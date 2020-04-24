@@ -37,7 +37,6 @@ public class AppTest
     }
     @Test
     public void recive(){
-        KafkaConsumerClient kcc=new KafkaConsumerClient();
-        kcc.runConsumer();
+
     }
 }

@@ -10,7 +10,7 @@ public class RedisClusterClient {
 
     public static RedisClusterClient getInstance(String hosts) {
         if (instance == null) {
-            synchronized (RedisClient.class) {
+            synchronized (RedisClusterClient.class) {
                 if (instance == null) {
                     instance = new RedisClusterClient(hosts);
                 }

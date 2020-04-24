@@ -1,6 +1,7 @@
 package com.beeplay.easylog.kafka;
 
 
+import com.beeplay.easylog.redis.RedisClient;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -12,21 +13,30 @@ import java.util.Arrays;
 import java.util.Properties;
 
 public class KafkaConsumerClient {
+    private static KafkaConsumerClient instance;
+    private KafkaConsumer kafkaConsumer;
+    public static KafkaConsumerClient getInstance(String hosts) {
+        if (instance == null) {
+            synchronized (RedisClient.class) {
+                if (instance == null) {
+                    instance = new KafkaConsumerClient(hosts);
+                }
+            }
+        }
+        return instance;
+    }
 
-    public  void runConsumer(){
+    public KafkaConsumer getKafkaConsumer() {
+        return kafkaConsumer;
+    }
+    KafkaConsumerClient(String hosts){
         Properties props = new Properties();
-
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 5000);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "logConsumer");
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Arrays.asList("beeplay_log_list","test001"));
-        while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-            for (ConsumerRecord<String, String> record : records) {
-                System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
-            }
-        }
+        kafkaConsumer = new KafkaConsumer<>(props);
     }
+
 }

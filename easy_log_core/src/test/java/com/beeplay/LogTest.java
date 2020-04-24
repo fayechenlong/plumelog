@@ -18,15 +18,14 @@ public class LogTest
     public static void main( String[] args )
     {
         TransId.logTranID.set(UUID.randomUUID().toString());
-        //for(int i=0;i<1000;i++) {
-        logger.info(IpGetter.getIp());
-        // }
-
-        try {
-            TransMessage a=null;
-            a.setTransId("sasa");
-        }catch (Exception e){
-            logger.error("设置值报错",e);
+        for(int i=0;i<223;i++) {
+        logger.info("I am log name:"+UUID.randomUUID().toString());
         }
+//        try {
+//            TransMessage a=null;
+//            a.setTransId("sasa");
+//        }catch (Exception e){
+//            logger.error("设置值报错",e);
+//        }
     }
 }

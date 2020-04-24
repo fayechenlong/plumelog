@@ -11,7 +11,7 @@ public class KafkaProducerClient {
     private Properties props = new Properties();
     public static KafkaProducerClient getInstance(String hosts) {
         if (instance == null) {
-            synchronized (RedisClient.class) {
+            synchronized (KafkaProducerClient.class) {
                 if (instance == null) {
                     instance = new KafkaProducerClient(hosts);
                 }
