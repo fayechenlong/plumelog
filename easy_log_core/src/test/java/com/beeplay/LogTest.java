@@ -21,11 +21,5 @@ public class LogTest
         for(int i=0;i<223;i++) {
         logger.info("I am log name:"+UUID.randomUUID().toString());
         }
-//        try {
-//            TransMessage a=null;
-//            a.setTransId("sasa");
-//        }catch (Exception e){
-//            logger.error("设置值报错",e);
-//        }
     }
 }

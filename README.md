@@ -31,6 +31,18 @@
 
        private static EasyLogger logger = EasyLogger.getLogger(Logger.getLogger(LogTest.class));
        
+       public class LogTest
+       {
+           private static EasyLogger logger = EasyLogger.getLogger(Logger.getLogger(LogTest.class));
+           public static void main( String[] args )
+           {
+               TransId.logTranID.set(UUID.randomUUID().toString());
+               for(int i=0;i<223;i++) {
+               logger.info("I am log name:"+UUID.randomUUID().toString());
+               }
+           }
+       }
+       
 3. 配置log4j配置文件，增加下面这个Appender
 
         log4j.appender.L=com.beeplay.easylog.core.appender.KafkaAppender
