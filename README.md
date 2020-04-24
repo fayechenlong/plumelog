@@ -9,6 +9,8 @@
  
  4. 全程日志不落磁盘，免维护
  
+ 5. 目前只支持log4j,后期会支持log4j2和logback
+ 
        
 
 ### 2.架构
@@ -26,6 +28,24 @@
    
 ### 4.使用方法
 1. 引入easy_log_core到项目中，安装kafka，安装elasticsearch
+
+    注意：如果是spring boot要去除自己的logback,否则配置不生效;如下：
+    
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-starter-logging</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-log4j</artifactId>
+                    <version>1.3.8.RELEASE</version>
+                </dependency>
 
 2. 在使用的地方加入代码
 

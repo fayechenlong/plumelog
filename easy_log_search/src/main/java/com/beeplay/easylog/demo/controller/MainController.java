@@ -1,24 +1,26 @@
 package com.beeplay.easylog.demo.controller;
 
 
-import org.springframework.stereotype.Controller;
+import com.beeplay.easylog.core.client.EasyLogger;
+import com.beeplay.easylog.demo.service.MainService;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Controller
+@RestController
 public class MainController {
-
+    private static EasyLogger logger = EasyLogger.getLogger(Logger.getLogger(MainController.class));
+    @Autowired
+    private MainService mainService;
     @RequestMapping("/index")
-    private String index(){
+    private String index(String data) {
+        logger.info("I am MainController");
+        logger.info(data);
+        mainService.testLog();
         return "index";
     }
-    @RequestMapping("/index1")
-    private String index1(){
-        return "index1";
-    }
-    @RequestMapping("/index2")
-    private String index2(){
-        return "index2";
-    }
-
 }
+
+
