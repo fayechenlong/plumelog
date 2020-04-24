@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class KafkaLogCollect {
 
     private static Logger logger=Logger.getLogger(KafkaLogCollect.class);
-    public static List<Map<String,Object>> list=new CopyOnWriteArrayList();
+    private static List<Map<String,Object>> list=new CopyOnWriteArrayList();
 
 
     public static void kafkaStart(String kafkaHosts,String esHosts){

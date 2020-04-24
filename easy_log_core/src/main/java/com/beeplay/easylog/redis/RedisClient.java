@@ -1,9 +1,10 @@
 package com.beeplay.easylog.redis;
 
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RedisClient {
     private static  RedisClient instance;
@@ -44,5 +45,39 @@ public class RedisClient {
             sj.close();
         }
     }
-
+    public String getMessage(String key) {
+        Jedis sj=jedisPool.getResource();
+        String obj;
+        try {
+            obj=sj.lpop(key);
+        }finally {
+            sj.close();
+        }
+        return obj;
+    }
+    public List<String> getMessage(String key,int size) {
+        Jedis sj=jedisPool.getResource();
+        List<String> list=new ArrayList<>();
+        List<Response<String>> listRes=new ArrayList<>();
+        try {
+            Pipeline pl=sj.pipelined();
+            for(int i=0;i<size;i++) {
+                Response<String> res=pl.lpop(key);
+                if(res==null){
+                    break;
+                }
+                listRes.add(res);
+            }
+            pl.sync();
+            for(Response<String> res:listRes) {
+                String log=res.get();
+                if(log!=null) {
+                    list.add(log);
+                }
+            }
+        }finally {
+            sj.close();
+        }
+        return list;
+    }
 }

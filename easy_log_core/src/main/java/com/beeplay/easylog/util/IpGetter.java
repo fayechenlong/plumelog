@@ -1,9 +1,6 @@
 package com.beeplay.easylog.util;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;

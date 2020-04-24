@@ -2,6 +2,7 @@ package com.beeplay.easylog.redis;
 
 import redis.clients.jedis.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class RedisClusterClient {
@@ -33,5 +34,25 @@ public class RedisClusterClient {
         }finally {
             jedisCluster.close();
         }
+    }
+    public String getMessage(String key) {
+        String obj;
+        try {
+            obj=jedisCluster.lpop(key);
+        }finally {
+            jedisCluster.close();
+        }
+        return obj;
+    }
+
+    public List<String> getMessage(String key, long size) {
+        List<String> list;
+        try {
+            list=jedisCluster.lrange(key,0L,size-1);
+            jedisCluster.ltrim(key,size,-1);
+        }finally {
+            jedisCluster.close();
+        }
+        return list;
     }
 }
