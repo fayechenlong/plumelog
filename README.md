@@ -31,11 +31,9 @@
 
        private static EasyLogger logger = EasyLogger.getLogger(Logger.getLogger(LogTest.class));
        
-       public class LogTest
-       {
+       public class LogTest{
            private static EasyLogger logger = EasyLogger.getLogger(Logger.getLogger(LogTest.class));
-           public static void main( String[] args )
-           {
+           public static void main( String[] args ){
                TransId.logTranID.set(UUID.randomUUID().toString());
                for(int i=0;i<223;i++) {
                logger.info("I am log name:"+UUID.randomUUID().toString());
