@@ -30,7 +30,16 @@
 
 1. 打包
 
-   maven install -DskipTest 打包，把打完的包上传到自己的maven私服
+* maven install -DskipTest 打包
+   
+* 到easy_log_core,easy_log_log4j,easy_log_log4j2,easy_log_logback四个目录下 执行maven deploy 上传包到自己的私服
+   
+     私服地址到easy_log目录的pom.xml改
+     
+            <properties>
+              <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+              <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
+            </properties>
 
 2. 配置
 
