@@ -68,6 +68,7 @@
     
 #### logback
 
+* 引入
     
        <dependency>
            <groupId>com.beeplay</groupId>
@@ -75,7 +76,7 @@
            <version>1.0</version>
        </dependency>
     
-配置
+* 配置
     
         <!-- easylog日志 -->
         <appender name="easylog" class="com.beeplay.easylog.logback.appender.RedisAppender">
@@ -102,7 +103,16 @@
 
 #### log4j2
 
-          
+* 引入
+
+       <dependency>
+           <groupId>com.beeplay</groupId>
+           <artifactId>easy_log_logBack</artifactId>
+           <version>1.0</version>
+       </dependency>       
+
+* 配置
+
           <KafkaAppender name="kafkaAppender" appName="easyjob" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092" topic="beeplay_log_list">
               <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
           </KafkaAppender>
