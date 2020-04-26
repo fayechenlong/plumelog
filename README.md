@@ -73,7 +73,7 @@
 
     同理如果使用logback,和log4j2配置如下
     
-    这里注意：spring boot项目默认用的logback
+    这里注意：spring boot项目默认用的logback;easy_log_search里面有基于springboot的使用demo
     
 #### logback
 
