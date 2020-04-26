@@ -1,7 +1,7 @@
 package com.beeplay.easylog.server.collect;
 
 
-import com.beeplay.easylog.redis.RedisClient;
+import com.beeplay.easylog.core.redis.RedisClient;
 import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
 import com.beeplay.easylog.server.util.DateUtil;

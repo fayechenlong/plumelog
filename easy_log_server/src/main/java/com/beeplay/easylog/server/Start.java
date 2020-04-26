@@ -1,7 +1,7 @@
 package com.beeplay.easylog.server;
 
 import com.beeplay.easylog.server.collect.KafkaLogCollect;
-import com.beeplay.easylog.util.ThreadPoolUtil;
+import com.beeplay.easylog.core.util.ThreadPoolUtil;
 import org.apache.log4j.Logger;
 import java.io.InputStream;
 import java.util.Properties;
@@ -22,11 +22,14 @@ public class Start {
 
         String model=properties.getProperty("easylog.server.model");
         InitConfig.MAX_SEND_SIZE=Integer.valueOf(properties.getProperty("easylog.server.maxSendSize"));
+        InitConfig.LOG_KEY=properties.getProperty("easylog.server.logKey");
+        InitConfig.ES_INDEX=properties.getProperty("easylog.server.es.index");
+        InitConfig.ES_TYPE=properties.getProperty("easylog.server.es.type");
 
         if("kafka".equals(model)) {
 
-            final String kafkaHosts = properties.getProperty("easylog.server.host.kafkaHosts");
-            final String esHosts = properties.getProperty("easylog.server.host.esHosts");
+            final String kafkaHosts = properties.getProperty("easylog.server.kafka.kafkaHosts");
+            final String esHosts = properties.getProperty("easylog.server.es.esHosts");
 
             logger.info("kafkaHosts:" + kafkaHosts);
 
@@ -40,18 +43,23 @@ public class Start {
             });
         }
         if("redis".equals(model)) {
-            final String redisHost = properties.getProperty("easylog.server.host.redisHost");
-            final String redisPort = properties.getProperty("easylog.server.host.redisPort");
-            final String esHosts = properties.getProperty("easylog.server.host.esHosts");
+            String redisHost = properties.getProperty("easylog.server.redis.redisHost");
+
+            String[] hs=redisHost.split(":");
+
+            final String ip=hs[0];
+            final int port=Integer.valueOf(hs[1]);
+
+            final String esHosts = properties.getProperty("easylog.server.es.esHosts");
             logger.info("get properties success!");
 
-            logger.info("redisHost:" + redisHost+":"+redisPort);
+            logger.info("redisHost:" + redisHost);
 
             logger.info("esHosts:" + esHosts);
             threadPoolExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    redisStart(redisHost,Integer.valueOf(redisPort), esHosts);
+                    redisStart(ip,port, esHosts);
                 }
             });
         }

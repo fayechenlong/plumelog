@@ -1,5 +1,5 @@
 package com.beeplay.easylog;
-import com.beeplay.easylog.core.client.TransId;
+import com.beeplay.easylog.core.TransId;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 

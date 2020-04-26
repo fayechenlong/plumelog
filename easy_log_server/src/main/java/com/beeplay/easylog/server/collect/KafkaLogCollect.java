@@ -1,6 +1,6 @@
 package com.beeplay.easylog.server.collect;
 
-import com.beeplay.easylog.kafka.KafkaConsumerClient;
+import com.beeplay.easylog.core.kafka.KafkaConsumerClient;
 import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
 import com.beeplay.easylog.server.util.DateUtil;
