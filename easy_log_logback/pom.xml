@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>easy_log_logback</artifactId>
-    <name>easy_log_logBack</name>
+    <name>easy_log_logback</name>
     <dependencies>
         <dependency>
             <groupId>ch.qos.logback</groupId>
