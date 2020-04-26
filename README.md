@@ -66,7 +66,7 @@
     
     这里注意：spring boot项目默认用的logback
     
-####logback
+#### logback
 
     
                        <dependency>
@@ -100,7 +100,7 @@
             <appender-ref ref="easylog" />
         </root>
 
-####log4j2
+#### log4j2
 
           
               <KafkaAppender name="kafkaAppender" appName="easyjob" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092" topic="beeplay_log_list">
