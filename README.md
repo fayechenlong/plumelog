@@ -81,7 +81,7 @@
     
        <dependency>
            <groupId>com.beeplay</groupId>
-           <artifactId>easy_log_logBack</artifactId>
+           <artifactId>easy_log_logback</artifactId>
            <version>1.0</version>
        </dependency>
     
