@@ -17,6 +17,7 @@
     <name>easy_log</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
   </properties>
   <build>
     <plugins>
