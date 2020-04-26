@@ -160,6 +160,8 @@
 4. 启动服务
 
  * 步骤一打包完的 easy_log_server 和 easy_log_search 两个项目
+   
+   备注：可用不用启动easy_log_search这个项目，这是个日志查询界面，可以使用kibana代替
  
  * easy_log_server中easylog.properties详解
  
