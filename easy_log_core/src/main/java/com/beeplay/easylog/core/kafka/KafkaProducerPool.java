@@ -3,6 +3,10 @@ package com.beeplay.easylog.core.kafka;
 import com.beeplay.easylog.core.util.Pool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
+
+/**
+ * kafka生产者池
+ */
 public class KafkaProducerPool extends Pool<KafkaProducer> {
 
     public KafkaProducerPool(final GenericObjectPoolConfig poolConfig, final String hosts) {

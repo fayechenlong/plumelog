@@ -6,15 +6,14 @@ import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
 import com.beeplay.easylog.server.util.DateUtil;
 import com.beeplay.easylog.server.util.GfJsonUtil;
-import org.apache.log4j.Logger;
-
+import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RedisLogCollect {
-    private static Logger logger=Logger.getLogger(RedisLogCollect.class);
+    private static org.slf4j.Logger logger= LoggerFactory.getLogger(RedisLogCollect.class);
     private static List<Map<String,Object>> list=new CopyOnWriteArrayList();
 
     public static void redisStart(String redisHot,int redisPort,String esHosts){
@@ -49,7 +48,7 @@ public class RedisLogCollect {
             logger.info("log insert es success! count:"+list.size());
             list.clear();
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("",e);
         }
     }
 }

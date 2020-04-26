@@ -2,7 +2,7 @@ package com.beeplay.easylog.server;
 
 import com.beeplay.easylog.server.collect.KafkaLogCollect;
 import com.beeplay.easylog.core.util.ThreadPoolUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -11,7 +11,7 @@ import static com.beeplay.easylog.server.collect.RedisLogCollect.redisStart;
 
 
 public class Start {
-    private static Logger logger=Logger.getLogger(Start.class);
+    private static org.slf4j.Logger logger= LoggerFactory.getLogger(Start.class);
     private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     public static void main( String[] args ) throws Exception {
         Properties properties = new Properties();

@@ -8,14 +8,15 @@ import com.beeplay.easylog.server.util.GfJsonUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class KafkaLogCollect {
 
-    private static Logger logger=Logger.getLogger(KafkaLogCollect.class);
+    private static org.slf4j.Logger logger= LoggerFactory.getLogger(KafkaLogCollect.class);
     private static List<Map<String,Object>> list=new CopyOnWriteArrayList();
 
 
