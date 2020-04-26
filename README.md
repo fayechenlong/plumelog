@@ -130,7 +130,7 @@
               </root>
           </loggers>
   
-2. 实例代码
+3. 示例代码
   
        import com.beeplay.easylog.core.TransId;
        import org.slf4j.Logger;
@@ -148,7 +148,9 @@
            }
        }
 
-3. 启动步骤一打包完的 easy_log_server 和 easy_log_search 两个项目
+4. 启动服务
+
+ * 步骤一打包完的 easy_log_server 和 easy_log_search 两个项目
  
  * easy_log_server中easylog.properties详解
  
