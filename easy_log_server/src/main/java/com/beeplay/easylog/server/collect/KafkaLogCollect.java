@@ -30,14 +30,14 @@ public class KafkaLogCollect {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
             if(records.count()>0) {
                 logger.info("get log " + " " + records.count() + " counts!");
-                for (ConsumerRecord<String, String> record : records) {
+                records.forEach(record->{
                     logger.info("get log:" + record.value());
                     Map<String, Object> map = GfJsonUtil.parseObject(record.value(), Map.class);
                     list.add(map);
                     if (list.size() >= InitConfig.MAX_SEND_SIZE) {
                         sendLog(ec);
                     }
-                }
+                });
                 if(list.size()>0) {
                     sendLog(ec);
                 }

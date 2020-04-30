@@ -26,17 +26,17 @@ public class RedisLogCollect {
             List<String> logs=redisClient.getMessage(InitConfig.LOG_KEY,InitConfig.MAX_SEND_SIZE);
             if(logs.size()>0) {
                 logger.info("get log " + " " + list.size() + " counts!");
-                for (String log : logs) {
+                logs.forEach(log->{
                     logger.info("get log:" + log);
                     Map<String, Object> map = GfJsonUtil.parseObject(log, Map.class);
                     list.add(map);
-                }
+                });
                 if (list.size() > 0) {
                     sendLog(ec);
                 }
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

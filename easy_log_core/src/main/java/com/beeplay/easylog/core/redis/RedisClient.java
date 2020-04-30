@@ -68,12 +68,12 @@ public class RedisClient {
                 listRes.add(res);
             }
             pl.sync();
-            for(Response<String> res:listRes) {
+            listRes.forEach(res->{
                 String log=res.get();
                 if(log!=null) {
                     list.add(log);
                 }
-            }
+            });
         }finally {
             sj.close();
         }

@@ -4,13 +4,14 @@ package com.beeplay.easylog.core;
 public class LogMessage {
     private String appName;
     private String serverName;
-    private String dtTime;
+    private Long dtTime;
     private String transId;
     private String content;
     private String logLevel;
     private String className;
     private String method;
     private String logType;
+    private String dateTime;
 
     public String getAppName() {
         return appName;
@@ -76,11 +77,19 @@ public class LogMessage {
         this.logType = logType;
     }
 
-    public String getDtTime() {
+    public Long getDtTime() {
         return dtTime;
     }
 
-    public void setDtTime(String dtTime) {
+    public void setDtTime(Long dtTime) {
         this.dtTime = dtTime;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
     }
 }

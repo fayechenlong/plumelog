@@ -16,7 +16,8 @@ public class LogMessageUtil {
         logMessage.setAppName(appName);
         logMessage.setContent(iLoggingEvent.getFormattedMessage());
         logMessage.setTransId(TransId.logTranID.get());
-        logMessage.setDtTime(DateUtil.parseTimestampToStr(new Timestamp(iLoggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
+        logMessage.setDateTime(DateUtil.parseTimestampToStr(new Timestamp(iLoggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
+        logMessage.setDtTime(iLoggingEvent.getTimeStamp());
         logMessage.setClassName(iLoggingEvent.getLoggerName());
         logMessage.setMethod(iLoggingEvent.getThreadName());
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());

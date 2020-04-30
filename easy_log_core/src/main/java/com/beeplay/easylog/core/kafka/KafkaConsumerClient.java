@@ -1,7 +1,5 @@
 package com.beeplay.easylog.core.kafka;
 
-
-import com.beeplay.easylog.core.redis.RedisClient;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -12,7 +10,7 @@ public class KafkaConsumerClient {
     private KafkaConsumer kafkaConsumer;
     public static KafkaConsumerClient getInstance(String hosts) {
         if (instance == null) {
-            synchronized (RedisClient.class) {
+            synchronized (KafkaConsumerClient.class) {
                 if (instance == null) {
                     instance = new KafkaConsumerClient(hosts);
                 }

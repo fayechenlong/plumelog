@@ -8,10 +8,19 @@ import org.apache.log4j.spi.LoggingEvent;
 import java.sql.Timestamp;
 
 /**
- * 组装日志数据
- */
+* @Author Frank.chen
+* @Description //TODO
+* @Date 15:56 2020/4/27
+**/
 public class LogMessageUtil {
 
+    /**
+    * @Author Frank.chen
+    * @Description //TODO
+    * @Date 15:56 2020/4/27
+    * @Param [appName, loggingEvent]
+    * @return com.beeplay.easylog.core.LogMessage
+    **/
     public static LogMessage getLogMessage(String appName,LoggingEvent loggingEvent){
         LogMessage logMessage = new LogMessage();
         String ip = IpGetter.getIp();
@@ -19,10 +28,12 @@ public class LogMessageUtil {
         logMessage.setAppName(appName);
         logMessage.setContent(loggingEvent.getRenderedMessage());
         logMessage.setTransId(TransId.logTranID.get());
-        logMessage.setDtTime(DateUtil.parseTimestampToStr(new Timestamp(loggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
+        logMessage.setDateTime(DateUtil.parseTimestampToStr(new Timestamp(loggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
+        logMessage.setDtTime(loggingEvent.getTimeStamp());
         logMessage.setClassName(loggingEvent.getLoggerName());
         logMessage.setMethod(loggingEvent.getLocationInformation().getMethodName());
         logMessage.setLogLevel(loggingEvent.getLevel().toString());
         return logMessage;
+
     }
 }

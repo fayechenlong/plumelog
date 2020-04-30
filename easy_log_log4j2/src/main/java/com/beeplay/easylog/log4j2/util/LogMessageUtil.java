@@ -20,7 +20,8 @@ public class LogMessageUtil {
         logMessage.setAppName(appName);
         logMessage.setContent(logEvent.getMessage().getFormattedMessage());
         logMessage.setTransId(TransId.logTranID.get());
-        logMessage.setDtTime(DateUtil.parseTimestampToStr(new Timestamp(logEvent.getTimeMillis()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
+        logMessage.setDateTime(DateUtil.parseTimestampToStr(new Timestamp(logEvent.getTimeMillis()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
+        logMessage.setDtTime(logEvent.getTimeMillis());
         logMessage.setClassName(logEvent.getLoggerName());
         logMessage.setMethod(logEvent.getThreadName());
         logMessage.setLogLevel(logEvent.getLevel().toString());

@@ -45,11 +45,11 @@ public class ElasticSearchClient {
     }
     public void insertList(List<Map<String,Object>> list,String baseIndex,String baseType) throws IOException {
         BulkRequest bulkRequest = new BulkRequest();
-        for(Map<String,Object> map:list){
+        list.forEach(map->{
             IndexRequest request = new IndexRequest(baseIndex, baseType, UUID.randomUUID().toString());
             request.source(map);
             bulkRequest.add(request);
-        }
+        });
         client.bulk(bulkRequest);
     }
     public void close(){
