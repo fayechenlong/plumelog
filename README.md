@@ -174,7 +174,7 @@
        
   * 查询界面
      
-     到easy_job_ui界面下，进入src目录 修改配置文件 config.json
+     1.到easy_job_ui界面下，进入src目录 修改配置文件 config.json
      
           {
               "api": "http://localhost:8989/",//node服务地址
@@ -182,11 +182,12 @@
               "prefix": "beeplay_log_",//es索引前缀
               "port" : 8989 //端口号，和上面api端口号
           }
-     运行 npm run build 打包
      
-     dist为打包后的目录，进入这个目录运行  node app
+     2.运行 npm run build 打包
      
-     http://你的部署服务器地址:8989 访问前端
+     3.dist为打包后的目录，进入这个目录运行  node app
+     
+     4.http://你的部署服务器地址:8989 访问前端
      
      备注：也可以用kibanna
      
