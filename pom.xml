@@ -8,11 +8,11 @@
     <version>1.0</version>
     <modules>
         <module>easy_log_core</module>
-      <module>easy_log_search</module>
-      <module>easy_log_server</module>
+        <module>easy_log_demo</module>
+        <module>easy_log_server</module>
         <module>easy_log_log4j</module>
-      <module>easy_log_logBack</module>
-      <module>easy_log_log4j2</module>
+        <module>easy_log_logback</module>
+        <module>easy_log_log4j2</module>
     </modules>
     <name>easy_log</name>
   <properties>
