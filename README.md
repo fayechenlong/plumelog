@@ -176,6 +176,8 @@
      
      1.到easy_job_ui界面下，进入src目录 修改配置文件 config.json
      
+     注意：需要自行安装nodejs环境
+     
           {
               "api": "http://localhost:8989/",//node服务地址
               "es": "http://172.16.251.196:9200/", //es地址
