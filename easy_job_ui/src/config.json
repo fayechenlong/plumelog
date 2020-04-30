@@ -1,0 +1,6 @@
+{
+    "api": "http://localhost:8989/",
+    "es": "http://172.16.251.196:9200/",
+    "prefix": "beeplay_log_",
+    "port" : 8989
+}
