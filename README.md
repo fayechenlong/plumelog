@@ -159,14 +159,8 @@
 
 4. 启动服务
 
- * 步骤一打包完的 easy_log_server 和 easy_log_search 两个项目
-   
-   备注：可用不用启动easy_log_search这个项目，这是个日志查询界面，可以使用kibana代替
-   
-         日志查询界面地址：
-         
-         http://你的服务器IP:8080
- 
+ * 步骤一打包完的 启动 easy_log_server-1.0.jar 
+  
  * easy_log_server中easylog.properties详解
  
        easylog.server.model=kafka
@@ -177,8 +171,25 @@
        easylog.server.maxSendSize=100
        #log的key名称，如果用的kafka就是kafka的topic
        easylog.server.logkey=beeplay_log_list
-    
-   
+       
+  * 查询界面
+     
+     到easy_job_ui界面下，进入src目录 修改配置文件 config.json
+     
+          {
+              "api": "http://localhost:8989/",//node服务地址
+              "es": "http://172.16.251.196:9200/", //es地址
+              "prefix": "beeplay_log_",//es索引前缀
+              "port" : 8989 //端口号，和上面api端口号
+          }
+     运行 npm run build 打包
+     
+     dist为打包后的目录，进入这个目录运行  node app
+     
+     http://你的部署服务器地址:8989 访问前端
+     
+     备注：也可以用kibanna
+     
 ### 5.联系交流
 * wx
   
