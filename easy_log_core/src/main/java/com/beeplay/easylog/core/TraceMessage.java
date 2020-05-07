@@ -1,7 +1,7 @@
 package com.beeplay.easylog.core;
 
 
-public class TransMessage {
+public class TraceMessage {
 
     private String transId;
     private String content;

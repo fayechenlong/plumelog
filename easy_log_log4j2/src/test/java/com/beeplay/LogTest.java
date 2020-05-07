@@ -1,7 +1,7 @@
 package com.beeplay;
 
 
-import com.beeplay.easylog.core.TransId;
+import com.beeplay.easylog.core.TraceId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ public class LogTest
     private static Logger logger=LoggerFactory.getLogger(LogTest.class);
     public static void main( String[] args )
     {
-        TransId.logTranID.set(UUID.randomUUID().toString());
+        TraceId.logTraceID.set(UUID.randomUUID().toString());
         logger.info("{}","I am log name:"+UUID.randomUUID().toString());
         logger.info("{}","I am log name:"+UUID.randomUUID().toString());
     }

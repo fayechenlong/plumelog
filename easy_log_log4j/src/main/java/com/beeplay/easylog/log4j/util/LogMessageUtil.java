@@ -1,7 +1,7 @@
 package com.beeplay.easylog.log4j.util;
 
 import com.beeplay.easylog.core.LogMessage;
-import com.beeplay.easylog.core.TransId;
+import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.util.DateUtil;
 import com.beeplay.easylog.core.util.IpGetter;
 import org.apache.log4j.spi.LoggingEvent;
@@ -27,7 +27,7 @@ public class LogMessageUtil {
         logMessage.setServerName(ip);
         logMessage.setAppName(appName);
         logMessage.setContent(loggingEvent.getRenderedMessage());
-        logMessage.setTransId(TransId.logTranID.get());
+        logMessage.setTraceId(TraceId.logTraceID.get());
         logMessage.setDateTime(DateUtil.parseTimestampToStr(new Timestamp(loggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
         logMessage.setDtTime(loggingEvent.getTimeStamp());
         logMessage.setClassName(loggingEvent.getLoggerName());

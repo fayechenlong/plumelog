@@ -1,5 +1,6 @@
 package com.beeplay.easylog.demo;
-import com.beeplay.easylog.core.TransId;
+import com.beeplay.easylog.core.TraceId;
+import com.beeplay.easylog.core.util.IdWorker;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -13,9 +14,8 @@ public class Interceptor extends HandlerInterceptorAdapter{
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-        TransId.logTranID.set(UUID.randomUUID().toString());
-
+        IdWorker worker = new IdWorker(1,1,1);
+        TraceId.logTraceID.set(String.valueOf(worker.nextId()));
         return true;
     }
 }

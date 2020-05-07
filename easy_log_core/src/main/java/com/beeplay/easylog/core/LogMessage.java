@@ -5,7 +5,7 @@ public class LogMessage {
     private String appName;
     private String serverName;
     private Long dtTime;
-    private String transId;
+    private String traceId;
     private String content;
     private String logLevel;
     private String className;
@@ -29,12 +29,12 @@ public class LogMessage {
         this.serverName = serverName;
     }
 
-    public String getTransId() {
-        return transId;
+    public String getTraceId() {
+        return traceId;
     }
 
-    public void setTransId(String transId) {
-        this.transId = transId;
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
     }
 
     public String getContent() {
