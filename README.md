@@ -19,7 +19,9 @@
 
 * easy_log_server 负责把队列中的日志日志异步写入到elasticsearch 
 
-* easy_log_search 前端展示，日志查询界面
+* easy_log_ui 前端展示，日志查询界面
+
+* easy_log_demo 基于springboot的使用案例
 
 ### 3.系统流程
    1. easy_log_core 搜集日志发送到=>kafka或者redis
@@ -30,7 +32,7 @@
 
 1. 打包
 
-* maven install -DskipTest 打包
+* maven install -DskipTests 打包
    
 * 到easy_log_core,easy_log_log4j,easy_log_log4j2,easy_log_logback四个目录下 执行maven deploy 上传包到自己的私服
    
