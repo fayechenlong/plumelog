@@ -1,0 +1,5 @@
+com/beeplay/easylog/log4j/util/LogMessageUtil.class
+com/beeplay/easylog/log4j/appender/RedisAppender$1.class
+com/beeplay/easylog/log4j/appender/KafkaAppender.class
+com/beeplay/easylog/log4j/appender/RedisAppender.class
+com/beeplay/easylog/log4j/appender/KafkaAppender$1.class

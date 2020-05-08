@@ -13,6 +13,7 @@
         <module>easy_log_log4j</module>
         <module>easy_log_logback</module>
         <module>easy_log_log4j2</module>
+      <module>easy_log_dubbo</module>
     </modules>
     <name>easy_log</name>
   <properties>
