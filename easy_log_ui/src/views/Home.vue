@@ -96,7 +96,7 @@
           <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
           <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
           <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
-          <td class="icon">{{item._source.transId}}<Icon type="ios-search" @click="doSearch('transId',item)" /></td>
+          <td class="icon">{{item._source.transId}}<Icon type="ios-search" v-if="item._source.transId" @click="doSearch('transId',item)" /></td>
           <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
           <td>{{item._source.dtTime | filterTime}}</td>
           <td class='td_cnt' v-html="showContent(item)"></td>
