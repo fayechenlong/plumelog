@@ -77,6 +77,9 @@
     
     这里注意：spring boot项目默认用的logback;easy_log_search里面有基于springboot的使用demo
     
+    #### 【dubbo rpc 跨服务传送trace_id 可以参考 easy_log_dubbo】
+    
+    
 #### logback
 
 * 引入
