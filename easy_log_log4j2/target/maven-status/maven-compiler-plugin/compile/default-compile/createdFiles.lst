@@ -1,6 +1,0 @@
-com/beeplay/easylog/log4j2/appender/RedisAppender$1.class
-com/beeplay/easylog/log4j2/appender/KafkaAppender$1.class
-com/beeplay/easylog/log4j2/appender/RedisAppender.class
-com/beeplay/easylog/log4j2/appender/KafkaAppender.class
-com/beeplay/easylog/log4j2/util/LogMessageUtil.class
-META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat
