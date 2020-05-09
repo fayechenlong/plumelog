@@ -207,3 +207,9 @@
    * 有问题在留言区留言，会在第一时间内回复
       
    * 欢迎有兴趣的一起加入研究
+   
+### 7.测试地址
+
+   * 查询界面地址：https://easylog-demo.beeplaying.com
+      
+   * 访问这个地址产生测试log数据：https://easylog-demo.beeplaying.com/demo/index?data=1234  data参数自己随便传，传什么打印什么
