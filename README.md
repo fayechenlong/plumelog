@@ -1,5 +1,5 @@
-# easy_log
-### 1.分布式日志系统介绍
+# easy_log 一个简单易用的分布式日志组件
+### 1.系统介绍
 
  1. 无入侵的分布式日志系统，基于log4j、log4j2、logback搜集日志，设置链路ID，方便查询关联日志
  
@@ -156,9 +156,9 @@
            private static Logger logger=LoggerFactory.getLogger(LogTest.class);
            public static void main( String[] args )
            {
-               TransId.logTranID.set(UUID.randomUUID().toString());
-               logger.info("{}","I am log name:"+UUID.randomUUID().toString());
-               logger.info("{}","I am log name:"+UUID.randomUUID().toString());
+                TraceId.logTraceID.set(UUID.randomUUID().toString());
+                logger.info("{}","I am log name:"+UUID.randomUUID().toString());
+                logger.info("{}","I am log name:"+UUID.randomUUID().toString());
            }
        }
 
@@ -198,11 +198,11 @@
      
      备注：也可以用kibanna
      
-### 5.联系交流
-* wx
-  
-   longfeiclf
-   
-### 6.感谢
+### 5.后续版本计划
 
-   感谢查询界面提供“毛毛”
+   2.0版本将会增加全链路追踪功能，目前正在开发当中，UI界面也会优化
+   
+### 6.联系交流
+   * 有问题在留言区留言，会在第一时间内回复
+      
+   * 欢迎有兴趣的一起加入研究
