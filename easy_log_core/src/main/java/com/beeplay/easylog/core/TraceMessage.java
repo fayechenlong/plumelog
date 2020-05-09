@@ -3,22 +3,22 @@ package com.beeplay.easylog.core;
 
 public class TraceMessage {
 
-    private String transId;
-    private String content;
+    private String traceId;
+    private String messageType;
 
-    public String getTransId() {
-        return transId;
+    public String getTraceId() {
+        return traceId;
     }
 
-    public void setTransId(String transId) {
-        this.transId = transId;
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
     }
 
-    public String getContent() {
-        return content;
+    public String getMessageType() {
+        return messageType;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
     }
 }
