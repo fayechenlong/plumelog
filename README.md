@@ -165,6 +165,8 @@
 4. 启动服务
 
  * 步骤一打包完的 启动 easy_log_server-1.0.jar 
+
+   注意：打完的包target目录下，lib文件夹（依赖包目录），config文件夹（两个配置文件的目录），easy_log_server-1.0.jar 放到同一个目录下
   
  * easy_log_server中easylog.properties详解
  
