@@ -179,7 +179,7 @@
        
   * 查询界面
      
-     1.到easy_job_ui界面下，进入src目录 修改配置文件 config.json
+     1.到easy_log_ui界面下，进入src目录 修改配置文件 config.json
      
      注意：需要自行安装nodejs环境
      
