@@ -52,7 +52,7 @@
             <tr>
               <td class="key">追踪码</td>
               <td>
-                <Input class="txt" name="transId" v-model="filter.transId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+                <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
               </td>
             </tr>
             <tr>
@@ -96,7 +96,7 @@
           <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
           <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
           <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
-          <td class="icon">{{item._source.transId}}<Icon type="ios-search" v-if="item._source.transId" @click="doSearch('transId',item)" /></td>
+          <td class="icon">{{item._source.traceId}}<Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
           <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
           <td>{{item._source.dtTime | filterTime}}</td>
           <td class='td_cnt' v-html="showContent(item)"></td>
@@ -245,7 +245,7 @@ export default {
        },
        {
         'name': '追踪码',
-        'value': 'transId'
+        'value': 'traceId'
        },
        {
         'name': '模块名',
@@ -268,7 +268,7 @@ export default {
      filter:{
        "logLevel":'',
        "appName":"",
-       "transId":""
+       "traceId":""
      },
      list:{
        hits:[]
@@ -349,7 +349,7 @@ export default {
      this.filter = {
        "logLevel":'',
        "appName":"",
-       "transId":""
+       "traceId":""
      }
      this.searchKey = "";
      this.dateTimeRange = [];
@@ -384,7 +384,7 @@ export default {
     
       for(var date of dateList){
            promises.push(new Promise((res,reject)=>{
-               axios.head($config.api+date)
+               axios.head('/'+date)
                     .then(r=>{
                         res(true)
                     })
@@ -448,7 +448,7 @@ export default {
 
       //this.checkExistsIndex(dateList).then(existDateList=>{
           
-          let url= $config.api+'getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+          let url= '/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
 
           let esFilter = {
             "query":{
