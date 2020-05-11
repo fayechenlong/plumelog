@@ -38,7 +38,6 @@ public class KafkaAppender  extends AppenderBase<ILoggingEvent> {
         if(kafkaClient==null){
             kafkaClient= KafkaProducerClient.getInstance(this.kafkaHosts);
         }
-        System.out.println(kafkaHosts);
         final String topic=this.topic;
         final LogMessage logMessage = LogMessageUtil.getLogMessage(this.appName,event);
         threadPoolExecutor.execute(new Runnable() {
