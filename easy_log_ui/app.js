@@ -44,9 +44,94 @@ function checkExistsIndex(dateList) {
       return existDateList
     })
    
+}
+
+function formartTrace(list){
+
+
+  //todo:检测数据是否闭合（判断<和>的数量是否一致）
+
+  let zIndex=0;
+  let _list = [];
+
+  function pushItem(item,isStart){
+
+    // console.log("zIndex:"+zIndex);
+
+    let _arrary=_list;
+    //找到该层级的最后一个元素往里插
+    if(zIndex>-1){
+      
+      for(var i=0;i<zIndex;i++){
+          _arrary = _arrary[_arrary.length-1].children;
+      }
+
+     
+      //方法开始
+      if(isStart){
+        _arrary.push({
+          method: item.method,
+          appName: item.appName,
+          start_time: item.time,
+          children:[]
+        });
+        // console.log('start');
+        // console.log('zindex:'+zIndex);
+        // console.log(JSON.stringify(_arrary,null,2));
+      }
+      //方法结束
+      else
+      {
+        //找到一个没结束的item
+        for(var f=0;f<_arrary.length;f++){
+          if(!_arrary[f].end_time){
+            _arrary[f].end_time = item.time;
+            break
+          }
+        }
+        
+        // console.log('close');
+        // console.log('zindex:'+zIndex);
+        // console.log(JSON.stringify(_arrary,null,2));
+        // _arrary.end_time = item.time;
+        // console.log(JSON.stringify(_list,null,2));
+        // console.log('========================');
+        // console.log(JSON.stringify(_arrary,null,2));
+      }
+      
+      // console.log('zindex:'+zIndex);
+      // console.log(JSON.stringify(_list));
+    }
+    else
+    {
+      _arrary.push({
+        method: item.method,
+        appName: item.appName,
+        start_time: item.time,
+        children:[]
+      })
+    }
   }
 
-  app.post('/getInfo', function (req, res) {
+  for(var i=0;i<list.length;i++){
+    //如果postion是 '<' 说明是上一个方法的子方法
+    if(list[i]['position']=='<'){
+      pushItem(list[i],true)
+      zIndex++;
+
+    }
+    else if(list[i]['position']=='>')
+    {
+      zIndex--;
+      pushItem(list[i],false)
+    }
+  }
+
+  // console.log(JSON.stringify(_list,null,2))
+  return _list;
+}
+
+app.post('/getInfo', function (req, res) {
     
     var str='';
     req.on("data",function(dt){
@@ -65,6 +150,67 @@ function checkExistsIndex(dateList) {
                 res.send(response.text);
             })
     })
+});
+
+app.get('/getTrace', function (req, res) {
+
+  //console.log('traceId:'+req.query.traceId)
+  if(req.query.traceId){
+    checkExistsIndex(req.query.index.split(',')).then(existIndex=>{
+        let filter = {
+          "query": {
+            "bool": {
+              "must": [{
+                "match": {
+                  "traceId": {
+                    "query": req.query.traceId
+                  }
+                }
+              }]
+            }
+          },
+          "sort": [{
+            "positionNum": "asc"
+          }]
+        };
+
+        let url = config.es+existIndex+'/_search';
+        superagent
+            .post(url)
+            .set('Accept', 'application/json')
+            .send(JSON.stringify(filter))
+            .timeout(20000)
+            .end(function (err, response) {
+                let hits = [];
+                
+                try{
+                  var result = JSON.parse(response.text);
+                  result.hits.hits.map(hit=>{
+                    hits.push(hit._source)
+                  })
+                }
+                catch(e){
+                  console.log('get hits error,'+e.message)
+                }
+
+                if(hits.length>0)
+                {
+                  res.send(formartTrace(hits));
+                }
+                else
+                {
+                  res.send({});
+                }
+
+            })
+    })
+  }
+  else
+  {
+    res.send('{}');
+  }
+    
+ 
 });
 
 

@@ -1,68 +1,66 @@
 <template>
   <div class="pnl_wraper">
+
+    <!-- <div style="width:800px;float:left;margin-top:20px;margin-left:50px;">
+
+      <tree :info="traceInfo" />
+    </div> -->
+
     <div class="pnl_filters">
       <div class="alert alert-danger" v-if="danger_str" role="alert">
         {{danger_str}}
       </div>
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item active" aria-current="page">
-            <h3><Icon type="ios-bug" />&nbsp;日志查询系统</h3>
-          </li>
-        </ol>
-      </nav>
-      <iframe id="rfFrame" name="rfFrame" src="about:blank" style="display:none;"></iframe> 
-      <form action="" target="rfFrame" ref="form" autocomplete="on">
-        <table class='tbl_filters'>
-          <tbody>
-            <tr>
-              <td class="key">应用名称</td>
-              <td>
-                <Input class="txt" name="appName" v-model="filter.appName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true" />
-              </td>
-            </tr>
-            <tr>
-              <td class="key">日志等级</td>
-              <td>
-                <Select v-model="filter.logLevel" placeholder="请选择日志等级">
-                    <Option value="" key="ALL">所有</Option>
-                    <Option value="INFO" key="INFO">INFO</Option>
-                    <Option value="ERROR" key="ERROR">ERROR</Option>
-                    <Option value="WARN" key="WARN">WARN</Option>
-                    <Option value="DEBUG" key="DEBUG">DEBUG</Option>
-                </Select>
-              </td>
-            </tr>
-            <tr>
-              <td class="key">服务器名称</td>
-              <td>
-                <Input class="txt" name="serverName" v-model="filter.serverName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table class='tbl_filters'>
+      <log-header></log-header>
+      
+      <table class='tbl_filters'>
+        <tbody>
           <tr>
-              <td class="key">模块名</td>
-              <td>
-                <Input class="txt"  name="className" v-model="filter.className" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
-              </td>
-            </tr>
-            <tr>
-              <td class="key">追踪码</td>
-              <td>
-                <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
-              </td>
-            </tr>
-            <tr>
-              <td class="key">日期和时间</td>
-              <td>
-                  <DatePicker ref='datePicker' v-model="dateTimeRange" :editable="true" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 378px"></DatePicker>
-              </td>
-            </tr>
-        </table>
-      </form>
+            <td class="key">应用名称</td>
+            <td>
+              <Input class="txt" name="appName" v-model="filter.appName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true" />
+            </td>
+          </tr>
+          <tr>
+            <td class="key">日志等级</td>
+            <td>
+              <Select v-model="filter.logLevel" placeholder="请选择日志等级">
+                  <Option value="" key="ALL">所有</Option>
+                  <Option value="INFO" key="INFO">INFO</Option>
+                  <Option value="ERROR" key="ERROR">ERROR</Option>
+                  <Option value="WARN" key="WARN">WARN</Option>
+                  <Option value="DEBUG" key="DEBUG">DEBUG</Option>
+              </Select>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">服务器名称</td>
+            <td>
+              <Input class="txt" name="serverName" v-model="filter.serverName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class='tbl_filters'>
+        <tr>
+            <td class="key">模块名</td>
+            <td>
+              <Input class="txt"  name="className" v-model="filter.className" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">追踪码</td>
+            <td>
+              <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">日期和时间</td>
+            <td>
+                <DatePicker ref='datePicker' v-model="dateTimeRange" :editable="true" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 378px"></DatePicker>
+            </td>
+          </tr>
+      </table>
     <div style="clear:both"></div>
       <table class="tbl_filters">
         <tr>
@@ -96,7 +94,7 @@
           <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
           <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
           <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
-          <td class="icon">{{item._source.traceId}}<Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
+          <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
           <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
           <td>{{item._source.dtTime | filterTime}}</td>
           <td class='td_cnt' v-html="showContent(item)"></td>
@@ -117,7 +115,6 @@
     </nav>
 
     <!-- Modal -->
-    
     <div class="modal fade show" style="display:block" v-if="content.title" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable" style="max-width:1200px" role="document">
         <div class="modal-content">
@@ -148,7 +145,7 @@
       </div>
     </div>
     <div class="modal-backdrop fade show" v-if="content.title"></div>
-
+    
   </div>
 </template>
 
@@ -162,74 +159,40 @@ import '@/assets/prism.js'
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
 import * as $config from '@/config.json'
+import tree from '@/components/tree.vue'
+import logHeader from '@/components/logHeader.vue'
+import "@/assets/less/base.less";
+import dateOption from './dateOption';
 
 
 export default {
   name: "Home",
   data(){
    return {
+     traceInfo:{
+          name:"tree1",
+          time: "20189123123",
+          zindex:1,
+          children:[
+              {
+                  name:"tree2",
+                  time: "20189123123",
+                  zindex:2,
+              },
+              {
+                  name:"tree3",
+                  time: "20189123123",
+                  zindex:2,
+                  children:[{
+                      name:"tree4",
+                      time: "20189123123",
+                      zindex:3,
+                  }]
+              }
+          ]
+      },
      api: process.env.api,
-     dateOption:{
-       shortcuts: [
-         {
-              text: '15分钟',
-              value () {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setTime(start.getTime() - 60 * 1000 * 15);
-                  return [start, end];
-              }
-          },
-          {
-              text: '30分钟',
-              value () {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setTime(start.getTime() - 60 * 1000 * 30);
-                  return [start, end];
-              }
-          },
-          {
-              text: '1小时',
-              value () {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setTime(start.getTime() - 3600 * 1000);
-                  return [start, end];
-              }
-          },
-          {
-              text: '24小时',
-              value () {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setTime(start.getTime() - 3600 * 1000 * 24);
-                  return [start, end];
-              }
-          },
-          {
-              text: '1周',
-              value () {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                  return [start, end];
-              }
-          },
-          {
-              text: '当天',
-              value () {
-                  const end = new Date();
-                  var start = new Date();
-                  start.setTime(start.setHours(0,0));
-                  return [start, end];
-              }
-          }
-      ],
-       disabledDate(date){
-         return date && date.valueOf() > Date.now();
-       }
-     },
+     dateOption,
      contentItems:[
        {
         'name': '应用名称',
@@ -266,9 +229,9 @@ export default {
      searchKey:'',
      danger_str:'',
      filter:{
-       "logLevel":'',
-       "appName":"",
-       "traceId":""
+       "logLevel": '',
+       "appName": "",
+       "traceId": ""
      },
      list:{
        hits:[]
@@ -279,6 +242,8 @@ export default {
   },
   components: {
     // HelloWorld
+    tree,
+    logHeader
   },
   filters:{
     substr(str){
@@ -379,33 +344,6 @@ export default {
       this.filter = JSON.parse(this.$route.query.filter || '{}')
       this.from = from;
     },
-    checkExistsIndex(dateList) {
-      var promises=[];
-    
-      for(var date of dateList){
-           promises.push(new Promise((res,reject)=>{
-               axios.head('/'+date)
-                    .then(r=>{
-                        res(true)
-                    })
-                    .catch(error=>{
-                      res(false)
-                    })
-           }))
-      }
-
-      return Promise.all(promises).then(data=>{
-        var existDateList=[];
-        for(var i=0;i<dateList.length;i++)
-        {
-          if(data[i]){
-            existDateList.push(dateList[i])
-          }
-        }
-        return existDateList
-      })
-     
-    },
     showContent(item){
       var str = (_.get(item,"highlight.content[0]","") || _.get(item,"_source.content",""))
       if(str.length>30)
@@ -422,8 +360,6 @@ export default {
       }
     },
     doSearch(keyName,item){
-
-      this.$refs.form.submit();
 
       if(keyName && item){
         this.filter[keyName] = item._source[keyName]
@@ -445,45 +381,40 @@ export default {
       if(dateList.length==0){
         dateList.push($config.prefix+moment().format('YYYYMMDD'));
       }
-
-      //this.checkExistsIndex(dateList).then(existDateList=>{
           
-          let url= '/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+      let url= '/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
 
-          let esFilter = {
-            "query":{
-              "bool":{
-                "must":[
-                  ...shouldFilter
-                ]
-              }
-            },
-            "highlight": {
-                "fields" : {
-                    "content" : {}
-                }
-            },
-            "sort":[
-              {
-                "dtTime":"desc"
-              }
+      let esFilter = {
+        "query":{
+          "bool":{
+            "must":[
+              ...shouldFilter
             ]
-          };
-
-          axios.post(url,esFilter).then(data=>{
-            this.list = _.get(data,'data.hits')
-          })
-
-          this.$router.push({
-            name:'Home',
-            query:{
-              from:this.from,
-              filter: JSON.stringify(this.filter)
+          }
+        },
+        "highlight": {
+            "fields" : {
+                "content" : {}
             }
-          }).catch(err=>{
-            
-          })
-      //});
+        },
+        "sort":[
+          {
+            "dtTime":"desc"
+          }
+        ]
+      };
+
+      axios.post(url,esFilter).then(data=>{
+        this.list = _.get(data,'data.hits')
+      })
+
+      this.$router.push({
+        name:'Home',
+        query:{
+          from:this.from,
+          filter: JSON.stringify(this.filter)
+        }
+      })
     },
     prevePage(){
       let from = this.from - this.size
@@ -519,157 +450,9 @@ export default {
 </script>
 <style lang="less">
 
-  pre {
-    // white-space: pre-wrap;       /* css-3 */
-    // white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    // white-space: -pre-wrap;      /* Opera 4-6 */
-    // white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
-  }
-
-  .pnl_wraper
-  {
-    padding-bottom:80px;
-    .pnl_filters
-    {
-      padding-bottom:20px; 
-      nav{
-        margin-bottom:20px;
-      }
-    }
-    .page_nav
-    {
-      position:fixed;
-      bottom:0;
-      width:100%;
-      padding:15px 0;
-      background:#fff;
-      border-top:1px solid #ccc;
-    }
-  }
-
-  .table_detail {
-    position:relative;
-    border-collapse: collapse;
-    thead {
-      position:sticky;
-        top: 0;
-      th{
-        position:sticky;
-        top: -1px;
-        background:#fff;
-        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
-        z-index:99;
-      }
-    }
-
-    td{
-      position: relative;
-      &.icon{
-         &:hover{
-          i{
-            display: inline;
-          }
-        }
-        i{
-           cursor: pointer;
-           position: absolute;
-           top: 15px;
-           right:5px;
-           font-size: 16px;
-           display:none;
-        }
-       
-      }
-    }
-
-    .btn{
-      font-size:14px !important;
-    }
-
-    tr.WARN{
-      td{
-        background: #fff1d7;
-      }
-    }
-
-    tr.ERROR{
-      td{
-        background: #f7b8a8;
-      }
-    }
-
-    tr:hover{
-      td{
-        background:#e3ecf3;
-      }
-    }
-  }
-
-  .modal-body
-  {
-    table{
-      tr{
-        td{
-          vertical-align:top;
-          padding:10px 0;
-          border-bottom:1px dotted #ececec;
-          .code_wrap
-          {
-            width:950px;
-          }
-        }
-        .key{
-          width:150px;
-          font-weight:700;
-          text-align:right;
-          padding:10px 50px 10px 10px;
-        }
-      }
-      
-    }
-  }
-
-  .td_cnt
-  {
-    em {
-      background:yellow;
-    }
-  }
-
-  .modal-body
-  {
-    text-align:left;
-    em {
-      background:yellow;
-    }
-  }
-
-  
 </style>
+<style lang="less" src="../assets/less/filters.less" scoped></style>
 <style lang="less" scoped>
-
-  .tbl_filters {
-    float:left;
-    tr{
-      td{
-        height:30px;
-        line-height:30px;
-        text-align:left;
-        padding-bottom:10px;
-        &.key{
-          padding-left:20px;
-          text-align:right;
-          font-weight:700;
-          width:150px;
-          padding-right:30px;
-        }
-        .txt{
-          width:378px;
-        }
-      }
-    }
-  }
 
   .breadcrumb
   {

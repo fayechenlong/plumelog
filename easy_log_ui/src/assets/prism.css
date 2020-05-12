@@ -136,7 +136,3 @@ pre[class*="language-"] {
 	font-style: italic;
 }
 
-.token.entity {
-	cursor: help;
-}
-
