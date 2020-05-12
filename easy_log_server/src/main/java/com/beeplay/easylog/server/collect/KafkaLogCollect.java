@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 /**
 * @Author Frank.chen
-* @Description //TODO
+* @Description kafka collect
 * @Date 14:15 2020/5/12
 * @Param 
 * @return 
@@ -42,7 +42,7 @@ public class KafkaLogCollect {
             if(records.count()>0) {
                 logger.info("get log " + " " + records.count() + " counts!");
                 records.forEach(record->{
-                    logger.info("get log:" + record.value());
+                    logger.debug("get log:" + record.value());
                     Map<String, Object> map = GfJsonUtil.parseObject(record.value(), Map.class);
                     list.add(map);
                     if (list.size() >= InitConfig.MAX_SEND_SIZE) {

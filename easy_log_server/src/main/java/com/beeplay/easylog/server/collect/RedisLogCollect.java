@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 /**
 * @Author Frank.chen
-* @Description //TODO
+* @Description redis collect
 * @Date 14:15 2020/5/12
 * @Param 
 * @return 
@@ -65,18 +65,18 @@ public class RedisLogCollect {
         if(logs.size()>0) {
             logger.info("get log " + " " + list.size() + " counts!");
             logs.forEach(log->{
-                logger.info("get log:" + log);
+                logger.debug("get log:" + log);
                 Map<String, Object> map = GfJsonUtil.parseObject(log, Map.class);
                 list.add(map);
             });
             if (list.size() > 0) {
-                sendLog(ec,InitConfig.ES_INDEX+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
+                sendLog(ec,index);
             }
         }
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("",e);
         }
     }
     private  void sendLog(ElasticSearchClient ec,String index){
