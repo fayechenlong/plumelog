@@ -22,6 +22,11 @@
             <artifactId>easy_log_core</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.beeplay</groupId>
+            <artifactId>easy_log_trace</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 </project>

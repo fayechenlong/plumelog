@@ -17,9 +17,11 @@ public class TraceLogMessage extends BaseLogMessage {
     private Long time;
 
     /**
-     * 执行的位置 开始结束
+     * 执行的位置 开始 or 结束
      */
     private String position;
+
+
 
     public Long getTime() {
         return time;

@@ -5,6 +5,7 @@ package com.beeplay.easylog.logback.appender;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.beeplay.easylog.core.LogMessage;
+import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.kafka.KafkaProducerClient;
 import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.core.util.ThreadPoolUtil;
@@ -39,7 +40,7 @@ public class KafkaAppender  extends AppenderBase<ILoggingEvent> {
             kafkaClient= KafkaProducerClient.getInstance(this.kafkaHosts);
         }
         final String topic=this.topic;
-        final LogMessage logMessage = LogMessageUtil.getLogMessage(this.appName,event);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName,event);
         threadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
