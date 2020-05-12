@@ -37,7 +37,12 @@ public class LogMessageUtil {
                 new Timestamp(iLoggingEvent.getTimeStamp()),
                 DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
         logMessage.setDtTime(iLoggingEvent.getTimeStamp());
-        logMessage.setClassName(iLoggingEvent.getLoggerName());
+
+        StackTraceElement stackTraceElement=iLoggingEvent.getCallerData()[0];
+
+        logMessage.setClassName(stackTraceElement.getClassName());
+        logMessage.setMethod(stackTraceElement.getMethodName());
+
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;
     }

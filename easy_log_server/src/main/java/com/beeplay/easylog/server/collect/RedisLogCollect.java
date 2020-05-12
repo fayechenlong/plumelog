@@ -50,12 +50,11 @@ public class RedisLogCollect extends BaseLogCollect{
     private  void collectTraceLog(){
         while (true) {
             List<String> logs=redisClient.getMessage(InitConfig.LOG_KEY+"_"+ LogTypeContext.LOG_TYPE_TRACE,InitConfig.MAX_SEND_SIZE);
-            collect(logs,InitConfig.ES_INDEX+LogTypeContext.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
+            collectTrace(logs,InitConfig.ES_INDEX+LogTypeContext.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
         }
     }
     private  void collect(List<String> logs,String index){
         if(logs.size()>0) {
-            logger.info("get log " + " " + super.logList.size() + " counts!");
             logs.forEach(log->{
                 logger.debug("get log:" + log);
                 Map<String, Object> map = GfJsonUtil.parseObject(log, Map.class);
@@ -74,5 +73,24 @@ public class RedisLogCollect extends BaseLogCollect{
             logger.error("",e);
         }
     }
-
+    private  void collectTrace(List<String> logs,String index){
+        if(logs.size()>0) {
+            logs.forEach(log->{
+                logger.debug("get log:" + log);
+                Map<String, Object> map = GfJsonUtil.parseObject(log, Map.class);
+                super.traceLogList.add(map);
+            });
+            if (super.traceLogList.size() > 0) {
+                List<Map<String,Object>> logList=new CopyOnWriteArrayList();
+                logList.addAll(super.traceLogList);
+                super.traceLogList.clear();
+                super.sendTraceLogList(index,logList);
+            }
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            logger.error("",e);
+        }
+    }
 }
