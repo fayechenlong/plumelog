@@ -1,17 +1,15 @@
 package com.beeplay.easylog.logback.util;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.beeplay.easylog.core.LogMessage;
 import com.beeplay.easylog.core.LogMessageThreadLocal;
-import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.TraceMessage;
 import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.dto.RunLogMessage;
 import com.beeplay.easylog.core.dto.TraceLogMessage;
 import com.beeplay.easylog.core.util.DateUtil;
-import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.core.util.IpGetter;
+
 import java.sql.Timestamp;
 
 public class LogMessageUtil {

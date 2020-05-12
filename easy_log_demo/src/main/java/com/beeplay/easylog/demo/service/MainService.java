@@ -19,7 +19,7 @@ public class MainService {
         System.out.println("testLog===>" + System.currentTimeMillis());
         try {
             say(System.currentTimeMillis() + "ppp");
-            tankService.tankSay();
+            tankService.tankSay("ppp");
         } catch (Exception e) {
             logger.error("{}", LogExceptionStackTrace.erroStackTrace(e));
         }

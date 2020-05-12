@@ -1,10 +1,8 @@
 package com.beeplay.easylog.logback.appender;
 
 
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import com.beeplay.easylog.core.LogMessage;
 import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.kafka.KafkaProducerClient;
 import com.beeplay.easylog.core.util.GfJsonUtil;

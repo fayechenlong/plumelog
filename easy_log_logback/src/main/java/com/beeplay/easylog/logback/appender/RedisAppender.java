@@ -24,11 +24,6 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private String redisPort;
     private String redisAuth;
     private String redisKey;
-    private String traceKey;
-
-    public void setTraceKey(String traceKey) {
-        this.traceKey = traceKey;
-    }
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -58,7 +53,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, event);
         final String redisKey =
                 logMessage instanceof RunLogMessage ? this.redisKey :
-                        this.traceKey != null ? this.traceKey : this.redisKey + LogMessageConstant.TRACE_KEY_SUFFIX;
+                        this.redisKey + LogMessageConstant.TRACE_KEY_SUFFIX;
         threadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {

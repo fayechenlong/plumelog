@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * className：TankService
- * description： TODO
+ * description：
  * time：2020-05-11.14:06
  *
  * @author Tank
@@ -22,8 +22,8 @@ public class TankService {
     TankServiceThere tankServiceThere;
 
     @Trace
-    public void tankSay() {
-        System.out.println("tankSay========>");
+    public void tankSay(String kk) {
+        System.out.println("tankSay========>" + kk);
         tankServiceTwo.tankServiceTwo();
         tankServiceThere.tankServiceThere();
     }
