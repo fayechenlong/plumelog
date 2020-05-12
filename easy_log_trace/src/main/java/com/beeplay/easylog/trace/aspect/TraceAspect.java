@@ -13,6 +13,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * className：TraceAspect
  * description：
@@ -25,27 +27,31 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class TraceAspect {
+    public static AtomicInteger atomicInteger = new AtomicInteger(0);
 
     @Around("@annotation(com.beeplay.easylog.trace.annotation.Trace))")
     public void around(JoinPoint joinPoint) {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         if (traceMessage == null) {
             traceMessage = new TraceMessage();
+            traceMessage.getPositionNum().set(0);
         }
         String traceId = TraceId.logTraceID.get();
         traceMessage.setTraceId(traceId);
         traceMessage.setMessageType(joinPoint.getSignature().toString());
         traceMessage.setPosition(LogMessageConstant.TRACE_START);
+        traceMessage.getPositionNum().incrementAndGet();
         LogMessageThreadLocal.logMessageThreadLocal.set(traceMessage);
         try {
             log.info(LogMessageConstant.TRACE_PRE + GfJsonUtil.toJSONString(traceMessage));
             ((ProceedingJoinPoint) joinPoint).proceed();
             traceMessage.setMessageType(joinPoint.getSignature().toString());
             traceMessage.setPosition(LogMessageConstant.TRACE_END);
+            traceMessage.getPositionNum().incrementAndGet();
             log.info(LogMessageConstant.TRACE_PRE + GfJsonUtil.toJSONString(traceMessage));
-        } catch (
-                Throwable e) {
-            log.error("TID:{} , 链路：{},异常：{}", traceId, joinPoint.getSignature(), LogExceptionStackTrace.erroStackTrace(e).toString());
+        } catch (Throwable e) {
+            log.error("TID:{} , 链路：{},异常：{}", traceId, joinPoint.getSignature(),
+                    LogExceptionStackTrace.erroStackTrace(e).toString());
         }
     }
 }

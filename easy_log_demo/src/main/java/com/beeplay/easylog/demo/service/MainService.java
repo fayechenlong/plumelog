@@ -18,8 +18,10 @@ public class MainService {
     public void testLog() {
         System.out.println("testLog===>" + System.currentTimeMillis());
         try {
+            logger.info("testLog===> 开始" + System.currentTimeMillis());
             say(System.currentTimeMillis() + "ppp");
             tankService.tankSay("ppp");
+            logger.info("testLog===> 结束" + System.currentTimeMillis());
         } catch (Exception e) {
             logger.error("{}", LogExceptionStackTrace.erroStackTrace(e));
         }

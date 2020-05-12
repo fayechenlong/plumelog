@@ -26,5 +26,6 @@ public class TankService {
         System.out.println("tankSay========>" + kk);
         tankServiceTwo.tankServiceTwo();
         tankServiceThere.tankServiceThere();
+
     }
 }

@@ -3,7 +3,9 @@ package com.beeplay.easylog.logback.appender;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
+import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.dto.BaseLogMessage;
+import com.beeplay.easylog.core.dto.RunLogMessage;
 import com.beeplay.easylog.core.kafka.KafkaProducerClient;
 import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.core.util.ThreadPoolUtil;
@@ -12,7 +14,7 @@ import com.beeplay.easylog.logback.util.LogMessageUtil;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
-public class KafkaAppender  extends AppenderBase<ILoggingEvent> {
+public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     private KafkaProducerClient kafkaClient;
     private String appName;
@@ -34,11 +36,13 @@ public class KafkaAppender  extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(ILoggingEvent event) {
 
-        if(kafkaClient==null){
-            kafkaClient= KafkaProducerClient.getInstance(this.kafkaHosts);
+        if (kafkaClient == null) {
+            kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
         }
-        final String topic=this.topic;
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName,event);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, event);
+        final String topic =
+                logMessage instanceof RunLogMessage ? this.topic :
+                        this.topic + LogMessageConstant.TRACE_KEY_SUFFIX;
         threadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {

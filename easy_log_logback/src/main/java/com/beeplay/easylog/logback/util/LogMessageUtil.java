@@ -24,6 +24,7 @@ public class LogMessageUtil {
             traceLogMessage.setMethod(traceMessage.getMessageType());
             traceLogMessage.setTime(iLoggingEvent.getTimeStamp());
             traceLogMessage.setPosition(traceMessage.getPosition());
+            traceLogMessage.setPositionNum(traceMessage.getPositionNum().get());
             return traceLogMessage;
         }
         RunLogMessage logMessage = new RunLogMessage();
@@ -37,7 +38,6 @@ public class LogMessageUtil {
                 DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
         logMessage.setDtTime(iLoggingEvent.getTimeStamp());
         logMessage.setClassName(iLoggingEvent.getLoggerName());
-        logMessage.setMethod(traceMessage.getMessageType());
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;
     }

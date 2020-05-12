@@ -21,7 +21,18 @@ public class TraceLogMessage extends BaseLogMessage {
      */
     private String position;
 
+    /**
+     * 执行位置数
+     */
+    private Integer positionNum;
 
+    public Integer getPositionNum() {
+        return positionNum;
+    }
+
+    public void setPositionNum(Integer positionNum) {
+        this.positionNum = positionNum;
+    }
 
     public Long getTime() {
         return time;
