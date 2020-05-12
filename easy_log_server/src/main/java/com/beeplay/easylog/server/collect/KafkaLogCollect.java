@@ -36,7 +36,7 @@ public class KafkaLogCollect extends BaseLogCollect{
         while (true) {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
             records.forEach(record->{
-                logger.info("get log:" + record.value()+"  logType:"+record.topic());
+                logger.debug("get log:" + record.value()+"  logType:"+record.topic());
                 if(record.topic().equals(InitConfig.LOG_KEY)){
                     super.logList.add(GfJsonUtil.parseObject(record.value(), Map.class));
                 }
