@@ -3,8 +3,9 @@ package com.beeplay.easylog.trace.aspect;
 import com.beeplay.easylog.core.LogMessageThreadLocal;
 import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.TraceMessage;
+import com.beeplay.easylog.core.constant.LogMessageConstant;
+import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.core.util.LogExceptionStackTrace;
-import com.beeplay.easylog.trace.dto.TraceMessageDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -34,17 +35,14 @@ public class TraceAspect {
         String traceId = TraceId.logTraceID.get();
         traceMessage.setTraceId(traceId);
         traceMessage.setMessageType(joinPoint.getSignature().toString());
+        traceMessage.setPosition(LogMessageConstant.TRACE_START);
         LogMessageThreadLocal.logMessageThreadLocal.set(traceMessage);
         try {
-            TraceMessageDTO dto = new TraceMessageDTO();
-            dto.setMethod(joinPoint.getSignature().toString());
-            dto.setTime(System.currentTimeMillis());
-            dto.setPosition("<");
-            log.info(dto.toString());
+            log.info(LogMessageConstant.TRACE_PRE + GfJsonUtil.toJSONString(traceMessage));
             ((ProceedingJoinPoint) joinPoint).proceed();
-            dto.setTime(System.currentTimeMillis());
-            dto.setPosition(">");
-            log.info(dto.toString());
+            traceMessage.setMessageType(joinPoint.getSignature().toString());
+            traceMessage.setPosition(LogMessageConstant.TRACE_END);
+            log.info(LogMessageConstant.TRACE_PRE + GfJsonUtil.toJSONString(traceMessage));
         } catch (
                 Throwable e) {
             log.error("TID:{} , 链路：{},异常：{}", traceId, joinPoint.getSignature(), LogExceptionStackTrace.erroStackTrace(e).toString());

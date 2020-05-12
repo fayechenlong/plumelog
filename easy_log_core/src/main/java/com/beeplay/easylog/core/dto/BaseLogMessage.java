@@ -23,7 +23,7 @@ public class BaseLogMessage {
     /**
      * 方法名
      */
-    private String methodName;
+    private String method;
 
     public String getTraceId() {
         return traceId;
@@ -41,11 +41,11 @@ public class BaseLogMessage {
         this.appName = appName;
     }
 
-    public String getMethodName() {
-        return methodName;
+    public String getMethod() {
+        return method;
     }
 
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
+    public void setMethod(String method) {
+        this.method = method;
     }
 }

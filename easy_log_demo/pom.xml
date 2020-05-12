@@ -29,6 +29,12 @@
             <artifactId>easy_log_logback</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.beeplay</groupId>
+            <artifactId>easy_log_trace</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
         <!--&lt;!&ndash; https://mvnrepository.com/artifact/com.alibaba.csp/sentinel-core &ndash;&gt;-->
         <!--<dependency>-->
             <!--<groupId>com.alibaba.csp</groupId>-->

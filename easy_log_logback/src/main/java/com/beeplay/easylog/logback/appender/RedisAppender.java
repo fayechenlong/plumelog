@@ -4,10 +4,15 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.beeplay.easylog.core.LogMessage;
+import com.beeplay.easylog.core.constant.LogMessageConstant;
+import com.beeplay.easylog.core.dto.BaseLogMessage;
+import com.beeplay.easylog.core.dto.RunLogMessage;
+import com.beeplay.easylog.core.dto.TraceLogMessage;
 import com.beeplay.easylog.core.redis.RedisClient;
 import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.core.util.ThreadPoolUtil;
 import com.beeplay.easylog.logback.util.LogMessageUtil;
+
 import java.util.concurrent.ThreadPoolExecutor;
 
 
@@ -19,6 +24,11 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private String redisPort;
     private String redisAuth;
     private String redisKey;
+    private String traceKey;
+
+    public void setTraceKey(String traceKey) {
+        this.traceKey = traceKey;
+    }
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -42,11 +52,13 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        if(redisClient==null){
+        if (redisClient == null) {
             redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), this.redisAuth);
         }
-        final String redisKey=this.redisKey;
-        final LogMessage logMessage = LogMessageUtil.getLogMessage(this.appName,event);
+        BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, event);
+        final String redisKey =
+                logMessage instanceof RunLogMessage ? this.redisKey :
+                        this.traceKey != null ? this.traceKey : this.redisKey + LogMessageConstant.TRACE_KEY_SUFFIX;
         threadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
