@@ -39,6 +39,7 @@ public class Start {
             InitConfig.LOG_KEY=this.properties.getProperty("easylog.server.logKey");
             InitConfig.ES_INDEX=this.properties.getProperty("easylog.server.es.index");
             InitConfig.ES_TYPE=this.properties.getProperty("easylog.server.es.type");
+            InitConfig.KAFKA_GROUP_NAME=this.properties.getProperty("easylog.server.kafka.kafkaGroupName");
 
             this.kafkaHosts = this.properties.getProperty("easylog.server.kafka.kafkaHosts");
             this.esHosts = this.properties.getProperty("easylog.server.es.esHosts");
