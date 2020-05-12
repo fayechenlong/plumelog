@@ -1,6 +1,7 @@
 package com.beeplay.easylog.server.collect;
 
 
+import com.beeplay.easylog.core.LogTypeContext;
 import com.beeplay.easylog.core.redis.RedisClient;
 import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
@@ -12,42 +13,83 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class RedisLogCollect {
-    private static org.slf4j.Logger logger= LoggerFactory.getLogger(RedisLogCollect.class);
-    private static List<Map<String,Object>> list=new CopyOnWriteArrayList();
+/**
+* @Author Frank.chen
+* @Description redis collect
+* @Date 14:15 2020/5/12
+* @Param 
+* @return 
+**/
+public class RedisLogCollect extends BaseLogCollect{
+    private  org.slf4j.Logger logger= LoggerFactory.getLogger(RedisLogCollect.class);
+    private RedisClient redisClient;
 
-    public static void redisStart(String redisHot,int redisPort,String esHosts){
+    public RedisLogCollect(String redisHost,int redisPort,String esHosts){
 
-        RedisClient redisClient=RedisClient.getInstance(redisHot,redisPort,"");
+        this.redisClient=RedisClient.getInstance(redisHost,redisPort,"");
         logger.info("getting log ready!");
-        ElasticSearchClient ec=ElasticSearchClient.getInstance(esHosts);
+        super.elasticSearchClient=ElasticSearchClient.getInstance(esHosts);
         logger.info("sending log ready!");
+    }
+    public  void redisStart(){
+
+        threadPoolExecutor.execute(()->{
+            collectRuningLog();
+        });
+        threadPoolExecutor.execute(()->{
+            collectTraceLog();
+        });
+
+    }
+    private  void collectRuningLog(){
         while (true) {
             List<String> logs=redisClient.getMessage(InitConfig.LOG_KEY,InitConfig.MAX_SEND_SIZE);
-            if(logs.size()>0) {
-                logger.info("get log " + " " + list.size() + " counts!");
-                logs.forEach(log->{
-                    logger.info("get log:" + log);
-                    Map<String, Object> map = GfJsonUtil.parseObject(log, Map.class);
-                    list.add(map);
-                });
-                if (list.size() > 0) {
-                    sendLog(ec);
-                }
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            collect(logs,InitConfig.ES_INDEX+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
         }
     }
-    private static void sendLog(ElasticSearchClient ec){
+    private  void collectTraceLog(){
+        while (true) {
+            List<String> logs=redisClient.getMessage(InitConfig.LOG_KEY+"_"+ LogTypeContext.LOG_TYPE_TRACE,InitConfig.MAX_SEND_SIZE);
+            collectTrace(logs,InitConfig.ES_INDEX+LogTypeContext.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
+        }
+    }
+    private  void collect(List<String> logs,String index){
+        if(logs.size()>0) {
+            logs.forEach(log->{
+                logger.debug("get log:" + log);
+                Map<String, Object> map = GfJsonUtil.parseObject(log, Map.class);
+                super.logList.add(map);
+            });
+            if (super.logList.size() > 0) {
+                List<Map<String,Object>> logList=new CopyOnWriteArrayList();
+                logList.addAll(super.logList);
+                super.logList.clear();
+                super.sendLog(index,logList);
+            }
+        }
         try {
-            ec.insertList(list,InitConfig.ES_INDEX+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD),InitConfig.ES_TYPE);
-            logger.info("log insert es success! count:"+list.size());
-            list.clear();
-        } catch (Exception e) {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            logger.error("",e);
+        }
+    }
+    private  void collectTrace(List<String> logs,String index){
+        if(logs.size()>0) {
+            logs.forEach(log->{
+                logger.debug("get log:" + log);
+                Map<String, Object> map = GfJsonUtil.parseObject(log, Map.class);
+                super.traceLogList.add(map);
+            });
+            if (super.traceLogList.size() > 0) {
+                List<Map<String,Object>> logList=new CopyOnWriteArrayList();
+                logList.addAll(super.traceLogList);
+                super.traceLogList.clear();
+                super.sendTraceLogList(index,logList);
+            }
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
             logger.error("",e);
         }
     }

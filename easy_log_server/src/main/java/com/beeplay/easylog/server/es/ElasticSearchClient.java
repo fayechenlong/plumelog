@@ -11,7 +11,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
+/**
+* @Author Frank.chen
+* @Description //TODO
+* @Date 14:15 2020/5/12
+* @Param 
+* @return 
+**/
 public class ElasticSearchClient {
     private static ElasticSearchClient instance;
     private RestHighLevelClient client;

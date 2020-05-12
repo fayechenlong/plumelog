@@ -26,11 +26,11 @@
     </appender>
 
     <!-- easylog日志 -->
-    <!--<appender name="easylog" class="com.beeplay.easylog.logback.appender.KafkaAppender">-->
-        <!--<appName>easylog</appName>-->
-        <!--<kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>-->
-        <!--<topic>beeplay_log_list</topic>-->
-    <!--</appender>-->
+    <!--<appender name="easylog" class="com.beeplay.easylog.logback.appender.KafkaAppender">
+        <appName>easylog</appName>
+        <kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>
+        <topic>beeplay_log_list</topic>
+    </appender>-->
 
     <!-- easylog日志 -->
     <appender name="easylog" class="com.beeplay.easylog.logback.appender.RedisAppender">
