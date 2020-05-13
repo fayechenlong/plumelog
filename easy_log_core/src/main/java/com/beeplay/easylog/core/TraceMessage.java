@@ -3,6 +3,15 @@ package com.beeplay.easylog.core;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+/**
+ * className：TraceMessage
+ * description： TODO
+ * time：2020-05-13.11:47
+ *
+ * @author Tank
+ * @version 1.0.0
+ */
 public class TraceMessage {
 
     private String traceId;

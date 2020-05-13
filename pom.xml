@@ -15,6 +15,7 @@
         <module>easy_log_log4j2</module>
         <module>easy_log_dubbo</module>
         <module>easy_log_trace</module>
+        <module>easy_log_demo_dubbo</module>
     </modules>
     <name>easy_log</name>
     <properties>
