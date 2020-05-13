@@ -1,6 +1,8 @@
 package com.beeplay.easylog.log4j2.appender;
 
 import com.beeplay.easylog.core.LogMessage;
+import com.beeplay.easylog.core.MessageAppenderFactory;
+import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.kafka.KafkaProducerClient;
 import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.core.util.ThreadPoolUtil;
@@ -38,14 +40,9 @@ public class KafkaAppender extends AbstractAppender {
         if(kafkaClient==null){
             kafkaClient= KafkaProducerClient.getInstance(kafkaHosts);
         }
-        final String topic=this.topic;
-        final LogMessage logMessage = LogMessageUtil.getLogMessage(this.appName,logEvent);
-        threadPoolExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                kafkaClient.pushMessage(topic,GfJsonUtil.toJSONString(logMessage));
-            }
-        });
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName,logEvent);
+        MessageAppenderFactory.push(appName, logMessage, kafkaClient);
+
     }
     @PluginFactory
     public static KafkaAppender createAppender(

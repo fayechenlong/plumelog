@@ -1,17 +1,14 @@
 package com.beeplay.easylog.log4j.appender;
 
-import com.beeplay.easylog.core.LogMessage;
-import com.beeplay.easylog.log4j.util.LogMessageUtil;
+import com.beeplay.easylog.core.MessageAppenderFactory;
+import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.redis.RedisClient;
-import com.beeplay.easylog.core.util.GfJsonUtil;
-import com.beeplay.easylog.core.util.ThreadPoolUtil;
+import com.beeplay.easylog.log4j.util.LogMessageUtil;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
-import java.util.concurrent.ThreadPoolExecutor;
 
 
 public class RedisAppender extends AppenderSkeleton {
-    private ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     private RedisClient redisClient;
     private String appName;
     private String reidsHost;
@@ -41,17 +38,11 @@ public class RedisAppender extends AppenderSkeleton {
 
     @Override
     protected void append(LoggingEvent loggingEvent) {
-        if(redisClient==null) {
+        if (redisClient == null) {
             redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), this.redisAuth);
         }
-        final String redisKey=this.redisKey;
-        final LogMessage logMessage = LogMessageUtil.getLogMessage(this.appName,loggingEvent);
-        threadPoolExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                redisClient.pushMessage(redisKey, GfJsonUtil.toJSONString(logMessage));
-            }
-        });
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
+        MessageAppenderFactory.push(appName, logMessage, redisClient);
     }
 
     @Override
