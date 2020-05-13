@@ -1,6 +1,4 @@
 {
     "es": "http://172.16.251.196:9200/",
-    "prefix": "beeplay_log_",
-    "prefix_trace": "beeplay_log_trace_",
     "port" : 8989
 }

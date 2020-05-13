@@ -84,13 +84,13 @@ export default {
       
       if(startDate){
          while(startDate<=this.dateTimeRange[1]){
-          dateList.push($config.prefix_trace+moment(startDate).format('YYYYMMDD'))
+          dateList.push('easy_trace_'+moment(startDate).format('YYYYMMDD'))
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }
      
       if(dateList.length==0){
-        dateList.push($config.prefix_trace+moment().format('YYYYMMDD'));
+        dateList.push('easy_trace_'+moment().format('YYYYMMDD'));
       }
 
       let url= '/getTrace?index='+dateList.join(',')+'&traceId='+this.traceId;

@@ -347,12 +347,6 @@ export default {
         return code;
       }
     },
-    init(){
-      let from = this.$route.query.from || 0
-      from = parseInt(from);
-      this.filter = JSON.parse(this.$route.query.filter || '{}')
-      this.from = from;
-    },
     showContent(item){
       var str = (_.get(item,"highlight.content[0]","") || _.get(item,"_source.content",""))
       if(str.length>30)
@@ -382,13 +376,13 @@ export default {
       
       if(startDate){
          while(startDate<=this.dateTimeRange[1]){
-          dateList.push($config.prefix+moment(startDate).format('YYYYMMDD'))
+          dateList.push('easy_'+moment(startDate).format('YYYYMMDD'))
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }
      
       if(dateList.length==0){
-        dateList.push($config.prefix+moment().format('YYYYMMDD'));
+        dateList.push('easy_'+moment().format('YYYYMMDD'));
       }
           
       let url= '/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
@@ -417,13 +411,13 @@ export default {
         this.list = _.get(data,'data.hits')
       })
 
-      this.$router.push({
-        name:'Home',
-        query:{
-          from:this.from,
-          filter: JSON.stringify(this.filter)
-        }
-      })
+      // this.$router.push({
+      //   name:'Home',
+      //   query:{
+      //     from:this.from,
+      //     filter: JSON.stringify(this.filter)
+      //   }
+      // })
     },
     prevePage(){
       let from = this.from - this.size
@@ -452,7 +446,6 @@ export default {
     }
   },
   mounted(){
-    this.init();
     this.doSearch();
   }
 };
