@@ -9,10 +9,6 @@
             <td>
               <Input class="txt" name="appName" v-model="traceId" placeholder="输入追踪码" :clearable="true" />
             </td>
-            <td class="key">日期和时间</td>
-            <td>
-              <DatePicker ref='datePicker' v-model="dateTimeRange" :editable="true" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 378px"></DatePicker>
-            </td>
           </tr>
         </tbody>
       </table>
@@ -69,8 +65,7 @@ export default {
     clear(){
       this.traceId='';
       this.dateTimeRange = [];
-      this.$refs.datePicker.internalValue=[];
-      this.traces=[];
+      sessionStorage.removeItem('cache_traceId');
       this.doSearch();
     },
     dateChange(){
@@ -84,6 +79,7 @@ export default {
     doSearch(){
       //列出范围内的日期
       let dateList=[];
+      this.traces=[];
       let startDate = _.clone(this.dateTimeRange[0]);
       
       if(startDate){
@@ -107,6 +103,11 @@ export default {
   mounted(){
     if(this.$route.query.traceId){
       this.traceId = this.$route.query.traceId;
+      sessionStorage['cache_traceId']=this.traceId;
+      this.doSearch();
+    }
+    else if(sessionStorage['cache_traceId']){
+      this.traceId = sessionStorage['cache_traceId'];
       this.doSearch();
     }
   }

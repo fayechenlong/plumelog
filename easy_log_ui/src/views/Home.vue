@@ -43,7 +43,7 @@
 
       <table class='tbl_filters'>
         <tr>
-            <td class="key">模块名</td>
+            <td class="key">类名</td>
             <td>
               <Input class="txt"  name="className" v-model="filter.className" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
             </td>
@@ -85,7 +85,13 @@
     <table v-if="list.hits.length>0" cellspacing="0" cellpadding="0"  class="table table-striped table_detail">
       <thead>
         <tr>
-          <th v-for="item in contentItems" :key="item.name" scope="col">{{item.name}}</th>
+          <th scope="col">应用名称</th>
+          <th scope="col">日志等级</th>
+          <th scope="col">服务器名称</th>
+          <th scope="col">追踪码</th>
+          <th scope="col">类名</th>
+          <th scope="col">时间</th>
+          <th scope="col">内容</th>
           <th scope="col">操作</th>
         </tr>
       </thead>
@@ -94,7 +100,7 @@
           <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
           <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
           <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
-          <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
+          <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
           <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
           <td>{{item._source.dtTime | filterTime}}</td>
           <td class='td_cnt' v-html="showContent(item)"></td>
@@ -211,8 +217,12 @@ export default {
         'value': 'traceId'
        },
        {
-        'name': '模块名',
+        'name': '类名',
         'value': 'className'
+       },
+       {
+        'name': '方法名',
+        'value': 'method'
        },
        {
         'name': '时间',
@@ -221,8 +231,7 @@ export default {
        {
         'name': '内容',
         'value': 'content'
-       },
-       
+       }
      ],
      dateTimeRange:[],
      content:{},
@@ -253,7 +262,7 @@ export default {
       return str;
     },
     filterTime(date){
-      return moment(date).format('YYYY/MM/DD HH:mm:ss')
+      return moment(date).format('YYYY-MM-DD HH:mm:ss')
     }
   },
   computed:{
