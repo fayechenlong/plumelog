@@ -17,6 +17,11 @@ public class TestTank {
 
     @Trace
     public void testTank(Integer kk){
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println("testTank========>" + kk);
     }
 }

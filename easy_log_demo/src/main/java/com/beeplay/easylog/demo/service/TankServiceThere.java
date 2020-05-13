@@ -20,6 +20,8 @@ public class TankServiceThere {
     @Trace
     public void tankServiceThere() {
         System.out.println("tankServiceThere========>");
-        testTank.testTank(111);
+        for (int i = 0; i < 10; i++) {
+            testTank.testTank(111);
+        }
     }
 }

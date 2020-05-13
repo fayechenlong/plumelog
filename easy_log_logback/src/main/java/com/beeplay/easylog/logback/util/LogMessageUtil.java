@@ -6,11 +6,7 @@ import com.beeplay.easylog.core.TraceMessage;
 import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.dto.RunLogMessage;
-import com.beeplay.easylog.core.util.DateUtil;
-import com.beeplay.easylog.core.util.IpGetter;
 import com.beeplay.easylog.core.util.TraceLogMessageFactory;
-
-import java.sql.Timestamp;
 
 public class LogMessageUtil {
 
@@ -19,19 +15,11 @@ public class LogMessageUtil {
         String formattedMessage = iLoggingEvent.getFormattedMessage();
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {
             return TraceLogMessageFactory.getTraceLogMessage(
-                    traceMessage,appName,iLoggingEvent.getTimeStamp());
+                    traceMessage, appName, iLoggingEvent.getTimeStamp());
         }
-        RunLogMessage logMessage = new RunLogMessage();
-        String ip = IpGetter.getIp();
-        logMessage.setServerName(ip);
-        logMessage.setAppName(appName);
-        logMessage.setContent(iLoggingEvent.getFormattedMessage());
-        logMessage.setTraceId(traceMessage.getTraceId());
-        logMessage.setDateTime(DateUtil.parseTimestampToStr(
-                new Timestamp(iLoggingEvent.getTimeStamp()),
-                DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
-        logMessage.setDtTime(iLoggingEvent.getTimeStamp());
-        StackTraceElement stackTraceElement=iLoggingEvent.getCallerData()[0];
+        RunLogMessage logMessage =
+                TraceLogMessageFactory.getLogMessage(appName, formattedMessage, iLoggingEvent.getTimeStamp());
+        StackTraceElement stackTraceElement = iLoggingEvent.getCallerData()[0];
         logMessage.setClassName(stackTraceElement.getClassName());
         logMessage.setMethod(stackTraceElement.getMethodName());
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
