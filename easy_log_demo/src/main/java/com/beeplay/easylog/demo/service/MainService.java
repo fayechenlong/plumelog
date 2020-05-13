@@ -2,7 +2,9 @@ package com.beeplay.easylog.demo.service;
 
 
 import com.beeplay.easylog.core.util.LogExceptionStackTrace;
+import com.beeplay.easylog.demo.dubbo.service.EasyLogDubboService;
 import com.beeplay.easylog.trace.annotation.Trace;
+import org.apache.dubbo.config.annotation.Reference;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,9 +16,13 @@ public class MainService {
     @Autowired
     TankService tankService;
 
+    @Reference
+    EasyLogDubboService easyLogDubboService;
+
     @Trace
     public void testLog() {
-        System.out.println("testLog===>" + System.currentTimeMillis());
+        easyLogDubboService.testLogDubbo();
+        /*System.out.println("testLog===>" + System.currentTimeMillis());
         try {
             logger.info("testLog===> 开始" + System.currentTimeMillis());
             say(System.currentTimeMillis() + "ppp");
@@ -24,7 +30,7 @@ public class MainService {
             logger.info("testLog===> 结束" + System.currentTimeMillis());
         } catch (Exception e) {
             logger.error("{}", LogExceptionStackTrace.erroStackTrace(e));
-        }
+        }*/
     }
 
     public void say(String name) {

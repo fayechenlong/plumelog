@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 public class TraceAspect {
     @Around("@annotation(com.beeplay.easylog.trace.annotation.Trace))")
     public void around(JoinPoint joinPoint) {
+        System.out.println(joinPoint.getSignature().getName());
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         if (traceMessage == null) {
             traceMessage = new TraceMessage();
