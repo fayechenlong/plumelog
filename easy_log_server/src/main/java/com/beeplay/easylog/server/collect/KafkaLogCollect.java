@@ -40,7 +40,7 @@ public class KafkaLogCollect extends BaseLogCollect{
                 if(record.topic().equals(LogMessageConstant.LOG_KEY)){
                     super.logList.add(GfJsonUtil.parseObject(record.value(), Map.class));
                 }
-                if(record.topic().equals(LogMessageConstant.LOG_KEY+"_"+ LogMessageConstant.LOG_TYPE_TRACE)){
+                if(record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)){
                     super.traceLogList.add(GfJsonUtil.parseObject(record.value(), Map.class));
                 }
             });

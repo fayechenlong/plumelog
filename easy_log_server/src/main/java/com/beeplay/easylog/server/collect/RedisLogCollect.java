@@ -49,7 +49,7 @@ public class RedisLogCollect extends BaseLogCollect{
     }
     private  void collectTraceLog(){
         while (true) {
-            List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY+"_"+ LogMessageConstant.LOG_TYPE_TRACE,InitConfig.MAX_SEND_SIZE);
+            List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE,InitConfig.MAX_SEND_SIZE);
             collectTrace(logs,LogMessageConstant.ES_INDEX+LogMessageConstant.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
         }
     }

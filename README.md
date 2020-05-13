@@ -50,7 +50,7 @@
                    <dependency>
                        <groupId>com.beeplay</groupId>
                        <artifactId>easy_log_log4j</artifactId>
-                       <version>1.0</version>
+                       <version>2.0</version>
                    </dependency>
                          
     配置log4j配置文件，增加下面这个Appender
@@ -61,8 +61,6 @@
         #appName系统的名称(自己定义就好)
         log4j.appender.L.appName=easyjob
         log4j.appender.L.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
-        #topic(kafka的topic)这里面要和easy_log_server中的一致
-        log4j.appender.L.topic=beeplay_log_list
 
     redis做为中间件
     
@@ -70,12 +68,10 @@
         log4j.appender.L.appName=easyjob
         log4j.appender.L.reidsHost=172.16.249.72
         log4j.appender.L.redisPort=6379
-        log4j.appender.L.redisAuth=
-        log4j.appender.L.redisKey=beeplay_log_list
 
     同理如果使用logback,和log4j2配置如下
     
-    这里注意：spring boot项目默认用的logback;easy_log_search里面有基于springboot的使用demo
+    这里注意：spring boot项目默认用的logback;easy_log_demo里面有基于springboot的使用demo
     
     #### 【dubbo rpc 跨服务传送trace_id 可以参考 easy_log_dubbo】
     
@@ -87,7 +83,7 @@
        <dependency>
            <groupId>com.beeplay</groupId>
            <artifactId>easy_log_logback</artifactId>
-           <version>1.0</version>
+           <version>2.0</version>
        </dependency>
     
 * 配置
@@ -97,13 +93,11 @@
             <appName>easylog</appName>
             <reidsHost>172.16.249.72</reidsHost>
             <redisPort>6379</redisPort>
-            <redisKey>beeplay_log_list</redisKey>
         </appender>
        
         <appender name="easylog" class="com.beeplay.easylog.logback.appender.KafkaAppender">
             <appName>easylog</appName>
             <kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>
-            <topic>beeplay_log_list</topic>
         </appender>
       
         <!-- 上面两个配置二选一 -->
@@ -122,7 +116,7 @@
        <dependency>
            <groupId>com.beeplay</groupId>
            <artifactId>easy_log_logBack</artifactId>
-           <version>1.0</version>
+           <version>2.0</version>
        </dependency>       
 
 * 配置
@@ -146,6 +140,9 @@
   
 3. 示例代码
   
+   * 运行日志使用 
+  
+  
        import com.beeplay.easylog.core.TransId;
        import org.slf4j.Logger;
        import org.slf4j.LoggerFactory;
@@ -162,22 +159,30 @@
            }
        }
 
+   * 链路追踪使用
+      
+      
+      
+      
+
 4. 启动服务
 
- * 步骤一打包完的 启动 easy_log_server-1.0.jar 
+ * 步骤一打包完的 启动 easy_log_server-1.0.jar ，高可用的话直接启动多个服务就行
 
    注意：打完的包target目录下，lib文件夹（依赖包目录），config文件夹（两个配置文件的目录），easy_log_server-1.0.jar 放到同一个目录下
   
- * easy_log_server中easylog.properties详解
- 
+ * easy_log_server中easylog.properties详解    
+        
+       #日志缓冲区，kafka，redis两种模式
        easylog.server.model=kafka
        #kafka集群地址
        easylog.server.host.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
+       #如果是redis 这边填写redis地址
+       easylog.server.redis.redisHost=172.16.249.72:6379
        #elasticsearch集群地址
        easylog.server.host.esHosts=172.16.251.196:9200
-       easylog.server.maxSendSize=100
-       #log的key名称，如果用的kafka就是kafka的topic
-       easylog.server.logkey=beeplay_log_list
+       #每次获取最大日志条数
+       easylog.server.maxSendSize=5000
        
   * 查询界面
      
@@ -186,9 +191,7 @@
      注意：需要自行安装nodejs环境
      
           {
-              "api": "http://localhost:8989/",//node服务地址
               "es": "http://172.16.251.196:9200/", //es地址
-              "prefix": "beeplay_log_",//es索引前缀
               "port" : 8989 //端口号，和上面api端口号
           }
      
@@ -198,17 +201,21 @@
      
      4.http://你的部署服务器地址:8989 访问前端
      
-     备注：也可以用kibanna
-     
-### 5.后续版本计划
+### 5.版本计划
 
-   2.0版本将会增加全链路追踪功能，目前正在开发当中，UI界面也会优化
+   2.0版本增加全链路追踪功能，优化日志抓取写入，可以做生产用，1.0是demo版本，只做思路上的参考
+   
+   3.0计划版本
+   
+      1.增加获取非java项目日志API接口
+      
+      2.增加性能分析，和API超时报错告警功能
    
 ### 6.联系交流
 
    * 有问题在留言区留言，会在第一时间内回复
       
-   * 欢迎有兴趣的一起加入研究
+   * 欢迎有兴趣的一起加入研究；QQ群：1072991065
    
 ### 7.测试地址
 
