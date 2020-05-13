@@ -1,7 +1,7 @@
 package com.beeplay.easylog.server.collect;
 
 
-import com.beeplay.easylog.core.LogTypeContext;
+import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.redis.RedisClient;
 import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
@@ -43,14 +43,14 @@ public class RedisLogCollect extends BaseLogCollect{
     }
     private  void collectRuningLog(){
         while (true) {
-            List<String> logs=redisClient.getMessage(InitConfig.LOG_KEY,InitConfig.MAX_SEND_SIZE);
-            collect(logs,InitConfig.ES_INDEX+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
+            List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY,InitConfig.MAX_SEND_SIZE);
+            collect(logs,LogMessageConstant.ES_INDEX+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
         }
     }
     private  void collectTraceLog(){
         while (true) {
-            List<String> logs=redisClient.getMessage(InitConfig.LOG_KEY+"_"+ LogTypeContext.LOG_TYPE_TRACE,InitConfig.MAX_SEND_SIZE);
-            collectTrace(logs,InitConfig.ES_INDEX+LogTypeContext.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
+            List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY+"_"+ LogMessageConstant.LOG_TYPE_TRACE,InitConfig.MAX_SEND_SIZE);
+            collectTrace(logs,LogMessageConstant.ES_INDEX+LogMessageConstant.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
         }
     }
     private  void collect(List<String> logs,String index){

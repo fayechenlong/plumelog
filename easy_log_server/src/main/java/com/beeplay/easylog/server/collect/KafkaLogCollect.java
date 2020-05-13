@@ -1,6 +1,6 @@
 package com.beeplay.easylog.server.collect;
 
-import com.beeplay.easylog.core.LogTypeContext;
+import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.kafka.KafkaConsumerClient;
 import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
@@ -28,7 +28,7 @@ public class KafkaLogCollect extends BaseLogCollect{
     public KafkaLogCollect(String kafkaHosts,String esHosts){
         super.elasticSearchClient=ElasticSearchClient.getInstance(esHosts);
         this.kafkaConsumer=KafkaConsumerClient.getInstance(kafkaHosts,InitConfig.KAFKA_GROUP_NAME,InitConfig.MAX_SEND_SIZE).getKafkaConsumer();
-        this.kafkaConsumer.subscribe(Arrays.asList(InitConfig.LOG_KEY,InitConfig.LOG_KEY+"_"+ LogTypeContext.LOG_TYPE_TRACE));
+        this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY,LogMessageConstant.LOG_KEY+"_"+ LogMessageConstant.LOG_TYPE_TRACE));
         logger.info("sending log ready!");
     }
     public  void kafkaStart(){
@@ -37,10 +37,10 @@ public class KafkaLogCollect extends BaseLogCollect{
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
             records.forEach(record->{
                 logger.debug("get log:" + record.value()+"  logType:"+record.topic());
-                if(record.topic().equals(InitConfig.LOG_KEY)){
+                if(record.topic().equals(LogMessageConstant.LOG_KEY)){
                     super.logList.add(GfJsonUtil.parseObject(record.value(), Map.class));
                 }
-                if(record.topic().equals(InitConfig.LOG_KEY+"_"+ LogTypeContext.LOG_TYPE_TRACE)){
+                if(record.topic().equals(LogMessageConstant.LOG_KEY+"_"+ LogMessageConstant.LOG_TYPE_TRACE)){
                     super.traceLogList.add(GfJsonUtil.parseObject(record.value(), Map.class));
                 }
             });
@@ -50,7 +50,7 @@ public class KafkaLogCollect extends BaseLogCollect{
                 logList.addAll(super.logList);
                 super.logList.clear();
                 super.threadPoolExecutor.execute(() -> {
-                    super.sendLog(InitConfig.ES_INDEX + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD),logList);
+                    super.sendLog(LogMessageConstant.ES_INDEX + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD),logList);
                     super.logList.clear();
                 });
             }
@@ -59,7 +59,7 @@ public class KafkaLogCollect extends BaseLogCollect{
                 sendlogList.addAll(super.traceLogList);
                 super.traceLogList.clear();
                 super.threadPoolExecutor.execute(() -> {
-                    super.sendTraceLogList(InitConfig.ES_INDEX + LogTypeContext.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD),sendlogList);
+                    super.sendTraceLogList(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD),sendlogList);
                     super.traceLogList.clear();
                 });
             }

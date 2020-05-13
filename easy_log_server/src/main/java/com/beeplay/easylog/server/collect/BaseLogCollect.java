@@ -1,12 +1,9 @@
 package com.beeplay.easylog.server.collect;
 
+import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.util.ThreadPoolUtil;
-import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
-import com.beeplay.easylog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,7 +27,7 @@ public class BaseLogCollect {
 
     public  void sendLog(String index,List<Map<String,Object>> sendList){
         try {
-            elasticSearchClient.insertList(sendList,index,InitConfig.ES_TYPE);
+            elasticSearchClient.insertList(sendList,index, LogMessageConstant.ES_TYPE);
             logger.info("logList insert es success! count:"+sendList.size());
         } catch (Exception e) {
             logger.error("",e);
@@ -38,7 +35,7 @@ public class BaseLogCollect {
     }
     public  void sendTraceLogList(String index,List<Map<String,Object>> sendTraceLogList){
         try {
-            elasticSearchClient.insertList(sendTraceLogList,index,InitConfig.ES_TYPE);
+            elasticSearchClient.insertList(sendTraceLogList,index,LogMessageConstant.ES_TYPE);
             logger.info("traceLogList insert es success! count:"+sendTraceLogList.size());
         } catch (Exception e) {
             logger.error("",e);

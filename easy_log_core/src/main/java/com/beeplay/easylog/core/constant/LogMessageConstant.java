@@ -28,4 +28,15 @@ public interface LogMessageConstant {
      * 当前链路结束标志
      */
     String TRACE_END = ">";
+
+
+    String LOG_KEY="easy_log_list";
+
+    String ES_INDEX="easy_log_";
+
+    String ES_TYPE="easy_log";
+
+    String LOG_TYPE_RUN="run";
+
+    String LOG_TYPE_TRACE="trace";
 }

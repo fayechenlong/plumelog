@@ -10,4 +10,11 @@ public class ThreadPoolUtil {
                 new ThreadPoolExecutor.DiscardOldestPolicy());
         return threadPool;
     }
+    public static ThreadPoolExecutor getPool(int corePoolSize,int maxPoolSize,int capacity) {
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
+                10,10,10,TimeUnit.SECONDS,
+                new ArrayBlockingQueue<Runnable>(1),
+                new ThreadPoolExecutor.DiscardOldestPolicy());
+        return threadPool;
+    }
 }
