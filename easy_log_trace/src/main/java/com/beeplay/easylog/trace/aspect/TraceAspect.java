@@ -13,8 +13,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * className：TraceAspect
  * description：
@@ -27,8 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 @Slf4j
 public class TraceAspect {
-    public static AtomicInteger atomicInteger = new AtomicInteger(0);
-
     @Around("@annotation(com.beeplay.easylog.trace.annotation.Trace))")
     public void around(JoinPoint joinPoint) {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
