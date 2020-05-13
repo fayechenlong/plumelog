@@ -138,33 +138,14 @@
               </root>
           </loggers>
   
-3. 示例代码
+3. 示例(所有的列子都在easy_log_demo里面)
   
-   * 运行日志使用 
+* 运行日志使用 
   
-  
-       import com.beeplay.easylog.core.TransId;
-       import org.slf4j.Logger;
-       import org.slf4j.LoggerFactory;
-       import java.util.UUID;
-       
-       public class LogTest
-       {
-           private static Logger logger=LoggerFactory.getLogger(LogTest.class);
-           public static void main( String[] args )
-           {
-                TraceId.logTraceID.set(UUID.randomUUID().toString());
-                logger.info("{}","I am log name:"+UUID.randomUUID().toString());
-                logger.info("{}","I am log name:"+UUID.randomUUID().toString());
-           }
-       }
 
-   * 链路追踪使用
+* 链路追踪使用
       
       
-      
-      
-
 4. 启动服务
 
  * 步骤一打包完的 启动 easy_log_server-1.0.jar ，高可用的话直接启动多个服务就行
