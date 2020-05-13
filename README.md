@@ -217,6 +217,7 @@
       
    * 欢迎有兴趣的一起加入研究；QQ群：1072991065
    
+  ![avatar](/pic/EasyLog官方群群二维码.png)
 ### 7.测试地址
 
    * 查询界面地址：https://easylog-demo.beeplaying.com
