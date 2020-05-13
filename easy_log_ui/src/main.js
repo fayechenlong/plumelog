@@ -8,6 +8,12 @@ import 'view-design/dist/styles/iview.css';
 Vue.config.productionTip = false;
 Vue.use(ViewUI);
 
+ViewUI.LoadingBar.config({
+  color: '#5cb85c',
+  failedColor: '#f0ad4e',
+  height: 3
+});
+
 new Vue({
   router,
   store,

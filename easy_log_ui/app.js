@@ -20,8 +20,7 @@ function checkExistsIndex(dateList) {
   
     for(var date of dateList){
          promises.push(new Promise((res,reject)=>{
-            superagent.head(config.api+date)
-    
+            superagent.head(config.es+date)
                     .then(
                         r=>{
                             res(true)
@@ -140,6 +139,16 @@ app.post('/getInfo', function (req, res) {
     })
 
     checkExistsIndex(req.query.index.split(',')).then(existIndex=>{
+  
+        if(existIndex.length==0){
+          res.send({
+            hits:{
+              hits:[],
+              total:0
+            }
+          })
+          return;
+        }
 
         let url = config.es+existIndex+'/_search?from='+(req.query.from || 0)+'&size='+(req.query.size || 30);
         superagent
@@ -157,7 +166,7 @@ app.get('/getTrace', function (req, res) {
 
   //console.log('traceId:'+req.query.traceId)
   if(req.query.traceId){
-    checkExistsIndex(req.query.index.split(',')).then(existIndex=>{
+
         let filter = {
           "query": {
             "bool": {
@@ -175,7 +184,7 @@ app.get('/getTrace', function (req, res) {
           }]
         };
 
-        let url = config.es+existIndex+'/_search';
+        let url = config.es+'/_search?size=500';
         superagent
             .post(url)
             .set('Accept', 'application/json')
@@ -204,7 +213,6 @@ app.get('/getTrace', function (req, res) {
                 }
 
             })
-    })
   }
   else
   {

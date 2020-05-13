@@ -81,7 +81,6 @@
     </div>
 
     <div style="float:right;margin-right:20px;margin-bottom:5px">共 <b>{{list.total}}</b> 条数据</div>
-   
     <table v-if="list.hits.length>0" cellspacing="0" cellpadding="0"  class="table table-striped table_detail">
       <thead>
         <tr>
@@ -119,6 +118,8 @@
         <li class="page-item"><div class="page-count">第{{parseInt(from/size)+1}}页 / 共{{  parseInt(list.total/size)+1}}页</div></li>
       </ul>
     </nav>
+
+    
 
     <!-- Modal -->
     <div class="modal fade show" style="display:block" v-if="content.title" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
@@ -256,8 +257,8 @@ export default {
   },
   filters:{
     substr(str){
-      if(str.length>50){
-        return str.substring(0,50)+'...';
+      if(str.length>30){
+        return str.substring(0,30)+'...';
       }
       return str;
     },
@@ -376,13 +377,13 @@ export default {
       
       if(startDate){
          while(startDate<=this.dateTimeRange[1]){
-          dateList.push('easy_'+moment(startDate).format('YYYYMMDD'))
+          dateList.push('easy_log_'+moment(startDate).format('YYYYMMDD'))
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }
      
       if(dateList.length==0){
-        dateList.push('easy_'+moment().format('YYYYMMDD'));
+        dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
       let url= '/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
@@ -407,17 +408,12 @@ export default {
         ]
       };
 
+      this.$Loading.start();
+
       axios.post(url,esFilter).then(data=>{
+        this.$Loading.finish();
         this.list = _.get(data,'data.hits')
       })
-
-      // this.$router.push({
-      //   name:'Home',
-      //   query:{
-      //     from:this.from,
-      //     filter: JSON.stringify(this.filter)
-      //   }
-      // })
     },
     prevePage(){
       let from = this.from - this.size
