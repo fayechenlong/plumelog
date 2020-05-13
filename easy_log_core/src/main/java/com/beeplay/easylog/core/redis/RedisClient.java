@@ -1,11 +1,12 @@
 package com.beeplay.easylog.core.redis;
 
 
+import com.beeplay.easylog.core.AbstractClient;
 import redis.clients.jedis.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RedisClient {
+public class RedisClient extends AbstractClient {
     private static  RedisClient instance;
     private  int MAX_ACTIVE = 8;
     private  int MAX_IDLE = 8;
@@ -36,6 +37,7 @@ public class RedisClient {
             jedisPool = new JedisPool(config, host, port, TIMEOUT);
         }
     }
+    @Override
     public void pushMessage(String key, String strings) {
         Jedis sj=jedisPool.getResource();
         try {

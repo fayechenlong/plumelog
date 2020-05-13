@@ -16,14 +16,13 @@ import com.beeplay.easylog.logback.util.LogMessageUtil;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
-public class RedisAppender extends AppenderBase<ILoggingEvent> {
-    private ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
+public class RedisAppender extends AbstractAppender {
+    private ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(4, 8, 5000);
     private RedisClient redisClient;
     private String appName;
     private String reidsHost;
     private String redisPort;
     private String redisAuth;
-    private String redisKey;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -41,24 +40,11 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         this.redisAuth = redisAuth;
     }
 
-    public void setRedisKey(String redisKey) {
-        this.redisKey = redisKey;
-    }
-
     @Override
     protected void append(ILoggingEvent event) {
         if (redisClient == null) {
             redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), this.redisAuth);
         }
-        BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, event);
-        final String redisKey =
-                logMessage instanceof RunLogMessage ? this.redisKey :
-                        this.redisKey + LogMessageConstant.TRACE_KEY_SUFFIX;
-        threadPoolExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                redisClient.pushMessage(redisKey, GfJsonUtil.toJSONString(logMessage));
-            }
-        });
+        super.push(this.appName, event, redisClient);
     }
 }

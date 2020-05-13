@@ -1,6 +1,7 @@
 package com.beeplay.easylog.demo.service;
 
 import com.beeplay.easylog.trace.annotation.Trace;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,9 +14,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TankServiceThere {
+    @Autowired
+    TestTank testTank;
 
     @Trace
     public void tankServiceThere() {
         System.out.println("tankServiceThere========>");
+        testTank.testTank(111);
     }
 }

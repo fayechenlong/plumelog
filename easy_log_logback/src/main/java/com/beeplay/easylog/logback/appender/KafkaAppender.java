@@ -14,7 +14,7 @@ import com.beeplay.easylog.logback.util.LogMessageUtil;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
-public class KafkaAppender extends AppenderBase<ILoggingEvent> {
+public class KafkaAppender extends AbstractAppender {
     private ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     private KafkaProducerClient kafkaClient;
     private String appName;
@@ -39,15 +39,6 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
         if (kafkaClient == null) {
             kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, event);
-        final String topic =
-                logMessage instanceof RunLogMessage ? this.topic :
-                        this.topic + LogMessageConstant.TRACE_KEY_SUFFIX;
-        threadPoolExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                kafkaClient.pushMessage(topic, GfJsonUtil.toJSONString(logMessage));
-            }
-        });
+        super.push(this.appName, event, kafkaClient);
     }
 }
