@@ -2,14 +2,8 @@ package com.beeplay.easylog.logback.appender;
 
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.AppenderBase;
-import com.beeplay.easylog.core.constant.LogMessageConstant;
-import com.beeplay.easylog.core.dto.BaseLogMessage;
-import com.beeplay.easylog.core.dto.RunLogMessage;
 import com.beeplay.easylog.core.kafka.KafkaProducerClient;
-import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.core.util.ThreadPoolUtil;
-import com.beeplay.easylog.logback.util.LogMessageUtil;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
