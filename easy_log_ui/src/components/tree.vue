@@ -1,7 +1,7 @@
 <template>
     <div class="mm_tree">
         <div class="info" :class="{'closed':close}">
-            <i class="icon"  @click="toggle"></i>
+            <i @click="toggle"><Tooltip :disabled="toolTip==''" offset="-22"  placement="left-start" class="icon" :class="{'disable':toolTip==''}" :content="toolTip"></Tooltip></i>
             <div class="title">{{data.method}}</div>
             <div class="time">
                 应用名称：{{data.appName}}<template v-if="data.end_time>=data.start_time"><br/>花费时间：{{data.end_time - data.start_time}}ms</template>
@@ -32,6 +32,11 @@ export default {
             close:false,
         }
     },
+    computed:{
+        toolTip(){
+            return this.data.children && this.data.children.length ? this.close ? '点击展开':'点击收起' : ''
+        }
+    },
     methods:{
         toggle(){
             if(this.data.children.length>0){
@@ -50,6 +55,14 @@ export default {
     },
     mounted(){
         this.data = this.info;
+        if(this.data.zIndex>1 && this.data.children.length>0)
+        {
+            this.close = true;
+        }
+        else
+        {
+            this.close =false;
+        }
     }
 }
 </script>
@@ -90,6 +103,11 @@ export default {
                 background:none;
                 border:2px solid red;
                 border-radius: 50%;
+                cursor: pointer;
+                &.disable
+                {
+                    cursor: auto;
+                }
             }
 
             &.closed{

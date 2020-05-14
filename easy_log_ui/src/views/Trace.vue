@@ -55,7 +55,7 @@ export default {
     doSearch(){
       //列出范围内的日期
       this.traces=[];
-
+      sessionStorage['cache_traceId'] = this.traceId ;
       let url= '/getTrace?traceId='+this.traceId;
       this.$Loading.start();
 
@@ -68,13 +68,11 @@ export default {
   mounted(){
     if(this.$route.query.traceId){
       this.traceId = this.$route.query.traceId;
-      sessionStorage['cache_traceId']=this.traceId;
-      this.doSearch();
     }
     else if(sessionStorage['cache_traceId']){
       this.traceId = sessionStorage['cache_traceId'];
-      this.doSearch();
     }
+    this.doSearch();
   }
 };
 </script>
