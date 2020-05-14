@@ -84,24 +84,24 @@
     <table v-if="list.hits.length>0" cellspacing="0" cellpadding="0"  class="table table-striped table_detail">
       <thead>
         <tr>
-          <th scope="col">应用名称</th>
+          <th scope="col">时间</th>
           <th scope="col">日志等级</th>
           <th scope="col">服务器名称</th>
+          <th scope="col">应用名称</th>
           <th scope="col">追踪码</th>
           <th scope="col">类名</th>
-          <th scope="col">时间</th>
           <th scope="col">内容</th>
           <th scope="col">操作</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in list.hits" :class="item._source.logLevel" :key="item._id">
-          <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
+          <td>{{item._source.dtTime | filterTime}}</td>
           <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
           <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
+          <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
           <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
           <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
-          <td>{{item._source.dtTime | filterTime}}</td>
           <td class='td_cnt' v-html="showContent(item)"></td>
           <td><button class="btn btn-primary" @click="showDetail(item)">详情</button></td>
         </tr>
@@ -133,16 +133,18 @@
           </div>
           <div class="modal-body">
               <table>
-                <tr v-for="item in contentItems" :key="item.value">
-                  <td class="key">{{item.name}}</td>
-                  <td v-if="item.value == 'dtTime'">{{content._source[item.value] | filterTime}}</td>
-                  <td v-else-if="item.value == 'content'">
-                    <div class="code_wrap">
-                      <pre v-html="hightLightCode(content.content)"></pre>
-                    </div>
-                  </td>
-                  <td v-else>{{content._source[item.value]}}</td>
-                </tr>
+                <template  v-for="item in contentItems">
+                  <tr v-if="content._source[item.value]" :key="item.value">
+                    <td class="key">{{item.name}}</td>
+                    <td v-if="item.value == 'dtTime'">{{content._source[item.value] | filterTime}}</td>
+                    <td v-else-if="item.value == 'content'">
+                      <div class="code_wrap">
+                        <pre v-html="hightLightCode(content.content)"></pre>
+                      </div>
+                    </td>
+                    <td v-else>{{content._source[item.value]}}</td>
+                  </tr>
+                </template>
               </table>
           </div>
           <div class="modal-footer">
