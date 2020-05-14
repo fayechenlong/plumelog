@@ -135,7 +135,7 @@
               <table>
                 <template  v-for="item in contentItems">
                   <tr v-if="content._source[item.value]" :key="item.value">
-                    <td class="key">{{item.name}}</td>
+                    <td class="key"><div>{{item.name}}</div></td>
                     <td v-if="item.value == 'dtTime'">{{content._source[item.value] | filterTime}}</td>
                     <td v-else-if="item.value == 'content'">
                       <div class="code_wrap">
