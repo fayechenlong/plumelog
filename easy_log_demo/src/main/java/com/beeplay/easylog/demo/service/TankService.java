@@ -23,10 +23,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class TankService {
-    private static ExecutorService executorService = TtlExecutors.getTtlExecutorService(
-            new ThreadPoolExecutor(8, 8,
-                    0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>()));
     private static org.slf4j.Logger logger= LoggerFactory.getLogger(TankService.class);
     @Autowired
     TankServiceTwo tankServiceTwo;
@@ -35,17 +31,9 @@ public class TankService {
     TankServiceThere tankServiceThere;
 
     @Trace
-    public void tankSay(String kk) {
-        System.out.println("tankSay========>" + kk);
-        tankServiceTwo.tankServiceTwo();
-        tankServiceThere.tankServiceThere();
-
-        executorService.execute(()->{
-
-            TraceId.logTraceID.get();
-
-            logger.info("tankSay =》我是子线程的日志！{}",TraceId.logTraceID.get());
-        });
-
+    public void tankSay(String data) {
+        logger.info("tankSay==>>{}",data);
+        tankServiceTwo.tankServiceTwo(data);
+        tankServiceThere.tankServiceThere(data);
     }
 }

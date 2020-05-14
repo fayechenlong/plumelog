@@ -15,13 +15,15 @@ public class MainController {
     @Autowired
     private MainService mainService;
 
-
     @RequestMapping("/index")
     public String index(String data) {
         logger.info("I am MainController");
-        logger.info(data);
-        mainService.testLog();
-        return "index";
+        if(data!=null&&!"".equals(data)){
+            data="你啥都没有输入！";
+        }
+        logger.info("你输入的是{}",data);
+        mainService.testLog(data);
+        return data;
     }
 }
 
