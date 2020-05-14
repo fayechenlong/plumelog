@@ -1,19 +1,19 @@
-package com.beeplay.easylog.demo.dubbo;
+package com.beeplay.easylog;
+
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 
 /**
-* @Author Frank.chen
-* @Description //TODO
-* @Date 15:58 2020/5/13
-* @Param 
-* @return 
-**/
+ * className：App
+ * description： TODO
+ * time：2020-05-14.11:03
+ *
+ * @author Tank
+ * @version 1.0.0
+ */
 @SpringBootApplication
 @EnableDubbo
-@ComponentScan("com.beeplay")
 public class App {
     public static void main( String[] args ){
         SpringApplication.run(App.class, args);
