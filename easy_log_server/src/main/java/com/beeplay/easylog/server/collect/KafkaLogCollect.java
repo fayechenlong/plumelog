@@ -63,7 +63,11 @@ public class KafkaLogCollect extends BaseLogCollect{
                     super.traceLogList.clear();
                 });
             }
-
+            try {
+                Thread.sleep(InitConfig.MAX_INTERVAL);
+            } catch (InterruptedException e) {
+                logger.error("",e);
+            }
         }
     }
 }

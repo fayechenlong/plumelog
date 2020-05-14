@@ -68,7 +68,7 @@ public class RedisLogCollect extends BaseLogCollect{
             }
         }
         try {
-            Thread.sleep(100);
+            Thread.sleep(InitConfig.MAX_INTERVAL);
         } catch (InterruptedException e) {
             logger.error("",e);
         }
@@ -88,7 +88,7 @@ public class RedisLogCollect extends BaseLogCollect{
             }
         }
         try {
-            Thread.sleep(100);
+            Thread.sleep(InitConfig.MAX_INTERVAL);
         } catch (InterruptedException e) {
             logger.error("",e);
         }

@@ -37,6 +37,7 @@ public class Start {
 
             InitConfig.MAX_SEND_SIZE=Integer.valueOf(this.properties.getProperty("easylog.server.maxSendSize"));
             InitConfig.KAFKA_GROUP_NAME=this.properties.getProperty("easylog.server.kafka.kafkaGroupName");
+            InitConfig.MAX_INTERVAL=Integer.valueOf(this.properties.getProperty("easylog.server.interval"));
 
             this.kafkaHosts = this.properties.getProperty("easylog.server.kafka.kafkaHosts");
             this.esHosts = this.properties.getProperty("easylog.server.es.esHosts");
