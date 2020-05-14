@@ -34,7 +34,7 @@
     <!-- easylog日志 -->
     <appender name="easylog_demo" class="com.beeplay.easylog.logback.appender.RedisAppender">
         <appName>easy_log_demo</appName>
-        <reidsHost>10.103.4.14</reidsHost>
+        <reidsHost>172.16.249.72</reidsHost>
         <redisPort>6379</redisPort>
     </appender>
 
