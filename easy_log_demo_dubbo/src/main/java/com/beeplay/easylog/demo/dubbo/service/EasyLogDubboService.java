@@ -1,6 +1,5 @@
 package com.beeplay.easylog.demo.dubbo.service;
 
-import com.beeplay.easylog.trace.annotation.Trace;
 
 /**
  * @InterfaceName EasyLogDubboService
@@ -11,6 +10,5 @@ import com.beeplay.easylog.trace.annotation.Trace;
  **/
 public interface EasyLogDubboService {
 
-    @Trace
     void testLogDubbo();
 }

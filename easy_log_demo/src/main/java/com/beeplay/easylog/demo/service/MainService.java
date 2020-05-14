@@ -22,7 +22,7 @@ public class MainService {
     @Trace
     public void testLog() {
         easyLogDubboService.testLogDubbo();
-        /*System.out.println("testLog===>" + System.currentTimeMillis());
+        System.out.println("testLog===>" + System.currentTimeMillis());
         try {
             logger.info("testLog===> 开始" + System.currentTimeMillis());
             say(System.currentTimeMillis() + "ppp");
@@ -30,7 +30,7 @@ public class MainService {
             logger.info("testLog===> 结束" + System.currentTimeMillis());
         } catch (Exception e) {
             logger.error("{}", LogExceptionStackTrace.erroStackTrace(e));
-        }*/
+        }
     }
 
     public void say(String name) {

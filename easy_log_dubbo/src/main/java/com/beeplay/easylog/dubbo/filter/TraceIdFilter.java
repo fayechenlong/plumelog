@@ -1,4 +1,4 @@
-package com.beeplay.dubbo.filter;
+package com.beeplay.easylog.dubbo.filter;
 
 import com.beeplay.easylog.core.TraceId;
 import org.apache.dubbo.common.extension.Activate;
@@ -18,7 +18,7 @@ import static org.apache.dubbo.common.constants.CommonConstants.PROVIDER;
  * @author Tank
  * @version 1.0.0
  */
-@Activate(group = {PROVIDER, CONSUMER})
+@Activate(group ={PROVIDER,CONSUMER})
 public class TraceIdFilter implements Filter {
 
     private static final String TRACE_ID = "trace_id";

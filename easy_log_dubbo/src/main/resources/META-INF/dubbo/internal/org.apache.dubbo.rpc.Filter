@@ -1,1 +1,1 @@
-trace=com.beeplay.dubbo.filter.TraceIdFilter
+traceIdFilter=com.beeplay.easylog.dubbo.filter.TraceIdFilter
