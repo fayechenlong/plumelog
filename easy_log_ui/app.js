@@ -180,6 +180,7 @@ app.get('/getTrace', function (req, res) {
             }
           },
           "sort": [{
+            "time":"asc",
             "positionNum": "asc"
           }]
         };
