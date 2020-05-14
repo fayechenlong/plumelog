@@ -1,8 +1,13 @@
 package com.beeplay.easylog.demo.service;
 
+import com.beeplay.easylog.core.TraceId;
+import com.beeplay.easylog.core.util.ThreadPoolUtil;
 import com.beeplay.easylog.trace.annotation.Trace;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * className：TankService
@@ -14,7 +19,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TankService {
-
+    private static ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool(4, 8, 5000);
+    private static org.slf4j.Logger logger= LoggerFactory.getLogger(TankService.class);
     @Autowired
     TankServiceTwo tankServiceTwo;
 
@@ -26,6 +33,13 @@ public class TankService {
         System.out.println("tankSay========>" + kk);
         tankServiceTwo.tankServiceTwo();
         tankServiceThere.tankServiceThere();
+
+        threadPoolExecutor.execute(()->{
+
+            TraceId.logTraceID.get();
+
+            logger.info("我是子线程的日志！{}",TraceId.logTraceID.get());
+        });
 
     }
 }

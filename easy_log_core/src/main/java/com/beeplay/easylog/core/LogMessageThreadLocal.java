@@ -1,6 +1,8 @@
 package com.beeplay.easylog.core;
 
 
+import com.alibaba.ttl.TransmittableThreadLocal;
+
 /**
  * @ClassName LogMessageThreadLocal
  * @Deacription TODO
@@ -9,5 +11,5 @@ package com.beeplay.easylog.core;
  * @Version 1.0
  **/
 public class LogMessageThreadLocal {
-    public static ThreadLocal<TraceMessage> logMessageThreadLocal = new ThreadLocal<>();
+    public static TransmittableThreadLocal<TraceMessage> logMessageThreadLocal = new TransmittableThreadLocal<>();
 }
