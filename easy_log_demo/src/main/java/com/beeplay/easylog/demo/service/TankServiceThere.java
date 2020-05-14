@@ -18,16 +18,10 @@ import org.springframework.stereotype.Service;
 public class TankServiceThere {
     @Autowired
     TestTank testTank;
-
     @Reference
     EasyLogDubboService easyLogDubboService;
-
     @Trace
     public void tankServiceThere() {
-        System.out.println("tankServiceThere========>");
-        for (int i = 0; i < 10; i++) {
-            easyLogDubboService.testLogDubbo();
-            testTank.testTank(111);
-        }
+        testTank.testTank(111);
     }
 }
