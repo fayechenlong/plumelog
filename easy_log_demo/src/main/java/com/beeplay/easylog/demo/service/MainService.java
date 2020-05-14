@@ -2,6 +2,7 @@ package com.beeplay.easylog.demo.service;
 
 
 import com.alibaba.ttl.threadpool.TtlExecutors;
+import com.beeplay.easylog.core.LogMessage;
 import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.util.LogExceptionStackTrace;
 import com.beeplay.easylog.demo.dubbo.service.EasyLogDubboService;
@@ -30,23 +31,21 @@ public class MainService {
     EasyLogDubboService easyLogDubboService;
 
     @Trace
-    public void testLog() {
+    public void testLog(String data) {
+        logger.info("I am service! 下面调用EasyLogDubboService远程服务！");
         easyLogDubboService.testLogDubbo();
-        System.out.println("testLog===>" + System.currentTimeMillis());
-        try {
-            logger.info(Thread.currentThread().getName() + "testLog===> 开始" + System.currentTimeMillis());
-            say(System.currentTimeMillis() + "ppp");
-            tankService.tankSay("ppp");
-            logger.info(Thread.currentThread().getName() + "testLog===> 结束" + System.currentTimeMillis());
-        } catch (Exception e) {
-            logger.error("{}", LogExceptionStackTrace.erroStackTrace(e));
-        }
+        logger.info("远程调用成功！");
+        tankService.tankSay(data);
         executorService.execute(() -> {
-            logger.info("testLog =》我是子线程的日志1！{}", TraceId.logTraceID.get());
+            logger.info("子线程日志展示");
         });
-    }
+        try {
 
-    public void say(String name) {
-        System.out.println("say===>" + name);
+            LogMessage lo=null;
+            lo.setMethod("");
+        }catch (Exception e){
+            logger.error("异常日志展示：{}", LogExceptionStackTrace.erroStackTrace(e));
+        }
+        logger.warn("警告日志展示！");
     }
 }

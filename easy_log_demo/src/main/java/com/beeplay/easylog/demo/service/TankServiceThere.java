@@ -3,6 +3,7 @@ package com.beeplay.easylog.demo.service;
 import com.beeplay.easylog.demo.dubbo.service.EasyLogDubboService;
 import com.beeplay.easylog.trace.annotation.Trace;
 import org.apache.dubbo.config.annotation.Reference;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TankServiceThere {
-    @Autowired
-    TestTank testTank;
-    @Reference
-    EasyLogDubboService easyLogDubboService;
+    private static org.slf4j.Logger logger= LoggerFactory.getLogger(TankServiceThere.class);
     @Trace
-    public void tankServiceThere() {
-        testTank.testTank(111);
+    public void tankServiceThere(String data) {
+
+        logger.info("tankServiceThere==>>{}",data);
     }
 }
