@@ -1,6 +1,6 @@
 package com.beeplay.easylog.demo.service;
 
-import com.alibaba.ttl.threadpool.TtlExecutors;
+import com.alibaba.ttl.TtlRunnable;
 import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.util.ThreadPoolUtil;
 import com.beeplay.easylog.trace.annotation.Trace;
@@ -8,10 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * className：TankService
@@ -23,10 +20,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class TankService {
-    private static ExecutorService executorService = TtlExecutors.getTtlExecutorService(
-            new ThreadPoolExecutor(8, 8,
-                    0L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>()));
+    private static ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool(4, 8, 5000);
     private static org.slf4j.Logger logger= LoggerFactory.getLogger(TankService.class);
     @Autowired
     TankServiceTwo tankServiceTwo;
@@ -40,12 +35,10 @@ public class TankService {
         tankServiceTwo.tankServiceTwo();
         tankServiceThere.tankServiceThere();
 
-        executorService.execute(()->{
-
+        threadPoolExecutor.execute(TtlRunnable.get(()->{
             TraceId.logTraceID.get();
-
             logger.info("tankSay =》我是子线程的日志！{}",TraceId.logTraceID.get());
-        });
+        }));
 
     }
 }
