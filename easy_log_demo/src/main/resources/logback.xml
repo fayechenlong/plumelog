@@ -27,7 +27,7 @@
 
     <!-- easylog日志 -->
     <appender name="easylog_demo" class="com.beeplay.easylog.logback.appender.KafkaAppender">
-        <appName>easylog</appName>
+        <appName>easylog_demo</appName>
         <kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>
     </appender>
 
@@ -43,6 +43,6 @@
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="easylog" />
+        <appender-ref ref="easylog_demo" />
     </root>
 </configuration>
