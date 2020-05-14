@@ -56,60 +56,33 @@ function formartTrace(list){
 
   function pushItem(item,isStart){
 
-    // console.log("zIndex:"+zIndex);
-
     let _arrary=_list;
-    //找到该层级的最后一个元素往里插
-    if(zIndex>-1){
-      
-      for(var i=0;i<zIndex;i++){
-          _arrary = _arrary[_arrary.length-1].children;
-      }
 
-     
-      //方法开始
-      if(isStart){
-        _arrary.push({
-          method: item.method,
-          appName: item.appName,
-          start_time: item.time,
-          children:[]
-        });
-        // console.log('start');
-        // console.log('zindex:'+zIndex);
-        // console.log(JSON.stringify(_arrary,null,2));
-      }
-      //方法结束
-      else
-      {
-        //找到一个没结束的item
-        for(var f=0;f<_arrary.length;f++){
-          if(!_arrary[f].end_time){
-            _arrary[f].end_time = item.time;
-            break
-          }
-        }
-        
-        // console.log('close');
-        // console.log('zindex:'+zIndex);
-        // console.log(JSON.stringify(_arrary,null,2));
-        // _arrary.end_time = item.time;
-        // console.log(JSON.stringify(_list,null,2));
-        // console.log('========================');
-        // console.log(JSON.stringify(_arrary,null,2));
-      }
-      
-      // console.log('zindex:'+zIndex);
-      // console.log(JSON.stringify(_list));
+    //找到该层级的最后一个元素往里插
+    for(var i=0;i<zIndex;i++){
+        _arrary = _arrary[_arrary.length-1].children;
     }
-    else
-    {
+    
+    //方法开始
+    if(isStart){
       _arrary.push({
         method: item.method,
         appName: item.appName,
         start_time: item.time,
+        zIndex: zIndex,
         children:[]
-      })
+      });
+    }
+    //方法结束
+    else
+    {
+      //找到一个没结束的item
+      for(var f=0;f<_arrary.length;f++){
+        if(!_arrary[f].end_time){
+          _arrary[f].end_time = item.time;
+          break
+        }
+      }
     }
   }
 
@@ -127,7 +100,6 @@ function formartTrace(list){
     }
   }
 
-  // console.log(JSON.stringify(_list,null,2))
   return _list;
 }
 
