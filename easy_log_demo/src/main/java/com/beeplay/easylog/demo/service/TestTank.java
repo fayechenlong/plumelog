@@ -18,7 +18,7 @@ public class TestTank {
     @Trace
     public void testTank(Integer kk){
         try {
-            Thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

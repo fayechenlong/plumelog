@@ -27,7 +27,7 @@ public class MainService {
     @Trace
     public void testLog() {
         easyLogDubboService.testLogDubbo();
-        /*System.out.println("testLog===>" + System.currentTimeMillis());
+        System.out.println("testLog===>" + System.currentTimeMillis());
         try {
             logger.info("testLog===> 开始" + System.currentTimeMillis());
             say(System.currentTimeMillis() + "ppp");
@@ -41,7 +41,7 @@ public class MainService {
             TraceId.logTraceID.get();
 
             logger.info("我是子线程的日志1！{}",TraceId.logTraceID.get());
-        });*/
+        });
     }
 
     public void say(String name) {
