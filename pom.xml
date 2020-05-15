@@ -34,5 +34,16 @@
                 </configuration>
             </plugin>
         </plugins>
+
     </build>
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>${distribution.repository.url}/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>${distribution.repository.url}/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

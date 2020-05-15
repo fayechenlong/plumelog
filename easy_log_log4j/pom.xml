@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>easy_log_log4j</artifactId>
     <name>easy_log_log4j</name>
+    <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -22,14 +23,4 @@
             <version>2.0</version>
         </dependency>
     </dependencies>
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <url>${distribution.repository.url}/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>${distribution.repository.url}/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
