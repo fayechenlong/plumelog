@@ -234,7 +234,7 @@
    
    * 微信号：franklinkin
    
-  ![avatar](/pic/EasyLog官方群群二维码.png)
+  ![avatar](/pic/EasyLog官方群群二维码.png)![avatar](/pic/weixin.jpg)
   
 ### 7.测试地址
 
