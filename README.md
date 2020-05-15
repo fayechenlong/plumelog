@@ -218,7 +218,7 @@
      
      4.http://你的部署服务器地址:8989 访问前端
      
-     5.![前端部署文档](/easy_log_ui/README.md)
+     5.[前端部署文档](/easy_log_ui/README.md)
      
 ### 5.版本计划
 
