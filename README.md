@@ -157,33 +157,30 @@
 * 链路追踪使用 [传送门](/easy_log_trace/README.md)
 
 * 跨线程追踪使用 有两种使用方式，（easy_log_demo也有）
+
     #### 修饰线程池
 
 
-    private static ExecutorService executorService = TtlExecutors.getTtlExecutorService(
-                new ThreadPoolExecutor(8, 8,
-                        0L, TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<Runnable>()));
-                        
-                        
-      //省去每次Runnable和Callable传入线程池时的修饰，这个逻辑可以在线程池中完成      
-      executorService.execute(() -> {
-                  logger.info("子线程日志展示");
-      });
+        private static ExecutorService executorService = TtlExecutors.getTtlExecutorService(
+                    new ThreadPoolExecutor(8, 8,
+                            0L, TimeUnit.MILLISECONDS,
+                            new LinkedBlockingQueue<Runnable>()));
+          //省去每次Runnable和Callable传入线程池时的修饰，这个逻辑可以在线程池中完成      
+          executorService.execute(() -> {
+                      logger.info("子线程日志展示");
+          });
       
       
       
    #### 修饰Runnable和Callable
    
 
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool(4, 8, 5000);
-            
-            
-    threadPoolExecutor.execute(TtlRunnable.get(() -> {
-               TraceId.logTraceID.get();
-               logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
-     }));
+        private static ThreadPoolExecutor threadPoolExecutor
+                = ThreadPoolUtil.getPool(4, 8, 5000);
+        threadPoolExecutor.execute(TtlRunnable.get(() -> {
+                   TraceId.logTraceID.get();
+                   logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
+         }));
       
        
    #### 以上两种方式执行都支持traceId传递。如果不使用线程的方式。默认就是支持传递
