@@ -1,5 +1,5 @@
 # EasyLog 一个简单易用的java分布式日志组件
-### 1.系统介绍
+### 一.系统介绍
 
  1. 无入侵的分布式日志系统，基于log4j、log4j2、logback搜集日志，设置链路ID，方便查询关联日志
  
@@ -13,7 +13,7 @@
  
        
 
-### 2.架构
+### 二.架构
 
 * easy_log_core 核心组件包含日志搜集端，负责搜集日志并推送到kafka，redis等队列
 
@@ -23,20 +23,18 @@
 
 * easy_log_demo 基于springboot的使用案例
 
-### 3.系统流程
+### 三.系统流程
    1. easy_log_core 搜集日志发送到=>kafka或者redis
    
    2. easy_log_server kafka或者redis=>elasticsearch
    
-### 4.使用方法
+### 四.使用方法
 
 1. 打包
 
-* maven install -DskipTests 打包
+* maven deploy -DskipTests 上传包到自己的私服
    
-* 到easy_log_core,easy_log_log4j,easy_log_log4j2,easy_log_logback四个目录下 执行maven deploy 上传包到自己的私服
-   
-     私服地址到easy_log目录的pom.xml改
+     私服地址到easy_log/pom.xml改
      
             <properties>
               <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -70,11 +68,6 @@
         log4j.appender.L.redisPort=6379
 
     同理如果使用logback,和log4j2配置如下
-    
-    这里注意：spring boot项目默认用的logback;easy_log_demo里面有基于springboot的使用demo
-    
-    #### 【dubbo rpc 跨服务传送trace_id 可以参考 easy_log_dubbo】
-    
     
 #### logback
 
@@ -156,7 +149,7 @@
         }
 
 
-* 链路追踪使用 [传送门](/easy_log_trace/README.md)
+* [链路追踪使用](/easy_log_trace/README.md)
 
 * TraceId跨线程传递
 
@@ -184,8 +177,8 @@
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
       
-       
-   #### 以上两种方式执行都支持traceId传递。如果不使用线程的方式。默认就是支持传递
+* [Dubbo的分布式系统traceId传递 ](/easy_log_dubbo/README.md)
+
    
 4. 启动服务
 
@@ -205,6 +198,8 @@
        easylog.server.host.esHosts=172.16.251.196:9200
        #每次获取最大日志条数
        easylog.server.maxSendSize=5000
+       #日志读取频次，单位毫秒
+       easylog.server.interval=100
        
   * 查询界面
      
@@ -214,7 +209,7 @@
      
           {
               "es": "http://172.16.251.196:9200/", //es地址
-              "port" : 8989 //端口号，和上面api端口号
+              "port" : 8989 //前端服务端口
           }
      
      2.运行 npm run build 打包
@@ -235,11 +230,12 @@
    
 ### 6.联系交流
 
-   * 有问题在留言区留言，会在第一时间内回复
-      
-   * 欢迎有兴趣的一起加入研究；QQ群：1072991065
+   * QQ群：1072991065
+   
+   * 微信号：franklinkin
    
   ![avatar](/pic/EasyLog官方群群二维码.png)
+  
 ### 7.测试地址
 
    * 查询界面地址：https://easylog-demo.beeplaying.com
