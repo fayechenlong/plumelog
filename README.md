@@ -140,6 +140,20 @@
   
 3. 示例(所有的列子都在easy_log_demo里面)
 
+* 要想产生traceID，需要再拦截器里增加，如下：
+
+        @Component
+        public class Interceptor extends HandlerInterceptorAdapter{
+        
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                IdWorker worker = new IdWorker(1,1,1);
+                TraceId.logTraceID.set(String.valueOf(worker.nextId()));//设置TraceID值，不埋此点链路ID就没有
+                return true;
+            }
+        }
+
+
 * 链路追踪使用 [传送门](/easy_log_trace/README.md)
 
 * 跨线程追踪使用 有两种使用方式，（easy_log_demo也有）
