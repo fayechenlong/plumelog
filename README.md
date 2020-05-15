@@ -140,7 +140,9 @@
   
 3. 示例(所有的列子都在easy_log_demo里面)
 
-* 要想产生traceID，需要再拦截器里增加，如下：
+* 普通日志使用
+
+   要想产生traceID，需要再拦截器里增加，如下：
 
         @Component
         public class Interceptor extends HandlerInterceptorAdapter{
@@ -156,7 +158,9 @@
 
 * 链路追踪使用 [传送门](/easy_log_trace/README.md)
 
-* 跨线程追踪使用 有两种使用方式，（easy_log_demo也有）
+* TraceId跨线程传递
+
+    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（easy_log_demo也有）
 
     #### 修饰线程池
 
