@@ -115,7 +115,7 @@
 
        <dependency>
            <groupId>com.beeplay</groupId>
-           <artifactId>easy_log_logBack</artifactId>
+           <artifactId>easy_log_log4j2</artifactId>
            <version>2.0</version>
        </dependency>       
 
