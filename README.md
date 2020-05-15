@@ -162,9 +162,7 @@
 
 
         private static ExecutorService executorService = TtlExecutors.getTtlExecutorService(
-                    new ThreadPoolExecutor(8, 8,
-                            0L, TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue<Runnable>()));
+                    new ThreadPoolExecutor(8, 8,0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>()));
           //省去每次Runnable和Callable传入线程池时的修饰，这个逻辑可以在线程池中完成      
           executorService.execute(() -> {
                       logger.info("子线程日志展示");
@@ -175,8 +173,8 @@
    #### 修饰Runnable和Callable
    
 
-        private static ThreadPoolExecutor threadPoolExecutor
-                = ThreadPoolUtil.getPool(4, 8, 5000);
+        private static ThreadPoolExecutor threadPoolExecutor= ThreadPoolUtil.getPool(4, 8, 5000);
+        
         threadPoolExecutor.execute(TtlRunnable.get(() -> {
                    TraceId.logTraceID.get();
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
