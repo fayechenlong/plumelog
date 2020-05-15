@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TraceAspect {
     @Around("@annotation(com.beeplay.easylog.trace.annotation.Trace))")
-    public void around(JoinPoint joinPoint) {
+    public Object around(JoinPoint joinPoint) {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         if (traceMessage == null) {
             traceMessage = new TraceMessage();
@@ -38,9 +38,10 @@ public class TraceAspect {
         traceMessage.setPosition(LogMessageConstant.TRACE_START);
         traceMessage.getPositionNum().incrementAndGet();
         LogMessageThreadLocal.logMessageThreadLocal.set(traceMessage);
+        Object proceed = null;
         try {
             log.info(LogMessageConstant.TRACE_PRE + GfJsonUtil.toJSONString(traceMessage));
-            ((ProceedingJoinPoint) joinPoint).proceed();
+            proceed = ((ProceedingJoinPoint) joinPoint).proceed();
             traceMessage.setMessageType(joinPoint.getSignature().toString());
             traceMessage.setPosition(LogMessageConstant.TRACE_END);
             traceMessage.getPositionNum().incrementAndGet();
@@ -49,5 +50,6 @@ public class TraceAspect {
             log.error("TID:{} , 链路：{},异常：{}", traceId, joinPoint.getSignature(),
                     LogExceptionStackTrace.erroStackTrace(e).toString());
         }
+        return proceed;
     }
 }
