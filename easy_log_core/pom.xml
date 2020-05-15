@@ -9,6 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>easy_log_core</artifactId>
     <name>easy_log_core</name>
+    <packaging>jar</packaging>
 <dependencies>
         <dependency>
             <groupId>redis.clients</groupId>
@@ -43,14 +44,4 @@
             <version>2.11.4</version>
         </dependency>
 </dependencies>
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <url>${distribution.repository.url}/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>${distribution.repository.url}/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
