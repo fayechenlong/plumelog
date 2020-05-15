@@ -232,10 +232,11 @@
 
    * QQ群：1072991065
    
+   ![avatar](/pic/EasyLog官方群群二维码.png)
+    
    * 微信号：franklinkin
    
-  ![avatar](/pic/EasyLog官方群群二维码.png)
-  ![avatar](/pic/weixin.jpg)
+   ![avatar](/pic/weixin.jpg)
   
 ### 7.测试地址
 
