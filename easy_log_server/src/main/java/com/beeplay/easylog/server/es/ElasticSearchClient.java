@@ -1,22 +1,18 @@
 package com.beeplay.easylog.server.es;
 
-import com.beeplay.easylog.server.collect.RedisLogCollect;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 /**
 * @Author Frank.chen
 * @Description //TODO
@@ -51,22 +47,19 @@ public class ElasticSearchClient {
     public void insertList(List<Map<String,Object>> list,String baseIndex,String type) throws IOException {
         BulkRequest bulkRequest = new BulkRequest();
         list.forEach(map->{
-            IndexRequest request = new IndexRequest(baseIndex);
+            IndexRequest request = new IndexRequest(baseIndex).type(type);//TODO 方法过期，后面修改
             request.source(map);
             bulkRequest.add(request);
         });
         client.bulkAsync(bulkRequest, RequestOptions.DEFAULT, new ActionListener<BulkResponse>() {
             @Override
             public void onResponse(BulkResponse bulkResponse) {
-
                 logger.info("ElasticSearch commit success!");
-                //成功
             }
 
             @Override
             public void onFailure(Exception e) {
-                //失败
-                logger.info("ElasticSearch commit Failure!");
+                logger.error("ElasticSearch commit Failure!",e);
             }
         });
     }
