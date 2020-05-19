@@ -30,6 +30,8 @@
    
 ### 四.使用方法
 
+  ###前提:kafka或者redis  和 elasticsearch（版本6.8以上最好） 自行安装完毕
+    
 1. 打包
 
 * maven deploy -DskipTests 上传包到自己的私服
