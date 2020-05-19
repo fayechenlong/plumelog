@@ -18,7 +18,7 @@ public class MainController {
     @RequestMapping("/index")
     public String index(String data) {
         logger.info("I am MainController");
-        if(data!=null&&!"".equals(data)){
+        if(data==null||"".equals(data)){
             data="你啥都没有输入！";
         }
         logger.info("你输入的是{}",data);

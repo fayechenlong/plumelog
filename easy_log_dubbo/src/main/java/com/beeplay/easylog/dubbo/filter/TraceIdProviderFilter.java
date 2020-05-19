@@ -1,6 +1,7 @@
 package com.beeplay.easylog.dubbo.filter;
 
 import com.beeplay.easylog.core.TraceId;
+import com.beeplay.easylog.core.util.IdWorker;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.*;
 import org.springframework.util.StringUtils;
@@ -18,22 +19,17 @@ import static org.apache.dubbo.common.constants.CommonConstants.PROVIDER;
  * @author Tank
  * @version 1.0.0
  */
-@Activate(group ={PROVIDER,CONSUMER})
-public class TraceIdFilter implements Filter {
-
+@Activate(group =PROVIDER)
+public class TraceIdProviderFilter implements Filter {
     private static final String TRACE_ID = "trace_id";
-
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        //从本地线程中获取traceId
-        String traceId = TraceId.logTraceID.get();
-        //如果没有就可能是服务端那应该从Attachment获取
+        String traceId =invocation.getAttachment(TRACE_ID);
         if (StringUtils.isEmpty(traceId)) {
-            traceId = invocation.getAttachment(TRACE_ID);
-            TraceId.logTraceID.set(traceId);
-        } else {
-            invocation.setAttachment(TRACE_ID, traceId);
+            IdWorker worker = new IdWorker(1,1,1);
+            traceId=String.valueOf(worker.nextId());
         }
+        TraceId.logTraceID.set(traceId);
         return invoker.invoke(invocation);
     }
 }

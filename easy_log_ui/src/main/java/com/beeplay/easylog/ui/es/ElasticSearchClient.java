@@ -1,18 +1,16 @@
-package com.beeplay.easylog.server.es;
+package com.beeplay.easylog.ui.es;
 
 import org.apache.http.HttpHost;
-import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.slf4j.LoggerFactory;
+import org.elasticsearch.client.*;
+import org.elasticsearch.client.indices.GetIndexRequest;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 /**
 * @Author Frank.chen
 * @Description //TODO
@@ -21,9 +19,9 @@ import java.util.Map;
 * @return 
 **/
 public class ElasticSearchClient {
-    private  org.slf4j.Logger logger= LoggerFactory.getLogger(ElasticSearchClient.class);
     private static ElasticSearchClient instance;
     private RestHighLevelClient client;
+
     public static ElasticSearchClient getInstance(String hosts) {
         if (instance == null) {
             synchronized (ElasticSearchClient.class) {
@@ -43,25 +41,30 @@ public class ElasticSearchClient {
         RestClientBuilder builder = RestClient.builder(httpHosts);
        client = new RestHighLevelClient(builder);
     }
-
-    public void insertList(List<Map<String,Object>> list,String baseIndex,String type) throws IOException {
+    public void insertList(List<Map<String,Object>> list,String baseIndex) throws IOException {
         BulkRequest bulkRequest = new BulkRequest();
         list.forEach(map->{
-            IndexRequest request = new IndexRequest(baseIndex).type(type);//TODO 方法过期，后面修改
+            IndexRequest request = new IndexRequest(baseIndex);
             request.source(map);
             bulkRequest.add(request);
         });
-        client.bulkAsync(bulkRequest, RequestOptions.DEFAULT, new ActionListener<BulkResponse>() {
-            @Override
-            public void onResponse(BulkResponse bulkResponse) {
-                logger.info("ElasticSearch commit success!");
-            }
+        client.bulk(bulkRequest, RequestOptions.DEFAULT);
+    }
 
-            @Override
-            public void onFailure(Exception e) {
-                logger.error("ElasticSearch commit Failure!",e);
+    public String[] getExistIndices(String [] indices){
+        List<String> existIndexList = new ArrayList<>();
+        for (String index: indices){
+            try {
+                GetIndexRequest indexRequest = new GetIndexRequest(index);
+                boolean exists = client.indices().exists(indexRequest, RequestOptions.DEFAULT);
+                if (exists) {
+                    existIndexList.add(index);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }
+        return existIndexList.toArray(new String[0]);
     }
     public void close(){
         try {
