@@ -41,18 +41,8 @@ public class ElasticSearchClient {
         RestClientBuilder builder = RestClient.builder(httpHosts);
        client = new RestHighLevelClient(builder);
     }
-    public void insertList(List<Map<String,Object>> list,String baseIndex) throws IOException {
-        BulkRequest bulkRequest = new BulkRequest();
-        list.forEach(map->{
-            IndexRequest request = new IndexRequest(baseIndex);
-            request.source(map);
-            bulkRequest.add(request);
-        });
-        client.bulk(bulkRequest, RequestOptions.DEFAULT);
-    }
-
-    public String[] getExistIndices(String [] indices){
-        List<String> existIndexList = new ArrayList<>();
+    public List<String> getExistIndices(String [] indices){
+        List<String> existIndexList = new ArrayList<String>();
         for (String index: indices){
             try {
                 GetIndexRequest indexRequest = new GetIndexRequest(index);
@@ -64,7 +54,7 @@ public class ElasticSearchClient {
                 e.printStackTrace();
             }
         }
-        return existIndexList.toArray(new String[0]);
+        return existIndexList;
     }
     public void close(){
         try {
