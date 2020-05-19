@@ -124,13 +124,24 @@ app.post('/getInfo', function (req, res) {
 
         let url = config.es+existIndex+'/_search?from='+(req.query.from || 0)+'&size='+(req.query.size || 30);
         superagent
-            .post(url)
-            .set('Accept', 'application/json')
-            .send(str)
-            .timeout(20000)
-            .end(function (err, response) {
-                res.send(response.text);
-            })
+          .post(url)
+          .set('Accept', 'application/json')
+          .send(str)
+          .timeout(10000)
+          .end(function (err, response) {
+            if(err){
+              res.send({
+                hits:{
+                  hits:[],
+                  total:0
+                }
+              })
+            }
+            else
+            {
+              res.send(response.text);
+            }
+          })
     })
 });
 
@@ -139,60 +150,64 @@ app.get('/getTrace', function (req, res) {
   //console.log('traceId:'+req.query.traceId)
   if(req.query.traceId){
 
-        let filter = {
-          "query": {
-            "bool": {
-              "must": [{
-                "match": {
-                  "traceId": {
-                    "query": req.query.traceId
-                  }
-                }
-              }]
+    let filter = {
+      "query": {
+        "bool": {
+          "must": [{
+            "match": {
+              "traceId": {
+                "query": req.query.traceId
+              }
             }
-          },
-          "sort": [{
-            "time":"asc",
-            "positionNum": "asc"
           }]
-        };
+        }
+      },
+      "sort": [{
+        "time":"asc",
+        "positionNum": "asc"
+      }]
+    };
 
-        let url = config.es+'/_search?size=500';
-        superagent
-            .post(url)
-            .set('Accept', 'application/json')
-            .send(JSON.stringify(filter))
-            .timeout(20000)
-            .end(function (err, response) {
-                let hits = [];
-                
-                try{
-                  var result = JSON.parse(response.text);
-                  result.hits.hits.map(hit=>{
-                    hits.push(hit._source)
-                  })
-                }
-                catch(e){
-                  console.log('get hits error,'+e.message)
-                }
+    let url = config.es+'/_search?size=500';
+    superagent
+      .post(url)
+      .set('Accept', 'application/json')
+      .send(JSON.stringify(filter))
+      .timeout(20000)
+      .end(function (err, response) {
+          if(err){
+            res.send({});
+          }
+          else
+          {
+            let hits = [];
+          
+            try{
+              var result = JSON.parse(response.text);
+              result.hits.hits.map(hit=>{
+                hits.push(hit._source)
+              })
+            }
+            catch(e){
+              console.log('get hits error,'+e.message)
+              res.send({});
+            }
 
-                if(hits.length>0)
-                {
-                  res.send(formartTrace(hits));
-                }
-                else
-                {
-                  res.send({});
-                }
-
-            })
+            if(hits.length>0)
+            {
+              res.send(formartTrace(hits));
+            }
+            else
+            {
+              res.send({});
+            }
+          }
+    })
   }
   else
   {
-    res.send('{}');
+    res.send({});
   }
-    
- 
 });
 
 

@@ -80,7 +80,7 @@
        <div style="clear:both"></div>
     </div>
 
-    <div style="float:right;margin-right:20px;margin-bottom:5px">共 <b>{{list.total}}</b> 条数据</div>
+    <div style="float:right;margin-right:20px;margin-bottom:5px">共 <b>{{totalCount}}</b> 条数据</div>
     <table v-if="list.hits.length>0" cellspacing="0" cellpadding="0"  class="table table-striped table_detail">
       <thead>
         <tr>
@@ -107,7 +107,7 @@
         </tr>
       </tbody>
     </table>
-    <nav v-if="list.total && parseInt(list.total/size) > 0" class="page_nav" aria-label="Page navigation example">
+    <nav v-if="totalCount && parseInt(totalCount/size) > 0" class="page_nav" aria-label="Page navigation example">
       <ul class="pagination justify-content-center">
         <li class="page-item" :class="{'disabled': !isShowLastPage }">
           <a class="page-link" href="javascript:void(0)" @click="prevePage" tabindex="-1">上一页</a>
@@ -115,7 +115,7 @@
         <li class="page-item" :class="{'disabled': !haveNextPage }">
           <a class="page-link" href="javascript:void(0)" @click="nextPage">下一页</a>
         </li>
-        <li class="page-item"><div class="page-count">第{{parseInt(from/size)+1}}页 / 共{{  parseInt(list.total/size)+1}}页</div></li>
+        <li class="page-item"><div class="page-count">第{{parseInt(from/size)+1}}页 / 共{{  parseInt(totalCount/size)+1}}页</div></li>
       </ul>
     </nav>
 
@@ -269,11 +269,17 @@ export default {
     }
   },
   computed:{
+    totalCount(){
+      if(!this.list.total){
+        return 0
+      }
+      return this.list.total.value || this.list.total
+    },
     isShowLastPage(){
       return this.from > 0 
     },
     haveNextPage(){
-      if(this.list.total>=(this.from+this.size))
+      if(this.totalCount>=(this.from+this.size))
         return true
       else
         return false
@@ -388,7 +394,7 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= '/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+      let url= 'http://10.33.80.49:8082/query?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
 
       let esFilter = {
         "query":{
