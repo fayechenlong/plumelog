@@ -207,7 +207,7 @@
      
      1.到easy_log_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动easy_log_ui-2.0.jar就行了
      
-     2.[前端部署文档](/easy_log_ui/README.md)
+     2.[前端打包文档](/easy_log_ui/README.md)，也可以不用打包，easy_log_ui里面已经有一份打包好了的，如果自己修改代码那就要打包了
      
      3.界面介绍
      
