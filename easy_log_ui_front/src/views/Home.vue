@@ -394,7 +394,7 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= 'http://10.33.80.49:8082/query?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+      let url= '/query?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
 
       let esFilter = {
         "query":{
