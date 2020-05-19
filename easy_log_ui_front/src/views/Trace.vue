@@ -52,16 +52,100 @@ export default {
     logHeader
   },
   methods:{
+    formartTrace(list){
+      //todo:检测数据是否闭合（判断<和>的数量是否一致）
+      let zIndex=0;
+      let _list = [];
+
+      function pushItem(item,isStart){
+
+        let _arrary=_list;
+
+        //找到该层级的最后一个元素往里插
+        for(var i=0;i<zIndex;i++){
+            _arrary = _arrary[_arrary.length-1].children;
+        }
+        
+        //方法开始
+        if(isStart){
+          _arrary.push({
+            method: item.method,
+            appName: item.appName,
+            start_time: item.time,
+            zIndex: zIndex,
+            children:[]
+          });
+        }
+        //方法结束
+        else
+        {
+          //找到一个没结束的item
+          for(var f=0;f<_arrary.length;f++){
+            if(!_arrary[f].end_time){
+              _arrary[f].end_time = item.time;
+              break
+            }
+          }
+        }
+      }
+
+      for(var i=0;i<list.length;i++){
+        //如果postion是 '<' 说明是上一个方法的子方法
+        if(list[i]['position']=='<'){
+          pushItem(list[i],true)
+          zIndex++;
+
+        }
+        else if(list[i]['position']=='>')
+        {
+          zIndex--;
+          pushItem(list[i],false)
+        }
+      }
+
+      return _list;
+    },
     doSearch(){
       //列出范围内的日期
       this.traces=[];
-      sessionStorage['cache_traceId'] = this.traceId ;
-      let url= '/getTrace?traceId='+this.traceId;
+      sessionStorage['cache_traceId'] = this.traceId;
+
+      let url= '/query?index=easy_log_*&size=1000&from=0';
+
+      let filter = {
+        "query": {
+          "bool": {
+            "must": [{
+              "match": {
+                "traceId": {
+                  "query": this.traceId
+                }
+              }
+            }]
+          }
+        },
+        "sort": [{
+          "time":"asc",
+          "positionNum": "asc"
+        }]
+      };
+
       this.$Loading.start();
 
-      axios.get(url).then(data=>{
+      axios.post(url,filter).then(data=>{
         this.$Loading.finish();
-        this.traces = _.get(data,'data',[])
+        let hits = [];
+
+        let _hits = [];
+        _hits = _.get(data,'data.hits.hits',[]);
+
+        _hits.map(hit=>{
+          hits.push(hit._source)
+        })
+        if(hits.length>0)
+        {
+          this.traces = this.formartTrace(hits)
+        }
       })
     }
   },
