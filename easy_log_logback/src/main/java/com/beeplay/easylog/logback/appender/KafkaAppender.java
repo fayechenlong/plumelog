@@ -28,6 +28,6 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
         }
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        MessageAppenderFactory.push(appName, logMessage, kafkaClient);
+        MessageAppenderFactory.push(logMessage, kafkaClient);
     }
 }

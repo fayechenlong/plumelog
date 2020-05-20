@@ -30,6 +30,8 @@
    
 ### 四.使用方法
 
+  ###前提:kafka或者redis  和 elasticsearch（版本6.8以上最好） 自行安装完毕
+    
 1. 打包
 
 * maven deploy -DskipTests 上传包到自己的私服
@@ -203,24 +205,11 @@
        
   * 查询界面
      
-     1.到easy_log_ui界面下，进入src目录 修改配置文件 config.json
+     1.到easy_log_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动easy_log_ui-2.0.jar就行了
      
-     注意：需要自行安装nodejs环境
+     2.[前端打包文档](/easy_log_ui/README.md)，也可以不用打包，easy_log_ui里面已经有一份打包好了的，如果自己修改代码那就要打包了
      
-          {
-              "es": "http://172.16.251.196:9200/", //es地址
-              "port" : 8989 //前端服务端口
-          }
-     
-     2.运行 npm run build 打包
-     
-     3.dist为打包后的目录，进入这个目录运行  node app
-     
-     4.http://你的部署服务器地址:8989 访问前端
-     
-     5.[前端部署文档](/easy_log_ui/README.md)
-     
-     6.界面介绍
+     3.界面介绍
      
      ![avatar](/pic/jiaocheng.jpg)
      

@@ -7,12 +7,15 @@ import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.redis.RedisClient;
 import com.beeplay.easylog.logback.util.LogMessageUtil;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private RedisClient redisClient;
     private String appName;
     private String reidsHost;
     private String redisPort;
+    private AtomicInteger atomicInteger = new AtomicInteger(0);
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -29,10 +32,13 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        if (redisClient == null) {
-            redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), "");
-        }
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        MessageAppenderFactory.push(appName, logMessage, redisClient);
+        MessageAppenderFactory.push(logMessage,this.redisClient);
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), "");
     }
 }

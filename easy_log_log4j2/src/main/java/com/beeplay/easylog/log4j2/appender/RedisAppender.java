@@ -36,7 +36,7 @@ public class RedisAppender extends AbstractAppender {
             redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), "");
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, logEvent);
-        MessageAppenderFactory.push(appName, logMessage, redisClient);
+        MessageAppenderFactory.push(logMessage, redisClient);
     }
 
     @PluginFactory

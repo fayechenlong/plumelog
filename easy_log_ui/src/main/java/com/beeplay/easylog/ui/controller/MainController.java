@@ -41,11 +41,17 @@ public class MainController {
     @RequestMapping("/query")
     public String query(@RequestBody String queryStr,String index,String size,String from) {
         String message="";
-        ElasticSearchClient elasticSearchClient=ElasticSearchClient.getInstance(esHosts);
-        String[] indexs=index.split(",");
-        List<String> reindexs=elasticSearchClient.getExistIndices(indexs);
-        String indexStr=String.join(",",reindexs);
+        String indexStr=index;
 
+        //加这个try是为了兼容老版本ES
+        try {
+            ElasticSearchClient elasticSearchClient=ElasticSearchClient.getInstance(esHosts);
+            String[] indexs=index.split(",");
+            List<String> reindexs=elasticSearchClient.getExistIndices(indexs);
+            indexStr=String.join(",",reindexs);
+        }catch (Exception e){
+
+        }
         try {
             StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
             stringEntity.setContentType("application/json");
