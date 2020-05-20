@@ -1,9 +1,7 @@
 package com.beeplay.easylog.core.disruptor;
 
 import com.lmax.disruptor.*;
-import com.lmax.disruptor.dsl.ProducerType;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**

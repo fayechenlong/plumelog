@@ -42,7 +42,7 @@ public class RedisAppender extends AppenderSkeleton {
             redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), this.redisAuth);
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
-        MessageAppenderFactory.push(logMessage, redisClient);
+        MessageAppenderFactory.push(appName,logMessage, redisClient);
     }
 
     @Override

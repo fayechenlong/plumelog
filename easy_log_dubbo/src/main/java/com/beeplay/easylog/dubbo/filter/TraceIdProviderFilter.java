@@ -6,7 +6,6 @@ import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.*;
 import org.springframework.util.StringUtils;
 
-import static org.apache.dubbo.common.constants.CommonConstants.CONSUMER;
 import static org.apache.dubbo.common.constants.CommonConstants.PROVIDER;
 
 /**

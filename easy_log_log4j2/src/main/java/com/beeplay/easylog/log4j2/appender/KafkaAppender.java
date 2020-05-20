@@ -1,11 +1,8 @@
 package com.beeplay.easylog.log4j2.appender;
 
-import com.beeplay.easylog.core.LogMessage;
 import com.beeplay.easylog.core.MessageAppenderFactory;
 import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.kafka.KafkaProducerClient;
-import com.beeplay.easylog.core.util.GfJsonUtil;
-import com.beeplay.easylog.core.util.ThreadPoolUtil;
 import com.beeplay.easylog.log4j2.util.LogMessageUtil;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -16,9 +13,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
-
 import java.io.Serializable;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Plugin(name = "KafkaAppender", category = "Core", elementType = "appender", printObject = true)
 public class KafkaAppender extends AbstractAppender {
