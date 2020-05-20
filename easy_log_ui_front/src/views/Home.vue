@@ -349,7 +349,7 @@ export default {
     },
     hightLightCode(code){
       if(code.indexOf('java.')>-1){
-        return Prism.highlight(code, Prism.languages.stackjava, 'stackjava');
+        return Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
       }
       else
       {
@@ -394,7 +394,7 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= '/query?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+      let url= 'https://easylog-demo.beeplaying.com/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
 
       let esFilter = {
         "query":{
