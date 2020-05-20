@@ -11,40 +11,46 @@
     <!-- 彩色日志格式 -->
     <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
+
     <!--输出到控制台-->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <!--此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
+    <!--<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        &lt;!&ndash;此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息&ndash;&gt;
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>info</level>
         </filter>
         <encoder>
             <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
-            <!-- 设置字符集 -->
+            &lt;!&ndash; 设置字符集 &ndash;&gt;
             <charset>UTF-8</charset>
         </encoder>
     </appender>
 
-
-
-    <!-- easylog日志 -->
+    <!- easylog日志 -->
     <!--<appender name="easylog_demo" class="com.beeplay.easylog.logback.appender.KafkaAppender">-->
-        <!--<appName>easylog_demo</appName>-->
-        <!--<kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>-->
+    <!--<appName>easylog_demo</appName>-->
+    <!--<kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>-->
     <!--</appender>-->
 
-     <!--#easylog日志-->
+    <!-- easylog日志 -->
     <appender name="easylog_demo" class="com.beeplay.easylog.logback.appender.RedisAppender">
         <appName>easy_log_demo</appName>
         <reidsHost>172.16.249.72</reidsHost>
         <redisPort>6379</redisPort>
     </appender>
 
-
+    <appender name="trace-async-appender" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>512</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="easylog_demo"/>
+    </appender>
 
 
     <!-- 日志输出级别 -->
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="easylog_demo" />
+        <!--<appender-ref ref="CONSOLE" />-->
+        <appender-ref ref="trace-async-appender"/>
     </root>
 </configuration>

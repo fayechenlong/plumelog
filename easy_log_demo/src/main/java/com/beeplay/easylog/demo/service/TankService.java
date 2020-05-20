@@ -31,13 +31,13 @@ public class TankService {
 
     @Trace
     public void tankSay(String kk) {
-        System.out.println("tankSay========>" + kk);
+        //System.out.println("tankSay========>" + kk);
         tankServiceTwo.tankServiceTwo(kk);
         tankServiceThere.tankServiceThere(kk);
-        threadPoolExecutor.execute(TtlRunnable.get(() -> {
+      /*  threadPoolExecutor.execute(TtlRunnable.get(() -> {
             TraceId.logTraceID.get();
             logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
-        }));
+        }));*/
 
 
     }

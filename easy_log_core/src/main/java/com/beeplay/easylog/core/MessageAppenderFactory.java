@@ -19,10 +19,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class MessageAppenderFactory {
 
     private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool(4, 8, 5000);
+            = ThreadPoolUtil.getPool(4, 20, 50000);
 
 
-    public static void push(String appName, BaseLogMessage baseLogMessage, AbstractClient client) {
+    public static void push(BaseLogMessage baseLogMessage, AbstractClient client) {
         final String redisKey =
                 baseLogMessage instanceof RunLogMessage
                         ? LogMessageConstant.LOG_KEY
@@ -34,4 +34,5 @@ public class MessageAppenderFactory {
             }
         });
     }
+
 }

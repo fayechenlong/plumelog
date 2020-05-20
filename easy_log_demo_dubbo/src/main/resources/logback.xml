@@ -38,6 +38,13 @@
         <redisPort>6379</redisPort>
     </appender>
 
+    <appender name="trace-async-appender" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>512</queueSize>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="easylog"/>
+    </appender>
+
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
