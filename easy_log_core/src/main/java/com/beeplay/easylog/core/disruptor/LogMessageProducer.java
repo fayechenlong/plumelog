@@ -21,7 +21,6 @@ public class LogMessageProducer {
 
     public void send(LogEvent data) {
         long next = ringBuffer.next();
-        System.out.println(next);
         try {
             LogEvent event = ringBuffer.get(next);
             event.setAppName(data.getAppName());

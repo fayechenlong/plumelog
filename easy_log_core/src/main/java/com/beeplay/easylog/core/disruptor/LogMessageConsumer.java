@@ -24,7 +24,6 @@ public class LogMessageConsumer implements WorkHandler<LogEvent> {
 
     @Override
     public void onEvent(LogEvent event) throws Exception {
-        System.out.println(this.name + "===" + event.getAppName());
         BaseLogMessage baseLogMessage = event.getBaseLogMessage();
         final String redisKey =
                 baseLogMessage instanceof RunLogMessage
