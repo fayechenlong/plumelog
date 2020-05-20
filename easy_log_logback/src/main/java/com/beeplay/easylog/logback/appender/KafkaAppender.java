@@ -4,6 +4,9 @@ package com.beeplay.easylog.logback.appender;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.beeplay.easylog.core.MessageAppenderFactory;
+import com.beeplay.easylog.core.disruptor.LogEvent;
+import com.beeplay.easylog.core.disruptor.LogMessageProducer;
+import com.beeplay.easylog.core.disruptor.LogRingBuffer;
 import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.kafka.KafkaProducerClient;
 import com.beeplay.easylog.logback.util.LogMessageUtil;
@@ -28,6 +31,6 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
         }
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        MessageAppenderFactory.push(logMessage, kafkaClient);
+        MessageAppenderFactory.push(this.appName,logMessage,kafkaClient);
     }
 }

@@ -17,7 +17,7 @@ import java.io.Serializable;
 
 @Plugin(name = "RedisAppender", category = "Core", elementType = "appender", printObject = true)
 public class RedisAppender extends AbstractAppender {
-    private RedisClient redisClient;
+    private static RedisClient redisClient;
     private String appName;
     private String reidsHost;
     private String redisPort;
@@ -32,11 +32,9 @@ public class RedisAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent logEvent) {
-        if (redisClient == null) {
-            redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), "");
-        }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, logEvent);
-        MessageAppenderFactory.push(logMessage, redisClient);
+        MessageAppenderFactory.push(this.appName,logMessage,redisClient);
+
     }
 
     @PluginFactory
@@ -47,6 +45,7 @@ public class RedisAppender extends AbstractAppender {
             @PluginAttribute("redisPort") String redisPort,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
+        redisClient = RedisClient.getInstance(reidsHost, Integer.parseInt(redisPort), "");
         return new RedisAppender(name, appName, reidsHost, redisPort, filter, layout, true);
     }
 }

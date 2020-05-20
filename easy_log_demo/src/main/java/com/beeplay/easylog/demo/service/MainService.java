@@ -39,7 +39,6 @@ public class MainService {
             logger.info("子线程日志展示");
         });*/
         try {
-
             LogMessage lo=null;
             lo.setMethod("");
         }catch (Exception e){
