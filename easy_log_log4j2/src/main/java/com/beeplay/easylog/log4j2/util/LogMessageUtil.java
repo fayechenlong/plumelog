@@ -9,7 +9,6 @@ import com.beeplay.easylog.core.util.LogExceptionStackTrace;
 import com.beeplay.easylog.core.util.TraceLogMessageFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.message.Message;
 
 import static org.apache.logging.log4j.message.ParameterizedMessageFactory.INSTANCE;
 
@@ -39,15 +38,13 @@ public class LogMessageUtil {
         return logMessage;
     }
 
-    public static String getMessage(LogEvent logEvent) {
+    private static String getMessage(LogEvent logEvent) {
         if (logEvent.getLevel().equals(Level.ERROR)) {
-            String msg = null;
+            Object[] msg = new String[1];
             if (logEvent.getThrown() != null) {
-                msg = LogExceptionStackTrace.erroStackTrace(logEvent.getThrown()).toString();
-                Message message = INSTANCE.newMessage(logEvent.getMessage().getFormat(), msg);
-                return message.getFormattedMessage();
-
-            }else {
+                msg[0] = LogExceptionStackTrace.erroStackTrace(logEvent.getThrown()).toString();
+                return packageMessage(logEvent.getMessage().getFormat(), msg);
+            } else {
                 if (logEvent.getMessage().getParameters() != null) {
                     Object[] args = logEvent.getMessage().getParameters();
                     for (int i = 0; i < args.length; i++) {
@@ -55,11 +52,17 @@ public class LogMessageUtil {
                             args[i] = LogExceptionStackTrace.erroStackTrace(args[i]);
                         }
                     }
-                    Message message = INSTANCE.newMessage(logEvent.getMessage().getFormat(), args);
-                    return message.getFormattedMessage();
+                    return packageMessage(logEvent.getMessage().getFormat(), args);
                 }
             }
         }
         return logEvent.getMessage().getFormattedMessage();
+    }
+
+    private static String packageMessage(String message, Object[] args) {
+        if (message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
+            return INSTANCE.newMessage(message, args).getFormattedMessage();
+        }
+        return TraceLogMessageFactory.packageMessage(message, args);
     }
 }

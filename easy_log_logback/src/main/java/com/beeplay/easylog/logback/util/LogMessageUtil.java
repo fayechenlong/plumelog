@@ -38,12 +38,12 @@ public class LogMessageUtil {
         return logMessage;
     }
 
-    public static String getMessage(ILoggingEvent logEvent) {
+    private static String getMessage(ILoggingEvent logEvent) {
         if (logEvent.getLevel().equals(Level.ERROR)) {
             if (logEvent.getThrowableProxy() != null) {
                 ThrowableProxy throwableProxy = (ThrowableProxy) logEvent.getThrowableProxy();
                 String[] args = new String[]{LogExceptionStackTrace.erroStackTrace(throwableProxy.getThrowable()).toString()};
-                return MessageFormatter.arrayFormat(logEvent.getFormattedMessage(), args).getMessage();
+                return packageMessage(logEvent.getMessage(), args);
             } else {
                 Object[] args = logEvent.getArgumentArray();
                 for (int i = 0; i < args.length; i++) {
@@ -51,9 +51,16 @@ public class LogMessageUtil {
                         args[i] = LogExceptionStackTrace.erroStackTrace(args[i]);
                     }
                 }
-                return MessageFormatter.arrayFormat(logEvent.getMessage(), args).getMessage();
+                return packageMessage(logEvent.getMessage(), args);
             }
         }
         return logEvent.getFormattedMessage();
+    }
+
+    private static String packageMessage(String message, Object[] args) {
+        if (message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
+            return MessageFormatter.arrayFormat(message, args).getMessage();
+        }
+        return TraceLogMessageFactory.packageMessage(message, args);
     }
 }

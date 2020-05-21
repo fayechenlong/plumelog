@@ -10,6 +10,7 @@
     <artifactId>easy_log_core</artifactId>
     <name>easy_log_core</name>
     <packaging>jar</packaging>
+    
 <dependencies>
         <dependency>
             <groupId>redis.clients</groupId>

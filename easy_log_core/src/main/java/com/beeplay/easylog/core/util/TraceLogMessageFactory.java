@@ -2,6 +2,7 @@ package com.beeplay.easylog.core.util;
 
 import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.TraceMessage;
+import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.dto.RunLogMessage;
 import com.beeplay.easylog.core.dto.TraceLogMessage;
 
@@ -41,4 +42,14 @@ public class TraceLogMessageFactory<T> {
         logMessage.setTraceId(TraceId.logTraceID.get());
         return logMessage;
     }
+
+    public static String packageMessage(String message, Object[] args) {
+        StringBuilder builder = new StringBuilder(128);
+        builder.append(message);
+        for (int i = 0; i < args.length; i++) {
+            builder.append("\n").append(args[i]);
+        }
+        return builder.toString();
+    }
+
 }

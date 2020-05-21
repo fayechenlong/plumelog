@@ -39,4 +39,6 @@ public interface LogMessageConstant {
     String LOG_TYPE_RUN = "run";
 
     String LOG_TYPE_TRACE = "trace";
+
+    String DELIM_STR = "{}";
 }
