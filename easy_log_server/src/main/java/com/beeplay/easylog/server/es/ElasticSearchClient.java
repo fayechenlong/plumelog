@@ -17,8 +17,8 @@ import java.util.Map;
 * @Author Frank.chen
 * @Description //TODO
 * @Date 14:15 2020/5/12
-* @Param 
-* @return 
+* @Param
+* @return
 **/
 public class ElasticSearchClient {
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(ElasticSearchClient.class);
