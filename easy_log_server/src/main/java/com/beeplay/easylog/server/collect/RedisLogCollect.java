@@ -4,6 +4,7 @@ package com.beeplay.easylog.server.collect;
 import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.redis.RedisClient;
 import com.beeplay.easylog.server.InitConfig;
+import com.beeplay.easylog.server.es.ElasticLowerClient;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
 import com.beeplay.easylog.server.util.DateUtil;
 import com.beeplay.easylog.server.util.GfJsonUtil;
@@ -29,6 +30,7 @@ public class RedisLogCollect extends BaseLogCollect{
         this.redisClient=RedisClient.getInstance(redisHost,redisPort,"");
         logger.info("getting log ready!");
         super.elasticSearchClient=ElasticSearchClient.getInstance(esHosts);
+        super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts);
         logger.info("sending log ready!");
     }
     public  void redisStart(){

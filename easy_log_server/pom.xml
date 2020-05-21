@@ -11,9 +11,14 @@
     <artifactId>easy_log_server</artifactId>
     <name>easy_log_server</name>
     <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>org.elasticsearch</groupId>-->
+            <!--<artifactId>elasticsearch</artifactId>-->
+            <!--<version>7.7.0</version>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-client</artifactId>
             <version>7.7.0</version>
         </dependency>
         <dependency>
