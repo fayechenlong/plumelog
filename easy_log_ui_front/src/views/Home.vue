@@ -348,6 +348,12 @@ export default {
         }
     },
     hightLightCode(code){
+
+      if(this.searchKey){
+         let re = new RegExp("(" + this.searchKey.replace(/\*/g,'') + ")", "gmi");
+          code = code.replace(re, '<em>$1</em>');
+      }
+
       if(code.indexOf('java.')>-1){
         return Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
       }
@@ -367,7 +373,7 @@ export default {
     showDetail(item){
       this.content = {
         "title":'日志详情',
-        content: _.get(item,"highlight.content[0]","") || _.get(item,"_source.content",""),
+        content: _.get(item,"_source.content",""),
         ...item
       }
     },
@@ -394,7 +400,7 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= 'https://easylog-demo.beeplaying.com/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+      let url= '/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
 
       let esFilter = {
         "query":{
