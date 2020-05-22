@@ -3,6 +3,8 @@ package com.beeplay.easylog.core.kafka;
 import com.beeplay.easylog.core.AbstractClient;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+
+import java.util.List;
 import java.util.Properties;
 
 public class KafkaProducerClient extends AbstractClient {
@@ -25,6 +27,11 @@ public class KafkaProducerClient extends AbstractClient {
     public void pushMessage(String topic, String message) {
         KafkaProducer kafkaProducer=kafkaProducerPool.getResource();
         kafkaProducer.send(new ProducerRecord<String, String>(topic, message));
+        kafkaProducerPool.returnResource(kafkaProducer);
+    }
+    @Override
+    public void putMessageList(String topic, List<String> list) {
+        KafkaProducer kafkaProducer=kafkaProducerPool.getResource();
         kafkaProducerPool.returnResource(kafkaProducer);
     }
 }

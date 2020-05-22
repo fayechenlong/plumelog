@@ -1,5 +1,7 @@
 package com.beeplay.easylog.core;
 
+import java.util.List;
+
 /**
  * className：AbstractClient
  * description： TODO
@@ -10,5 +12,7 @@ package com.beeplay.easylog.core;
  */
 public abstract class AbstractClient {
     public void pushMessage(String key, String strings) {
+    }
+    public void putMessageList(String key, List<String> list) {
     }
 }

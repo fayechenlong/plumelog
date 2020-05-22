@@ -17,6 +17,7 @@ public class KafkaProducerFactory implements PooledObjectFactory<KafkaProducer> 
         this.props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
         this.props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         this.props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        this.props.put(ProducerConfig.LINGER_MS_CONFIG,10);
     }
     @Override
     public void activateObject(PooledObject<KafkaProducer> kafkaProducer) throws Exception {

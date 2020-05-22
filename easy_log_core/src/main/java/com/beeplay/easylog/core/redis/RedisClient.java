@@ -56,6 +56,21 @@ public class RedisClient extends AbstractClient {
         }
         return obj;
     }
+    @Override
+    public void putMessageList(String key, List<String> list){
+        Jedis sj=jedisPool.getResource();
+        try {
+            Pipeline pl=sj.pipelined();
+            list.forEach(str->{
+                pl.rpush(key,str);
+            });
+            pl.sync();
+        }finally {
+            sj.close();
+        }
+
+    }
+
     public List<String> getMessage(String key,int size) {
         Jedis sj=jedisPool.getResource();
         List<String> list=new ArrayList<>();
