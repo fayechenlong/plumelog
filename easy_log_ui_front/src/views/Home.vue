@@ -400,7 +400,7 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= '/getInfo?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+      let url= '/query?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
 
       let esFilter = {
         "query":{

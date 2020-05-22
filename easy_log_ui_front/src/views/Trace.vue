@@ -110,7 +110,7 @@ export default {
       this.traces=[];
       sessionStorage['cache_traceId'] = this.traceId;
 
-      let url= '/getInfo?index=easy_log_trace_*&size=1000&from=0';
+      let url= '/query?index=easy_log_trace_*&size=1000&from=0';
 
       let filter = {
         "query": {
