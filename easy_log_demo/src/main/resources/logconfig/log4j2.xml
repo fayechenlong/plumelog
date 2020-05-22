@@ -15,8 +15,8 @@
         <!--</appender>-->
 
         <!--10.103.4.50   172.16.249.72-->
-        <RedisAppender name="easylog_demo" appName="easy_log_demo" reidsHost="10.103.4.50" redisPort="6379" />
-
+        <RedisAppender name="easylog_demo" appName="easy_log_demo" reidsHost="172.16.249.72" redisPort="6379" />
+        <!--<RedisAppender name="easylog_demo" appName="easy_log_demo" reidsHost="10.103.4.14" redisPort="6379" />-->
         <!--整个日志采取异步输出，由于混部会影响性能，故 console和redis都采用异步输出，
             所以说有时候日志没有输出完也许应用已经可以访问了
          -->
