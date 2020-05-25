@@ -33,7 +33,7 @@ public class RedisAppender extends AbstractAppender {
     @Override
     public void append(LogEvent logEvent) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, logEvent);
-        MessageAppenderFactory.push(this.appName, logMessage, redisClient);
+        MessageAppenderFactory.push(logMessage, redisClient);
 
     }
 

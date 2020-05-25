@@ -26,24 +26,24 @@ public class MainService {
     @Autowired
     TankService tankService;
 
-    @Reference
-    EasyLogDubboService easyLogDubboService;
+    //@Reference
+    //EasyLogDubboService easyLogDubboService;
 
     @Trace
     public void testLog(String data) {
         logger.info("I am service! 下面调用EasyLogDubboService远程服务！");
-        easyLogDubboService.testLogDubbo();
+        //easyLogDubboService.testLogDubbo();
         logger.info("远程调用成功！");
         tankService.tankSay(data);
-        executorService.execute(() -> {
+        /*executorService.execute(() -> {
             logger.info("子线程日志展示");
-        });
-        try {
+        });*/
+        /*try {
             LogMessage lo=null;
             lo.setMethod("");
         }catch (Exception e){
             logger.error("异常日志展示：{}",e);
-        }
+        }*/
         logger.warn("警告日志展示！");
     }
 }

@@ -19,6 +19,11 @@ import java.util.Enumeration;
 public class IpGetter {
 
     /**
+     * 当前IP。类初始化时调用一次就可以了
+     */
+    public final static String CURRENT_IP = getIp();
+
+    /**
      * 单网卡名称
      */
     private static final String NETWORK_CARD = "eth0";

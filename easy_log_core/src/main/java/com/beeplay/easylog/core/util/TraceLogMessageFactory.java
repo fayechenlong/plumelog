@@ -2,11 +2,8 @@ package com.beeplay.easylog.core.util;
 
 import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.TraceMessage;
-import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.dto.RunLogMessage;
 import com.beeplay.easylog.core.dto.TraceLogMessage;
-
-import java.sql.Timestamp;
 
 /**
  * className：TraceLogMessageFactory
@@ -31,13 +28,9 @@ public class TraceLogMessageFactory<T> {
 
     public static RunLogMessage getLogMessage(String appName, String message, long time) {
         RunLogMessage logMessage = new RunLogMessage();
-        String ip = IpGetter.getIp();
-        logMessage.setServerName(ip);
+        logMessage.setServerName(IpGetter.CURRENT_IP);
         logMessage.setAppName(appName);
         logMessage.setContent(message);
-        logMessage.setDateTime(DateUtil.parseTimestampToStr(
-                new Timestamp(time),
-                DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS));
         logMessage.setDtTime(time);
         logMessage.setTraceId(TraceId.logTraceID.get());
         return logMessage;

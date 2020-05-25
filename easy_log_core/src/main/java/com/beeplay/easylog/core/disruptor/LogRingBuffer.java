@@ -25,7 +25,7 @@ public class LogRingBuffer {
                             public LogEvent newInstance() {
                                 return new LogEvent();
                             }
-                        }, 1024, new YieldingWaitStrategy());
+                        }, 512, new SleepingWaitStrategy());
         //2 通过ringBuffer 创建一个屏障
         SequenceBarrier sequenceBarrier = ringBuffer.newBarrier();
 
