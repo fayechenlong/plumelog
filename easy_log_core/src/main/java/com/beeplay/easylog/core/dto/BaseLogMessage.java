@@ -9,6 +9,10 @@ package com.beeplay.easylog.core.dto;
  * @version 1.0.0
  */
 public class BaseLogMessage {
+    /**
+     * 记录服务IP
+     */
+    private String serverName;
 
     /**
      * 追踪码
@@ -47,5 +51,13 @@ public class BaseLogMessage {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 }

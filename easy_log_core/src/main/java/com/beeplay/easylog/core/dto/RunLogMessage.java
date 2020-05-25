@@ -10,21 +10,13 @@ package com.beeplay.easylog.core.dto;
  */
 public class RunLogMessage extends BaseLogMessage{
 
-    private String serverName;
+
     private Long dtTime;
     private String content;
     private String logLevel;
     private String className;
     private String logType;
     private String dateTime;
-
-    public String getServerName() {
-        return serverName;
-    }
-
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
-    }
 
     public Long getDtTime() {
         return dtTime;
