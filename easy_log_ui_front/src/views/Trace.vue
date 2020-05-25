@@ -72,6 +72,7 @@ export default {
             method: item.method,
             appName: item.appName,
             start_time: item.time,
+            serverName: item.serverName,
             zIndex: zIndex,
             children:[]
           });
