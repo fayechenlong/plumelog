@@ -18,7 +18,7 @@
     <loggers>
         <root level="INFO">
             <appender-ref ref="Console"/>
-            <appender-ref ref="kafkaAppender"/>
+            <appender-ref ref="redisAppender"/>
         </root>
     </loggers>
 </configuration>

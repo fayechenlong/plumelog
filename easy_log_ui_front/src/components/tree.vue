@@ -4,7 +4,7 @@
             <i @click="toggle"><Tooltip :disabled="toolTip==''" offset="-22"  placement="left-start" class="icon" :class="{'disable':toolTip==''}" :content="toolTip"></Tooltip></i>
             <div class="title">{{data.method}}</div>
             <div class="time">
-                应用名称：{{data.appName}}<template v-if="data.end_time>=data.start_time"><br/>花费时间：{{data.end_time - data.start_time}}ms</template>
+                应用名称：{{data.appName}} <b>（{{data.serverName}}）</b><template v-if="data.end_time>=data.start_time"><br/>花费时间：{{data.end_time - data.start_time}}ms</template>
             </div>
         </div>
         <div v-if="!close" class="children">
