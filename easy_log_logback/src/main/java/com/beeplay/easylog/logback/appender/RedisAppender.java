@@ -16,7 +16,7 @@ import com.beeplay.easylog.logback.util.LogMessageUtil;
  * @author Tank
  * @version 1.0.0
  */
-public class RedisAppender extends AppenderBase<LoggingEventVO> {
+public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private RedisClient redisClient;
     private String appName;
     private String reidsHost;
@@ -36,7 +36,7 @@ public class RedisAppender extends AppenderBase<LoggingEventVO> {
 
 
     @Override
-    protected void append(LoggingEventVO event) {
+    protected void append(ILoggingEvent event) {
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
         MessageAppenderFactory.push(this.appName,logMessage,redisClient);
     }
