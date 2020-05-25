@@ -2,7 +2,16 @@ package com.beeplay.easylog.ui.util;
 
 import com.beeplay.easylog.core.dto.TraceLogMessage;
 import com.beeplay.easylog.ui.dto.TraceLog;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -14,45 +23,19 @@ import java.util.List;
  **/
 public class LogUtil {
 
-    private int zIndex=0;
-    private List<TraceLog> _list;
-
-    public List<TraceLog> formartTrace(List<TraceLogMessage> list){
-
-        for(int i=0;i<list.size();i++){
-            //如果postion是 '<' 说明是上一个方法的子方法
-            if(list.get(i).getPosition().equals("<")){
-                pushItem(list.get(i),true);
-                zIndex++;
-
-            }
-            else if(list.get(i).getPosition().equals(">"))
-            {
-                zIndex--;
-                pushItem(list.get(i),false);
-            }
-        }
-        return _list;
-    }
-    private void pushItem(TraceLogMessage item,boolean isStart){
-
-        List<TraceLog> _arrary = _list;
-        for(int i=0;i<zIndex;i++){
-            _arrary = _arrary.get(_arrary.size()-1).getChildren();
-        }
-        if(isStart){
-            TraceLog tl=new TraceLog();
-            tl.setAppName(item.getAppName());
-            tl.setMethod(item.getMethod());
-            tl.setStartTime(item.getTime());
-            tl.setzIndex(zIndex);
-        }else {
-            for(int f=0;f<_arrary.size();f++){
-                if(_arrary.get(f).getEndTime()!=null){
-                    _arrary.get(f).setEndTime(item.getTime());
-                    break;
-                }
-            }
-        }
+    public static HttpEntity getInfo(String url,String queryStr) throws IOException {
+        StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
+        stringEntity.setContentType("application/json");
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(5000)
+                .setConnectTimeout(5000)
+                .setConnectionRequestTimeout(5000)
+                .build();
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(url);
+        post.setEntity(stringEntity);
+        post.setConfig(requestConfig);
+        HttpResponse response = client.execute(post);
+        return response.getEntity();
     }
 }

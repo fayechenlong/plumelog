@@ -3,6 +3,7 @@ package com.beeplay.easylog.ui.controller;
 import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.ui.es.ElasticLowerClient;
 import com.beeplay.easylog.ui.es.ElasticSearchClient;
+import com.beeplay.easylog.ui.util.LogUtil;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -57,22 +58,8 @@ public class MainController {
             String[] indexs=index.split(",");
             List<String> reindexs=elasticLowerClient.getExistIndices(indexs);
             indexStr=String.join(",",reindexs);
-
-            StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
-            stringEntity.setContentType("application/json");
-            RequestConfig requestConfig = RequestConfig.custom()
-                    .setSocketTimeout(5000)
-                    .setConnectTimeout(5000)
-                    .setConnectionRequestTimeout(5000)
-                    .build();
-            HttpClient client = HttpClientBuilder.create().build();
             String url = "http://"+esHosts+"/"+indexStr+"/_search?from="+from+"&size="+size;
-            HttpPost post = new HttpPost(url);
-            post.setEntity(stringEntity);
-            post.setConfig(requestConfig);
-            HttpResponse response = client.execute(post);
-            HttpEntity resEntity = response.getEntity();
-            message = EntityUtils.toString(resEntity, "utf-8");
+            return EntityUtils.toString(LogUtil.getInfo(url,queryStr), "utf-8");
         }catch (IOException e){
           e.printStackTrace();
         }
