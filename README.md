@@ -45,7 +45,9 @@
 
 2. 配置
 
-    （1）如果用log4j，引入
+#### 性能排名，log4j2>logback>log4j 如果您的项目没有特殊需求，建议用log4j2
+
+   （1）如果用log4j，引入
     
                    <dependency>
                        <groupId>com.beeplay</groupId>
@@ -53,23 +55,23 @@
                        <version>2.0</version>
                    </dependency>
                          
-    配置log4j配置文件，增加下面这个Appender
+   配置log4j配置文件，增加下面这个Appender
     
-    kafka做为中间件
+   kafka做为中间件
     
         log4j.appender.L=com.beeplay.easylog.core.appender.KafkaAppender
         #appName系统的名称(自己定义就好)
         log4j.appender.L.appName=easyjob
         log4j.appender.L.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
 
-    redis做为中间件
+   redis做为中间件
     
         log4j.appender.L=com.beeplay.easylog.log4j.appender.RedisAppender
         log4j.appender.L.appName=easyjob
         log4j.appender.L.reidsHost=172.16.249.72
         log4j.appender.L.redisPort=6379
 
-    同理如果使用logback,和log4j2配置如下
+   同理如果使用logback,和log4j2配置如下
     
 #### logback
 
