@@ -32,12 +32,12 @@ public class MessageAppenderFactory {
      * @param client
      */
     public static void push(String appName, BaseLogMessage baseLogMessage, AbstractClient client) {
-        LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
-        LogEvent event = new LogEvent();
-        event.setAppName(appName);
-        event.setClient(client);
-        event.setBaseLogMessage(baseLogMessage);
-        producer.send(event);
+//        LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
+//        LogEvent event = new LogEvent();
+//        event.setAppName(appName);
+//        event.setClient(client);
+//        event.setBaseLogMessage(baseLogMessage);
+//        producer.send(event);
     }
 
     /**
