@@ -8,10 +8,10 @@ import java.util.List;
 
 public class RedisClient extends AbstractClient {
     private static  RedisClient instance;
-    private  int MAX_ACTIVE = 8;
+    private  int MAX_ACTIVE = 30;
     private  int MAX_IDLE = 8;
-    private  int MAX_WAIT = 10000;
-    private  int TIMEOUT = 10000;
+    private  int MAX_WAIT = 1000;
+    private  int TIMEOUT = 1000;
     private  boolean TEST_ON_BORROW = true;
     private JedisPool jedisPool = null;
 
@@ -27,7 +27,7 @@ public class RedisClient extends AbstractClient {
     }
     private RedisClient(String host, int port, String pass){
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxIdle(MAX_ACTIVE);
+        config.setMaxTotal(MAX_ACTIVE);
         config.setMaxIdle(MAX_IDLE);
         config.setMaxWaitMillis(MAX_WAIT);
         config.setTestOnBorrow(TEST_ON_BORROW);

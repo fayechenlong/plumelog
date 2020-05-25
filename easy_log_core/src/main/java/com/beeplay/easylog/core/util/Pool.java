@@ -17,6 +17,10 @@ public abstract class Pool<T> implements Closeable {
   }
 
   public Pool(final GenericObjectPoolConfig poolConfig, PooledObjectFactory<T> factory) {
+    poolConfig.setMinIdle(0);
+    poolConfig.setMaxIdle(8);
+    poolConfig.setMaxTotal(30);
+    poolConfig.setMaxWaitMillis(1000);
     initPool(poolConfig, factory);
   }
 

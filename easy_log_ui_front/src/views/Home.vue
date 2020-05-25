@@ -423,10 +423,14 @@ export default {
       };
 
       this.$Loading.start();
-
+      
+      
       axios.post(url,esFilter).then(data=>{
         this.$Loading.finish();
-        this.list = _.get(data,'data.hits')
+        this.list = _.get(data,'data.hits',{
+          total:0,
+          hits:[]
+        })
       })
     },
     prevePage(){
