@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>easy_log_ui</artifactId>
     <name>easy_log_ui</name>
-    <version>2.0</version>
+    <version>2.0-RELEASE</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.beeplay</groupId>
             <artifactId>easy_log_core</artifactId>
-            <version>2.0</version>
+            <version>2.0-RELEASE</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
