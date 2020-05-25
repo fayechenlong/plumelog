@@ -167,7 +167,6 @@ import moment from 'moment'
 import '@/assets/prism.js' 
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
-import * as $config from '@/config.json'
 import tree from '@/components/tree.vue'
 import logHeader from '@/components/logHeader.vue'
 import "@/assets/less/base.less";
