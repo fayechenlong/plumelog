@@ -38,7 +38,7 @@ public class LogMessageUtil {
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, loggingEvent.getTimeStamp());
         logMessage.setClassName(loggingEvent.getLoggerName());
-        logMessage.setMethod(loggingEvent.getLocationInformation().getMethodName());
+        logMessage.setMethod(loggingEvent.getThreadName());
         logMessage.setLogLevel(loggingEvent.getLevel().toString());
         return logMessage;
     }
