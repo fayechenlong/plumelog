@@ -3,10 +3,7 @@ package com.beeplay.easylog.demo.service;
 
 import com.alibaba.ttl.threadpool.TtlExecutors;
 import com.beeplay.easylog.core.LogMessage;
-import com.beeplay.easylog.core.util.LogExceptionStackTrace;
-import com.beeplay.easylog.demo.dubbo.service.EasyLogDubboService;
 import com.beeplay.easylog.trace.annotation.Trace;
-import org.apache.dubbo.config.annotation.Reference;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +23,8 @@ public class MainService {
     @Autowired
     TankService tankService;
 
-    //@Reference
-    //EasyLogDubboService easyLogDubboService;
+   // @Reference
+   // EasyLogDubboService easyLogDubboService;
 
     @Trace
     public void testLog(String data) {
@@ -35,15 +32,15 @@ public class MainService {
         //easyLogDubboService.testLogDubbo();
         logger.info("远程调用成功！");
         tankService.tankSay(data);
-        /*executorService.execute(() -> {
+        executorService.execute(() -> {
             logger.info("子线程日志展示");
-        });*/
-        /*try {
+        });
+        try {
             LogMessage lo=null;
             lo.setMethod("");
         }catch (Exception e){
             logger.error("异常日志展示：{}",e);
-        }*/
+        }
         logger.warn("警告日志展示！");
     }
 }

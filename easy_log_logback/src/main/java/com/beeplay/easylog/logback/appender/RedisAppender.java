@@ -1,6 +1,7 @@
 package com.beeplay.easylog.logback.appender;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEventVO;
 import ch.qos.logback.core.AppenderBase;
 import com.beeplay.easylog.core.MessageAppenderFactory;
 import com.beeplay.easylog.core.dto.BaseLogMessage;
@@ -36,10 +37,8 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        if (logMessage != null){
-            MessageAppenderFactory.push(logMessage, redisClient);
-        }
+        BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
+        MessageAppenderFactory.push(this.appName,logMessage,redisClient);
     }
 
     @Override

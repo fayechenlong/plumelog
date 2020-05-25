@@ -32,6 +32,7 @@ public class LogMessageUtil {
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, iLoggingEvent.getTimeStamp());
         logMessage.setClassName(iLoggingEvent.getLoggerName());
+        logMessage.setMethod(iLoggingEvent.getThreadName());
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;
     }

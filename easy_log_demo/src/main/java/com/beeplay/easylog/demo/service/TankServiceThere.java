@@ -1,10 +1,7 @@
 package com.beeplay.easylog.demo.service;
 
-import com.beeplay.easylog.demo.dubbo.service.EasyLogDubboService;
 import com.beeplay.easylog.trace.annotation.Trace;
-import org.apache.dubbo.config.annotation.Reference;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
