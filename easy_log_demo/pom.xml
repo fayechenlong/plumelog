@@ -100,7 +100,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>easy_log_demo_logback</finalName>
+        <finalName>easy_log_demo_log4j_kafka</finalName>
     </build>
 
 </project>
