@@ -46,8 +46,11 @@ public class LogMessageUtil {
 
     private static String getMessage(LoggingEvent logEvent) {
         if (logEvent.getLevel().toInt() == Priority.ERROR_INT) {
-            String msg = LogExceptionStackTrace.erroStackTrace(
-                    logEvent.getThrowableInformation().getThrowable()).toString();
+            String msg = "";
+            if (logEvent.getThrowableInformation() != null){
+                msg = LogExceptionStackTrace.erroStackTrace(
+                        logEvent.getThrowableInformation().getThrowable()).toString();
+            }
             if (logEvent.getRenderedMessage().indexOf(LogMessageConstant.DELIM_STR) > 0) {
                 FormattingTuple format = MessageFormatter.format(logEvent.getRenderedMessage(), msg);
                 return format.getMessage();
