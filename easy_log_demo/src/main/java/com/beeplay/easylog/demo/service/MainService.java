@@ -28,7 +28,7 @@ public class MainService {
 
     @Trace
     public void testLog(String data) {
-        logger.info("I am service! 下面调用EasyLogDubboService远程服务！");
+        logger.error("I am service! 下面调用EasyLogDubboService远程服务！");
         //easyLogDubboService.testLogDubbo();
         logger.info("远程调用成功！");
         tankService.tankSay(data);

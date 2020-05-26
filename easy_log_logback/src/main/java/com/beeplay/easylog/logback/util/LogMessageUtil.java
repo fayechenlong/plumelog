@@ -45,12 +45,14 @@ public class LogMessageUtil {
                 return packageMessage(logEvent.getMessage(), args);
             } else {
                 Object[] args = logEvent.getArgumentArray();
-                for (int i = 0; i < args.length; i++) {
-                    if (args[i] instanceof Throwable) {
-                        args[i] = LogExceptionStackTrace.erroStackTrace(args[i]);
+                if (args != null) {
+                    for (int i = 0; i < args.length; i++) {
+                        if (args[i] instanceof Throwable) {
+                            args[i] = LogExceptionStackTrace.erroStackTrace(args[i]);
+                        }
                     }
+                    return packageMessage(logEvent.getMessage(), args);
                 }
-                return packageMessage(logEvent.getMessage(), args);
             }
         }
         return logEvent.getFormattedMessage();
