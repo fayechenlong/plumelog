@@ -1,12 +1,10 @@
 package com.beeplay.easylog.server.es;
 
-import com.beeplay.easylog.core.util.GfJsonUtil;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.*;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -38,14 +36,14 @@ public class ElasticLowerClient {
         }
         client = RestClient.builder(httpHosts).build();
     }
-    public void insertList(List<Map<String,Object>> list,String baseIndex,String type) throws IOException {
+    public void insertList(List<String> list,String baseIndex,String type) throws IOException {
         StringBuffer sendStr=new StringBuffer();
         for(int a=0;a<list.size();a++) {
-            Map<String,Object> map=list.get(a);
+            String map=list.get(a);
             String ent="{\"index\":{\"_id\":\""+ UUID.randomUUID().toString()+"\"}} ";
             sendStr.append(ent);
             sendStr.append("\r\n");
-            sendStr.append(GfJsonUtil.toJSONString(map));
+            sendStr.append(map);
             sendStr.append("\r\n");
         }
         Request request = new Request(
