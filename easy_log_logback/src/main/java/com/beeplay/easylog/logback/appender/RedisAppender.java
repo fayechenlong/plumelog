@@ -38,7 +38,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(ILoggingEvent event) {
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        MessageAppenderFactory.push(this.appName,logMessage,redisClient);
+        MessageAppenderFactory.push(logMessage,redisClient);
     }
 
     @Override
