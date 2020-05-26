@@ -58,7 +58,7 @@ public class ElasticLowerClient {
         for (String index: indices){
             try {
                 Request request = new Request(
-                        "PUT",
+                        "HEAD",
                         "/"+index+"");
                 Response res=client.performRequest(request);
                 if(res.getStatusLine().getStatusCode()==200){
