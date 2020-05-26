@@ -55,7 +55,7 @@ public class ElasticLowerClient {
             inputStream.read(bytes);
             String str = new String(bytes);
             reStr=str;
-        } catch (IOException e) {
+        } catch (Exception e) {
             reStr = "";
         }
        return reStr;
@@ -71,10 +71,24 @@ public class ElasticLowerClient {
                 if(res.getStatusLine().getStatusCode()==200){
                     existIndexList.add(index);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
             }
         }
         return existIndexList;
+    }
+    public boolean deleteIndex(String index){
+        try {
+            Request request = new Request(
+                    "DELETE",
+                    "/" + index + "");
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        }catch (Exception e){
+          return false;
+        }
+        return false;
     }
     public void close(){
         try {

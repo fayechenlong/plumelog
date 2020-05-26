@@ -53,7 +53,6 @@ public class MainController {
         String message="";
         String indexStr="";
         try {
-
             ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts);
             String[] indexs=index.split(",");
             List<String> reindexs=elasticLowerClient.getExistIndices(indexs);
@@ -96,5 +95,13 @@ public class MainController {
             e.printStackTrace();
         }
         return "";
+    }
+    @RequestMapping("/deleteIndex")
+    public Map<String,Object> deleteIndex(String index) {
+        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts);
+        boolean re=elasticLowerClient.deleteIndex(index);
+        Map<String,Object> map=new HashMap<>();
+        map.put("acknowledged",re);
+        return map;
     }
 }
