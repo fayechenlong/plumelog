@@ -6,13 +6,11 @@ import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticLowerClient;
 import com.beeplay.easylog.server.es.ElasticSearchClient;
 import com.beeplay.easylog.server.util.DateUtil;
-import com.beeplay.easylog.server.util.GfJsonUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
 * @Author Frank.chen
@@ -37,38 +35,22 @@ public class KafkaLogCollect extends BaseLogCollect{
         logger.info("getting log ready!");
         while (true) {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
+            List<String> logList=new ArrayList();
+            List<String> sendlogList=new ArrayList();
             records.forEach(record->{
                 logger.debug("get log:" + record.value()+"  logType:"+record.topic());
                 if(record.topic().equals(LogMessageConstant.LOG_KEY)){
-                    super.logList.add(GfJsonUtil.parseObject(record.value(), Map.class));
+                    logList.add(record.value());
                 }
                 if(record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)){
-                    super.traceLogList.add(GfJsonUtil.parseObject(record.value(), Map.class));
+                    sendlogList.add(record.value());
                 }
             });
-
-            if(super.logList.size()>0) {
-                final List<Map<String,Object>> logList=new CopyOnWriteArrayList();
-                logList.addAll(super.logList);
-                super.logList.clear();
-                super.threadPoolExecutor.execute(() -> {
-                    super.sendLog(LogMessageConstant.ES_INDEX + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD),logList);
-                    super.logList.clear();
-                });
+            if(logList.size()>0) {
+                super.sendLog(LogMessageConstant.ES_INDEX + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD),logList);
             }
-            if(super.traceLogList.size()>0) {
-                final List<Map<String,Object>> sendlogList=new CopyOnWriteArrayList();
-                sendlogList.addAll(super.traceLogList);
-                super.traceLogList.clear();
-                super.threadPoolExecutor.execute(() -> {
-                    super.sendTraceLogList(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD),sendlogList);
-                    super.traceLogList.clear();
-                });
-            }
-            try {
-                Thread.sleep(InitConfig.MAX_INTERVAL);
-            } catch (InterruptedException e) {
-                logger.error("",e);
+            if(sendlogList.size()>0){
+                super.sendTraceLogList(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD),sendlogList);
             }
         }
     }

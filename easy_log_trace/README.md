@@ -2,9 +2,18 @@
 
 #### 使用注意事项
 
-1. 引入当前包后，如果目录对不上，需要手动加入 @ComponentScan 把TraceAspect扫描进来否则可能不生效
+1.引入
+    
+                   <dependency>
+                       <groupId>com.beeplay</groupId>
+                       <artifactId>easy_log_trace</artifactId>
+                       <version>2.0.RELEASE</version>
+                   </dependency>
+                         
 
-2. 需要自己的项目引入aop的 （这里默认scope 为 provided）
+2. 引入当前包后，如果目录对不上，需要手动加入 @ComponentScan 把TraceAspect扫描进来否则可能不生效
+
+3. 需要自己的项目引入aop的 （这里默认scope 为 provided）
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -14,7 +23,7 @@
                 <!-- scope 为 provided 是为了不与使用者的版本冲突-->
             </dependency>
             
-3. 在需要记录的方法上加入 @Trace 就可以记录链路日志了 跨应用传送traceId 目前只支持dubbo
+4. 在需要记录的方法上加入 @Trace 就可以记录链路日志了 跨应用传送traceId 目前只支持dubbo
 
         @Trace
         public void testLog() {

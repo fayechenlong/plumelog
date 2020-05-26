@@ -52,7 +52,7 @@
                    <dependency>
                        <groupId>com.beeplay</groupId>
                        <artifactId>easy_log_log4j</artifactId>
-                       <version>2.0</version>
+                       <version>2.0.RELEASE</version>
                    </dependency>
                          
    配置log4j配置文件，增加下面这个Appender
@@ -80,7 +80,7 @@
        <dependency>
            <groupId>com.beeplay</groupId>
            <artifactId>easy_log_logback</artifactId>
-           <version>2.0</version>
+           <version>2.0.RELEASE</version>
        </dependency>
     
 * 配置
@@ -113,7 +113,7 @@
        <dependency>
            <groupId>com.beeplay</groupId>
            <artifactId>easy_log_log4j2</artifactId>
-           <version>2.0</version>
+           <version>2.0.RELEASE</version>
        </dependency>       
 
 * 配置
@@ -186,7 +186,7 @@
    
 4. 启动服务
 
- * 步骤一打包完的 启动 easy_log_server-1.0.jar ，高可用的话直接启动多个服务就行
+ * 步骤一打包完的 启动 easy_log_server-2.0.RELEASE.jar ，高可用的话直接启动多个服务就行
 
    注意：打完的包target目录下，lib文件夹（依赖包目录），config文件夹（两个配置文件的目录），easy_log_server-1.0.jar 放到同一个目录下
   
@@ -207,7 +207,7 @@
        
   * 查询界面
      
-     1.到easy_log_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动easy_log_ui-2.0.jar就行了
+     1.到easy_log_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动easy_log_ui-2.0.RELEASE.jar就行了
      
      2.[前端打包文档](/easy_log_ui/README.md)，也可以不用打包，easy_log_ui里面已经有一份打包好了的，如果自己修改代码那就要打包了
      
