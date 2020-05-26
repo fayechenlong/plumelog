@@ -2,28 +2,14 @@ package com.beeplay.easylog.ui.controller;
 
 import com.beeplay.easylog.core.util.GfJsonUtil;
 import com.beeplay.easylog.ui.es.ElasticLowerClient;
-import com.beeplay.easylog.ui.es.ElasticSearchClient;
 import com.beeplay.easylog.ui.util.LogUtil;
-import org.apache.http.*;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -53,7 +39,6 @@ public class MainController {
         String message="";
         String indexStr="";
         try {
-
             ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts);
             String[] indexs=index.split(",");
             List<String> reindexs=elasticLowerClient.getExistIndices(indexs);
@@ -96,5 +81,13 @@ public class MainController {
             e.printStackTrace();
         }
         return "";
+    }
+    @RequestMapping("/deleteIndex")
+    public Map<String,Object> deleteIndex(String index) {
+        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts);
+        boolean re=elasticLowerClient.deleteIndex(index);
+        Map<String,Object> map=new HashMap<>();
+        map.put("acknowledged",re);
+        return map;
     }
 }

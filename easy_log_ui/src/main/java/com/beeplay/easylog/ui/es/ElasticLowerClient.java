@@ -1,17 +1,10 @@
 package com.beeplay.easylog.ui.es;
-
-import com.beeplay.easylog.core.util.GfJsonUtil;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.*;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
 * @Author Frank.chen
@@ -55,7 +48,7 @@ public class ElasticLowerClient {
             inputStream.read(bytes);
             String str = new String(bytes);
             reStr=str;
-        } catch (IOException e) {
+        } catch (Exception e) {
             reStr = "";
         }
        return reStr;
@@ -71,10 +64,24 @@ public class ElasticLowerClient {
                 if(res.getStatusLine().getStatusCode()==200){
                     existIndexList.add(index);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
             }
         }
         return existIndexList;
+    }
+    public boolean deleteIndex(String index){
+        try {
+            Request request = new Request(
+                    "DELETE",
+                    "/" + index + "");
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        }catch (Exception e){
+          return false;
+        }
+        return false;
     }
     public void close(){
         try {
