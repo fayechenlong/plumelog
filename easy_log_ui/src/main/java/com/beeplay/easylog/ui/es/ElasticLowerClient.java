@@ -1,17 +1,10 @@
 package com.beeplay.easylog.ui.es;
-
-import com.beeplay.easylog.core.util.GfJsonUtil;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.*;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
 * @Author Frank.chen
