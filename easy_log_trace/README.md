@@ -31,7 +31,7 @@
             easyLogDubboService.testLogDubbo();
         }
 
-5. 全局打点 需要自己定义切入点 (demo 如下 )
+5. 全局打点 需要自己定义切入点 (demo 如下 )  当定义全局打点时。手动打点就会失效
 
 ```java
 
