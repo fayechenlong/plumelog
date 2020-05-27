@@ -21,13 +21,15 @@ public class RedisAppender extends AbstractAppender {
     private String appName;
     private String reidsHost;
     private String redisPort;
+    private String redisAuth;
 
-    protected RedisAppender(String name, String appName, String reidsHost, String redisPort, Filter filter, Layout<? extends Serializable> layout,
+    protected RedisAppender(String name, String appName, String reidsHost, String redisPort,String redisAuth, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.reidsHost = reidsHost;
         this.redisPort = redisPort;
+        this.redisAuth=redisAuth;
     }
 
     @Override
@@ -43,9 +45,10 @@ public class RedisAppender extends AbstractAppender {
             @PluginAttribute("appName") String appName,
             @PluginAttribute("reidsHost") String reidsHost,
             @PluginAttribute("redisPort") String redisPort,
+            @PluginAttribute("redisAuth") String redisAuth,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
-        redisClient = RedisClient.getInstance(reidsHost, Integer.parseInt(redisPort), "");
-        return new RedisAppender(name, appName, reidsHost, redisPort, filter, layout, true);
+        redisClient = RedisClient.getInstance(reidsHost, Integer.parseInt(redisPort), redisAuth);
+        return new RedisAppender(name, appName, reidsHost, redisPort,redisAuth, filter, layout, true);
     }
 }
