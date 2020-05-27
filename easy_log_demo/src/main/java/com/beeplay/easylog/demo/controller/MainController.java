@@ -2,6 +2,7 @@ package com.beeplay.easylog.demo.controller;
 
 
 import com.beeplay.easylog.demo.service.MainService;
+import com.beeplay.easylog.trace.annotation.Trace;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ public class MainController {
     private MainService mainService;
 
     @RequestMapping("/index")
+    @Trace
     public String index(String data) {
         logger.info("I am MainController");
         if(data==null||"".equals(data)){
