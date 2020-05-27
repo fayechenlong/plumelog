@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
  * @author Tank
  * @version 1.0.0
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class AspectConfig extends AbstractAspect {
 
     @Around("within(com.beeplay.easylog..*))")
-    public Object around(JoinPoint joinPoint) {
+    public Object around(JoinPoint joinPoint) throws Throwable {
         return aroundExecute(joinPoint);
     }
 }

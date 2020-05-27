@@ -4,6 +4,7 @@ package com.beeplay.easylog.demo.service;
 import com.alibaba.ttl.threadpool.TtlExecutors;
 import com.beeplay.easylog.core.LogMessage;
 import com.beeplay.easylog.trace.annotation.Trace;
+import com.sun.org.apache.xalan.internal.xsltc.cmdline.getopt.GetOptsException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,20 +27,22 @@ public class MainService {
    // @Reference
    // EasyLogDubboService easyLogDubboService;
 
-    @Trace
+   // @Trace
     public void testLog(String data) {
         logger.error("I am service! 下面调用EasyLogDubboService远程服务！");
         //easyLogDubboService.testLogDubbo();
         logger.info("远程调用成功！");
-        tankService.tankSay(data);
+
         executorService.execute(() -> {
             logger.info("子线程日志展示");
         });
         try {
-            LogMessage lo=null;
-            lo.setMethod("");
+           // LogMessage lo=null;
+           // lo.setMethod("");
+            tankService.tankSay(data);
+
         }catch (Exception e){
-            logger.error("异常日志展示：{}",e);
+            logger.error("异常日志展示",e);
         }
         logger.warn("警告日志展示！");
     }
