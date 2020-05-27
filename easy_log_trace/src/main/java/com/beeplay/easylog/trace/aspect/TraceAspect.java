@@ -16,10 +16,11 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-@ConditionalOnMissingBean(AbstractAspect.class)
+@ConditionalOnMissingBean(value = AbstractAspect.class,ignored = TraceAspect.class)
 public class TraceAspect extends AbstractAspect {
     @Around("@annotation(com.beeplay.easylog.trace.annotation.Trace))")
-    public Object around(JoinPoint joinPoint) {
+    public Object around(JoinPoint joinPoint) throws Throwable {
         return aroundExecute(joinPoint);
     }
+
 }
