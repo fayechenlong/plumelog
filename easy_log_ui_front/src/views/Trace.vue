@@ -156,7 +156,9 @@ export default {
     else if(sessionStorage['cache_traceId']){
       this.traceId = sessionStorage['cache_traceId'];
     }
-    this.doSearch();
+    if(this.traceId){
+      this.doSearch();
+    }
   }
 };
 </script>

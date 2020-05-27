@@ -4,49 +4,30 @@
       <log-header></log-header>
       <div style="clear:both"></div>
     </div>
+    
     <div class="pnl_sizes">
-      <div class="pnl_size" v-if="sizeInfo.length>0">
-        <h4>运行数据</h4>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th></th>
-              <th>时间</th>
-              <th>条数</th>
-              <th>大小</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in sizeInfo" :key="item.uuid">
-              <td><i :class="item.health"></i></td>
-              <td>{{item.index}}</td>
-              <td>{{item['docs.count']}}</td>
-              <td>{{item['pri.store.size']}}（{{item['store.size']}}）</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="pnl_size" v-if="traceInfo.length>0">
-         <h4>链路数据</h4>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th></th>
-              <th>时间</th>
-              <th>条数</th>
-              <th>大小</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in traceInfo" :key="item.uuid">
-              <td><i :class="item.health"></i></td>
-              <td>{{item.index}}</td>
-              <td>{{item['docs.count']}}</td>
-              <td>{{item['pri.store.size']}}（{{item['store.size']}}）</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <Tabs active-key="运行数据" @on-click="changeTab">
+        <Tab-pane label="运行数据" name="run" key="运行数据">
+           <div class="pnl_size" v-if="sizeInfo.length>0">
+             <Table height="600" @on-selection-change="changeSizeSelect" :content="self" :columns="columns_size" :data="sizeInfo">
+               <template slot-scope="{ row, index }" slot="action">
+                <Button type="error" size="small" @click="remove(index)">删除</Button>
+               </template>
+             </Table>
+          </div>
+        </Tab-pane>
+        <Tab-pane label="链路数据" name="trace" key="链路数据">
+          <div class="pnl_size" v-if="traceInfo.length>0">
+             <Table height="600" @on-selection-change="changeTraceSelect" :content="self" :columns="columns_size" :data="traceInfo">
+               <template slot-scope="{ row, index }" slot="action">
+                <Button type="error" size="small" @click="remove(index)">删除</Button>
+               </template>
+             </Table>
+          </div>
+        </Tab-pane>
+    </Tabs>
+    <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="removeSelect" type="error">删除所选</Button>
+      
     </div>
   </div>
 </template>
@@ -68,42 +49,132 @@ export default {
   name: "Size",
   data(){
    return {
+     self:this,
+     size_selection:[],
+     trace_selection:[],
+     currentTab:'run',
+     columns_size:[
+       {
+        type: 'selection',
+        width: 60,
+        align: 'center'
+      },
+      {
+        title: '健康',
+        key:'health',
+         width: 100,
+        render: (h, params) => {
+            return h('div', [
+                h('i', {
+                   'class':params.row.health
+                })
+            ]);
+        }
+      },
+      {
+        title: '时间',
+        key:'index',
+        sortable: true,
+        sortType:"desc",//初始化排序
+        render:(h,params)=>{
+          let _index = params.row.index.replace('easy_log_trace_','').replace('easy_log_','');;
+          if(_index.length>=8){
+            _index = _index.substring(0,4)+'-'+_index.substring(4,6)+'-'+_index.substring(6,8)
+          }
+          return h('span',_index)
+        }
+      },
+      {
+        title:'条数',
+        key:'docs.count',
+        sortable: true
+      },
+      {
+        title:'大小',
+        key:'pri.store.size',
+        sortable: true,
+        render: (h, params) => {
+            return h('div', [
+                h('span', params.row['pri.store.size']+'（'+ params.row['store.size']+'）')
+            ]);
+        }
+      },
+      // {
+      //     title: '操作',
+      //     slot: 'action',
+      //     width: 150,
+      //     align: 'center'
+      // }
+     ],
      sizeInfo:[],
      traceInfo:[],
    }
+  },
+  computed:{
+    isDisabled(){
+      let isDisabled = true;
+      if(this.currentTab=='run' && this.size_selection.length>0){
+        isDisabled = false;
+      }
+      else if(this.currentTab=='trace' && this.trace_selection.length>0){
+        isDisabled = false;
+      }
+      return isDisabled;
+    }
   },
   components: {
     logHeader
   },
   methods:{
-    formatData(data){
-      //_.orderBy(users, ['user', 'age'], ['asc', 'desc']);
+    changeTab(name){
+      this.currentTab = name;
+    },
+    removeSelect(){
 
-      data =  _.map(data,d=>{
-        d.index = d.index.replace('easy_log_trace_','').replace('easy_log_','');
-        return d;
+      var selected = this.currentTab == 'run' ? this.size_selection : this.trace_selection;
+
+      if(!confirm('确定要删除这 '+selected.length+' 条记录么？')){
+        return false
+      }
+      
+      let deletePromise=[];
+      for(var item of selected)
+      {
+        deletePromise.push(axios.get('http://10.33.80.49:8989/deleteIndex?index='+item.index))
+      }
+      Promise.all(deletePromise).then(results=>{
+        let successResults=[];
+
+        for(var result of results){
+          if(result.data.acknowledged){
+            successResults.push(result);
+          }
+        }
+        if(successResults.length == results.length){
+          //全部删除成功，提示
+          alert('删除成功')
+        }
+        this.getTraceInfo();
       })
-
-      data  = _.orderBy(data, ['index'], ['desc']);
-
-      data =  _.map(data,d=>{
-
-        d.index = d.index.substring(0,4)+'/'+d.index.substring(4,6)+'/'+d.index.substring(6,8)
-        return d;
-      })
-
-      return data;
+    },
+    changeSizeSelect(selection){
+      this.size_selection = selection;
+    },
+    changeTraceSelect(selection){
+      this.trace_selection = selection;
     },
     getTraceInfo(){
+       this.size_selection =[];
+       this.trace_selection = [];
        this.$Loading.start();
        axios.post('/getServerInfo?index=easy_log_2*').then(data=>{
          this.$Loading.finish();
-         this.sizeInfo = this.formatData(_.get(data,'data',[]));
+         this.sizeInfo = _.get(data,'data',[]);
        })
 
         axios.post('/getServerInfo?index=easy_log_trace*').then(data=>{
          this.$Loading.finish();
-         this.traceInfo = this.formatData( _.get(data,'data',[]));
+         this.traceInfo = _.get(data,'data',[]);
        })
     }
   },
@@ -117,26 +188,34 @@ export default {
   .pnl_sizes
   {
     display: flex;
+    padding-left:20px;
+    position: relative;
+    width:800px;
     // flex-direction: column; 
     // flex-wrap: nowrap;
     // justify-content: center;
+
+    .btn_delete
+    {
+      position: absolute;
+      top:-5px;
+      right:0;
+    }
     .pnl_size
     {
       text-align:left;
       flex: 1;
-      width:500px;
-      height:500px;
-      margin:0 20px;
+      width:800px;
+      
       table{
-        margin-top:20px;
         width:100%;
+        
         th{
+          border-top: none;
           text-align: center;
-          height: 30px;
         }
         td{
           text-align: center;
-          height: 30px;
           i{
             display: inline-block;
             width:10px;
