@@ -1,5 +1,10 @@
 package com.beeplay.easylog.ui.es;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,23 +21,33 @@ import java.util.List;
 public class ElasticLowerClient {
     private static ElasticLowerClient instance;
     private RestClient client;
-    public static ElasticLowerClient getInstance(String hosts) {
+    public static ElasticLowerClient getInstance(String hosts,String userName,String passWord) {
         if (instance == null) {
             synchronized (ElasticLowerClient.class) {
                 if (instance == null) {
-                    instance = new ElasticLowerClient(hosts);
+                    instance = new ElasticLowerClient(hosts,userName,passWord);
                 }
             }
         }
         return instance;
     }
-    public ElasticLowerClient(String hosts) {
+    public ElasticLowerClient(String hosts,String userName,String passWord) {
+
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, passWord));  //es账号密码
+
         String[] hostsAndPorts=hosts.split(",");
         HttpHost[] httpHosts = new HttpHost[hostsAndPorts.length];
         for(int i=0;i<hostsAndPorts.length;i++){
             httpHosts[i] = HttpHost.create(hostsAndPorts[i]);
         }
-        client = RestClient.builder(httpHosts).build();
+        client = RestClient.builder(httpHosts).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+            @Override
+            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+                httpClientBuilder.disableAuthCaching();
+                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            }
+        }).build();
     }
     public String cat(String index){
         String reStr="";

@@ -1,9 +1,15 @@
 package com.beeplay.easylog.server.es;
 
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.*;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,23 +24,50 @@ public class ElasticLowerClient {
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(ElasticLowerClient.class);
     private static ElasticLowerClient instance;
     private RestClient client;
-    public static ElasticLowerClient getInstance(String hosts) {
+
+    public static ElasticLowerClient getInstance(String hosts,String userName,String passWord) {
         if (instance == null) {
             synchronized (ElasticLowerClient.class) {
                 if (instance == null) {
-                    instance = new ElasticLowerClient(hosts);
+                    instance = new ElasticLowerClient(hosts,userName,passWord);
                 }
             }
         }
         return instance;
     }
-    public ElasticLowerClient(String hosts) {
+    public ElasticLowerClient(String hosts,String userName,String passWord) {
+
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, passWord));  //es账号密码
         String[] hostsAndPorts=hosts.split(",");
         HttpHost[] httpHosts = new HttpHost[hostsAndPorts.length];
         for(int i=0;i<hostsAndPorts.length;i++){
             httpHosts[i] = HttpHost.create(hostsAndPorts[i]);
         }
-        client = RestClient.builder(httpHosts).build();
+        client = RestClient.builder(httpHosts).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+            @Override
+            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+                httpClientBuilder.disableAuthCaching();
+                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+            }
+        }).build();
+    }
+    public List<String> getExistIndices(String [] indices){
+        List<String> existIndexList = new ArrayList<String>();
+        for (String index: indices){
+            try {
+                Request request = new Request(
+                        "HEAD",
+                        "/"+index+"");
+                Response res=client.performRequest(request);
+                if(res.getStatusLine().getStatusCode()==200){
+                    existIndexList.add(index);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return existIndexList;
     }
     public void insertList(List<String> list,String baseIndex,String type) throws IOException {
         StringBuffer sendStr=new StringBuffer();
@@ -46,9 +79,15 @@ public class ElasticLowerClient {
             sendStr.append(map);
             sendStr.append("\r\n");
         }
+        String endpoint="";
+        if(type==null){
+            endpoint="/"+baseIndex+"/_bulk";
+        }else {
+            endpoint="/"+baseIndex+"/"+type+"/_bulk";
+        }
         Request request = new Request(
                 "POST",
-                "/"+baseIndex+"/"+type+"/_bulk");
+                endpoint);
         request.setJsonEntity(sendStr.toString());
         client.performRequestAsync(request, new ResponseListener() {
             @Override
