@@ -1,11 +1,5 @@
 <template>
   <div class="pnl_wraper">
-
-    <!-- <div style="width:800px;float:left;margin-top:20px;margin-left:50px;">
-
-      <tree :info="traceInfo" />
-    </div> -->
-
     <div class="pnl_filters">
       <div class="alert alert-danger" v-if="danger_str" role="alert">
         {{danger_str}}
@@ -57,16 +51,19 @@
           <tr>
             <td class="key">日期和时间</td>
             <td>
-                <DatePicker ref='datePicker' v-model="dateTimeRange" :editable="true" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 378px"></DatePicker>
+                <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 280px"></DatePicker>
             </td>
           </tr>
       </table>
+
+      <div id="myChart" :style="{width: '500px', height: '300px'}"></div>
+
     <div style="clear:both"></div>
       <table class="tbl_filters">
         <tr>
             <td class="key">内容</td>
             <td>
-              <input class="txt ivu-input" @keyup.enter="doSearch()" style="width:907px" placeholder="输入搜索内容" v-model="searchKey" />
+              <input class="txt ivu-input" @keyup.enter="doSearch()" style="width:711px" placeholder="输入搜索内容" v-model="searchKey" />
             </td>
           </tr>
           <tr>
@@ -167,7 +164,6 @@ import moment from 'moment'
 import '@/assets/prism.js' 
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
-import tree from '@/components/tree.vue'
 import logHeader from '@/components/logHeader.vue'
 import "@/assets/less/base.less";
 import dateOption from './dateOption';
@@ -235,7 +231,7 @@ export default {
         'value': 'content'
        }
      ],
-     dateTimeRange:[],
+     dateTimeRange:[moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')],
      content:{},
      searchKey:'',
      danger_str:'',
@@ -253,7 +249,6 @@ export default {
   },
   components: {
     // HelloWorld
-    tree,
     logHeader
   },
   filters:{
@@ -285,6 +280,53 @@ export default {
     }
   },
   methods:{
+     drawLine(data){
+        let myChart = this.$echarts.init(document.getElementById('myChart'))
+
+        // 绘制图表
+        myChart.setOption({
+            tooltip: {
+              formatter(p,ticket){
+                return '时间：'+p.name+'<br/>数量：'+p.value+'条'
+              },
+              extraCssText:'text-align:left'
+            },
+            xAxis: {
+                data: _.map(data,(d)=>{
+
+                  if(data[data.length-1].key - data[0].key>1000*60*60*24){
+                    return  moment(d.key).format('MM-DD HH:mm') 
+                  }
+                  else
+                  {
+                    return  moment(d.key).format('HH:mm') 
+                  }
+                }),
+                axisLabel:{
+                  fontSize:12,
+                  color:'#666',
+                  // rotate:30
+                }
+            },
+            yAxis: {
+               axisLabel:{
+                  fontSize:12,
+                  color:'#666',
+                }
+            },
+            series: [{
+                name: '数量',
+                type: 'bar',
+                data: _.map(data,(d)=>{
+                  return d.doc_count
+                }),
+                itemStyle:{
+                    borderColor: 'rgb(110, 173, 193)',
+                    color: 'rgba(110, 173, 193,0.6)'
+                }
+            }]
+        });
+    },
     getShouldFilter(){
       let filters = [];
       let date=[];
@@ -334,8 +376,8 @@ export default {
        "traceId":""
      }
      this.searchKey = "";
-     this.dateTimeRange = [];
-     this.$refs.datePicker.internalValue=[];
+     this.dateTimeRange = [moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')];
+     this.$refs.datePicker.internalValue=[moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')];
      this.doSearch();
     },
     dateChange(){
@@ -399,16 +441,20 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= '/query?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+      let url= '/query?index='+dateList.join(',');
 
-      let esFilter = {
-        "query":{
+      let query = {
+         "query":{
           "bool":{
             "must":[
               ...shouldFilter
             ]
           }
-        },
+        }
+      };
+
+      let esFilter = {
+        ...query,
         "highlight": {
             "fields" : {
                 "content" : {}
@@ -423,14 +469,49 @@ export default {
 
       this.$Loading.start();
       
-      
-      axios.post(url,esFilter).then(data=>{
+      let searchUrl = url+'&size='+this.size+"&from="+this.from;
+      axios.post(searchUrl,esFilter).then(data=>{
         this.$Loading.finish();
         this.list = _.get(data,'data.hits',{
           total:0,
           hits:[]
         })
       })
+
+
+      let chartFilter = {
+        "query":{
+          "bool":{
+            "must":[
+              ...shouldFilter,
+            ]
+          }
+        },
+        "aggs": {
+          "2": {
+            "date_histogram": {
+              "field": "dtTime",
+              "interval": 3600000,
+              
+              "min_doc_count": 0
+            }
+          }
+        }
+      }
+
+      axios.post('/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
+        let _data = _.get(data,'data.aggregations.2.buckets',[]);
+
+        if(_data.length>0) {
+          this.drawLine(_data);
+        }
+      })
+
+      // console.log(JSON.stringify(chartFilter,null,2));
+
+      //获取图表数据
+      //axios.post(url,)
+
     },
     prevePage(){
       let from = this.from - this.size
@@ -468,6 +549,12 @@ export default {
 </style>
 <style lang="less" src="../assets/less/filters.less" scoped></style>
 <style lang="less" scoped>
+
+  #myChart{
+    position: absolute;
+    top: 30px;
+    left: 900px;
+  }
 
   .breadcrumb
   {

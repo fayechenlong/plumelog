@@ -6,7 +6,7 @@
         </Console>
 
         <!--<RollingFile name="RollingFile" filename="log/easy_log_server.log"-->
-                     <!--filepattern="${logPath}/%d{YYYYMMddHHmmss}-fargo.log">-->
+                     <!--filepattern="log/%d{YYYYMMddHHmmss}-fargo.log">-->
             <!--<PatternLayout pattern="%d{YYYY-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %msg%n" />-->
             <!--<Policies>-->
                 <!--<SizeBasedTriggeringPolicy size="10 MB" />-->
