@@ -1,5 +1,6 @@
 package com.beeplay.easylog.core.disruptor;
 
+import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.lmax.disruptor.RingBuffer;
 
 /**
@@ -19,13 +20,11 @@ public class LogMessageProducer {
         this.ringBuffer = ringBuffer;
     }
 
-    public void send(LogEvent data) {
+    public void send(BaseLogMessage data) {
         long next = ringBuffer.next();
         try {
             LogEvent event = ringBuffer.get(next);
-            event.setAppName(data.getAppName());
-            event.setBaseLogMessage(data.getBaseLogMessage());
-            event.setClient(data.getClient());
+            event.setBaseLogMessage(data);
         } finally {
             ringBuffer.publish(next);
         }

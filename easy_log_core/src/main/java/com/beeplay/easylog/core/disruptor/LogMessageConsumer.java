@@ -1,5 +1,6 @@
 package com.beeplay.easylog.core.disruptor;
 
+import com.beeplay.easylog.core.AbstractClient;
 import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.dto.BaseLogMessage;
 import com.beeplay.easylog.core.dto.RunLogMessage;
@@ -29,6 +30,6 @@ public class LogMessageConsumer implements WorkHandler<LogEvent> {
                 baseLogMessage instanceof RunLogMessage
                         ? LogMessageConstant.LOG_KEY
                         : LogMessageConstant.LOG_KEY_TRACE;
-        event.getClient().pushMessage(redisKey, GfJsonUtil.toJSONString(baseLogMessage));
+        AbstractClient.getClient().pushMessage(redisKey, GfJsonUtil.toJSONString(baseLogMessage));
     }
 }
