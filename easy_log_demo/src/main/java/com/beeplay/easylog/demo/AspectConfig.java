@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class AspectConfig extends AbstractAspect {
 
     @Around("within(com.beeplay.easylog..*))")
-    public Object around(JoinPoint joinPoint) {
+    public Object around(JoinPoint joinPoint) throws Throwable {
         return aroundExecute(joinPoint);
     }
 }

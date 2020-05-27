@@ -21,23 +21,19 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class MessageAppenderFactory {
 
+
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool(4, 8, 5000);
 
 
     /**
      * disruptor 的写入
-     * @param appName
      * @param baseLogMessage
-     * @param client
      */
-    public static void push(String appName, BaseLogMessage baseLogMessage, AbstractClient client) {
+    public static void push(BaseLogMessage baseLogMessage) {
         LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
-        LogEvent event = new LogEvent();
-        event.setAppName(appName);
-        event.setClient(client);
-        event.setBaseLogMessage(baseLogMessage);
-        producer.send(event);
+        producer.send(baseLogMessage);
     }
 
     /**
