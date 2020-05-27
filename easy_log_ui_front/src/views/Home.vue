@@ -55,6 +55,9 @@
             </td>
           </tr>
       </table>
+
+      <div id="myChart" :style="{width: '500px', height: '300px'}"></div>
+
     <div style="clear:both"></div>
       <table class="tbl_filters">
         <tr>
@@ -277,6 +280,53 @@ export default {
     }
   },
   methods:{
+     drawLine(data){
+        let myChart = this.$echarts.init(document.getElementById('myChart'))
+
+        // 绘制图表
+        myChart.setOption({
+            tooltip: {
+              formatter(p,ticket){
+                return '时间：'+p.name+'<br/>数量：'+p.value+'条'
+              },
+              extraCssText:'text-align:left'
+            },
+            xAxis: {
+                data: _.map(data,(d)=>{
+
+                  if(data[data.length-1].key - data[0].key>1000*60*60*24){
+                    return  moment(d.key).format('MM-DD HH:mm') 
+                  }
+                  else
+                  {
+                    return  moment(d.key).format('HH:mm') 
+                  }
+                }),
+                axisLabel:{
+                  fontSize:12,
+                  color:'#666',
+                  // rotate:30
+                }
+            },
+            yAxis: {
+               axisLabel:{
+                  fontSize:12,
+                  color:'#666',
+                }
+            },
+            series: [{
+                name: '数量',
+                type: 'bar',
+                data: _.map(data,(d)=>{
+                  return d.doc_count
+                }),
+                itemStyle:{
+                    borderColor: 'rgb(110, 173, 193)',
+                    color: 'rgba(110, 173, 193,0.6)'
+                }
+            }]
+        });
+    },
     getShouldFilter(){
       let filters = [];
       let date=[];
@@ -438,21 +488,26 @@ export default {
           }
         },
         "aggs": {
-          "1": {
+          "2": {
             "date_histogram": {
-              "field": "dateTime",
-              "interval": "5m",
-              "time_zone": "+08:00"
+              "field": "dtTime",
+              "interval": 3600000,
+              
+              "min_doc_count": 0
             }
           }
         }
       }
 
-      axios.post('http://172.16.251.196:9200/_search',chartFilter).then(data=>{
-        console.log("filterData",data)
+      axios.post('/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
+        let _data = _.get(data,'data.aggregations.2.buckets',[]);
+
+        if(_data.length>0) {
+          this.drawLine(_data);
+        }
       })
 
-      console.log(JSON.stringify(chartFilter,null,2));
+      // console.log(JSON.stringify(chartFilter,null,2));
 
       //获取图表数据
       //axios.post(url,)
@@ -494,6 +549,12 @@ export default {
 </style>
 <style lang="less" src="../assets/less/filters.less" scoped></style>
 <style lang="less" scoped>
+
+  #myChart{
+    position: absolute;
+    top: 30px;
+    left: 900px;
+  }
 
   .breadcrumb
   {
