@@ -136,7 +136,7 @@
                     <td v-if="item.value == 'dtTime'">{{content._source[item.value] | filterTime}}</td>
                     <td v-else-if="item.value == 'content'">
                       <div class="code_wrap">
-                        <pre v-html="hightLightCode(content.content)"></pre>
+                        <div v-html="hightLightCode(content.content)"></div>
                       </div>
                     </td>
                     <td v-else>{{content._source[item.value]}}</td>
@@ -406,7 +406,7 @@ export default {
       }
 
       if(code.indexOf('java.')>-1){
-        return Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+        return '<pre>'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>";
       }
       else
       {
