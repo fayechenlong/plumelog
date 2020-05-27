@@ -5,7 +5,6 @@ import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.redis.RedisClient;
 import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticLowerClient;
-import com.beeplay.easylog.server.es.ElasticSearchClient;
 import com.beeplay.easylog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -23,12 +22,11 @@ public class RedisLogCollect extends BaseLogCollect{
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(RedisLogCollect.class);
     private RedisClient redisClient;
 
-    public RedisLogCollect(String redisHost,int redisPort,String esHosts){
+    public RedisLogCollect(String redisHost,int redisPort,String esHosts,String userName,String passWord){
 
         this.redisClient=RedisClient.getInstance(redisHost,redisPort,"");
         logger.info("getting log ready!");
-        super.elasticSearchClient=ElasticSearchClient.getInstance(esHosts);
-        super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts);
+        super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts,userName,passWord);
         logger.info("sending log ready!");
     }
     public  void redisStart(){

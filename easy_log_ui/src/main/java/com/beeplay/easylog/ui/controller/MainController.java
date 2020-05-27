@@ -34,17 +34,23 @@ public class MainController {
     @Value("${es.esHosts}")
     private String esHosts;
 
+    @Value("${es.userName}")
+    private String userName;
+
+    @Value("${es.passWord}")
+    private String passWord;
+
     @RequestMapping("/query")
     public String query(@RequestBody String queryStr,String index,String size,String from) {
         String message="";
         String indexStr="";
         try {
-            ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts);
+            ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
             String[] indexs=index.split(",");
             List<String> reindexs=elasticLowerClient.getExistIndices(indexs);
             indexStr=String.join(",",reindexs);
             String url = "http://"+esHosts+"/"+indexStr+"/_search?from="+from+"&size="+size;
-            return EntityUtils.toString(LogUtil.getInfo(url,queryStr), "utf-8");
+            return EntityUtils.toString(LogUtil.getInfo(url,queryStr,userName,passWord), "utf-8");
         }catch (IOException e){
           e.printStackTrace();
         }
@@ -52,7 +58,7 @@ public class MainController {
     }
     @RequestMapping("/getServerInfo")
     public String query(String index) {
-        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts);
+        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
         String res=elasticLowerClient.cat(index);
         BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(res.getBytes(Charset.forName("utf8"))), Charset.forName("utf8")));
         List<String> list=new ArrayList<>();
@@ -84,7 +90,7 @@ public class MainController {
     }
     @RequestMapping("/deleteIndex")
     public Map<String,Object> deleteIndex(String index) {
-        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts);
+        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
         boolean re=elasticLowerClient.deleteIndex(index);
         Map<String,Object> map=new HashMap<>();
         map.put("acknowledged",re);

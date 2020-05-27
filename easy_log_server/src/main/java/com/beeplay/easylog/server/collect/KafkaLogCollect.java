@@ -4,7 +4,6 @@ import com.beeplay.easylog.core.constant.LogMessageConstant;
 import com.beeplay.easylog.core.kafka.KafkaConsumerClient;
 import com.beeplay.easylog.server.InitConfig;
 import com.beeplay.easylog.server.es.ElasticLowerClient;
-import com.beeplay.easylog.server.es.ElasticSearchClient;
 import com.beeplay.easylog.server.util.DateUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -24,9 +23,8 @@ public class KafkaLogCollect extends BaseLogCollect{
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(KafkaLogCollect.class);
     private KafkaConsumer<String, String> kafkaConsumer;
 
-    public KafkaLogCollect(String kafkaHosts,String esHosts){
-        super.elasticSearchClient=ElasticSearchClient.getInstance(esHosts);
-        super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts);
+    public KafkaLogCollect(String kafkaHosts,String esHosts,String userName,String passWord){
+        super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts,userName,passWord);
         this.kafkaConsumer=KafkaConsumerClient.getInstance(kafkaHosts,InitConfig.KAFKA_GROUP_NAME,InitConfig.MAX_SEND_SIZE).getKafkaConsumer();
         this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY,LogMessageConstant.LOG_KEY+"_"+ LogMessageConstant.LOG_TYPE_TRACE));
         logger.info("sending log ready!");
