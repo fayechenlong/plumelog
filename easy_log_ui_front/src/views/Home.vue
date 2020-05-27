@@ -1,11 +1,5 @@
 <template>
   <div class="pnl_wraper">
-
-    <!-- <div style="width:800px;float:left;margin-top:20px;margin-left:50px;">
-
-      <tree :info="traceInfo" />
-    </div> -->
-
     <div class="pnl_filters">
       <div class="alert alert-danger" v-if="danger_str" role="alert">
         {{danger_str}}
@@ -57,7 +51,7 @@
           <tr>
             <td class="key">日期和时间</td>
             <td>
-                <DatePicker ref='datePicker' v-model="dateTimeRange" :editable="true" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 378px"></DatePicker>
+                <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 280px"></DatePicker>
             </td>
           </tr>
       </table>
@@ -66,7 +60,7 @@
         <tr>
             <td class="key">内容</td>
             <td>
-              <input class="txt ivu-input" @keyup.enter="doSearch()" style="width:907px" placeholder="输入搜索内容" v-model="searchKey" />
+              <input class="txt ivu-input" @keyup.enter="doSearch()" style="width:711px" placeholder="输入搜索内容" v-model="searchKey" />
             </td>
           </tr>
           <tr>
@@ -167,7 +161,6 @@ import moment from 'moment'
 import '@/assets/prism.js' 
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
-import tree from '@/components/tree.vue'
 import logHeader from '@/components/logHeader.vue'
 import "@/assets/less/base.less";
 import dateOption from './dateOption';
@@ -235,7 +228,7 @@ export default {
         'value': 'content'
        }
      ],
-     dateTimeRange:[],
+     dateTimeRange:[moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')],
      content:{},
      searchKey:'',
      danger_str:'',
@@ -253,7 +246,6 @@ export default {
   },
   components: {
     // HelloWorld
-    tree,
     logHeader
   },
   filters:{
@@ -334,8 +326,8 @@ export default {
        "traceId":""
      }
      this.searchKey = "";
-     this.dateTimeRange = [];
-     this.$refs.datePicker.internalValue=[];
+     this.dateTimeRange = [moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')];
+     this.$refs.datePicker.internalValue=[moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')];
      this.doSearch();
     },
     dateChange(){
@@ -399,16 +391,20 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= '/query?index='+dateList.join(',')+'&size='+this.size+"&from="+this.from
+      let url= '/query?index='+dateList.join(',');
 
-      let esFilter = {
-        "query":{
+      let query = {
+         "query":{
           "bool":{
             "must":[
               ...shouldFilter
             ]
           }
-        },
+        }
+      };
+
+      let esFilter = {
+        ...query,
         "highlight": {
             "fields" : {
                 "content" : {}
@@ -423,14 +419,44 @@ export default {
 
       this.$Loading.start();
       
-      
-      axios.post(url,esFilter).then(data=>{
+      let searchUrl = url+'&size='+this.size+"&from="+this.from;
+      axios.post(searchUrl,esFilter).then(data=>{
         this.$Loading.finish();
         this.list = _.get(data,'data.hits',{
           total:0,
           hits:[]
         })
       })
+
+
+      let chartFilter = {
+        "query":{
+          "bool":{
+            "must":[
+              ...shouldFilter,
+            ]
+          }
+        },
+        "aggs": {
+          "1": {
+            "date_histogram": {
+              "field": "dateTime",
+              "interval": "5m",
+              "time_zone": "+08:00"
+            }
+          }
+        }
+      }
+
+      axios.post('http://172.16.251.196:9200/_search',chartFilter).then(data=>{
+        console.log("filterData",data)
+      })
+
+      console.log(JSON.stringify(chartFilter,null,2));
+
+      //获取图表数据
+      //axios.post(url,)
+
     },
     prevePage(){
       let from = this.from - this.size
