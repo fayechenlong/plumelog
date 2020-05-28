@@ -179,7 +179,7 @@ export default {
           }
         }
         if(successResults.length == results.length){
-          //全部删除成功，提示
+          //全部删除成功
           alert('删除成功');
           this.password = '';
         }
