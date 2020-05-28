@@ -25,7 +25,6 @@
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
 import axios from '@/services/http'
 import _ from 'lodash'
 import moment from 'moment'
