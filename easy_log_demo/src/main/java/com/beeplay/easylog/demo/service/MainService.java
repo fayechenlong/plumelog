@@ -32,7 +32,7 @@ public class MainService {
     @Trace
     public void testLog(String data) {
         logger.error("I am service! 下面调用EasyLogDubboService远程服务！");
-        easyLogDubboService.testLogDubbo();
+        //easyLogDubboService.testLogDubbo();
         logger.info("远程调用成功！");
 
         executorService.execute(() -> {

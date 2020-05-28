@@ -1,10 +1,8 @@
 package com.beeplay.easylog.core.util;
 
 
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import javax.swing.table.TableRowSorter;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -97,16 +95,29 @@ public class IpGetter {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
+    /**
+     * 获取本机的局域网ip地址，兼容Linux
+     * @return String
+     * @throws Exception
+     */
     public static String getIp(){
-        Collection<InetAddress> colInetAddress =getAllHostAddress();
-        for (InetAddress address : colInetAddress) {
-            if (!address.isLoopbackAddress()) {
-                String ip=address.getHostAddress();
-                if(ip.startsWith("10.")||ip.startsWith("172.")) {
-                    return ip;
+        String localHostAddress = "";
+        try {
+            Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+
+            while(allNetInterfaces.hasMoreElements()){
+                NetworkInterface networkInterface = allNetInterfaces.nextElement();
+                Enumeration<InetAddress> address = networkInterface.getInetAddresses();
+                while(address.hasMoreElements()){
+                    InetAddress inetAddress = address.nextElement();
+                    if(inetAddress != null && inetAddress instanceof Inet4Address){
+                        localHostAddress = inetAddress.getHostAddress();
+                    }
                 }
             }
+        }catch (Exception e){
+
         }
-        return "";
+        return localHostAddress;
     }
 }

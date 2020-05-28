@@ -451,7 +451,7 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= '/query?index='+dateList.join(',');
+      let url= process.env.VUE_APP_API+'/query?index='+dateList.join(',');
 
       let query = {
          "query":{
@@ -509,7 +509,7 @@ export default {
         }
       }
 
-      axios.post('/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
+      axios.post(process.env.VUE_APP_API+'/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
         let _data = _.get(data,'data.aggregations.2.buckets',[]);
 
         if(_data.length>0) {
