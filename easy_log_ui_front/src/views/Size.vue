@@ -68,7 +68,7 @@ export default {
   name: "Size",
   data(){
    return {
-     showModal:true,
+     showModal:false,
      password:'',
      self:this,
      size_selection:[],
@@ -169,7 +169,6 @@ export default {
       let deletePromise=[];
       for(var item of selected)
       {
-        //http://10.33.80.49:8989
         deletePromise.push(axios.get('/deleteIndex?index='+item.index+'&adminPassWord='+this.password))
       }
       Promise.all(deletePromise).then(results=>{
@@ -209,6 +208,7 @@ export default {
     }
   },
   mounted(){
+    console.log(process.env.VUE_APP_API);
     this.getTraceInfo();
   }
 };
