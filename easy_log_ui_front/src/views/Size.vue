@@ -168,7 +168,7 @@ export default {
       let deletePromise=[];
       for(var item of selected)
       {
-        deletePromise.push(axios.get('/deleteIndex?index='+item.index+'&adminPassWord='+this.password))
+        deletePromise.push(axios.get(process.env.VUE_APP_API+'/deleteIndex?index='+item.index+'&adminPassWord='+this.password))
       }
       Promise.all(deletePromise).then(results=>{
         let successResults=[];
@@ -196,19 +196,18 @@ export default {
        this.size_selection =[];
        this.trace_selection = [];
        this.$Loading.start();
-       axios.post('/getServerInfo?index=easy_log_2*').then(data=>{
+       axios.post(process.env.VUE_APP_API+'/getServerInfo?index=easy_log_2*').then(data=>{
          this.$Loading.finish();
          this.sizeInfo = _.get(data,'data',[]);
        })
 
-        axios.post('/getServerInfo?index=easy_log_trace*').then(data=>{
+        axios.post(process.env.VUE_APP_API+'/getServerInfo?index=easy_log_trace*').then(data=>{
          this.$Loading.finish();
          this.traceInfo = _.get(data,'data',[]);
        })
     }
   },
   mounted(){
-    console.log(process.env.VUE_APP_API);
     this.getTraceInfo();
   }
 };
