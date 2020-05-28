@@ -40,6 +40,9 @@ public class MainController {
     @Value("${es.passWord}")
     private String passWord;
 
+    @Value("${admin.password}")
+    private String adminPassWord;
+
     @RequestMapping("/query")
     public String query(@RequestBody String queryStr,String index,String size,String from) {
         String message="";
@@ -89,11 +92,16 @@ public class MainController {
         return "";
     }
     @RequestMapping("/deleteIndex")
-    public Map<String,Object> deleteIndex(String index) {
-        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
-        boolean re=elasticLowerClient.deleteIndex(index);
-        Map<String,Object> map=new HashMap<>();
-        map.put("acknowledged",re);
+    public Map<String,Object> deleteIndex(String index,String adminPassWord) {
+        Map<String, Object> map = new HashMap<>();
+        if(adminPassWord.equals(this.adminPassWord)) {
+            ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+            boolean re = elasticLowerClient.deleteIndex(index);
+            map.put("acknowledged", re);
+        }else {
+            map.put("acknowledged", false);
+            map.put("message", "管理密码错误！");
+        }
         return map;
     }
 }
