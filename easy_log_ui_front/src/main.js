@@ -18,6 +18,8 @@ Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false;
 Vue.use(ViewUI);
 
+console.log('process.env.api:'+process.env.VUE_APP_API)
+
 ViewUI.LoadingBar.config({
   color: '#5cb85c',
   failedColor: '#f0ad4e',
