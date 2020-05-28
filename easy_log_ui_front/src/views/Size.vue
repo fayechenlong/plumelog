@@ -32,7 +32,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">安全验证</h5>
+            <h5 class="modal-title">管理密码</h5>
             <button type="button" class="close" @click="closeModal" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -159,7 +159,6 @@ export default {
     },
     confirmModal(){
       this.showModal = false;
-      this.password = '';
       this.removeSelect();
     },
     removeSelect(){
@@ -181,7 +180,8 @@ export default {
         }
         if(successResults.length == results.length){
           //全部删除成功，提示
-          alert('删除成功')
+          alert('删除成功');
+          this.password = '';
         }
         this.getTraceInfo();
       })
