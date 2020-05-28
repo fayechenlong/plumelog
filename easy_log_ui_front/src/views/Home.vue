@@ -68,7 +68,7 @@
           </tr>
           <tr>
             <td></td>
-            <td style='padding-top:20px'>
+            <td style='padding-top:8px'>
               <Button type="primary" icon="ios-search" @click="doSearch">查询</Button>
               <Button style="margin-left:10px" @click="clear">重置</Button>
             </td>
@@ -556,7 +556,7 @@ export default {
 
   #myChart{
     position: absolute;
-    top: 30px;
+    top: 20px;
     left: 900px;
     width: calc(100% - 900px);
     min-width: 300px;
