@@ -68,7 +68,7 @@
           </tr>
           <tr>
             <td></td>
-            <td style='padding-top:20px'>
+            <td style='padding-top:8px'>
               <Button type="primary" icon="ios-search" @click="doSearch">查询</Button>
               <Button style="margin-left:10px" @click="clear">重置</Button>
             </td>
@@ -451,7 +451,7 @@ export default {
         dateList.push('easy_log_'+moment().format('YYYYMMDD'));
       }
           
-      let url= '/query?index='+dateList.join(',');
+      let url= 'https://easylog-demo.beeplaying.com/query?index='+dateList.join(',');
 
       let query = {
          "query":{
@@ -509,7 +509,7 @@ export default {
         }
       }
 
-      axios.post('/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
+      axios.post('https://easylog-demo.beeplaying.com/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
         let _data = _.get(data,'data.aggregations.2.buckets',[]);
 
         if(_data.length>0) {
@@ -556,7 +556,7 @@ export default {
 
   #myChart{
     position: absolute;
-    top: 30px;
+    top: 20px;
     left: 900px;
     width: calc(100% - 900px);
     min-width: 300px;
