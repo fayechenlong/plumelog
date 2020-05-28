@@ -49,24 +49,23 @@
             <artifactId>easy_log_trace</artifactId>
             <version>2.0</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.beeplay</groupId>-->
-            <!--<artifactId>easy_log_dubbo</artifactId>-->
-            <!--<version>2.0</version>-->
-        <!--</dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-spring-boot-starter -->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.dubbo</groupId>-->
-            <!--<artifactId>dubbo-spring-boot-starter</artifactId>-->
-            <!--<exclusions>-->
-                <!--&lt;!&ndash; 排除默认日志配置 &ndash;&gt;-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework.boot</groupId>-->
-                    <!--<artifactId>spring-boot-starter-logging</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-            <!--<version>2.7.3</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.beeplay</groupId>
+            <artifactId>easy_log_dubbo</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+            <exclusions>
+                <!-- 排除默认日志配置 -->
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>2.7.3</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-client -->
         <dependency>

@@ -8,7 +8,6 @@
     <version>2.0.RELEASE</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>

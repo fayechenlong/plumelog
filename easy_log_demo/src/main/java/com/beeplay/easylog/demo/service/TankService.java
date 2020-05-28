@@ -29,17 +29,13 @@ public class TankService {
     @Autowired
     TankServiceThere tankServiceThere;
 
-    //@Trace
-    public void tankSay(String kk) throws GolExection {
+    @Trace
+    public void tankSay(String kk)  {
         tankServiceTwo.tankServiceTwo(kk);
         tankServiceThere.tankServiceThere(kk);
       threadPoolExecutor.execute(TtlRunnable.get(() -> {
             TraceId.logTraceID.get();
             logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
         }));
-
-        throw new GolExection("全局异常uuuuuuu=====",100);
-
-
     }
 }

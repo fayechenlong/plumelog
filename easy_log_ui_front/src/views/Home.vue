@@ -56,7 +56,7 @@
           </tr>
       </table>
 
-      <div id="myChart" :style="{width: '500px', height: '300px'}"></div>
+      <div id="myChart"></div>
 
     <div style="clear:both"></div>
       <table class="tbl_filters">
@@ -68,7 +68,7 @@
           </tr>
           <tr>
             <td></td>
-            <td style='padding-top:20px'>
+            <td style='padding-top:8px'>
               <Button type="primary" icon="ios-search" @click="doSearch">查询</Button>
               <Button style="margin-left:10px" @click="clear">重置</Button>
             </td>
@@ -97,7 +97,7 @@
           <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
           <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
           <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
-          <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
+          <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
           <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
           <td class='td_cnt' v-html="showContent(item)"></td>
           <td><button class="btn btn-primary" @click="showDetail(item)">详情</button></td>
@@ -136,7 +136,7 @@
                     <td v-if="item.value == 'dtTime'">{{content._source[item.value] | filterTime}}</td>
                     <td v-else-if="item.value == 'content'">
                       <div class="code_wrap">
-                        <pre v-html="hightLightCode(content.content)"></pre>
+                        <div v-html="hightLightCode(content.content)"></div>
                       </div>
                     </td>
                     <td v-else>{{content._source[item.value]}}</td>
@@ -173,28 +173,6 @@ export default {
   name: "Home",
   data(){
    return {
-     traceInfo:{
-          name:"tree1",
-          time: "20189123123",
-          zindex:1,
-          children:[
-              {
-                  name:"tree2",
-                  time: "20189123123",
-                  zindex:2,
-              },
-              {
-                  name:"tree3",
-                  time: "20189123123",
-                  zindex:2,
-                  children:[{
-                      name:"tree4",
-                      time: "20189123123",
-                      zindex:3,
-                  }]
-              }
-          ]
-      },
      api: process.env.api,
      dateOption,
      contentItems:[
@@ -263,6 +241,43 @@ export default {
     }
   },
   computed:{
+    chartInterval(){
+      if(this.dateTimeRange.length>0){
+        let _range = (new Date(this.dateTimeRange[1])).getTime() - (new Date(this.dateTimeRange[0])).getTime();
+         //大于7天按照每天数据统计
+        if(_range>1000*60*60*24*7){
+          return {
+            format:'MM-DD',
+            value: 1000*60*60*24
+          }
+        }
+        //大于3天按照12小时进行统计
+        else if (_range>1000*60*60*24*3){
+          return {
+            format:'MM-DD HH:mm',
+            value: 1000*60*60*12
+          }
+        }
+        //大于1天按照6小时进行统计
+        else if (_range>1000*60*60*24){
+          return {
+            format:'MM-DD HH:mm',
+            value: 1000*60*60*6
+          }
+        }
+        else
+        {
+          return {
+            format:'HH:mm',
+            value: 1000*60*60
+          }
+        }
+      }
+      return {
+        format:'MM-DD HH:mm',
+        value: 1000*60*60
+      }
+    },
     totalCount(){
       if(!this.list.total){
         return 0
@@ -283,6 +298,8 @@ export default {
      drawLine(data){
         let myChart = this.$echarts.init(document.getElementById('myChart'))
 
+        window.addEventListener('resize',() => { myChart.resize(); });
+
         // 绘制图表
         myChart.setOption({
             tooltip: {
@@ -293,14 +310,7 @@ export default {
             },
             xAxis: {
                 data: _.map(data,(d)=>{
-
-                  if(data[data.length-1].key - data[0].key>1000*60*60*24){
-                    return  moment(d.key).format('MM-DD HH:mm') 
-                  }
-                  else
-                  {
-                    return  moment(d.key).format('HH:mm') 
-                  }
+                  return  moment(d.key).format(this.chartInterval.format) 
                 }),
                 axisLabel:{
                   fontSize:12,
@@ -316,7 +326,7 @@ export default {
             },
             series: [{
                 name: '数量',
-                type: 'bar',
+                type: 'line',
                 data: _.map(data,(d)=>{
                   return d.doc_count
                 }),
@@ -381,8 +391,8 @@ export default {
      this.doSearch();
     },
     dateChange(){
-        let startDate = this.dateTimeRange[0]
-        let endDate = this.dateTimeRange[1]
+        let startDate = new Date(this.dateTimeRange[0]);
+        let endDate = new Date(this.dateTimeRange[1]);
         if(startDate.getHours() == 0 && startDate.getMinutes() ==0 && endDate.getHours() == 0 && endDate.getMinutes() == 0){
           this.dateTimeRange[1].setHours(23,59)
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
@@ -396,7 +406,7 @@ export default {
       }
 
       if(code.indexOf('java.')>-1){
-        return Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+        return '<pre>'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>";
       }
       else
       {
@@ -426,7 +436,7 @@ export default {
 
       //列出范围内的日期
       let dateList=[];
-      let startDate = _.clone(this.dateTimeRange[0]);
+      let startDate = _.clone(new Date(this.dateTimeRange[0]));
 
       let shouldFilter = this.getShouldFilter();
       
@@ -491,7 +501,7 @@ export default {
           "2": {
             "date_histogram": {
               "field": "dtTime",
-              "interval": 3600000,
+              "interval": this.chartInterval.value,
               
               "min_doc_count": 0
             }
@@ -506,12 +516,6 @@ export default {
           this.drawLine(_data);
         }
       })
-
-      // console.log(JSON.stringify(chartFilter,null,2));
-
-      //获取图表数据
-      //axios.post(url,)
-
     },
     prevePage(){
       let from = this.from - this.size
@@ -552,8 +556,11 @@ export default {
 
   #myChart{
     position: absolute;
-    top: 30px;
+    top: 20px;
     left: 900px;
+    width: calc(100% - 900px);
+    min-width: 300px;
+    height: 300px;
   }
 
   .breadcrumb

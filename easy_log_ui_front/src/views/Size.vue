@@ -25,10 +25,29 @@
              </Table>
           </div>
         </Tab-pane>
-    </Tabs>
-    <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="removeSelect" type="error">删除所选</Button>
-      
+      </Tabs>
+      <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="checkRemove" type="error">删除所选</Button>
     </div>
+    <div class="modal fade show model_pwd" style="display:block" v-if="showModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">管理密码</h5>
+            <button type="button" class="close" @click="closeModal" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p><input type="password" autofocus v-model="password" placeholder="输入管理员密码" class="form-control"  /></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closeModal">关闭</button>
+            <button type="button" class="btn btn-primary" @click="confirmModal">确认</button>
+          </div>
+        </div>
+      </div>
+    </div>
+     <div class="modal-backdrop fade show" v-if="showModal"></div>
   </div>
 </template>
 
@@ -49,6 +68,8 @@ export default {
   name: "Size",
   data(){
    return {
+     showModal:false,
+     password:'',
      self:this,
      size_selection:[],
      trace_selection:[],
@@ -126,21 +147,28 @@ export default {
     logHeader
   },
   methods:{
+    closeModal(){
+      this.showModal = false;
+      this.password = '';
+    },
     changeTab(name){
       this.currentTab = name;
+    },
+    checkRemove(){
+     this.showModal = true;
+    },
+    confirmModal(){
+      this.showModal = false;
+      this.removeSelect();
     },
     removeSelect(){
 
       var selected = this.currentTab == 'run' ? this.size_selection : this.trace_selection;
-
-      if(!confirm('确定要删除这 '+selected.length+' 条记录么？')){
-        return false
-      }
       
       let deletePromise=[];
       for(var item of selected)
       {
-        deletePromise.push(axios.get('http://10.33.80.49:8989/deleteIndex?index='+item.index))
+        deletePromise.push(axios.get('/deleteIndex?index='+item.index+'&adminPassWord='+this.password))
       }
       Promise.all(deletePromise).then(results=>{
         let successResults=[];
@@ -152,7 +180,8 @@ export default {
         }
         if(successResults.length == results.length){
           //全部删除成功，提示
-          alert('删除成功')
+          alert('删除成功');
+          this.password = '';
         }
         this.getTraceInfo();
       })
@@ -179,6 +208,7 @@ export default {
     }
   },
   mounted(){
+    console.log(process.env.VUE_APP_API);
     this.getTraceInfo();
   }
 };
