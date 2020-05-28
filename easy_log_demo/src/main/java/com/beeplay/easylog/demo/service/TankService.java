@@ -29,7 +29,7 @@ public class TankService {
     @Autowired
     TankServiceThere tankServiceThere;
 
-    //@Trace
+    @Trace
     public void tankSay(String kk)  {
         tankServiceTwo.tankServiceTwo(kk);
         tankServiceThere.tankServiceThere(kk);
