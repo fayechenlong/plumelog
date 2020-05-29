@@ -431,16 +431,16 @@ export default {
           code = code.replace(re, '<em>$1</em>');
       }
 
-      if(code.indexOf('java.')>-1 || true){
-        return '<pre>'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>";
-      }
-      else
-      {
-        return code;
-      }
+      return '<pre>'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>";
+      // if(code.indexOf('java.')>-1 || true){
+      // }
+      // else
+      // {
+      //   return code;
+      // }
     },
     showContent(item){
-      return this.hightLightCode((_.get(item,"highlight.content[0]","") || _.get(item,"_source.content","")))
+      return _.get(item,"highlight.content[0]","") || _.get(item,"_source.content","")
     },
     showDetail(item){
       item.show = !item.show
