@@ -90,9 +90,9 @@
         <tr>
           <th scope="col" style="width:180px">时间</th>
           <th scope="col" style="width:80px">日志等级</th>
-          <th scope="col" style="width:120px">服务器名称</th>
+          <th scope="col" style="width:150px">服务器名称</th>
           <th scope="col" style="width:150px">应用名称</th>
-          <th scope="col" style="width:150px">追踪码</th>
+          <th scope="col" style="width:170px">追踪码</th>
           <th scope="col">类名</th>
           <th scope="col">内容</th>
           <th scope="col" style="width:70px">操作</th>
@@ -366,6 +366,10 @@ export default {
       for(let itemKey in this.filter)
       {
         if(this.filter[itemKey]){
+          // filters.push({
+          //   "term":{
+          //     [itemKey]:this.filter[itemKey].replace(/,/g,' '),
+          //   }
            filters.push({
             "match":{
               [itemKey]:{
