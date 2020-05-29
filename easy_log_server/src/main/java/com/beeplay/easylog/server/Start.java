@@ -23,6 +23,7 @@ public class Start {
     private  String esPassWord;
 
     private  String redisHost;
+    private  String redisPassWord;
 
     private  String KAFKA_MODE_NAME="kafka";
     private  String REDIS_MODE_NAME="redis";
@@ -50,6 +51,8 @@ public class Start {
             this.esPassWord=this.properties.getProperty("easylog.server.es.passWord");
 
             this.redisHost = this.properties.getProperty("easylog.server.redis.redisHost");
+            this.redisPassWord = this.properties.getProperty("easylog.server.redis.redisPassWord");
+
             this.model=this.properties.getProperty("easylog.server.model");
         }catch (Exception e){
             logger.error("load config fail!",e);
@@ -69,7 +72,7 @@ public class Start {
         if(KAFKA_MODE_NAME.equals(model)) {
             logger.info("kafkaHosts:" + kafkaHosts);
             logger.info("esHosts:" + esHosts);
-            KafkaLogCollect kafkaLogCollect=new KafkaLogCollect(kafkaHosts, esHosts,esUserName,esPassWord);
+            KafkaLogCollect kafkaLogCollect=new KafkaLogCollect(this.kafkaHosts, this.esHosts,this.esUserName,this.esPassWord);
             kafkaLogCollect.kafkaStart();
         }
         if(REDIS_MODE_NAME.equals(model)) {
@@ -78,7 +81,7 @@ public class Start {
             int port=Integer.valueOf(hs[1]);
             logger.info("redisHost:" + redisHost);
             logger.info("esHosts:" + esHosts);
-            RedisLogCollect redisLogCollect=new RedisLogCollect(ip,port, esHosts,esUserName,esPassWord);
+            RedisLogCollect redisLogCollect=new RedisLogCollect(ip,port,this.redisPassWord, this.esHosts,this.esUserName,this.esPassWord);
             redisLogCollect.redisStart();
         }
     }
