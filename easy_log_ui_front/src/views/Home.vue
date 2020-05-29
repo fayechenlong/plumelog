@@ -300,7 +300,7 @@ export default {
       return this.from > 0 
     },
     haveNextPage(){
-      if(this.totalCount>=(this.from+this.size))
+      if(this.totalCount>(this.from+this.size))
         return true
       else
         return false
