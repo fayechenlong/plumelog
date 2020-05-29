@@ -371,10 +371,9 @@ export default {
           //     [itemKey]:this.filter[itemKey].replace(/,/g,' '),
           //   }
            filters.push({
-            "match":{
+            "match_phrase":{
               [itemKey]:{
-                "query":this.filter[itemKey].replace(/,/g,' '),
-                // "type":"phrase"
+                "query":this.filter[itemKey].replace(/,/g,' ')
               }
             }
           })
@@ -432,16 +431,16 @@ export default {
           code = code.replace(re, '<em>$1</em>');
       }
 
-      if(code.indexOf('java.')>-1){
-        return '<pre>'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>";
-      }
-      else
-      {
-        return code;
-      }
+      return '<pre>'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>";
+      // if(code.indexOf('java.')>-1 || true){
+      // }
+      // else
+      // {
+      //   return code;
+      // }
     },
     showContent(item){
-      return (_.get(item,"highlight.content[0]","") || _.get(item,"_source.content",""))
+      return _.get(item,"highlight.content[0]","") || _.get(item,"_source.content","")
     },
     showDetail(item){
       item.show = !item.show
