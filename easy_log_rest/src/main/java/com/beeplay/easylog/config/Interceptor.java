@@ -1,17 +1,19 @@
-package com.beeplay.easylog.demo;
+package com.beeplay.easylog.config;
 import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.util.IdWorker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
 
 
 @Component
-public class Interceptor extends HandlerInterceptorAdapter{
+@Slf4j
+public class Interceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -22,6 +24,7 @@ public class Interceptor extends HandlerInterceptorAdapter{
         }else{
             TraceId.logTraceID.set(traceId);
         }
+        log.info("[Interceptor]  "+TraceId.logTraceID.get());
         return true;
     }
 }
