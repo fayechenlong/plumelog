@@ -17,6 +17,7 @@
         <module>easy_log_trace</module>
         <module>easy_log_demo_dubbo</module>
         <module>easy_log_ui</module>
+        <module>easy_log_rest</module>
     </modules>
     <name>easy_log</name>
     <properties>
