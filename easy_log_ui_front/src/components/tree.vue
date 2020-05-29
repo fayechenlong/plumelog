@@ -4,7 +4,7 @@
             <i @click="toggle"><Tooltip :disabled="toolTip==''" offset="-22"  placement="left-start" class="icon" :class="{'disable':toolTip==''}" :content="toolTip"></Tooltip></i>
             <div class="title">{{data.method}}</div>
             <div class="time">
-                应用名称：{{data.appName}} <b v-if="data.serverName">（{{data.serverName}}）</b><template v-if="data.end_time>=data.start_time"><br/>花费时间：{{data.end_time - data.start_time}}ms</template>
+                应用名称：{{data.appName}} <b v-if="data.serverName">（{{data.serverName}}）</b><template v-if="data.end_time>=data.start_time">&nbsp;&nbsp;花费时间：{{data.end_time - data.start_time}}ms</template>
             </div>
         </div>
         <div v-if="!close" class="children">
@@ -86,20 +86,21 @@ export default {
             position: relative;
             padding-bottom: 20px;
             .title{
-                font-size:16px;
+                font-size:14px;
                 font-weight:700;
             }
             .time{
                 color:#999;
+                font-size:13px;
             }
 
             .icon{
                 display: block;
                 position: absolute;
-                top:5px;
+                top:3px;
                 left:-27px;
-                width:16px;
-                height:16px;
+                width:14px;
+                height:14px;
                 background:none;
                 border:2px solid red;
                 border-radius: 50%;
@@ -114,8 +115,8 @@ export default {
                  .icon::before{
                      content: '';
                      position: absolute;
-                     width:12px;
-                     height:12px;
+                     width:10px;
+                     height:10px;
                      left:0;
                      top:0;
                      background:red;

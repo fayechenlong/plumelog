@@ -1,107 +1,135 @@
 <template>
   <div class="pnl_wraper">
-    <div class="pnl_filters">
-      <div class="alert alert-danger" v-if="danger_str" role="alert">
-        {{danger_str}}
-      </div>
-      <log-header></log-header>
-      
-      <table class='tbl_filters'>
-        <tbody>
-          <tr>
-            <td class="key">应用名称</td>
-            <td>
-              <Input class="txt" name="appName" v-model="filter.appName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true" />
-            </td>
-          </tr>
-          <tr>
-            <td class="key">日志等级</td>
-            <td>
-              <Select v-model="filter.logLevel" placeholder="请选择日志等级">
-                  <Option value="" key="ALL">所有</Option>
-                  <Option value="INFO" key="INFO">INFO</Option>
-                  <Option value="ERROR" key="ERROR">ERROR</Option>
-                  <Option value="WARN" key="WARN">WARN</Option>
-                  <Option value="DEBUG" key="DEBUG">DEBUG</Option>
-              </Select>
-            </td>
-          </tr>
-          <tr>
-            <td class="key">服务器名称</td>
-            <td>
-              <Input class="txt" name="serverName" v-model="filter.serverName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="icon_arrow" :class="{'up':showFilter,'down':!showFilter}" @click="setShowFilter">
+      <Icon type="ios-arrow-up" v-show="showFilter"  />
+      <Icon type="ios-arrow-down" v-show="!showFilter" />
+      <span class="text">{{showFilter?'收起':'展开'}}</span>
+    </div>
+    <div class="pnl_filters" >
+      <template v-if="showFilter">
+        <div class="alert alert-danger" v-if="danger_str" role="alert">
+          {{danger_str}}
+        </div>
+        <log-header></log-header>
+        
+        <table class='tbl_filters'>
+          <tbody>
+            <tr>
+              <td class="key">应用名称</td>
+              <td>
+                <Input class="txt" name="appName" v-model="filter.appName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true" />
+              </td>
+            </tr>
+            <tr>
+              <td class="key">日志等级</td>
+              <td>
+                <Select v-model="filter.logLevel" placeholder="请选择日志等级">
+                    <Option value="" key="ALL">所有</Option>
+                    <Option value="INFO" key="INFO">INFO</Option>
+                    <Option value="ERROR" key="ERROR">ERROR</Option>
+                    <Option value="WARN" key="WARN">WARN</Option>
+                    <Option value="DEBUG" key="DEBUG">DEBUG</Option>
+                </Select>
+              </td>
+            </tr>
+            <tr>
+              <td class="key">服务器名称</td>
+              <td>
+                <Input class="txt" name="serverName" v-model="filter.serverName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <table class='tbl_filters'>
-        <tr>
-            <td class="key">类名</td>
-            <td>
-              <Input class="txt"  name="className" v-model="filter.className" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
-            </td>
-          </tr>
+        <table class='tbl_filters'>
           <tr>
-            <td class="key">追踪码</td>
-            <td>
-              <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
-            </td>
-          </tr>
-          <tr>
-            <td class="key">日期和时间</td>
-            <td>
-                <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 280px"></DatePicker>
-            </td>
-          </tr>
-      </table>
+              <td class="key">类名</td>
+              <td>
+                <Input class="txt"  name="className" v-model="filter.className" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="key">追踪码</td>
+              <td>
+                <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="key">日期和时间</td>
+              <td>
+                  <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 280px"></DatePicker>
+              </td>
+            </tr>
+        </table>
 
-      <div id="myChart"></div>
+        <div id="myChart"></div>
 
-    <div style="clear:both"></div>
-      <table class="tbl_filters">
-        <tr>
-            <td class="key">内容</td>
-            <td>
-              <input class="txt ivu-input" @keyup.enter="doSearch()" style="width:711px" placeholder="输入搜索内容" v-model="searchKey" />
-            </td>
-          </tr>
+        <div style="clear:both"></div>
+        <table class="tbl_filters">
           <tr>
-            <td></td>
-            <td style='padding-top:8px'>
-              <Button type="primary" icon="ios-search" @click="doSearch">查询</Button>
-              <Button style="margin-left:10px" @click="clear">重置</Button>
-            </td>
-          </tr>
-      </table>
+              <td class="key">内容</td>
+              <td>
+                <input class="txt ivu-input" @keyup.enter="doSearch()" style="width:711px" placeholder="输入搜索内容" v-model="searchKey" />
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style='padding-top:8px'>
+                <Button type="primary" icon="ios-search" @click="doSearch">查询</Button>
+                <Button style="margin-left:10px" @click="clear">重置</Button>
+              </td>
+            </tr>
+        </table>
+      </template>
        <div style="clear:both"></div>
     </div>
 
     <div style="float:right;margin-right:20px;margin-bottom:5px">共 <b>{{totalCount}}</b> 条数据</div>
-    <table v-if="list.hits.length>0" cellspacing="0" cellpadding="0"  class="table table-striped table_detail">
+    <table v-if="list.hits.length>0" cellspacing="0" cellpadding="0"  class="table table_detail">
       <thead>
         <tr>
-          <th scope="col">时间</th>
-          <th scope="col">日志等级</th>
-          <th scope="col">服务器名称</th>
-          <th scope="col">应用名称</th>
-          <th scope="col">追踪码</th>
+          <th scope="col" style="width:180px">时间</th>
+          <th scope="col" style="width:80px">日志等级</th>
+          <th scope="col" style="width:150px">服务器名称</th>
+          <th scope="col" style="width:150px">应用名称</th>
+          <th scope="col" style="width:170px">追踪码</th>
           <th scope="col">类名</th>
           <th scope="col">内容</th>
-          <th scope="col">操作</th>
+          <th scope="col" style="width:70px">操作</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in list.hits" :class="item._source.logLevel" :key="item._id">
-          <td>{{item._source.dtTime | filterTime}}</td>
-          <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
-          <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
-          <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
-          <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
-          <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
-          <td class='td_cnt' v-html="showContent(item)"></td>
-          <td><button class="btn btn-primary" @click="showDetail(item)">详情</button></td>
-        </tr>
+        <template  v-for="item in list.hits">
+          <tr class="normal" :class="item._source.logLevel" :key="item._id" @dblclick="showDetail(item)">
+            <td>{{item._source.dtTime | filterTime}}</td>
+            <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
+            <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
+            <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
+            <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
+            <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
+            <td class='td_cnt'>
+              <div class="cnt" v-html="showContent(item)"></div>
+            </td>
+            <td><a style="color:#0081e9;user-select:none;" @click="showDetail(item)">{{item.show?'收起':'展开'}}</a></td>
+          </tr>
+          <tr v-show="item.show" :key="'cols_'+item._id" >
+            <td colspan="8">
+               <table class="detail_table">
+                  <template v-for="contentItem in contentItems">
+                    <tr v-if="item._source[contentItem.value]" :key="contentItem.value">
+                      <td class="key"><div>{{contentItem.name}}</div></td>
+                      <td class="value" v-if="contentItem.value == 'content'">
+                        <div class="code_wrap">
+                          <div v-html="hightLightCode(item._source.content)"></div>
+                        </div>
+                      </td>
+                      <td class="value" v-else>{{item._source[contentItem.value]}}</td>
+                    </tr>
+                  </template>
+              </table>
+            </td>
+          </tr>
+        </template>
       </tbody>
     </table>
     <nav v-if="totalCount && parseInt(totalCount/size) > 0" class="page_nav" aria-label="Page navigation example">
@@ -119,7 +147,7 @@
     
 
     <!-- Modal -->
-    <div class="modal fade show" style="display:block" v-if="content.title" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <!-- <div class="modal fade show" style="display:block" v-if="content.title" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable" style="max-width:1200px" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -150,7 +178,7 @@
         </div>
       </div>
     </div>
-    <div class="modal-backdrop fade show" v-if="content.title"></div>
+    <div class="modal-backdrop fade show" v-if="content.title"></div> -->
     
   </div>
 </template>
@@ -173,25 +201,11 @@ export default {
   name: "Home",
   data(){
    return {
+     chartData:[],
+     showFilter: true,
      api: process.env.api,
      dateOption,
      contentItems:[
-       {
-        'name': '应用名称',
-        'value': 'appName'
-       },
-       {
-        'name': '日志等级',
-        'value': 'logLevel'
-       },
-       {
-        'name': '服务器名称',
-        'value': 'serverName'
-       },
-       {
-        'name': '追踪码',
-        'value': 'traceId'
-       },
        {
         'name': '类名',
         'value': 'className'
@@ -201,16 +215,14 @@ export default {
         'value': 'method'
        },
        {
-        'name': '时间',
-        'value': 'dtTime'
-       },
-       {
         'name': '内容',
         'value': 'content'
        }
      ],
      dateTimeRange:[moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')],
-     content:{},
+     content:{
+       _source:{}
+     },
      searchKey:'',
      danger_str:'',
      filter:{
@@ -295,7 +307,18 @@ export default {
     }
   },
   methods:{
-     drawLine(data){
+    setShowFilter(show){
+      this.showFilter = !this.showFilter;
+      if(this.showFilter ){
+        this.$nextTick(()=>{
+          this.drawLine()
+        })
+      }
+    },
+     drawLine(){
+        if(this.chartData.length==0){
+          return false;
+        }
         let myChart = this.$echarts.init(document.getElementById('myChart'))
 
         window.addEventListener('resize',() => { myChart.resize(); });
@@ -309,7 +332,7 @@ export default {
               extraCssText:'text-align:left'
             },
             xAxis: {
-                data: _.map(data,(d)=>{
+                data: _.map(this.chartData,(d)=>{
                   return  moment(d.key).format(this.chartInterval.format) 
                 }),
                 axisLabel:{
@@ -327,7 +350,7 @@ export default {
             series: [{
                 name: '数量',
                 type: 'line',
-                data: _.map(data,(d)=>{
+                data: _.map(this.chartData,(d)=>{
                   return d.doc_count
                 }),
                 itemStyle:{
@@ -343,6 +366,10 @@ export default {
       for(let itemKey in this.filter)
       {
         if(this.filter[itemKey]){
+          // filters.push({
+          //   "term":{
+          //     [itemKey]:this.filter[itemKey].replace(/,/g,' '),
+          //   }
            filters.push({
             "match":{
               [itemKey]:{
@@ -414,19 +441,10 @@ export default {
       }
     },
     showContent(item){
-      var str = (_.get(item,"highlight.content[0]","") || _.get(item,"_source.content",""))
-      if(str.length>30)
-      {
-        return str.substring(0,30)+'...'
-      }
-      return str;
+      return (_.get(item,"highlight.content[0]","") || _.get(item,"_source.content",""))
     },
     showDetail(item){
-      this.content = {
-        "title":'日志详情',
-        content: _.get(item,"_source.content",""),
-        ...item
-      }
+      item.show = !item.show
     },
     doSearch(keyName,item){
 
@@ -482,10 +500,21 @@ export default {
       let searchUrl = url+'&size='+this.size+"&from="+this.from;
       axios.post(searchUrl,esFilter).then(data=>{
         this.$Loading.finish();
-        this.list = _.get(data,'data.hits',{
+        let _searchData = _.get(data,'data.hits',{
           total:0,
           hits:[]
         })
+
+        console.log('_searchData',_searchData)
+        _searchData.hits = _.map(_searchData.hits,item=>{
+          return {
+            show:false,
+            ...item
+          }
+        })
+
+         this.list = _searchData;
+        
       })
 
 
@@ -510,11 +539,8 @@ export default {
       }
 
       axios.post(process.env.VUE_APP_API+'/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
-        let _data = _.get(data,'data.aggregations.2.buckets',[]);
-
-        if(_data.length>0) {
-          this.drawLine(_data);
-        }
+        this.chartData = _.get(data,'data.aggregations.2.buckets',[]);
+        this.drawLine();
       })
     },
     prevePage(){
@@ -554,6 +580,7 @@ export default {
 <style lang="less" src="../assets/less/filters.less" scoped></style>
 <style lang="less" scoped>
 
+
   #myChart{
     position: absolute;
     top: 20px;
@@ -561,6 +588,52 @@ export default {
     width: calc(100% - 900px);
     min-width: 300px;
     height: 300px;
+  }
+
+  .detail_table
+  {
+    width:100%;
+
+    .key{
+      width:150px;
+      text-align: right;
+      padding-right:20px;
+      div{
+        width:150px;
+      }
+    }
+    .value{
+      text-align: left;
+    }
+    tr{
+      background: none !important;
+      td{
+       
+        padding: 5px;
+        border:none
+      }
+    }
+  }
+
+  .icon_arrow
+  {
+    cursor: pointer;
+    position: absolute;
+    font-size:20px;
+    top: 290px;
+    left: 50%;
+    transform: translateX(-50%);
+    width:100px;
+    height:50px;
+    z-index:10;
+    
+    &.down{
+      top: 10px;
+    }
+
+    .text{
+      font-size:14px;
+    }
   }
 
   .breadcrumb
@@ -586,6 +659,5 @@ export default {
     .page-count
     {
       padding:.5rem 1rem;
-      
     }
 </style>
