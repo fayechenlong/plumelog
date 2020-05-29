@@ -41,7 +41,8 @@ export default {
   data(){
    return {
      traces:[],
-     traceId: ""
+     traceId: "",
+     timeRange:[]
    }
   },
   components: {
@@ -109,7 +110,22 @@ export default {
       this.traces=[];
       sessionStorage['cache_traceId'] = this.traceId;
 
-      let url= process.env.VUE_APP_API+'/query?index=easy_log_trace_*&size=1000&from=0';
+      let dateList=[];
+      let startDate = new Date(this.timeRange[0]);
+      debugger;
+      if(startDate){
+         while(startDate<=new Date(this.timeRange[1])){
+          dateList.push('easy_log_trace_'+moment(startDate).format('YYYYMMDD'))
+          startDate = new Date(startDate.setDate(startDate.getDate()+1));
+        }
+      }
+      let _index = 'easy_log_trace_*'
+
+      if(dateList.length>0){
+        _index = dateList.join(',')
+      }
+
+      let url= process.env.VUE_APP_API+'/query?index='+_index+'&size=1000&from=0';
 
       let filter = {
         "query": {
@@ -151,6 +167,7 @@ export default {
   mounted(){
     if(this.$route.query.traceId){
       this.traceId = this.$route.query.traceId;
+      this.timeRange = JSON.parse(_.get(this.$route.query,'timeRange','[]'))
     }
     else if(sessionStorage['cache_traceId']){
       this.traceId = sessionStorage['cache_traceId'];

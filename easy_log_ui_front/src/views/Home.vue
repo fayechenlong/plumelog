@@ -90,9 +90,9 @@
         <tr>
           <th scope="col" style="width:180px">时间</th>
           <th scope="col" style="width:80px">日志等级</th>
-          <th scope="col" style="width:120px">服务器名称</th>
+          <th scope="col" style="width:150px">服务器名称</th>
           <th scope="col" style="width:150px">应用名称</th>
-          <th scope="col" style="width:150px">追踪码</th>
+          <th scope="col" style="width:170px">追踪码</th>
           <th scope="col">类名</th>
           <th scope="col">内容</th>
           <th scope="col" style="width:70px">操作</th>
@@ -100,7 +100,7 @@
       </thead>
       <tbody>
         <template  v-for="item in list.hits">
-          <tr class="normal" :class="item._source.logLevel" :key="item._id">
+          <tr class="normal" :class="item._source.logLevel" :key="item._id" @dblclick="showDetail(item)">
             <td>{{item._source.dtTime | filterTime}}</td>
             <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
             <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
@@ -112,7 +112,7 @@
             </td>
             <td><a style="color:#0081e9;user-select:none;" @click="showDetail(item)">{{item.show?'收起':'展开'}}</a></td>
           </tr>
-          <tr v-show="item.show" :key="'cols_'+item._id">
+          <tr v-show="item.show" :key="'cols_'+item._id" >
             <td colspan="8">
                <table class="detail_table">
                   <template v-for="contentItem in contentItems">
@@ -300,7 +300,7 @@ export default {
       return this.from > 0 
     },
     haveNextPage(){
-      if(this.totalCount>=(this.from+this.size))
+      if(this.totalCount>(this.from+this.size))
         return true
       else
         return false
@@ -366,6 +366,10 @@ export default {
       for(let itemKey in this.filter)
       {
         if(this.filter[itemKey]){
+          // filters.push({
+          //   "term":{
+          //     [itemKey]:this.filter[itemKey].replace(/,/g,' '),
+          //   }
            filters.push({
             "match":{
               [itemKey]:{
