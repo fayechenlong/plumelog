@@ -18,11 +18,7 @@ public class AppTest
     @Test
     public void shouldAnswerWithTrue(){
 
-        try {
-            System.out.println(IpUtils.getLocalHostIP());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
     }
 }

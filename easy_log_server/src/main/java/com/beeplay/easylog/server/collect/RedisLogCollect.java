@@ -29,6 +29,13 @@ public class RedisLogCollect extends BaseLogCollect{
         super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts,userName,passWord);
         logger.info("sending log ready!");
     }
+    public RedisLogCollect(String redisHost,int redisPort,String redisPassWord,String esHosts,String userName,String passWord){
+
+        this.redisClient=RedisClient.getInstance(redisHost,redisPort,redisPassWord);
+        logger.info("getting log ready!");
+        super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts,userName,passWord);
+        logger.info("sending log ready!");
+    }
     public  void redisStart(){
 
         threadPoolExecutor.execute(()->{

@@ -1,6 +1,6 @@
 <template>
    <nav class="navbar navbar-dark bg-dark">
-        <a class="navbar-brand" href="#"><Icon type="md-list" />&nbsp;EasyLog</a>
+        <a class="navbar-brand icon_log" href="/#/">PlumeLog</a>
             <ul class="navbar-nav">
                 <li class="nav-item " :class="{'active':pageName=='Home'}">
                     <a class="nav-link"  href="/#/">日志查询</a>
@@ -35,6 +35,12 @@ export default {
 <style lang="less">
     .navbar {
         justify-content: flex-start;
+        .icon_log
+        {
+            background: url('../assets/icon_white.png') no-repeat;
+            background-size: contain;
+            padding-left: 60px;
+        }
         .navbar-nav{
             flex-direction:row;
              .nav-link{
