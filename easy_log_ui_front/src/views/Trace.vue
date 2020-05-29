@@ -17,7 +17,7 @@
       </table>
       <div style="clear:both"></div>
     </div>
-    <div v-for="traceInfo in traces" :key="traceInfo.method" style="width:1020px;float:left;margin-top:20px;margin-left:50px;">
+    <div v-for="traceInfo in traces" :key="traceInfo.method" style="width:1020px;float:left;margin-top:5px;margin-left:50px;">
       <tree :info="traceInfo" />
     </div>
   </div>
