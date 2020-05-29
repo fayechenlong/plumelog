@@ -100,7 +100,7 @@
       </thead>
       <tbody>
         <template  v-for="item in list.hits">
-          <tr class="normal" :class="item._source.logLevel" :key="item._id">
+          <tr class="normal" :class="item._source.logLevel" :key="item._id" @dblclick="showDetail(item)">
             <td>{{item._source.dtTime | filterTime}}</td>
             <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
             <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
@@ -112,7 +112,7 @@
             </td>
             <td><a style="color:#0081e9;user-select:none;" @click="showDetail(item)">{{item.show?'收起':'展开'}}</a></td>
           </tr>
-          <tr v-show="item.show" :key="'cols_'+item._id">
+          <tr v-show="item.show" :key="'cols_'+item._id" >
             <td colspan="8">
                <table class="detail_table">
                   <template v-for="contentItem in contentItems">
