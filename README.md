@@ -1,4 +1,4 @@
- ![avatar](/pic/icon.jpg)
+ ![avatar](/pic/icon.png)
  # Plumelog(EasyLog) 一个简单易用的java分布式日志组件
 ### 一.系统介绍
 
