@@ -5,9 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>easy_log_demo_dubbo</artifactId>
     <name>easy_log_demo_dubbo</name>
-    <version>2.0</version>
+    <version>${project.version}</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.version>2.0</project.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,17 +27,17 @@
         <dependency>
             <groupId>com.beeplay</groupId>
             <artifactId>easy_log_logback</artifactId>
-            <version>2.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beeplay</groupId>
             <artifactId>easy_log_trace</artifactId>
-            <version>2.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beeplay</groupId>
             <artifactId>easy_log_dubbo</artifactId>
-            <version>2.0</version>
+            <version>${project.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-spring-boot-starter -->
         <dependency>
