@@ -43,7 +43,7 @@ public class MainController {
     @Value("${admin.password}")
     private String adminPassWord;
 
-    @RequestMapping("/query")
+    @RequestMapping({"/query","/plumelog/query"})
     public String query(@RequestBody String queryStr,String index,String size,String from) {
         String message="";
         String indexStr="";
@@ -59,7 +59,7 @@ public class MainController {
         }
         return message;
     }
-    @RequestMapping("/getServerInfo")
+    @RequestMapping({"/getServerInfo","/plumelog/getServerInfo"})
     public String query(String index) {
         ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
         String res=elasticLowerClient.cat(index);
@@ -91,7 +91,7 @@ public class MainController {
         }
         return "";
     }
-    @RequestMapping("/deleteIndex")
+    @RequestMapping({"/deleteIndex","/plumelog/deleteIndex"})
     public Map<String,Object> deleteIndex(String index,String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
         if(adminPassWord.equals(this.adminPassWord)) {

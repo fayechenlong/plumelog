@@ -101,17 +101,18 @@ public class IpGetter {
      * @throws Exception
      */
     public static String getIp(){
-        String localHostAddress = "";
+        String localHostAddress = "127.0.0.1";
         try {
             Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
-
             while(allNetInterfaces.hasMoreElements()){
                 NetworkInterface networkInterface = allNetInterfaces.nextElement();
                 Enumeration<InetAddress> address = networkInterface.getInetAddresses();
                 while(address.hasMoreElements()){
                     InetAddress inetAddress = address.nextElement();
                     if(inetAddress != null && inetAddress instanceof Inet4Address){
-                        localHostAddress = inetAddress.getHostAddress();
+                        if(!"127.0.0.1".equals(inetAddress.getHostAddress())) {
+                            localHostAddress = inetAddress.getHostAddress();
+                        }
                     }
                 }
             }

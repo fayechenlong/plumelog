@@ -105,7 +105,7 @@
             <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
             <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
             <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
-            <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
+            <td class="icon"> <a :href="'./#/trace?traceId='+item._source.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
             <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
             <td class='td_cnt'>
               <div class="cnt" v-html="showContent(item)"></div>
@@ -300,7 +300,7 @@ export default {
       return this.from > 0 
     },
     haveNextPage(){
-      if(this.totalCount>=(this.from+this.size))
+      if(this.totalCount>(this.from+this.size))
         return true
       else
         return false
@@ -371,10 +371,9 @@ export default {
           //     [itemKey]:this.filter[itemKey].replace(/,/g,' '),
           //   }
            filters.push({
-            "match":{
+            "match_phrase":{
               [itemKey]:{
-                "query":this.filter[itemKey].replace(/,/g,' '),
-                // "type":"phrase"
+                "query":this.filter[itemKey].replace(/,/g,' ')
               }
             }
           })
@@ -432,16 +431,16 @@ export default {
           code = code.replace(re, '<em>$1</em>');
       }
 
-      if(code.indexOf('java.')>-1){
-        return '<pre>'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>";
-      }
-      else
-      {
-        return code;
-      }
+      return '<pre>'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>";
+      // if(code.indexOf('java.')>-1 || true){
+      // }
+      // else
+      // {
+      //   return code;
+      // }
     },
     showContent(item){
-      return (_.get(item,"highlight.content[0]","") || _.get(item,"_source.content",""))
+      return _.get(item,"highlight.content[0]","") || _.get(item,"_source.content","")
     },
     showDetail(item){
       item.show = !item.show
@@ -505,7 +504,6 @@ export default {
           hits:[]
         })
 
-        console.log('_searchData',_searchData)
         _searchData.hits = _.map(_searchData.hits,item=>{
           return {
             show:false,

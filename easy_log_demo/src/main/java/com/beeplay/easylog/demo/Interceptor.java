@@ -2,6 +2,7 @@ package com.beeplay.easylog.demo;
 import com.beeplay.easylog.core.TraceId;
 import com.beeplay.easylog.core.util.IdWorker;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +15,13 @@ public class Interceptor extends HandlerInterceptorAdapter{
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        IdWorker worker = new IdWorker(1,1,1);
-        TraceId.logTraceID.set(String.valueOf(worker.nextId()));
+        String traceId = request.getHeader("TraceId");
+        if (StringUtils.isEmpty(traceId)){
+            IdWorker worker = new IdWorker(1,1,1);
+            TraceId.logTraceID.set(String.valueOf(worker.nextId()));
+        }else{
+            TraceId.logTraceID.set(traceId);
+        }
         return true;
     }
 }
