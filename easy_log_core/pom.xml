@@ -4,7 +4,7 @@
     <parent>
         <artifactId>easy_log</artifactId>
         <groupId>com.beeplay</groupId>
-        <version>2.0.RELEASE</version>
+        <version>${project.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>easy_log_core</artifactId>
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>3.1.0</version>
+            <version>${redis.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>2.5.0</version>
+            <version>${kafka.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
