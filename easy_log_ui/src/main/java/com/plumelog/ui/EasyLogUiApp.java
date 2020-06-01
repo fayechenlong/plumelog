@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 * @return
 **/
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.beeplay"})
+@ComponentScan(basePackages = {"com.plumelog"})
 public class EasyLogUiApp
 {
     public static void main( String[] args ){
