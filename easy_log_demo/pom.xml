@@ -8,7 +8,7 @@
     <version>${project.version}</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.version>2.0</project.version>
+        <project.version>2.0.RELEASE</project.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>easy_log</artifactId>
         <groupId>com.beeplay</groupId>
-        <version>2.0.RELEASE</version>
+        <version>${project.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>easy_log_dubbo</artifactId>
