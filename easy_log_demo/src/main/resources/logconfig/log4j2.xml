@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="info" packages="com.beeplay.easylog.log4j2.appender">
+<Configuration status="info" packages="com.plumelog.log4j2.appender">
     <Appenders>
         <!--<Console name="console" target="SYSTEM_OUT">
             &lt;!&ndash;控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） &ndash;&gt;
@@ -9,7 +9,7 @@
         </Console>-->
 
         <!-- easylog日志 -->
-        <appender name="easylog_demo" class="com.beeplay.easylog.log4j2.appender.KafkaAppender">
+        <appender name="easylog_demo" class="com.plumelog.log4j2.appender.KafkaAppender">
         <appName>easylog_demo</appName>
         <kafkaHosts>10.103.4.37:9092,10.103.4.50:9092,10.103.4.53:9092</kafkaHosts>
         </appender>

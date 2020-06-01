@@ -1,2 +1,2 @@
-traceIdFilterP=com.beeplay.easylog.dubbo.filter.TraceIdProviderFilter
-traceIdFilterC=com.beeplay.easylog.dubbo.filter.TraceIdConsumerFilter
+traceIdFilterP=com.plumelog.dubbo.filter.TraceIdProviderFilter
+traceIdFilterC=com.plumelog.dubbo.filter.TraceIdConsumerFilter

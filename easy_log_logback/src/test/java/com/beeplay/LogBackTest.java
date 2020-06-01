@@ -1,6 +1,6 @@
 package com.beeplay;
 
-import com.beeplay.easylog.core.TraceId;
+import com.plumelog.core.TraceId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

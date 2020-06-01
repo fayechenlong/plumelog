@@ -49,7 +49,7 @@
    （1）如果用log4j，引入
 ```xml
                    <dependency>
-                       <groupId>com.beeplay</groupId>
+                       <groupId>com.plumelog</groupId>
                        <artifactId>easy_log_log4j</artifactId>
                        <version>2.0.RELEASE</version>
                    </dependency>
@@ -77,7 +77,7 @@
 * 引入
 ```xml
        <dependency>
-           <groupId>com.beeplay</groupId>
+           <groupId>com.plumelog</groupId>
            <artifactId>easy_log_logback</artifactId>
            <version>2.0.RELEASE</version>
        </dependency>
@@ -110,7 +110,7 @@
 * 引入
 ```xml
        <dependency>
-           <groupId>com.beeplay</groupId>
+           <groupId>com.plumelog</groupId>
            <artifactId>easy_log_log4j2</artifactId>
            <version>2.0.RELEASE</version>
        </dependency>       

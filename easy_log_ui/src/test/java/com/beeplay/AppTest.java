@@ -1,6 +1,6 @@
 package com.beeplay;
 
-import com.beeplay.easylog.ui.es.ElasticLowerClient;
+import com.plumelog.ui.es.ElasticLowerClient;
 
 import java.io.IOException;
 

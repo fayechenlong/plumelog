@@ -5,7 +5,7 @@
 1.引入
   ```xml
                    <dependency>
-                       <groupId>com.beeplay</groupId>
+                       <groupId>com.plumelog</groupId>
                        <artifactId>easy_log_dubbo</artifactId>
                        <version>2.0.RELEASE</version>
                    </dependency>
