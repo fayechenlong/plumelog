@@ -1,15 +1,15 @@
 <template>
    <nav class="navbar navbar-dark bg-dark">
-        <a class="navbar-brand icon_log" href="/#/">PlumeLog</a>
+        <a class="navbar-brand icon_log" href="./#/">PlumeLog</a>
             <ul class="navbar-nav">
                 <li class="nav-item " :class="{'active':pageName=='Home'}">
-                    <a class="nav-link"  href="/#/">日志查询</a>
+                    <a class="nav-link"  href="./#/">日志查询</a>
                 </li>
                 <li class="nav-item" :class="{'active':pageName=='Trace'}">
-                    <a class="nav-link" href="/#/trace">链路追踪</a>
+                    <a class="nav-link" href="./#/trace">链路追踪</a>
                 </li>
                  <li class="nav-item" :class="{'active':pageName=='Size'}">
-                    <a class="nav-link" href="/#/size">管理</a>
+                    <a class="nav-link" href="./#/size">管理</a>
                 </li>
             </ul>
         </nav>
