@@ -5,9 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>easy_log_demo</artifactId>
     <name>easy_log_demo</name>
-    <version>2.0</version>
+    <version>${project.version}</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.version>2.0.RELEASE</project.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -41,18 +42,18 @@
         <dependency>
             <groupId>com.beeplay</groupId>
             <artifactId>easy_log_logback</artifactId>
-            <version>2.0.RELEASE</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.beeplay</groupId>
             <artifactId>easy_log_trace</artifactId>
-            <version>2.0.RELEASE</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beeplay</groupId>
             <artifactId>easy_log_dubbo</artifactId>
-            <version>2.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.dubbo</groupId>
@@ -99,7 +100,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>easy_log_demo_log4j_kafka</finalName>
+        <finalName>easy_log_demo</finalName>
     </build>
 
 </project>

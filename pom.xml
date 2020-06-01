@@ -5,7 +5,7 @@
     <groupId>com.beeplay</groupId>
     <artifactId>easy_log</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.RELEASE</version>
+    <version>${project.version}</version>
     <modules>
         <module>easy_log_core</module>
         <module>easy_log_demo</module>
@@ -23,6 +23,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
+        <project.version>2.0.RELEASE</project.version>
+        <redis.version>3.1.0</redis.version>
+        <kafka.version>2.5.0</kafka.version>
+        <springboot.version>2.1.7.RELEASE</springboot.version>
+        <elasticsearch.version>7.7.0</elasticsearch.version>
     </properties>
     <build>
         <plugins>
