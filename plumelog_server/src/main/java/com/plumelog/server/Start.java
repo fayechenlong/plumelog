@@ -30,30 +30,30 @@ public class Start {
 
     /**
     * @Author Frank.chen
-    * @Description load config from easylog.properties
+    * @Description load config from plumelog.properties
     * @Date 14:04 2020/5/12
     * @Param []
     * @return void
     **/
     private  void loadConfig(){
         try {
-            InputStream in = KafkaLogCollect.class.getClassLoader().getResourceAsStream("easylog.properties");
+            InputStream in = KafkaLogCollect.class.getClassLoader().getResourceAsStream("plumelog.properties");
             this.properties.load(in);
 
-            InitConfig.MAX_SEND_SIZE=Integer.valueOf(this.properties.getProperty("easylog.server.maxSendSize"));
-            InitConfig.KAFKA_GROUP_NAME=this.properties.getProperty("easylog.server.kafka.kafkaGroupName");
-            InitConfig.MAX_INTERVAL=Integer.valueOf(this.properties.getProperty("easylog.server.interval"));
+            InitConfig.MAX_SEND_SIZE=Integer.valueOf(this.properties.getProperty("plumelog.server.maxSendSize"));
+            InitConfig.KAFKA_GROUP_NAME=this.properties.getProperty("plumelog.server.kafka.kafkaGroupName");
+            InitConfig.MAX_INTERVAL=Integer.valueOf(this.properties.getProperty("plumelog.server.interval"));
 
-            this.kafkaHosts = this.properties.getProperty("easylog.server.kafka.kafkaHosts");
+            this.kafkaHosts = this.properties.getProperty("plumelog.server.kafka.kafkaHosts");
 
-            this.esHosts = this.properties.getProperty("easylog.server.es.esHosts");
-            this.esUserName=this.properties.getProperty("easylog.server.es.userName");
-            this.esPassWord=this.properties.getProperty("easylog.server.es.passWord");
+            this.esHosts = this.properties.getProperty("plumelog.server.es.esHosts");
+            this.esUserName=this.properties.getProperty("plumelog.server.es.userName");
+            this.esPassWord=this.properties.getProperty("plumelog.server.es.passWord");
 
-            this.redisHost = this.properties.getProperty("easylog.server.redis.redisHost");
-            this.redisPassWord = this.properties.getProperty("easylog.server.redis.redisPassWord");
+            this.redisHost = this.properties.getProperty("plumelog.server.redis.redisHost");
+            this.redisPassWord = this.properties.getProperty("plumelog.server.redis.redisPassWord");
 
-            this.model=this.properties.getProperty("easylog.server.model");
+            this.model=this.properties.getProperty("plumelog.server.model");
         }catch (Exception e){
             logger.error("load config fail!",e);
         }
@@ -90,7 +90,7 @@ public class Start {
             Start start=new Start();
             start.serverStart();
         }catch (Exception e){
-            logger.error("easyLog server running fail!",e);
+            logger.error("plumelog server running fail!",e);
         }
 
     }

@@ -17,8 +17,8 @@ public class PageController {
     public String index() {
         return "index";
     }
-    @RequestMapping("/index")
+    @RequestMapping("/plumelog")
     public String index1() {
-        return "index1";
+        return "index";
     }
 }

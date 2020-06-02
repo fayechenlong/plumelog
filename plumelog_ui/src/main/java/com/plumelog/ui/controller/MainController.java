@@ -43,7 +43,7 @@ public class MainController {
     @Value("${admin.password}")
     private String adminPassWord;
 
-    @RequestMapping("/query")
+    @RequestMapping({"/query","/plumelog/query"})
     public String query(@RequestBody String queryStr,String index,String size,String from) {
         String message="";
         String indexStr="";
@@ -52,14 +52,16 @@ public class MainController {
             String[] indexs=index.split(",");
             List<String> reindexs=elasticLowerClient.getExistIndices(indexs);
             indexStr=String.join(",",reindexs);
+            if("".equals(indexStr)){
+                return message;
+            }
             String url = "http://"+esHosts+"/"+indexStr+"/_search?from="+from+"&size="+size;
             return EntityUtils.toString(LogUtil.getInfo(url,queryStr,userName,passWord), "utf-8");
         }catch (IOException e){
-          e.printStackTrace();
+            return e.getMessage();
         }
-        return message;
     }
-    @RequestMapping("/getServerInfo")
+    @RequestMapping({"/getServerInfo","/plumelog/getServerInfo"})
     public String query(String index) {
         ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
         String res=elasticLowerClient.cat(index);
@@ -91,7 +93,7 @@ public class MainController {
         }
         return "";
     }
-    @RequestMapping("/deleteIndex")
+    @RequestMapping({"/deleteIndex","/plumelog/deleteIndex"})
     public Map<String,Object> deleteIndex(String index,String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
         if(adminPassWord.equals(this.adminPassWord)) {
