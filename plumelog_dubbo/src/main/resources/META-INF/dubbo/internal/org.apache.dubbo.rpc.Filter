@@ -1,0 +1,2 @@
+traceIdFilterP=com.plumelog.dubbo.filter.TraceIdProviderFilter
+traceIdFilterC=com.plumelog.dubbo.filter.TraceIdConsumerFilter
