@@ -92,6 +92,8 @@
     log4j.appender.L.appName=easyjob
     log4j.appender.L.reidsHost=172.16.249.72
     log4j.appender.L.redisPort=6379
+    #redis没有密码这一项为空或者不需要
+    log4j.appender.L.redisAuth=123456
 ```
    同理如果使用logback,和log4j2配置如下
     
@@ -107,10 +109,11 @@
 ```  
 * 配置
 ```xml
-    <!-- plumelog日志 -->
+    <!-- plumelog日志 --><!--redis没有密码 redisAuth 字段可以去掉一 -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plumelog</appName>
         <reidsHost>172.16.249.72</reidsHost>
+        <redisAuth>123456</redisAuth>
         <redisPort>6379</redisPort>
     </appender>
    
@@ -123,8 +126,6 @@
 
     <!-- 日志输出级别 -->
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
         <appender-ref ref="plumelog" />
     </root>
 ```   
@@ -143,8 +144,8 @@
   <KafkaAppender name="kafkaAppender" appName="plumelog" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092" >
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
   </KafkaAppender>
-
-  <RedisAppender name="redisAppender" appName="plumelog" reidsHost="172.16.249.72" redisPort="6379" >
+ <!--redis没有密码 redisAuth 字段可以去掉一 -->
+  <RedisAppender name="redisAppender" appName="plumelog" reidsHost="172.16.249.72" redisPort="6379" redisAuth="123456">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
   </RedisAppender>
 
@@ -152,7 +153,6 @@
   <!-- 上面两个配置二选一 -->
   <loggers>
       <root level="INFO">
-          <appender-ref ref="Console"/>
           <appender-ref ref="redisAppender"/>
       </root>
   </loggers>
