@@ -98,7 +98,7 @@ export default {
         sortable: true,
         sortType:"desc",//初始化排序
         render:(h,params)=>{
-          let _index = params.row.index.replace('plumelog_trace_','').replace('plumelog_','');;
+          let _index = params.row.index.replace('plume_log_trace_','').replace('plume_log_run_','');;
           if(_index.length>=8){
             _index = _index.substring(0,4)+'-'+_index.substring(4,6)+'-'+_index.substring(6,8)
           }
@@ -196,12 +196,12 @@ export default {
        this.size_selection =[];
        this.trace_selection = [];
        this.$Loading.start();
-       axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plumelog_2*').then(data=>{
+       axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_run_2*').then(data=>{
          this.$Loading.finish();
          this.sizeInfo = _.get(data,'data',[]);
        })
 
-        axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plumelog_trace*').then(data=>{
+        axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_trace_*').then(data=>{
          this.$Loading.finish();
          this.traceInfo = _.get(data,'data',[]);
        })

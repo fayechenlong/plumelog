@@ -25,16 +25,16 @@ public interface LogMessageConstant {
     String TRACE_END = ">";
 
 
-    String LOG_KEY = "easy_log_list";
+    String LOG_KEY = "plume_log_list";
 
     /**
      * 链路日志存入ES的索引后缀
      */
-    String LOG_KEY_TRACE = "easy_log_list";
+    String LOG_KEY_TRACE = "plume_trace_list";
 
-    String ES_INDEX = "easy_log_";
+    String ES_INDEX = "plume_log_";
 
-    String ES_TYPE = "easy_log";
+    String ES_TYPE = "plume_log";
 
     String LOG_TYPE_RUN = "run";
 

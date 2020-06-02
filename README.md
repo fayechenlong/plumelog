@@ -1,5 +1,5 @@
  ![avatar](/pic/icon.png)
- # Plumelog(EasyLog) 一个简单易用的java分布式日志组件
+ # Plumelog一个简单易用的java分布式日志组件
 ### 一.系统介绍
 
  1. 无入侵的分布式日志系统，基于log4j、log4j2、logback搜集日志，设置链路ID，方便查询关联日志
@@ -51,7 +51,7 @@
                    <dependency>
                        <groupId>com.plumelog</groupId>
                        <artifactId>plumelog_log4j</artifactId>
-                       <version>2.0.RELEASE</version>
+                       <version>1.0</version>
                    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -79,7 +79,7 @@
        <dependency>
            <groupId>com.plumelog</groupId>
            <artifactId>plumelog_logback</artifactId>
-           <version>2.0.RELEASE</version>
+           <version>1.0</version>
        </dependency>
 ```  
 * 配置
@@ -112,7 +112,7 @@
        <dependency>
            <groupId>com.plumelog</groupId>
            <artifactId>plumelog_log4j2</artifactId>
-           <version>2.0.RELEASE</version>
+           <version>1.0</version>
        </dependency>       
 ```   
 * 配置
@@ -185,28 +185,28 @@
    
 4. 启动服务
 
- * 步骤一打包完的 启动 plumelog_server-2.0.RELEASE.jar ，高可用的话直接启动多个服务就行
+ * 步骤一打包完的 启动 plumelog_server-1.0.jar ，高可用的话直接启动多个服务就行
 
    注意：打完的包target目录下，lib文件夹（依赖包目录），config文件夹（两个配置文件的目录），plumelog_server-1.0.jar 放到同一个目录下
   
- * plumelog_server中easylog.properties详解    
+ * plumelog_server中plumelog.properties详解    
 ```properties
        #日志缓冲区，kafka，redis两种模式
-       easylog.server.model=kafka
+       plumelog.server.model=kafka
        #kafka集群地址
-       easylog.server.host.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
+       plumelog.server.host.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
        #如果是redis 这边填写redis地址
-       easylog.server.redis.redisHost=172.16.249.72:6379
+       plumelog.server.redis.redisHost=172.16.249.72:6379
        #elasticsearch集群地址
-       easylog.server.host.esHosts=172.16.251.196:9200
+       plumelog.server.host.esHosts=172.16.251.196:9200
        #每次获取最大日志条数
-       easylog.server.maxSendSize=5000
+       plumelog.server.maxSendSize=5000
        #日志读取频次，单位毫秒
-       easylog.server.interval=100
+       plumelog.server.interval=100
 ```       
   * 查询界面
      
-     1.到plumelog_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动plumelog_ui-2.0.RELEASE.jar就行了
+     1.到plumelog_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动plumelog_ui-1.0.jar就行了
      
      2.[前端打包文档](/plumelog_ui/README.md)，也可以不用打包，plumelog_ui里面已经有一份打包好了的，如果自己修改代码那就要打包了
      
@@ -230,6 +230,6 @@
    
 ### 7.测试地址
 
-   * 查询界面地址：https://easylog-demo.beeplaying.com
+   * 查询界面地址：http://demo.plumelog.com
       
-   * 访问这个地址产生测试log数据：https://easylog-demo.beeplaying.com/demo/index?data=1234  data参数自己随便传，传什么打印什么
+   * 访问这个地址产生测试log数据：http://demo.plumelog.com/demo/index?data=1234  data参数自己随便传，传什么打印什么
