@@ -62,13 +62,13 @@
 ```properties
         log4j.appender.L=com.plumelog.core.appender.KafkaAppender
         #appName系统的名称(自己定义就好)
-        log4j.appender.L.appName=easyjob
+        log4j.appender.L.appName=plumelog
         log4j.appender.L.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
 ```
    redis做为中间件
 ```properties
         log4j.appender.L=com.plumelog.log4j.appender.RedisAppender
-        log4j.appender.L.appName=easyjob
+        log4j.appender.L.appName=plumelog
         log4j.appender.L.reidsHost=172.16.249.72
         log4j.appender.L.redisPort=6379
 ```
