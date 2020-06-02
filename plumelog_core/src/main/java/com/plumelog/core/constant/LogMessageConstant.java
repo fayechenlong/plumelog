@@ -30,7 +30,7 @@ public interface LogMessageConstant {
     /**
      * 链路日志存入ES的索引后缀
      */
-    String LOG_KEY_TRACE = "plume_log_list";
+    String LOG_KEY_TRACE = "plume_trace_list";
 
     String ES_INDEX = "plume_log_";
 
