@@ -1,13 +1,13 @@
  ![avatar](/pic/icon.png)
  # Plumelog一个简单易用的java分布式日志组件
 
-### 架构
+### 一、架构
 
  ![avatar](/pic/plumelog.png)
  
-### 使用方法
+### 二、使用方法
 
-#### 安装
+#### （1）安装
     
    1.安装 redis
      
@@ -20,27 +20,27 @@
    配置文件 plumelog_server/config/plumelog.properties 详解：
 
 ```properties
-        #日志缓冲区，kafka，redis两种模式
-        plumelog.server.model=redis
-        
-        #如果使用kafka，下面配置生效
-        plumelog.server.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
-        plumelog.server.kafka.kafkaGroupName=logConsumer
-        
-        #如果使用redis,下面配置生效
-        plumelog.server.redis.redisHost=172.16.249.72:6379
-        plumelog.server.redis.redisPassWord=
-        
-        #elasticsearch相关配置
-        plumelog.server.es.esHosts=172.16.251.196:9200
-        #ES没有密码的不用管这个配置
-        plumelog.server.es.userName=elastic
-        plumelog.server.es.passWord=plumelog123456
-        
-        #单次拉取日志条数
-        plumelog.server.maxSendSize=5000
-        #拉取时间间隔，kafka不生效
-        plumelog.server.interval=100
+    #日志缓冲区，kafka，redis两种模式
+    plumelog.server.model=redis
+    
+    #如果使用kafka，下面配置生效
+    plumelog.server.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
+    plumelog.server.kafka.kafkaGroupName=logConsumer
+    
+    #如果使用redis,下面配置生效
+    plumelog.server.redis.redisHost=172.16.249.72:6379
+    plumelog.server.redis.redisPassWord=
+    
+    #elasticsearch相关配置
+    plumelog.server.es.esHosts=172.16.251.196:9200
+    #ES没有密码的不用管这个配置
+    plumelog.server.es.userName=elastic
+    plumelog.server.es.passWord=plumelog123456
+    
+    #单次拉取日志条数
+    plumelog.server.maxSendSize=5000
+    #拉取时间间隔，kafka不生效
+    plumelog.server.interval=100
 ```       
    5.配置plume_ui,并启动，默认端口8989
    
@@ -65,7 +65,7 @@
     admin.password=123456
 ```
 
-#### 项目使用
+#### （2）项目使用
 
 #### 性能排名，log4j2>logback>log4j 如果您的项目没有特殊需求，建议用log4j2
 
@@ -157,7 +157,7 @@
       </root>
   </loggers>
 ```    
-#### 示例(所有的列子都在plumelog_demo里面)
+#### （3）示例(所有的列子都在plumelog_demo里面)
 
 * 普通日志使用
 
@@ -207,11 +207,11 @@
 
 * springcloud(fegin)的分布式系统traceId传递,参考plumelog_rest项目
 
-### 联系交流
+### 三、联系交流
 
    * QQ群：1072991065
    
-### 测试地址
+### 四、测试地址
 
    * 查询界面地址：http://demo.plumelog.com
       
