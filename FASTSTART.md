@@ -9,7 +9,7 @@
 
 #### （1）安装
     
-   1.安装 redis
+   1.安装 redis 或者 kafka（一般公司redis足够）
      
    2.安装 elasticsearch
     
