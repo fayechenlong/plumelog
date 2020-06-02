@@ -105,7 +105,7 @@
             <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
             <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
             <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
-            <td class="icon"> <a :href="'/#/trace?traceId='+item._source.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
+            <td class="icon"> <a :href="'./#/trace?traceId='+item._source.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
             <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
             <td class='td_cnt'>
               <div class="cnt" v-html="showContent(item)"></div>
@@ -459,13 +459,13 @@ export default {
       
       if(startDate){
          while(startDate<=this.dateTimeRange[1]){
-          dateList.push('plumelog_'+moment(startDate).format('YYYYMMDD'))
+          dateList.push('plume_log_run_'+moment(startDate).format('YYYYMMDD'))
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }
      
       if(dateList.length==0){
-        dateList.push('plumelog_'+moment().format('YYYYMMDD'));
+        dateList.push('plume_log_run_'+moment().format('YYYYMMDD'));
       }
           
       let url= process.env.VUE_APP_API+'/query?index='+dateList.join(',');
@@ -504,7 +504,6 @@ export default {
           hits:[]
         })
 
-        console.log('_searchData',_searchData)
         _searchData.hits = _.map(_searchData.hits,item=>{
           return {
             show:false,

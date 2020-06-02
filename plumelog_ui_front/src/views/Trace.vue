@@ -112,14 +112,13 @@ export default {
 
       let dateList=[];
       let startDate = new Date(this.timeRange[0]);
-      debugger;
       if(startDate){
          while(startDate<=new Date(this.timeRange[1])){
-          dateList.push('plumelog_trace_'+moment(startDate).format('YYYYMMDD'))
+          dateList.push('plume_log_trace_'+moment(startDate).format('YYYYMMDD'))
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }
-      let _index = 'plumelog_trace_*'
+      let _index = 'plume_log_trace_*'
 
       if(dateList.length>0){
         _index = dateList.join(',')
