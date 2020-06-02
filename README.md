@@ -14,6 +14,8 @@
  
 ### 二.架构
 
+ ![avatar](/pic/plumelog.png)
+ 
 * plumelog_core 核心组件包含日志搜集端，负责搜集日志并推送到kafka，redis等队列
 
 * plumelog_server 负责把队列中的日志日志异步写入到elasticsearch 
