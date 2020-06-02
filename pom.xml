@@ -3,23 +3,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.plumelog</groupId>
-    <artifactId>easy_log</artifactId>
+    <artifactId>plumelog</artifactId>
     <packaging>pom</packaging>
     <version>2.1</version>
     <modules>
-        <module>easy_log_core</module>
-        <module>easy_log_demo</module>
-        <module>easy_log_server</module>
-        <module>easy_log_log4j</module>
-        <module>easy_log_logback</module>
-        <module>easy_log_log4j2</module>
-        <module>easy_log_dubbo</module>
-        <module>easy_log_trace</module>
-        <module>easy_log_demo_dubbo</module>
-        <module>easy_log_ui</module>
-        <module>easy_log_rest</module>
+        <module>plumelog_core</module>
+        <module>plumelog_demo</module>
+        <module>plumelog_server</module>
+        <module>plumelog_log4j</module>
+        <module>plumelog_logback</module>
+        <module>plumelog_log4j2</module>
+        <module>plumelog_dubbo</module>
+        <module>plumelog_trace</module>
+        <module>plumelog_demo_dubbo</module>
+        <module>plumelog_ui</module>
+        <module>plumelog_rest</module>
     </modules>
-    <name>easy_log</name>
+    <name>plumelog</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>

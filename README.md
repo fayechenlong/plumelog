@@ -14,18 +14,18 @@
  
 ### 二.架构
 
-* easy_log_core 核心组件包含日志搜集端，负责搜集日志并推送到kafka，redis等队列
+* plumelog_core 核心组件包含日志搜集端，负责搜集日志并推送到kafka，redis等队列
 
-* easy_log_server 负责把队列中的日志日志异步写入到elasticsearch 
+* plumelog_server 负责把队列中的日志日志异步写入到elasticsearch 
 
-* easy_log_ui 前端展示，日志查询界面
+* plumelog_ui 前端展示，日志查询界面
 
-* easy_log_demo 基于springboot的使用案例
+* plumelog_demo 基于springboot的使用案例
 
 ### 三.系统流程
-   1. easy_log_core 搜集日志发送到=>kafka或者redis
+   1. plumelog_core 搜集日志发送到=>kafka或者redis
    
-   2. easy_log_server kafka或者redis=>elasticsearch
+   2. plumelog_server kafka或者redis=>elasticsearch
    
 ### 四.使用方法
 
@@ -35,7 +35,7 @@
 
 * maven deploy -DskipTests 上传包到自己的私服
    
-     私服地址到easy_log/pom.xml改
+     私服地址到plumelog/pom.xml改
 ```xml
            <properties>
               <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -50,7 +50,7 @@
 ```xml
                    <dependency>
                        <groupId>com.plumelog</groupId>
-                       <artifactId>easy_log_log4j</artifactId>
+                       <artifactId>plumelog_log4j</artifactId>
                        <version>2.0.RELEASE</version>
                    </dependency>
 ```                       
@@ -58,14 +58,14 @@
     
    kafka做为中间件
 ```properties
-        log4j.appender.L=com.beeplay.easylog.core.appender.KafkaAppender
+        log4j.appender.L=com.plumelog.core.appender.KafkaAppender
         #appName系统的名称(自己定义就好)
         log4j.appender.L.appName=easyjob
         log4j.appender.L.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
 ```
    redis做为中间件
 ```properties
-        log4j.appender.L=com.beeplay.easylog.log4j.appender.RedisAppender
+        log4j.appender.L=com.plumelog.log4j.appender.RedisAppender
         log4j.appender.L.appName=easyjob
         log4j.appender.L.reidsHost=172.16.249.72
         log4j.appender.L.redisPort=6379
@@ -78,21 +78,21 @@
 ```xml
        <dependency>
            <groupId>com.plumelog</groupId>
-           <artifactId>easy_log_logback</artifactId>
+           <artifactId>plumelog_logback</artifactId>
            <version>2.0.RELEASE</version>
        </dependency>
 ```  
 * 配置
 ```xml
-        <!-- easylog日志 -->
-        <appender name="easylog" class="com.beeplay.easylog.logback.appender.RedisAppender">
-            <appName>easylog</appName>
+        <!-- plumelog日志 -->
+        <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+            <appName>plumelog</appName>
             <reidsHost>172.16.249.72</reidsHost>
             <redisPort>6379</redisPort>
         </appender>
        
-        <appender name="easylog" class="com.beeplay.easylog.logback.appender.KafkaAppender">
-            <appName>easylog</appName>
+        <appender name="plumelog" class="com.plumelog.logback.appender.KafkaAppender">
+            <appName>plumelog</appName>
             <kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>
         </appender>
       
@@ -102,7 +102,7 @@
         <root level="INFO">
             <appender-ref ref="STDOUT" />
             <appender-ref ref="FILE" />
-            <appender-ref ref="easylog" />
+            <appender-ref ref="plumelog" />
         </root>
 ```   
 #### log4j2
@@ -111,17 +111,17 @@
 ```xml
        <dependency>
            <groupId>com.plumelog</groupId>
-           <artifactId>easy_log_log4j2</artifactId>
+           <artifactId>plumelog_log4j2</artifactId>
            <version>2.0.RELEASE</version>
        </dependency>       
 ```   
 * 配置
 ```xml
-          <KafkaAppender name="kafkaAppender" appName="easyjob" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092" >
+          <KafkaAppender name="kafkaAppender" appName="plumelog" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092" >
               <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
           </KafkaAppender>
     
-          <RedisAppender name="redisAppender" appName="easyjob" reidsHost="172.16.249.72" redisPort="6379" >
+          <RedisAppender name="redisAppender" appName="plumelog" reidsHost="172.16.249.72" redisPort="6379" >
               <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
           </RedisAppender>
      
@@ -134,7 +134,7 @@
               </root>
           </loggers>
 ```    
-3. 示例(所有的列子都在easy_log_demo里面)
+3. 示例(所有的列子都在plumelog_demo里面)
 
 * 普通日志使用
 
@@ -152,11 +152,11 @@
         }
 ```   
 
-* [链路追踪使用](/easy_log_trace/README.md)
+* [链路追踪使用](/plumelog_trace/README.md)
 
 * TraceId跨线程传递
 
-    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（easy_log_demo也有）
+    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog_demo也有）
 
     #### 修饰线程池
 
@@ -180,16 +180,16 @@
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
 ```       
-* [Dubbo的分布式系统traceId传递 ](/easy_log_dubbo/README.md)
+* [Dubbo的分布式系统traceId传递 ](/plumelog_dubbo/README.md)
 
    
 4. 启动服务
 
- * 步骤一打包完的 启动 easy_log_server-2.0.RELEASE.jar ，高可用的话直接启动多个服务就行
+ * 步骤一打包完的 启动 plumelog_server-2.0.RELEASE.jar ，高可用的话直接启动多个服务就行
 
-   注意：打完的包target目录下，lib文件夹（依赖包目录），config文件夹（两个配置文件的目录），easy_log_server-1.0.jar 放到同一个目录下
+   注意：打完的包target目录下，lib文件夹（依赖包目录），config文件夹（两个配置文件的目录），plumelog_server-1.0.jar 放到同一个目录下
   
- * easy_log_server中easylog.properties详解    
+ * plumelog_server中easylog.properties详解    
 ```properties
        #日志缓冲区，kafka，redis两种模式
        easylog.server.model=kafka
@@ -206,9 +206,9 @@
 ```       
   * 查询界面
      
-     1.到easy_log_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动easy_log_ui-2.0.RELEASE.jar就行了
+     1.到plumelog_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动plumelog_ui-2.0.RELEASE.jar就行了
      
-     2.[前端打包文档](/easy_log_ui/README.md)，也可以不用打包，easy_log_ui里面已经有一份打包好了的，如果自己修改代码那就要打包了
+     2.[前端打包文档](/plumelog_ui/README.md)，也可以不用打包，plumelog_ui里面已经有一份打包好了的，如果自己修改代码那就要打包了
      
      3.界面介绍
      
