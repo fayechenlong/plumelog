@@ -8,13 +8,6 @@ import org.springframework.util.StringUtils;
 
 import static org.apache.dubbo.common.constants.CommonConstants.CONSUMER;
 
-/**
- * @ClassName TraceIdFilter1
- * @Deacription TODO
- * @Author Frank.Chen
- * @Date 2020/5/19 11:07
- * @Version 1.0
- **/
 @Activate(group =CONSUMER)
 public class TraceIdConsumerFilter implements Filter {
     private static final String TRACE_ID = "trace_id";

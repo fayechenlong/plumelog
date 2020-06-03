@@ -26,20 +26,13 @@ public class MessageAppenderFactory {
             = ThreadPoolUtil.getPool(4, 8, 5000);
 
 
-    /**
-     * disruptor 的写入
-     * @param baseLogMessage
-     */
+
     public static void push(BaseLogMessage baseLogMessage) {
         LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
         producer.send(baseLogMessage);
     }
 
-    /**
-     * 直接使用线程池异步写入
-     * @param baseLogMessage
-     * @param client
-     */
+
     public static void push(BaseLogMessage baseLogMessage, AbstractClient client) {
         final String redisKey =
                 baseLogMessage instanceof RunLogMessage

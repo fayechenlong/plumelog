@@ -5,13 +5,7 @@ import com.plumelog.server.collect.RedisLogCollect;
 import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.Properties;
-/**
-* @Author Frank.chen
-* @Description //TODO
-* @Date 14:04 2020/5/12
-* @Param 
-* @return 
-**/
+
 public class Start {
     private static org.slf4j.Logger logger= LoggerFactory.getLogger(Start.class);
     private  Properties properties = new Properties();
@@ -28,13 +22,7 @@ public class Start {
     private  String KAFKA_MODE_NAME="kafka";
     private  String REDIS_MODE_NAME="redis";
 
-    /**
-    * @Author Frank.chen
-    * @Description load config from plumelog.properties
-    * @Date 14:04 2020/5/12
-    * @Param []
-    * @return void
-    **/
+
     private  void loadConfig(){
         try {
             InputStream in = KafkaLogCollect.class.getClassLoader().getResourceAsStream("plumelog.properties");
@@ -59,13 +47,6 @@ public class Start {
         }
 
     }
-    /**
-    * @Author Frank.chen
-    * @Description start server
-    * @Date 14:04 2020/5/12
-    * @Param []
-    * @return void
-    **/
     private  void serverStart(){
         loadConfig();
         logger.info("load config success!");

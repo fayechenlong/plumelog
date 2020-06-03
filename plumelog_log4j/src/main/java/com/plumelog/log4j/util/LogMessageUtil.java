@@ -12,22 +12,12 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
-/**
- * @Author Frank.chen
- * @Description //TODO
- * @Date 15:56 2020/4/27
- **/
+
 public class LogMessageUtil {
 
 
 
-    /**
-     * @return LogMessage
-     * @Author Frank.chen
-     * @Description //TODO
-     * @Date 15:56 2020/4/27
-     * @Param [appName, loggingEvent]
-     **/
+
     public static BaseLogMessage getLogMessage(String appName, LoggingEvent loggingEvent) {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(loggingEvent);

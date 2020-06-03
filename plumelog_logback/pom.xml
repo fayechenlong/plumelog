@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog_core</artifactId>
-            <version>${version}</version>
+            <version>1.0</version>
         </dependency>
     </dependencies>
     <build>

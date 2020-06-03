@@ -11,13 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
-* @Author Frank.chen
-* @Description redis collect
-* @Date 14:15 2020/5/12
-* @Param 
-* @return 
-**/
+
 public class RedisLogCollect extends BaseLogCollect{
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(RedisLogCollect.class);
     private RedisClient redisClient;

@@ -14,13 +14,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
 
-/**
- * @ClassName LogUtil
- * @Deacription TODO
- * @Author Frank.Chen
- * @Date 2020/5/18 18:54
- * @Version 1.0
- **/
+
 public class LogUtil {
 
     public static HttpEntity getInfo(String url,String queryStr,String userName,String password) throws IOException {

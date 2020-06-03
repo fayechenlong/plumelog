@@ -11,13 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
-* @Author Frank.chen
-* @Description //兼容低版本ES的client  不用考虑ES版本问题
-* @Date 14:15 2020/5/12
-* @Param 
-* @return 
-**/
+
 public class ElasticLowerClient {
     private static ElasticLowerClient instance;
     private RestClient client;

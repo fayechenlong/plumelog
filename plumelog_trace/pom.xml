@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.plumelog</groupId>
         <artifactId>plumelog</artifactId>
-        <version>${version}</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>plumelog_trace</artifactId>
@@ -31,9 +31,9 @@
             <version>${version}</version>
         </dependency>
     </dependencies>
-    <build>
+    <!--<build>
         <plugins>
-            <!-- 依赖包插件 -->
+            &lt;!&ndash; 依赖包插件 &ndash;&gt;
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -46,14 +46,14 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <!-- 是否不包含间接依赖 -->
+                            &lt;!&ndash; 是否不包含间接依赖 &ndash;&gt;
                             <excludeTransitive>false</excludeTransitive>
-                            <!-- 忽略版本 -->
+                            &lt;!&ndash; 忽略版本 &ndash;&gt;
                             <stripVersion>false</stripVersion>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 </project>

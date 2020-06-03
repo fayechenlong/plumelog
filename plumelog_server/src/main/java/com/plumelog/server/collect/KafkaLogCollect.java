@@ -11,13 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.*;
 
-/**
-* @Author Frank.chen
-* @Description kafka collect
-* @Date 14:15 2020/5/12
-* @Param 
-* @return 
-**/
 public class KafkaLogCollect extends BaseLogCollect{
 
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(KafkaLogCollect.class);
