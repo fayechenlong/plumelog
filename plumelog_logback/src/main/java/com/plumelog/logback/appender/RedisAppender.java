@@ -18,7 +18,7 @@ import com.plumelog.logback.util.LogMessageUtil;
 public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private RedisClient redisClient;
     private String appName;
-    private String reidsHost;
+    private String redisHost;
     private String redisPort;
     private String redisAuth;
 
@@ -26,8 +26,8 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         this.appName = appName;
     }
 
-    public void setReidsHost(String reidsHost) {
-        this.reidsHost = reidsHost;
+    public void setRedisHost(String redisHost) {
+        this.redisHost = redisHost;
     }
 
     public void setRedisPort(String redisPort) {
@@ -47,6 +47,6 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     @Override
     public void start() {
         super.start();
-        redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), this.redisAuth);
+        redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
     }
 }

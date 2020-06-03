@@ -19,15 +19,15 @@ import java.io.Serializable;
 public class RedisAppender extends AbstractAppender {
     private static RedisClient redisClient;
     private String appName;
-    private String reidsHost;
+    private String redisHost;
     private String redisPort;
     private String redisAuth;
 
-    protected RedisAppender(String name, String appName, String reidsHost, String redisPort,String redisAuth, Filter filter, Layout<? extends Serializable> layout,
+    protected RedisAppender(String name, String appName, String redisHost, String redisPort,String redisAuth, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
-        this.reidsHost = reidsHost;
+        this.redisHost = redisHost;
         this.redisPort = redisPort;
         this.redisAuth=redisAuth;
     }
@@ -43,12 +43,12 @@ public class RedisAppender extends AbstractAppender {
     public static RedisAppender createAppender(
             @PluginAttribute("name") String name,
             @PluginAttribute("appName") String appName,
-            @PluginAttribute("reidsHost") String reidsHost,
+            @PluginAttribute("redisHost") String redisHost,
             @PluginAttribute("redisPort") String redisPort,
             @PluginAttribute("redisAuth") String redisAuth,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
-        redisClient = RedisClient.getInstance(reidsHost, Integer.parseInt(redisPort), redisAuth);
-        return new RedisAppender(name, appName, reidsHost, redisPort,redisAuth, filter, layout, true);
+        redisClient = RedisClient.getInstance(redisHost, Integer.parseInt(redisPort), redisAuth);
+        return new RedisAppender(name, appName, redisHost, redisPort,redisAuth, filter, layout, true);
     }
 }

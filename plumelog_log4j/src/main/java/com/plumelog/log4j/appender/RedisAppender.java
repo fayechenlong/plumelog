@@ -11,7 +11,7 @@ import org.apache.log4j.spi.LoggingEvent;
 public class RedisAppender extends AppenderSkeleton {
     private RedisClient redisClient;
     private String appName;
-    private String reidsHost;
+    private String redisHost;
     private String redisPort;
     private String redisAuth;
     private String redisKey;
@@ -20,8 +20,8 @@ public class RedisAppender extends AppenderSkeleton {
         this.appName = appName;
     }
 
-    public void setReidsHost(String reidsHost) {
-        this.reidsHost = reidsHost;
+    public void setRedisHost(String redisHost) {
+        this.redisHost = redisHost;
     }
 
     public void setRedisPort(String redisPort) {
@@ -39,7 +39,7 @@ public class RedisAppender extends AppenderSkeleton {
     @Override
     protected void append(LoggingEvent loggingEvent) {
         if (redisClient == null) {
-            redisClient = RedisClient.getInstance(this.reidsHost, Integer.parseInt(this.redisPort), this.redisAuth);
+            redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
         MessageAppenderFactory.push(logMessage, redisClient);
