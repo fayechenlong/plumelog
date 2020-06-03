@@ -73,7 +73,7 @@
 ```properties
         log4j.appender.L=com.plumelog.log4j.appender.RedisAppender
         log4j.appender.L.appName=easyjob
-        log4j.appender.L.reidsHost=172.16.249.72
+        log4j.appender.L.redisHost=172.16.249.72
         log4j.appender.L.redisPort=6379
 ```
    同理如果使用logback,和log4j2配置如下
@@ -93,7 +93,7 @@
         <!-- plumelog日志 -->
         <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
             <appName>plumelog</appName>
-            <reidsHost>172.16.249.72</reidsHost>
+            <redisHost>172.16.249.72</redisHost>
             <redisPort>6379</redisPort>
         </appender>
        
@@ -127,7 +127,7 @@
               <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
           </KafkaAppender>
     
-          <RedisAppender name="redisAppender" appName="plumelog" reidsHost="172.16.249.72" redisPort="6379" >
+          <RedisAppender name="redisAppender" appName="plumelog" redisHost="172.16.249.72" redisPort="6379" >
               <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
           </RedisAppender>
      

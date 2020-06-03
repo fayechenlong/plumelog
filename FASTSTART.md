@@ -90,7 +90,7 @@
 ```properties
     log4j.appender.L=com.plumelog.log4j.appender.RedisAppender
     log4j.appender.L.appName=easyjob
-    log4j.appender.L.reidsHost=172.16.249.72
+    log4j.appender.L.redisHost=172.16.249.72
     log4j.appender.L.redisPort=6379
     #redis没有密码这一项为空或者不需要
     log4j.appender.L.redisAuth=123456
@@ -112,7 +112,7 @@
     <!-- plumelog日志 --><!--redis没有密码 redisAuth 字段可以去掉一 -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plumelog</appName>
-        <reidsHost>172.16.249.72</reidsHost>
+        <redisHost>172.16.249.72</redisHost>
         <redisAuth>123456</redisAuth>
         <redisPort>6379</redisPort>
     </appender>
@@ -145,7 +145,7 @@
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
   </KafkaAppender>
  <!--redis没有密码 redisAuth 字段可以去掉一 -->
-  <RedisAppender name="redisAppender" appName="plumelog" reidsHost="172.16.249.72" redisPort="6379" redisAuth="123456">
+  <RedisAppender name="redisAppender" appName="plumelog" redisHost="172.16.249.72" redisPort="6379" redisAuth="123456">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
   </RedisAppender>
 
