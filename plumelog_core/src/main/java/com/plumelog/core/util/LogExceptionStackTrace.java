@@ -3,11 +3,7 @@ package com.plumelog.core.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-/**
- * @author chenlongfei
- * @date 2016-09-29
- * 异常堆栈信息转化字符串信息
- */
+
 public class LogExceptionStackTrace {
 
     public static Object erroStackTrace(Object obj) {

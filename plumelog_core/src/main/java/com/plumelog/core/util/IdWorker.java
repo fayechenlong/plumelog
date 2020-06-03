@@ -1,12 +1,6 @@
 package com.plumelog.core.util;
 
-/**
- * @ClassName IdWorker
- * @Deacription TODO
- * @Author Frank.Chen
- * @Date 2020/5/7 15:14
- * @Version 1.0
- **/
+
 public class IdWorker {
 
     //因为二进制里第一个 bit 为如果是 1，那么都是负数，但是我们生成的 id 都是正数，所以第一个 bit 统一都是 0。
@@ -106,12 +100,7 @@ public class IdWorker {
                 (workerId << workerIdShift) | sequence;
     }
 
-    /**
-     * 当某一毫秒的时间，产生的id数 超过4095，系统会进入等待，直到下一毫秒，系统继续产生ID
-     *
-     * @param lastTimestamp
-     * @return
-     */
+
     private long tilNextMillis(long lastTimestamp) {
 
         long timestamp = timeGen();
@@ -127,11 +116,7 @@ public class IdWorker {
         return System.currentTimeMillis();
     }
 
-    /**
-     * main 测试类
-     *
-     * @param args
-     */
+
     public static void main(String[] args) {
 		IdWorker worker = new IdWorker(1,1,1);
 		for (int i = 0; i < 22; i++) {

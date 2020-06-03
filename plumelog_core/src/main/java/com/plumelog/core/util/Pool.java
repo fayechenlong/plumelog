@@ -5,10 +5,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import java.io.Closeable;
 
-/**
- * 资源池基类，封装GenericObjectPool中相应的方法
- * @param <T>
- */
+
 public abstract class Pool<T> implements Closeable {
 
   protected GenericObjectPool<T> internalPool;
@@ -45,10 +42,7 @@ public abstract class Pool<T> implements Closeable {
     this.internalPool = new GenericObjectPool<T>(factory, poolConfig);
   }
 
-  /**
-   * 获取一个对象资源
-   * @return
-   */
+
   public T getResource() {
     try {
       return internalPool.borrowObject();

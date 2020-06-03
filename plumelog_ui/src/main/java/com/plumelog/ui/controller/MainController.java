@@ -20,13 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @ClassName MainController
- * @Deacription TODO
- * @Author Frank.Chen
- * @Date 2020/5/18 11:51
- * @Version 1.0
- **/
 @RestController
 @CrossOrigin
 public class MainController {

@@ -2,13 +2,6 @@ package com.plumelog.ui.dto;
 
 import java.util.List;
 
-/**
- * @ClassName TraceLog
- * @Deacription TODO
- * @Author Frank.Chen
- * @Date 2020/5/19 14:15
- * @Version 1.0
- **/
 public class TraceLog {
 
     private String method;

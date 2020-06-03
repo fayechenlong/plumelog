@@ -29,12 +29,7 @@ public class IpGetter {
      */
     private static final String NETWORK_CARD_BAND = "bond0";
 
-    /**
-     * Description: 得到本机名<br>
-     *
-     * @return
-     * @see
-     */
+
     public static String getLocalHostName() {
         try {
             InetAddress addr = InetAddress.getLocalHost();
@@ -44,12 +39,7 @@ public class IpGetter {
         }
     }
 
-    /**
-     * Description: linux下获得本机IPv4 IP<br>
-     *
-     * @return
-     * @see
-     */
+
     public static String getLocalIP() {
         String ip = "";
         try {
@@ -94,11 +84,7 @@ public class IpGetter {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-    /**
-     * 获取本机的局域网ip地址，兼容Linux
-     * @return String
-     * @throws Exception
-     */
+
     public static String getIp(){
         String localHostAddress = "127.0.0.1";
         try {

@@ -13,13 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
-* @Author Frank.chen
-* @Description //兼容低版本ES的client  不用考虑ES版本问题
-* @Date 14:15 2020/5/12
-* @Param 
-* @return 
-**/
 public class ElasticLowerClient {
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(ElasticLowerClient.class);
     private static ElasticLowerClient instance;
