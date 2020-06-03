@@ -33,7 +33,7 @@
     <name>plumelog</name>
 
 
-    <!--<distributionManagement>
+    <distributionManagement>
         <repository>
             <id>releases</id>
             <url>${distribution.repository.url}/content/repositories/releases</url>
@@ -42,36 +42,36 @@
             <id>snapshots</id>
             <url>${distribution.repository.url}/content/repositories/snapshots</url>
         </snapshotRepository>
-    </distributionManagement>-->
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <scm>
-        <url>https://gitee.com/frankchenlong/plumelog</url>
-        <connection>scm:git:https://gitee.com/frankchenlong/plumelog.git</connection>
-        <developerConnection>scm:git:https://gitee.com/frankchenlong/plumelog.git</developerConnection>
-    </scm>
-    <developers>
-        <developer>
-            <name>朱水平</name>
-            <email>252720074@qq.com</email>
-            <url>http://www.plumelog.com</url>
-        </developer>
-    </developers>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
     </distributionManagement>
+<!--    <licenses>-->
+<!--        <license>-->
+<!--            <name>Apache License, Version 2.0</name>-->
+<!--            <url>http://www.apache.org/licenses/LICENSE-2.0</url>-->
+<!--            <distribution>repo</distribution>-->
+<!--        </license>-->
+<!--    </licenses>-->
+<!--    <scm>-->
+<!--        <url>https://gitee.com/frankchenlong/plumelog</url>-->
+<!--        <connection>scm:git:https://gitee.com/frankchenlong/plumelog.git</connection>-->
+<!--        <developerConnection>scm:git:https://gitee.com/frankchenlong/plumelog.git</developerConnection>-->
+<!--    </scm>-->
+<!--    <developers>-->
+<!--        <developer>-->
+<!--            <name>tank</name>-->
+<!--            <email>252720074@qq.com</email>-->
+<!--            <url>http://www.plumelog.com</url>-->
+<!--        </developer>-->
+<!--    </developers>-->
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            <id>ossrh</id>-->
+<!--            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+<!--        </snapshotRepository>-->
+<!--        <repository>-->
+<!--            <id>ossrh</id>-->
+<!--            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
 
     <build>
         <plugins>
@@ -85,65 +85,65 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <!-- 这里的id必须要和全局配置中的release id 一致 -->
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.sonatype.plugins</groupId>-->
+<!--                <artifactId>nexus-staging-maven-plugin</artifactId>-->
+<!--                <version>1.6.8</version>-->
+<!--                <extensions>true</extensions>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; 这里的id必须要和全局配置中的release id 一致 &ndash;&gt;-->
+<!--                    <serverId>ossrh</serverId>-->
+<!--                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>-->
+<!--                    <autoReleaseAfterClose>false</autoReleaseAfterClose>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <!-- Source -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-source-plugin</artifactId>-->
+<!--                <version>2.2.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar-no-fork</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <!-- Javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!--/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home-->
-                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--                <version>2.9.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>attach-javadocs</id>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash;/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home&ndash;&gt;-->
+<!--                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
 
             <!-- GPG -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-gpg-plugin</artifactId>-->
+<!--                <version>1.5</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>verify</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>sign</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
