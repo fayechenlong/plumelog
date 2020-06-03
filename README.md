@@ -14,6 +14,8 @@
  
 ### 二.架构
 
+ ![avatar](/pic/plumelog.png)
+ 
 * plumelog_core 核心组件包含日志搜集端，负责搜集日志并推送到kafka，redis等队列
 
 * plumelog_server 负责把队列中的日志日志异步写入到elasticsearch 
@@ -29,6 +31,10 @@
    
 ### 四.使用方法
 
+   ### [点我快速开始](/FASTSTART.md)
+
+  ### 自己编译安装如下
+  
   ### 前提:kafka或者redis  和 elasticsearch（版本6.8以上最好） 自行安装完毕，版本兼容已经做了，理论不用考虑ES版本
     
 1. 打包

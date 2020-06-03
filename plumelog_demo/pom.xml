@@ -118,7 +118,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>plumelog_demo_log4j_kafka</finalName>
+        <finalName>plumelog_demo</finalName>
     </build>
 
 </project>
