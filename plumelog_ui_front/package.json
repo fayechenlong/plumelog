@@ -18,7 +18,7 @@
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
-    "superagent": "^1.4.0",
+    "superagent": "^3.7.0",
     "superagent-proxy": "^1.0.2",
     "view-design": "^4.2.0",
     "vue": "^2.6.11",
