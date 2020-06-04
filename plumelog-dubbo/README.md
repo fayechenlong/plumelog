@@ -1,4 +1,4 @@
-## EasyLog  plumelog_dubbo 提供dubbo 跨服务传递traceID 
+## EasyLog  plumelog-dubbo 提供dubbo 跨服务传递traceID 
 
 ##### 使用注意事项
 
@@ -6,7 +6,7 @@
   ```xml
                    <dependency>
                        <groupId>com.plumelog</groupId>
-                       <artifactId>plumelog_dubbo</artifactId>
+                       <artifactId>plumelog-dubbo</artifactId>
                        <version>2.0.RELEASE</version>
                    </dependency>
    ```                     

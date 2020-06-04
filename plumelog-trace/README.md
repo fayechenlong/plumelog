@@ -1,4 +1,4 @@
-## EasyLog  plumelog_trace 提供链路日志
+## EasyLog  plumelog-trace 提供链路日志
 
 #### 使用注意事项
 
@@ -6,7 +6,7 @@
 ```xml
                     <dependency>
                        <groupId>com.plumelog</groupId>
-                       <artifactId>plumelog_trace</artifactId>
+                       <artifactId>plumelog-trace</artifactId>
                        <version>2.0.RELEASE</version>
                    </dependency>
 
