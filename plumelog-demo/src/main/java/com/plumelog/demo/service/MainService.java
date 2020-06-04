@@ -5,7 +5,7 @@ import com.alibaba.ttl.threadpool.TtlExecutors;
 import com.plumelog.core.LogMessage;
 import com.plumelog.demo.dubbo.service.EasyLogDubboService;
 import com.plumelog.trace.annotation.Trace;
-import jdk.nashorn.internal.ir.annotations.Reference;
+import org.apache.dubbo.config.annotation.Reference;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
