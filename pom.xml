@@ -5,13 +5,12 @@
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog</artifactId>
     <packaging>pom</packaging>
-    <version>${version}</version>
+    <version>2.1.1</version>
     <description>The parent project of plumelog</description>
     <url>https://gitee.com/frankchenlong/plumelog</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
-        <version>2.1</version>
         <redis.version>3.1.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
