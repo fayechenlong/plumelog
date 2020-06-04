@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.plumelog</groupId>
@@ -8,24 +8,22 @@
         <version>${version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>plumelog_log4j</artifactId>
-    <name>plumelog_log4j</name>
-    <packaging>jar</packaging>
+    <artifactId>plumelog-dubbo</artifactId>
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.21</version>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo</artifactId>
+            <version>2.7.3</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog_core</artifactId>
+            <artifactId>plumelog-core</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.7.25</version>
+            <groupId>com.plumelog</groupId>
+            <artifactId>plumelog-trace</artifactId>
+            <version>${version}</version>
         </dependency>
     </dependencies>
     <build>

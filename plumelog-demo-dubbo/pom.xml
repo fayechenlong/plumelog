@@ -3,8 +3,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>plumelog_demo_dubbo</artifactId>
-    <name>plumelog_demo_dubbo</name>
+    <artifactId>plumelog-demo-dubbo</artifactId>
+    <name>plumelog-demo-dubbo</name>
     <version>${version}</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -36,17 +36,17 @@
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog_logback</artifactId>
+            <artifactId>plumelog-logback</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog_trace</artifactId>
+            <artifactId>plumelog-trace</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog_dubbo</artifactId>
+            <artifactId>plumelog-dubbo</artifactId>
             <version>${version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-spring-boot-starter -->

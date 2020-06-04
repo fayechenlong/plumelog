@@ -44,12 +44,22 @@ public class RedisLogCollect extends BaseLogCollect{
         while (true) {
             List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
             collect(logs,LogMessageConstant.ES_INDEX+ LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
+            try {
+                Thread.sleep(InitConfig.MAX_INTERVAL);
+            } catch (InterruptedException e) {
+                logger.error("",e);
+            }
         }
     }
     private  void collectTraceLog(){
         while (true) {
             List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE,InitConfig.MAX_SEND_SIZE);
             collectTrace(logs,LogMessageConstant.ES_INDEX+LogMessageConstant.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
+            try {
+                Thread.sleep(InitConfig.MAX_INTERVAL);
+            } catch (InterruptedException e) {
+                logger.error("",e);
+            }
         }
     }
     private  void collect(List<String> logs,String index){
@@ -65,11 +75,6 @@ public class RedisLogCollect extends BaseLogCollect{
                 super.sendLog(index,logList);
             }
         }
-        try {
-            Thread.sleep(InitConfig.MAX_INTERVAL);
-        } catch (InterruptedException e) {
-            logger.error("",e);
-        }
     }
     private  void collectTrace(List<String> logs,String index){
         if(logs.size()>0) {
@@ -83,11 +88,6 @@ public class RedisLogCollect extends BaseLogCollect{
                 super.traceLogList.clear();
                 super.sendTraceLogList(index,logList);
             }
-        }
-        try {
-            Thread.sleep(InitConfig.MAX_INTERVAL);
-        } catch (InterruptedException e) {
-            logger.error("",e);
         }
     }
 }

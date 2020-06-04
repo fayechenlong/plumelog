@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.plumelog</groupId>
-    <artifactId>plumelog_rest</artifactId>
+    <artifactId>plumelog-rest</artifactId>
 
     <dependencies>
         <dependency>
@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog_log4j2</artifactId>
+            <artifactId>plumelog-log4j2</artifactId>
             <version>${version}</version>
         </dependency>
     </dependencies>
