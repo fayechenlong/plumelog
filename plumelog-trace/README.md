@@ -7,7 +7,7 @@
                     <dependency>
                        <groupId>com.plumelog</groupId>
                        <artifactId>plumelog-trace</artifactId>
-                       <version>2.0.RELEASE</version>
+                       <version>2.1</version>
                    </dependency>
 
 ```
