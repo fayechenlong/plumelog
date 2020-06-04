@@ -5,17 +5,19 @@
     <parent>
         <groupId>com.plumelog</groupId>
         <artifactId>plumelog</artifactId>
-        <version>${version}</version>
+        <version>2.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>plumelog-server</artifactId>
     <name>plumelog-server</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <redis.version>3.1.0</redis.version>
+        <kafka.version>2.5.0</kafka.version>
+        <springboot.version>2.1.7.RELEASE</springboot.version>
+        <elasticsearch.version>7.7.0</elasticsearch.version>
+    </properties>
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>org.elasticsearch</groupId>-->
-            <!--<artifactId>elasticsearch</artifactId>-->
-            <!--<version>7.7.0</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-client</artifactId>
