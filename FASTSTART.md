@@ -13,11 +13,11 @@
      
    2.安装 elasticsearch
     
-   3.下载安装包，plumelog_ui和plumelog_server 下载地址： https://gitee.com/frankchenlong/plumelog/releases
+   3.下载安装包，plumelog-ui和plumelog-server 下载地址： https://gitee.com/frankchenlong/plumelog/releases
    
-   4.配置plumelog_server，并启动
+   4.配置plumelog-server，并启动
    
-   配置文件 plumelog_server/config/plumelog.properties 详解：
+   配置文件 plumelog-server/config/plumelog.properties 详解：
 
 ```properties
     #日志缓冲区，kafka，redis两种模式
@@ -42,12 +42,12 @@
     #拉取时间间隔，kafka不生效
     plumelog.server.interval=100
 ```       
-   5.配置plume_ui,并启动，默认端口8989
+   5.配置plume-ui,并启动，默认端口8989
    
-   配置文件 plumelog_ui/application.properties 详解：
+   配置文件 plumelog-ui/application.properties 详解：
    
  ```properties
-    spring.application.name=plumelog_ui
+    spring.application.name=plumelog-ui
     server.port=8989
     spring.thymeleaf.mode=LEGACYHTML5
     spring.mvc.view.prefix=classpath:/templates/
@@ -73,7 +73,7 @@
 ```xml
    <dependency>
        <groupId>com.plumelog</groupId>
-       <artifactId>plumelog_log4j</artifactId>
+       <artifactId>plumelog-log4j</artifactId>
        <version>2.1</version>
    </dependency>
 ```                       
@@ -103,7 +103,7 @@
 ```xml
    <dependency>
        <groupId>com.plumelog</groupId>
-       <artifactId>plumelog_logback</artifactId>
+       <artifactId>plumelog-logback</artifactId>
        <version>2.1</version>
    </dependency>
 ```  
@@ -135,7 +135,7 @@
 ```xml
    <dependency>
        <groupId>com.plumelog</groupId>
-       <artifactId>plumelog_log4j2</artifactId>
+       <artifactId>plumelog-log4j2</artifactId>
        <version>2.1</version>
    </dependency>       
 ```   
@@ -157,7 +157,7 @@
       </root>
   </loggers>
 ```    
-#### （3）示例(所有的列子都在plumelog_demo里面)
+#### （3）示例(所有的列子都在plumelog-demo里面)
 
 * 普通日志使用
 
@@ -175,11 +175,11 @@
         }
 ```   
 
-* [链路追踪使用](/plumelog_trace/README.md)
+* [链路追踪使用](/plumelog-trace/README.md)
 
 * TraceId跨线程传递
 
-    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog_demo也有）
+    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog-demo也有）
 
     #### 修饰线程池
 
@@ -203,9 +203,9 @@
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
 ```       
-* [Dubbo的分布式系统traceId传递 ](/plumelog_dubbo/README.md)
+* [Dubbo的分布式系统traceId传递 ](/plumelog-dubbo/README.md)
 
-* springcloud(fegin)的分布式系统traceId传递,参考plumelog_rest项目
+* springcloud(fegin)的分布式系统traceId传递,参考plumelog-rest项目
 
 ### 三、联系交流
 

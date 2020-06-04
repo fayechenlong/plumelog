@@ -16,18 +16,18 @@
 
  ![avatar](/pic/plumelog.png)
  
-* plumelog_core 核心组件包含日志搜集端，负责搜集日志并推送到kafka，redis等队列
+* plumelog-core 核心组件包含日志搜集端，负责搜集日志并推送到kafka，redis等队列
 
-* plumelog_server 负责把队列中的日志日志异步写入到elasticsearch 
+* plumelog-server 负责把队列中的日志日志异步写入到elasticsearch 
 
-* plumelog_ui 前端展示，日志查询界面
+* plumelog-ui 前端展示，日志查询界面
 
-* plumelog_demo 基于springboot的使用案例
+* plumelog-demo 基于springboot的使用案例
 
 ### 三.系统流程
-   1. plumelog_core 搜集日志发送到=>kafka或者redis
+   1. plumelog-core 搜集日志发送到=>kafka或者redis
    
-   2. plumelog_server kafka或者redis=>elasticsearch
+   2. plumelog-server kafka或者redis=>elasticsearch
    
 ### 四.使用方法
 
@@ -56,8 +56,8 @@
 ```xml
                    <dependency>
                        <groupId>com.plumelog</groupId>
-                       <artifactId>plumelog_log4j</artifactId>
-                       <version>1.0</version>
+                       <artifactId>plumelog-log4j</artifactId>
+                       <version>2.1</version>
                    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -84,7 +84,7 @@
 ```xml
        <dependency>
            <groupId>com.plumelog</groupId>
-           <artifactId>plumelog_logback</artifactId>
+           <artifactId>plumelog-logback</artifactId>
            <version>1.0</version>
        </dependency>
 ```  
@@ -117,8 +117,8 @@
 ```xml
        <dependency>
            <groupId>com.plumelog</groupId>
-           <artifactId>plumelog_log4j2</artifactId>
-           <version>1.0</version>
+           <artifactId>plumelog-log4j2</artifactId>
+           <version>2.1</version>
        </dependency>       
 ```   
 * 配置
@@ -140,7 +140,7 @@
               </root>
           </loggers>
 ```    
-3. 示例(所有的列子都在plumelog_demo里面)
+3. 示例(所有的列子都在plumelog-demo里面)
 
 * 普通日志使用
 
@@ -158,11 +158,11 @@
         }
 ```   
 
-* [链路追踪使用](/plumelog_trace/README.md)
+* [链路追踪使用](/plumelog-trace/README.md)
 
 * TraceId跨线程传递
 
-    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog_demo也有）
+    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog-demo也有）
 
     #### 修饰线程池
 
@@ -186,16 +186,16 @@
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
 ```       
-* [Dubbo的分布式系统traceId传递 ](/plumelog_dubbo/README.md)
+* [Dubbo的分布式系统traceId传递 ](/plumelog-dubbo/README.md)
 
    
 4. 启动服务
 
- * 步骤一打包完的 启动 plumelog_server-1.0.jar ，高可用的话直接启动多个服务就行
+ * 步骤一打包完的 启动 plumelog-server-1.0.jar ，高可用的话直接启动多个服务就行
 
-   注意：打完的包target目录下，lib文件夹（依赖包目录），config文件夹（两个配置文件的目录），plumelog_server-1.0.jar 放到同一个目录下
+   注意：打完的包target目录下，lib文件夹（依赖包目录），config文件夹（两个配置文件的目录），plumelog-server-1.0.jar 放到同一个目录下
   
- * plumelog_server中plumelog.properties详解    
+ * plumelog-server中plumelog.properties详解    
 ```properties
        #日志缓冲区，kafka，redis两种模式
        plumelog.server.model=kafka
@@ -212,9 +212,9 @@
 ```       
   * 查询界面
      
-     1.到plumelog_ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动plumelog_ui-1.0.jar就行了
+     1.到plumelog-ui 配置 application.properties 中  es.esHosts 配置esapi地址 启动plumelog-ui-1.0.jar就行了
      
-     2.[前端打包文档](/plumelog_ui/README.md)，也可以不用打包，plumelog_ui里面已经有一份打包好了的，如果自己修改代码那就要打包了
+     2.[前端打包文档](/plumelog-ui/README.md)，也可以不用打包，plumelog-ui里面已经有一份打包好了的，如果自己修改代码那就要打包了
      
      3.界面介绍
      
