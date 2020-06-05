@@ -31,9 +31,9 @@
         <!--<kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>-->
     <!--</appender>-->
     <!-- easylog日志 -->
-    <appender name="plumelog_demo" class="com.plumelog.logback.appender.RedisAppender">
-        <appName>plumelog_demo</appName>
-        <redisHost>172.16.249.72</redisHost>
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+        <appName>plumelog</appName>
+        <redisHost>172.16.247.69</redisHost>
         <!--<redisAuth>123456</redisAuth>-->
         <redisPort>6379</redisPort>
     </appender>
@@ -41,6 +41,6 @@
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="plumelog_demo"/>
+        <appender-ref ref="plumelog"/>
     </root>
 </configuration>

@@ -38,7 +38,7 @@ public class KafkaAppender extends AppenderSkeleton {
             kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
-        MessageAppenderFactory.push(logMessage, kafkaClient);
+        MessageAppenderFactory.push(logMessage, kafkaClient,"plume.log.ack");
     }
 
     @Override

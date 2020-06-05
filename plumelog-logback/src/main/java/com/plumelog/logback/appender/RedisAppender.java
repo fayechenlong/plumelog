@@ -22,6 +22,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private String redisPort;
     private String redisAuth;
 
+
     public void setAppName(String appName) {
         this.appName = appName;
     }
@@ -41,12 +42,14 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(ILoggingEvent event) {
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        MessageAppenderFactory.push(logMessage,redisClient);
+        MessageAppenderFactory.push(logMessage,redisClient,"plume.log.ack");
     }
 
     @Override
     public void start() {
         super.start();
-        redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
+        if(redisClient==null) {
+            redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
+        }
     }
 }

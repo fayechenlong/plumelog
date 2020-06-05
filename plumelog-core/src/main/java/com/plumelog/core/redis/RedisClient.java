@@ -2,6 +2,7 @@ package com.plumelog.core.redis;
 
 
 import com.plumelog.core.AbstractClient;
+import com.plumelog.core.exception.LogQueueConnectException;
 import redis.clients.jedis.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +46,19 @@ public class RedisClient extends AbstractClient {
         }
     }
     @Override
-    public void pushMessage(String key, String strings) {
-        Jedis sj=jedisPool.getResource();
+    public void pushMessage(String key, String strings) throws LogQueueConnectException {
+        Jedis sj=null;
         try {
+            sj=jedisPool.getResource();
             sj.rpush(key, strings);
+        }catch (Exception e){
+         throw new LogQueueConnectException("redis 写入失败！",e);
         }finally {
-            sj.close();
+            if(sj!=null){
+               sj.close();
+            }
         }
+
     }
     public String getMessage(String key) {
         Jedis sj=jedisPool.getResource();
@@ -63,7 +70,6 @@ public class RedisClient extends AbstractClient {
         }
         return obj;
     }
-    @Override
     public void putMessageList(String key, List<String> list){
         Jedis sj=jedisPool.getResource();
         try {
@@ -77,12 +83,12 @@ public class RedisClient extends AbstractClient {
         }
 
     }
-
-    public List<String> getMessage(String key,int size) {
-        Jedis sj=jedisPool.getResource();
+    public List<String> getMessage(String key,int size) throws  LogQueueConnectException{
+        Jedis sj=null;
         List<String> list=new ArrayList<>();
-        List<Response<String>> listRes=new ArrayList<>();
         try {
+        sj=jedisPool.getResource();
+        List<Response<String>> listRes=new ArrayList<>();
             Pipeline pl=sj.pipelined();
             for(int i=0;i<size;i++) {
                 Response<String> res=pl.lpop(key);
@@ -98,8 +104,12 @@ public class RedisClient extends AbstractClient {
                     list.add(log);
                 }
             });
+        }catch (Exception e){
+            throw new LogQueueConnectException("redis 连接失败！",e);
         }finally {
-            sj.close();
+            if(sj!=null) {
+                sj.close();
+            }
         }
         return list;
     }

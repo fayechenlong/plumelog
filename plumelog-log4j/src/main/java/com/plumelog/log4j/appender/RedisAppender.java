@@ -48,7 +48,7 @@ public class RedisAppender extends AppenderSkeleton {
             redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
-        MessageAppenderFactory.push(logMessage, redisClient);
+        MessageAppenderFactory.push(logMessage, redisClient,"plume.log.ack");
     }
 
     @Override

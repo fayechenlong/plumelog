@@ -13,7 +13,8 @@ public class LogTest
     public static void main( String[] args )
     {
         TraceId.logTraceID.set(UUID.randomUUID().toString());
-        logger.info("{}","I am log name:"+UUID.randomUUID().toString());
-        logger.info("{}","I am log name:"+UUID.randomUUID().toString());
+//        logger.info("{}","I am log name:"+UUID.randomUUID().toString());
+//        logger.info("{}","I am log name:"+UUID.randomUUID().toString());
+        logger.error(null);
     }
 }

@@ -1,6 +1,7 @@
 package com.plumelog.server.collect;
 
 
+import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.es.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
@@ -66,23 +67,27 @@ public class RedisLogCollect extends BaseLogCollect{
     }
     private  void collectRuningLog(){
         while (true) {
+            try {
             List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
             collect(logs,LogMessageConstant.ES_INDEX+ LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
-            try {
-                Thread.sleep(InitConfig.MAX_INTERVAL);
+            Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
                 logger.error("",e);
+            } catch (LogQueueConnectException e) {
+                logger.error("从redis队列拉取日志失败！",e);
             }
         }
     }
     private  void collectTraceLog(){
         while (true) {
+            try {
             List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE,InitConfig.MAX_SEND_SIZE);
             collectTrace(logs,LogMessageConstant.ES_INDEX+LogMessageConstant.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
-            try {
-                Thread.sleep(InitConfig.MAX_INTERVAL);
+            Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
                 logger.error("",e);
+            }catch (LogQueueConnectException e) {
+                logger.error("从redis队列拉取日志失败！",e);
             }
         }
     }

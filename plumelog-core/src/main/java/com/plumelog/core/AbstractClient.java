@@ -1,5 +1,8 @@
 package com.plumelog.core;
 
+import com.plumelog.core.exception.LogQueueConnectException;
+import javafx.fxml.LoadException;
+
 import java.util.List;
 
 /**
@@ -14,9 +17,7 @@ public abstract class AbstractClient {
 
     private static AbstractClient client;
 
-    public void pushMessage(String key, String strings) {
-    }
-    public void putMessageList(String key, List<String> list) {
+    public void pushMessage(String key, String strings) throws LogQueueConnectException {
     }
 
     public static AbstractClient getClient() {

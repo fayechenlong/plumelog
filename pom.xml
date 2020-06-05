@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
-        <redis.version>3.1.0</redis.version>
+        <redis.version>3.3.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
         <elasticsearch.version>7.7.0</elasticsearch.version>
