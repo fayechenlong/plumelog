@@ -5,10 +5,13 @@ import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.util.DateUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
+
+import java.util.Date;
 
 import static org.apache.logging.log4j.message.ParameterizedMessageFactory.INSTANCE;
 
@@ -33,7 +36,15 @@ public class LogMessageUtil {
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, logEvent.getTimeMillis());
         logMessage.setClassName(logEvent.getLoggerName());
-        logMessage.setMethod(logEvent.getThreadName());
+        if(LogMessageConstant.RUN_MODEL==1) {
+            logMessage.setMethod(logEvent.getThreadName());
+        }else {
+            StackTraceElement atackTraceElement=logEvent.getSource();
+            String method=atackTraceElement.getMethodName();
+            String line=String.valueOf(atackTraceElement.getLineNumber());
+            logMessage.setMethod(method+"("+line+")");
+            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(logEvent.getTimeMillis()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        }
         logMessage.setLogLevel(logEvent.getLevel().toString());
         return logMessage;
     }

@@ -1,5 +1,6 @@
 package com.plumelog.log4j.appender;
 
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.log4j.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.dto.BaseLogMessage;
@@ -18,6 +19,7 @@ public class KafkaAppender extends AppenderSkeleton {
     private KafkaProducerClient kafkaClient;
     private String appName;
     private String kafkaHosts;
+    private String runModel;
     private String topic;
 
     public void setAppName(String appName) {
@@ -32,8 +34,15 @@ public class KafkaAppender extends AppenderSkeleton {
         this.topic = topic;
     }
 
+    public void setRunModel(String runModel) {
+        this.runModel = runModel;
+    }
+
     @Override
     protected void append(LoggingEvent loggingEvent) {
+        if(this.runModel!=null){
+            LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        }
         if (kafkaClient == null) {
             kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
         }

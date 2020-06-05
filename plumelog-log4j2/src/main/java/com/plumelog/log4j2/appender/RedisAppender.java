@@ -1,5 +1,6 @@
 package com.plumelog.log4j2.appender;
 
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.log4j2.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.dto.BaseLogMessage;
@@ -28,14 +29,16 @@ public class RedisAppender extends AbstractAppender {
     private String redisHost;
     private String redisPort;
     private String redisAuth;
+    private String runModel;
 
-    protected RedisAppender(String name, String appName, String redisHost, String redisPort,String redisAuth, Filter filter, Layout<? extends Serializable> layout,
+    protected RedisAppender(String name, String appName, String redisHost, String redisPort,String redisAuth,String runModel, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.redisHost = redisHost;
         this.redisPort = redisPort;
         this.redisAuth=redisAuth;
+        this.runModel=runModel;
     }
 
     @Override
@@ -52,9 +55,13 @@ public class RedisAppender extends AbstractAppender {
             @PluginAttribute("redisHost") String redisHost,
             @PluginAttribute("redisPort") String redisPort,
             @PluginAttribute("redisAuth") String redisAuth,
+            @PluginAttribute("runModel") String runModel,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
+        if(runModel!=null){
+            LogMessageConstant.RUN_MODEL=Integer.parseInt(runModel);
+        }
         redisClient = RedisClient.getInstance(redisHost, Integer.parseInt(redisPort), redisAuth);
-        return new RedisAppender(name, appName, redisHost, redisPort,redisAuth, filter, layout, true);
+        return new RedisAppender(name, appName, redisHost, redisPort,redisAuth,runModel, filter, layout, true);
     }
 }

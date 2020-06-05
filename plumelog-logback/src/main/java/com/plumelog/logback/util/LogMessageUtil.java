@@ -8,9 +8,12 @@ import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.util.DateUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
 import org.slf4j.helpers.MessageFormatter;
+
+import java.util.Date;
 
 /**
  * className：TraceAspect
@@ -32,7 +35,15 @@ public class LogMessageUtil {
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, iLoggingEvent.getTimeStamp());
         logMessage.setClassName(iLoggingEvent.getLoggerName());
-        logMessage.setMethod(iLoggingEvent.getThreadName());
+        if(LogMessageConstant.RUN_MODEL==1) {
+            logMessage.setMethod(iLoggingEvent.getThreadName());
+        }else {
+            StackTraceElement atackTraceElement=iLoggingEvent.getCallerData()[0];
+            String method=atackTraceElement.getMethodName();
+            String line=String.valueOf(atackTraceElement.getLineNumber());
+            logMessage.setMethod(method+"("+line+")");
+            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(iLoggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        }
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;
     }

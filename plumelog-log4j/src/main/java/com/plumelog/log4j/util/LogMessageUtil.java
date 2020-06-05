@@ -5,12 +5,17 @@ import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.util.DateUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
 import org.apache.log4j.Priority;
+import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * className：LogMessageUtil
@@ -31,7 +36,15 @@ public class LogMessageUtil {
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, loggingEvent.getTimeStamp());
         logMessage.setClassName(loggingEvent.getLoggerName());
-        logMessage.setMethod(loggingEvent.getThreadName());
+        if(LogMessageConstant.RUN_MODEL==1) {
+            logMessage.setMethod(loggingEvent.getThreadName());
+        }else {
+            LocationInfo locationInfo=loggingEvent.getLocationInformation();
+            String method=locationInfo.getMethodName();
+            String line=locationInfo.getLineNumber();
+            logMessage.setMethod(method+"("+line+")");
+            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(loggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        }
         logMessage.setLogLevel(loggingEvent.getLevel().toString());
         return logMessage;
     }

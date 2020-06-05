@@ -1,5 +1,6 @@
 package com.plumelog.log4j.appender;
 
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.log4j.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.dto.BaseLogMessage;
@@ -21,6 +22,7 @@ public class RedisAppender extends AppenderSkeleton {
     private String redisPort;
     private String redisAuth;
     private String redisKey;
+    private String runModel;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -42,8 +44,15 @@ public class RedisAppender extends AppenderSkeleton {
         this.redisKey = redisKey;
     }
 
+    public void setRunModel(String runModel) {
+        this.runModel = runModel;
+    }
+
     @Override
     protected void append(LoggingEvent loggingEvent) {
+        if(this.runModel!=null){
+            LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        }
         if (redisClient == null) {
             redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
         }

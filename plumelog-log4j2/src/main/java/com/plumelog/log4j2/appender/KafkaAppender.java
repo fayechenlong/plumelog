@@ -1,6 +1,7 @@
 package com.plumelog.log4j2.appender;
 
 import com.plumelog.core.MessageAppenderFactory;
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
 import com.plumelog.log4j2.util.LogMessageUtil;
@@ -23,15 +24,17 @@ import java.io.Serializable;
  */
 @Plugin(name = "KafkaAppender", category = "Core", elementType = "appender", printObject = true)
 public class KafkaAppender extends AbstractAppender {
-    private KafkaProducerClient kafkaClient;
+    private static KafkaProducerClient kafkaClient;
     private String appName;
     private String kafkaHosts;
+    private String runModel;
 
-    protected KafkaAppender(String name, String appName, String kafkaHosts, Filter filter, Layout<? extends Serializable> layout,
+    protected KafkaAppender(String name, String appName, String kafkaHosts,String runModel, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.kafkaHosts = kafkaHosts;
+        this.runModel=runModel;
     }
 
     @Override
@@ -50,9 +53,15 @@ public class KafkaAppender extends AbstractAppender {
             @PluginAttribute("appName") String appName,
             @PluginAttribute("kafkaHosts") String kafkaHosts,
             @PluginAttribute("topic") String topic,
+            @PluginAttribute("runModel") String runModel,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
-
-        return new KafkaAppender(name, appName, kafkaHosts, filter, layout, true);
+        if(runModel!=null){
+            LogMessageConstant.RUN_MODEL=Integer.parseInt(runModel);
+        }
+        if (kafkaClient == null) {
+            kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
+        }
+        return new KafkaAppender(name, appName, kafkaHosts,runModel, filter, layout, true);
     }
 }

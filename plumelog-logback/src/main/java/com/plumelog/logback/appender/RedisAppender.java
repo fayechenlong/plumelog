@@ -3,6 +3,7 @@ package com.plumelog.logback.appender;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.plumelog.core.MessageAppenderFactory;
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.logback.util.LogMessageUtil;
@@ -21,6 +22,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private String redisHost;
     private String redisPort;
     private String redisAuth;
+    private String runModel;
 
 
     public void setAppName(String appName) {
@@ -39,6 +41,10 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         this.redisAuth = redisAuth;
     }
 
+    public void setRunModel(String runModel) {
+        this.runModel = runModel;
+    }
+
     @Override
     protected void append(ILoggingEvent event) {
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
@@ -48,6 +54,9 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     @Override
     public void start() {
         super.start();
+        if(this.runModel!=null){
+            LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        }
         if(redisClient==null) {
             redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
         }

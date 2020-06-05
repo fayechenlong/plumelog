@@ -33,9 +33,10 @@
     <!-- easylog日志 -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plumelog</appName>
-        <redisHost>172.16.247.69</redisHost>
+        <redisHost>172.16.249.72</redisHost>
         <!--<redisAuth>123456</redisAuth>-->
         <redisPort>6379</redisPort>
+        <runModel>6379</runModel>
     </appender>
 
     <!-- 日志输出级别 -->
