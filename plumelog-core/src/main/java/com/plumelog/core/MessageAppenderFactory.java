@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class MessageAppenderFactory {
 
 
-
+    //设置阻塞队列为5000，防止OOM
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool(4, 8, 5000);
 

@@ -10,7 +10,13 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.util.*;
-
+/**
+ * className：KafkaLogCollect
+ * description：KafkaLogCollect 获取kafka中日志，存储到es
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class KafkaLogCollect extends BaseLogCollect{
 
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(KafkaLogCollect.class);

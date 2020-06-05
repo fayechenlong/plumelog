@@ -3,7 +3,13 @@ package com.plumelog.server.util;
 import com.alibaba.fastjson.JSON;
 
 import java.util.*;
-
+/**
+ * className：GfJsonUtil
+ * description：fastjson封装类
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public abstract class GfJsonUtil {
 
     private GfJsonUtil() {

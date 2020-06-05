@@ -12,11 +12,14 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
-
+/**
+ * className：LogMessageUtil
+ * description：组装日志对象
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class LogMessageUtil {
-
-
-
 
     public static BaseLogMessage getLogMessage(String appName, LoggingEvent loggingEvent) {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();

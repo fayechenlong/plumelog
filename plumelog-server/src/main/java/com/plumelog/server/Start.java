@@ -22,7 +22,9 @@ public class Start {
     private  String KAFKA_MODE_NAME="kafka";
     private  String REDIS_MODE_NAME="redis";
 
-
+    /**
+     * 加载配置
+     */
     private  void loadConfig(){
         try {
             InputStream in = KafkaLogCollect.class.getClassLoader().getResourceAsStream("plumelog.properties");

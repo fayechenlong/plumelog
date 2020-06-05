@@ -5,7 +5,14 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.List;
-
+/**
+ * className：KafkaProducerClient
+ * description：kafka Producer instance
+ * time：2020-05-11.16:17
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class KafkaProducerClient extends AbstractClient {
     private static KafkaProducerClient instance;
     private KafkaProducerPool kafkaProducerPool;

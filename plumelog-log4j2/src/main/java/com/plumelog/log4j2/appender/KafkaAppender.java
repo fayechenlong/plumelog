@@ -14,7 +14,13 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.io.Serializable;
-
+/**
+ * className：KafkaAppender
+ * description：KafkaAppender 如果使用kafka作为队列用这个KafkaAppender输出
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 @Plugin(name = "KafkaAppender", category = "Core", elementType = "appender", printObject = true)
 public class KafkaAppender extends AbstractAppender {
     private KafkaProducerClient kafkaClient;

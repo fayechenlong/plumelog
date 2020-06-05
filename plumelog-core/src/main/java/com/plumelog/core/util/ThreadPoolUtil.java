@@ -1,7 +1,13 @@
 package com.plumelog.core.util;
 
 import java.util.concurrent.*;
-
+/**
+ * className：ThreadPoolUtil
+ * description：带阻塞队列的线程池
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class ThreadPoolUtil {
     public static ThreadPoolExecutor getPool() {
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(

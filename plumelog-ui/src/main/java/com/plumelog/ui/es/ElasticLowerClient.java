@@ -11,7 +11,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * className：ElasticLowerClient
+ * description：ElasticLowerClient instance
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class ElasticLowerClient {
     private static ElasticLowerClient instance;
     private RestClient client;

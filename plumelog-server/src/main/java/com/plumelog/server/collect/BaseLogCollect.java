@@ -7,7 +7,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
-
+/**
+ * className：BaseLogCollect
+ * description：BaseLogCollect 基类
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class BaseLogCollect {
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(BaseLogCollect.class);
     public List<String> logList=new CopyOnWriteArrayList();

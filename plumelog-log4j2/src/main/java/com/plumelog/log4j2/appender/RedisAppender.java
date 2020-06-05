@@ -14,7 +14,13 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.io.Serializable;
-
+/**
+ * className：RedisAppender
+ * description：RedisAppender 如果使用redis作为队列用这个RedisAppender输出
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 @Plugin(name = "RedisAppender", category = "Core", elementType = "appender", printObject = true)
 public class RedisAppender extends AbstractAppender {
     private static RedisClient redisClient;

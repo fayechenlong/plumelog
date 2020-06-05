@@ -12,7 +12,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+/**
+ * className：ElasticLowerClient
+ * description：ElasticLowerClient
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class ElasticLowerClient {
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(ElasticLowerClient.class);
     private static ElasticLowerClient instance;

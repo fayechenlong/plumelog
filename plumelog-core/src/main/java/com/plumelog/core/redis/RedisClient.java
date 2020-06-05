@@ -5,7 +5,14 @@ import com.plumelog.core.AbstractClient;
 import redis.clients.jedis.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * className：RedisClient
+ * description：RedisClient instance
+ * time：2020-05-11.16:17
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class RedisClient extends AbstractClient {
     private static  RedisClient instance;
     private  int MAX_ACTIVE = 30;

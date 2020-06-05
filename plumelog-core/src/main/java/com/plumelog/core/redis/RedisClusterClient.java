@@ -4,7 +4,14 @@ import redis.clients.jedis.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+/**
+ * className：RedisClusterClient
+ * description：RedisClusterClient instance
+ * time：2020-05-11.16:17
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class RedisClusterClient {
     private static  RedisClusterClient instance;
     private JedisCluster jedisCluster = null;

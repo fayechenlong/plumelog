@@ -19,7 +19,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * className：MainController
+ * description：MainController
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 @RestController
 @CrossOrigin
 public class MainController {
@@ -41,6 +47,7 @@ public class MainController {
         String message="";
         String indexStr="";
         try {
+            //检查ES索引是否存在
             ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
             String[] indexs=index.split(",");
             List<String> reindexs=elasticLowerClient.getExistIndices(indexs);

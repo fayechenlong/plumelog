@@ -15,7 +15,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * 日期工具类
+ * className：DateUtil
+ * description：日志格式化工具类
+ *
+ * @author Frank.chen
+ * @version 1.0.0
  */
 public class DateUtil {
 

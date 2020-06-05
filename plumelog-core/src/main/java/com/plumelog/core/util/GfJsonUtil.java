@@ -3,13 +3,18 @@ package com.plumelog.core.util;
 import com.alibaba.fastjson.JSON;
 
 import java.util.*;
-
+/**
+ * className：GfJsonUtil
+ * description：fastjson工具类
+ * time：2020-05-11.16:17
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public abstract class GfJsonUtil {
 
     private GfJsonUtil() {
     }
-
-
     public static <T> T parseObject(String json, Class<T> clazz) {
         if (json == null) {
             return null;

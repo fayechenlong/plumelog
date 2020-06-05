@@ -7,7 +7,13 @@ import com.plumelog.core.redis.RedisClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
-
+/**
+ * className：RedisAppender
+ * description：RedisAppender 如果使用redis作为队列用这个RedisAppender输出
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class RedisAppender extends AppenderSkeleton {
     private RedisClient redisClient;
     private String appName;

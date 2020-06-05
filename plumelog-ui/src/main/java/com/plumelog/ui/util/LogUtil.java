@@ -14,7 +14,13 @@ import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
 
-
+/**
+ * className：LogUtil
+ * description：LogUtil
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class LogUtil {
 
     public static HttpEntity getInfo(String url,String queryStr,String userName,String password) throws IOException {

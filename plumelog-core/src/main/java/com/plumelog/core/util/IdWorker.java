@@ -1,6 +1,13 @@
 package com.plumelog.core.util;
 
-
+/**
+ * className：IdWorker
+ * description：基于雪花算法的ID生成器
+ * time：2020-05-11.16:17
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class IdWorker {
 
     //因为二进制里第一个 bit 为如果是 1，那么都是负数，但是我们生成的 id 都是正数，所以第一个 bit 统一都是 0。

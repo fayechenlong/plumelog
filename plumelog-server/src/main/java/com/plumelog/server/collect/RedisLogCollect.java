@@ -11,11 +11,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
+/**
+ * className：RedisLogCollect
+ * description：RedisLogCollect 获取redis中日志，存储到es
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class RedisLogCollect extends BaseLogCollect{
     private  org.slf4j.Logger logger= LoggerFactory.getLogger(RedisLogCollect.class);
     private RedisClient redisClient;
 
+    /**
+     * 无密码redis
+     * @param redisHost
+     * @param redisPort
+     * @param esHosts
+     * @param userName
+     * @param passWord
+     */
     public RedisLogCollect(String redisHost,int redisPort,String esHosts,String userName,String passWord){
 
         this.redisClient=RedisClient.getInstance(redisHost,redisPort,"");
@@ -23,6 +37,16 @@ public class RedisLogCollect extends BaseLogCollect{
         super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts,userName,passWord);
         logger.info("sending log ready!");
     }
+
+    /**
+     * 有密码redis
+     * @param redisHost
+     * @param redisPort
+     * @param redisPassWord
+     * @param esHosts
+     * @param userName
+     * @param passWord
+     */
     public RedisLogCollect(String redisHost,int redisPort,String redisPassWord,String esHosts,String userName,String passWord){
 
         this.redisClient=RedisClient.getInstance(redisHost,redisPort,redisPassWord);

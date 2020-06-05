@@ -7,7 +7,13 @@ import com.plumelog.core.kafka.KafkaProducerClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
-
+/**
+ * className：KafkaAppender
+ * description：KafkaAppender 如果使用kafka作为队列用这个KafkaAppender输出
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class KafkaAppender extends AppenderSkeleton {
     private KafkaProducerClient kafkaClient;
     private String appName;
