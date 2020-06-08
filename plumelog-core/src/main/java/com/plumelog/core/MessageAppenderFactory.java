@@ -68,26 +68,26 @@ public class MessageAppenderFactory {
                 baseLogMessage instanceof RunLogMessage
                         ? LogMessageConstant.LOG_KEY
                         : LogMessageConstant.LOG_KEY_TRACE;
-        logOutPut=cache.getIfPresent(logOutPutKey);
-        if(logOutPut==null||logOutPut) {
             threadPoolExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        client.pushMessage(redisKey, GfJsonUtil.toJSONString(baseLogMessage));
-                        //写入成功重置异常数量
-                        logOutPut=true;
-                        exceptionCount=0;
-                        cache.put(logOutPutKey,true);
-                    } catch (LogQueueConnectException e) {
-                        exceptionCount++;
-                        if(exceptionCount>maxExceptionCount){
-                            cache.put(logOutPutKey,false);
+                    logOutPut=cache.getIfPresent(logOutPutKey);
+                    if(logOutPut==null||logOutPut) {
+                        try {
+                            client.pushMessage(redisKey, GfJsonUtil.toJSONString(baseLogMessage));
+                            //写入成功重置异常数量
+                            logOutPut = true;
+                            exceptionCount = 0;
+                            cache.put(logOutPutKey, true);
+                        } catch (LogQueueConnectException e) {
+                            exceptionCount++;
+                            if (exceptionCount > maxExceptionCount) {
+                                cache.put(logOutPutKey, false);
+                            }
+                            e.printStackTrace();
                         }
-                        e.printStackTrace();
                     }
                 }
             });
-        }
     }
 }
