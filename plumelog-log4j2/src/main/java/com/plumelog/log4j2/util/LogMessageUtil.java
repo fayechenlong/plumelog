@@ -9,12 +9,10 @@ import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.DateUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
-import com.sun.tools.javac.util.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 
 import java.util.Date;
-import java.util.Map;
 
 import static org.apache.logging.log4j.message.ParameterizedMessageFactory.INSTANCE;
 
