@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import com.plumelog.core.LogMessageThreadLocal;
+import com.plumelog.core.TraceId;
 import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
@@ -25,24 +26,39 @@ import java.util.Date;
  */
 public class LogMessageUtil {
 
+    private static String isExpandRunLog(ILoggingEvent logEvent) {
+        String traceId = null;
+        if (LogMessageConstant.EXPAND.equals(LogMessageConstant.SLEUTH_EXPAND)) {
+            if (!logEvent.getMDCPropertyMap().isEmpty()) {
+                traceId = logEvent.getMDCPropertyMap().get(LogMessageConstant.TRACE_ID);
+                TraceId.logTraceID.set(traceId);
+            }
+        }
+        return traceId;
+    }
+
     public static BaseLogMessage getLogMessage(final String appName, final ILoggingEvent iLoggingEvent) {
+        String traceId = isExpandRunLog(iLoggingEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(iLoggingEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {
+            if (!LogMessageConstant.EXPAND.equals(LogMessageConstant.DEFAULT_EXPAND) && traceId != null) {
+                traceMessage.setTraceId(traceId);
+            }
             return TraceLogMessageFactory.getTraceLogMessage(
                     traceMessage, appName, iLoggingEvent.getTimeStamp());
         }
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, iLoggingEvent.getTimeStamp());
         logMessage.setClassName(iLoggingEvent.getLoggerName());
-        if(LogMessageConstant.RUN_MODEL==1) {
+        if (LogMessageConstant.RUN_MODEL == 1) {
             logMessage.setMethod(iLoggingEvent.getThreadName());
-        }else {
-            StackTraceElement atackTraceElement=iLoggingEvent.getCallerData()[0];
-            String method=atackTraceElement.getMethodName();
-            String line=String.valueOf(atackTraceElement.getLineNumber());
-            logMessage.setMethod(method+"("+line+")");
-            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(iLoggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        } else {
+            StackTraceElement atackTraceElement = iLoggingEvent.getCallerData()[0];
+            String method = atackTraceElement.getMethodName();
+            String line = String.valueOf(atackTraceElement.getLineNumber());
+            logMessage.setMethod(method + "(" + line + ")");
+            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(iLoggingEvent.getTimeStamp()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
         }
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;

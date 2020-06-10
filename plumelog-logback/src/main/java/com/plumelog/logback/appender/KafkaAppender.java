@@ -22,6 +22,15 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private String appName;
     private String kafkaHosts;
     private String runModel;
+    private String expand;
+
+    public String getExpand() {
+        return expand;
+    }
+
+    public void setExpand(String expand) {
+        this.expand = expand;
+    }
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -48,6 +57,9 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
         }
         if (kafkaClient == null) {
             kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
+        }
+        if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
+            LogMessageConstant.EXPAND = expand;
         }
     }
 }

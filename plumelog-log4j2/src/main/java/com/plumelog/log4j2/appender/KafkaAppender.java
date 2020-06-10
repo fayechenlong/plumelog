@@ -15,6 +15,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.io.Serializable;
+
 /**
  * className：KafkaAppender
  * description：KafkaAppender 如果使用kafka作为队列用这个KafkaAppender输出
@@ -28,13 +29,16 @@ public class KafkaAppender extends AbstractAppender {
     private String appName;
     private String kafkaHosts;
     private String runModel;
+    private String expand;
 
-    protected KafkaAppender(String name, String appName, String kafkaHosts,String runModel, Filter filter, Layout<? extends Serializable> layout,
-                            final boolean ignoreExceptions) {
+    protected KafkaAppender(String name, String appName, String kafkaHosts, String runModel, Filter filter, Layout<? extends Serializable> layout,
+                            final boolean ignoreExceptions, String expand) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.kafkaHosts = kafkaHosts;
-        this.runModel=runModel;
+        this.runModel = runModel;
+        this.expand = expand;
+
     }
 
     @Override
@@ -43,7 +47,7 @@ public class KafkaAppender extends AbstractAppender {
             kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, logEvent);
-        MessageAppenderFactory.push(logMessage, kafkaClient,"plume.log.ack");
+        MessageAppenderFactory.push(logMessage, kafkaClient, "plume.log.ack");
 
     }
 
@@ -53,15 +57,19 @@ public class KafkaAppender extends AbstractAppender {
             @PluginAttribute("appName") String appName,
             @PluginAttribute("kafkaHosts") String kafkaHosts,
             @PluginAttribute("topic") String topic,
+            @PluginAttribute("expand") String expand,
             @PluginAttribute("runModel") String runModel,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
-        if(runModel!=null){
-            LogMessageConstant.RUN_MODEL=Integer.parseInt(runModel);
+        if (runModel != null) {
+            LogMessageConstant.RUN_MODEL = Integer.parseInt(runModel);
         }
         if (kafkaClient == null) {
             kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
         }
-        return new KafkaAppender(name, appName, kafkaHosts,runModel, filter, layout, true);
+        if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
+            LogMessageConstant.EXPAND = expand;
+        }
+        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand);
     }
 }

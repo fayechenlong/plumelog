@@ -23,7 +23,15 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private String redisPort;
     private String redisAuth;
     private String runModel;
+    private String expand;
 
+    public String getExpand() {
+        return expand;
+    }
+
+    public void setExpand(String expand) {
+        this.expand = expand;
+    }
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -56,6 +64,9 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         super.start();
         if(this.runModel!=null){
             LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        }
+        if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
+            LogMessageConstant.EXPAND = expand;
         }
         if(redisClient==null) {
             redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);

@@ -74,6 +74,7 @@ public class MessageAppenderFactory {
                     logOutPut=cache.getIfPresent(logOutPutKey);
                     if(logOutPut==null||logOutPut) {
                         try {
+                            System.out.println(GfJsonUtil.toJSONString(baseLogMessage));
                             client.pushMessage(redisKey, GfJsonUtil.toJSONString(baseLogMessage));
                             //写入成功重置异常数量
                             logOutPut = true;

@@ -30,15 +30,17 @@ public class RedisAppender extends AbstractAppender {
     private String redisPort;
     private String redisAuth;
     private String runModel;
+    private String expand;
 
     protected RedisAppender(String name, String appName, String redisHost, String redisPort,String redisAuth,String runModel, Filter filter, Layout<? extends Serializable> layout,
-                            final boolean ignoreExceptions) {
+                            final boolean ignoreExceptions,String expand) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.redisHost = redisHost;
         this.redisPort = redisPort;
         this.redisAuth=redisAuth;
         this.runModel=runModel;
+        this.expand = expand;
     }
 
     @Override
@@ -56,12 +58,16 @@ public class RedisAppender extends AbstractAppender {
             @PluginAttribute("redisPort") String redisPort,
             @PluginAttribute("redisAuth") String redisAuth,
             @PluginAttribute("runModel") String runModel,
+            @PluginAttribute("expand") String expand,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
         if(runModel!=null){
             LogMessageConstant.RUN_MODEL=Integer.parseInt(runModel);
         }
+        if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
+            LogMessageConstant.EXPAND = expand;
+        }
         redisClient = RedisClient.getInstance(redisHost, Integer.parseInt(redisPort), redisAuth);
-        return new RedisAppender(name, appName, redisHost, redisPort,redisAuth,runModel, filter, layout, true);
+        return new RedisAppender(name, appName, redisHost, redisPort,redisAuth,runModel, filter, layout, true,expand);
     }
 }
