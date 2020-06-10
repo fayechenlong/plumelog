@@ -1,4 +1,4 @@
-package com.plumelog.server.es;
+package com.plumelog.server.client;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;

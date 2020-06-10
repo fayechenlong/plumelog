@@ -1,6 +1,6 @@
 package com.plumelog.server.collect;
 
-import com.plumelog.server.es.ElasticLowerClient;
+import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.ThreadPoolUtil;
 import org.slf4j.LoggerFactory;

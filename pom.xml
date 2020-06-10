@@ -40,35 +40,35 @@
             <url>${distribution.repository.url}/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <scm>
-        <url>https://gitee.com/frankchenlong/plumelog</url>
-        <connection>scm:git:https://gitee.com/frankchenlong/plumelog.git</connection>
-        <developerConnection>scm:git:https://gitee.com/frankchenlong/plumelog.git</developerConnection>
-    </scm>
-    <developers>
-        <developer>
-            <name>frank.chen</name>
-            <email>409111252@qq.com</email>
-            <url>http://www.plumelog.com</url>
-        </developer>
-        <developer>
-            <name>tank</name>
-            <email>252720074@qq.com</email>
-            <url>http://www.plumelog.com</url>
-        </developer>
-        <developer>
-            <name>will.Young</name>
-            <email>delicious28@gmail.com</email>
-            <url>http://www.plumelog.com</url>
-        </developer>
-    </developers>
+<!--    <licenses>-->
+<!--        <license>-->
+<!--            <name>Apache License, Version 2.0</name>-->
+<!--            <url>http://www.apache.org/licenses/LICENSE-2.0</url>-->
+<!--            <distribution>repo</distribution>-->
+<!--        </license>-->
+<!--    </licenses>-->
+<!--    <scm>-->
+<!--        <url>https://gitee.com/frankchenlong/plumelog</url>-->
+<!--        <connection>scm:git:https://gitee.com/frankchenlong/plumelog.git</connection>-->
+<!--        <developerConnection>scm:git:https://gitee.com/frankchenlong/plumelog.git</developerConnection>-->
+<!--    </scm>-->
+<!--    <developers>-->
+<!--        <developer>-->
+<!--            <name>frank.chen</name>-->
+<!--            <email>409111252@qq.com</email>-->
+<!--            <url>http://www.plumelog.com</url>-->
+<!--        </developer>-->
+<!--        <developer>-->
+<!--            <name>tank</name>-->
+<!--            <email>252720074@qq.com</email>-->
+<!--            <url>http://www.plumelog.com</url>-->
+<!--        </developer>-->
+<!--        <developer>-->
+<!--            <name>will.Young</name>-->
+<!--            <email>delicious28@gmail.com</email>-->
+<!--            <url>http://www.plumelog.com</url>-->
+<!--        </developer>-->
+<!--    </developers>-->
 <!--    <distributionManagement>-->
 <!--        <snapshotRepository>-->
 <!--            <id>ossrh</id>-->

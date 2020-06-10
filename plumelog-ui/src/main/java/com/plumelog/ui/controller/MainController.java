@@ -33,10 +33,10 @@ public class MainController {
     @Value("${es.esHosts}")
     private String esHosts;
 
-    @Value("${es.userName}")
+    @Value("${es.userName:}")
     private String userName;
 
-    @Value("${es.passWord}")
+    @Value("${es.passWord:}")
     private String passWord;
 
     @Value("${admin.password}")

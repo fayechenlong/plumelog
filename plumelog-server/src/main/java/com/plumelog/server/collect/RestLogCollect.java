@@ -1,61 +1,48 @@
 package com.plumelog.server.collect;
 
 
-import com.plumelog.core.exception.LogQueueConnectException;
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
-import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.redis.RedisClient;
+import com.plumelog.server.client.PlumeRestClient;
 import com.plumelog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * className：RedisLogCollect
- * description：RedisLogCollect 获取redis中日志，存储到es
+ * description：RedisLogCollect 获取rest接口中日志，存储到es
  *
  * @author Frank.chen
  * @version 1.0.0
  */
-public class RedisLogCollect extends BaseLogCollect{
-    private  org.slf4j.Logger logger= LoggerFactory.getLogger(RedisLogCollect.class);
-    private RedisClient redisClient;
+public class RestLogCollect extends BaseLogCollect{
+    private  org.slf4j.Logger logger= LoggerFactory.getLogger(RestLogCollect.class);
+    private String restUserName="";
+    private String restPassWord="";
+    private String restUrl="";
 
     /**
      * 无密码redis
-     * @param redisHost
-     * @param redisPort
+     * @param restUrl
      * @param esHosts
      * @param userName
      * @param passWord
      */
-    public RedisLogCollect(String redisHost,int redisPort,String esHosts,String userName,String passWord){
+    public RestLogCollect(String restUrl,String esHosts, String userName, String passWord,String restUserName,String restPassWord){
 
-        this.redisClient=RedisClient.getInstance(redisHost,redisPort,"");
-        logger.info("getting log ready!");
+        this.restUserName=restUserName;
+        this.restPassWord=restPassWord;
+        this.restUrl=restUrl;
         super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts,userName,passWord);
         logger.info("sending log ready!");
     }
 
-    /**
-     * 有密码redis
-     * @param redisHost
-     * @param redisPort
-     * @param redisPassWord
-     * @param esHosts
-     * @param userName
-     * @param passWord
-     */
-    public RedisLogCollect(String redisHost,int redisPort,String redisPassWord,String esHosts,String userName,String passWord){
 
-        this.redisClient=RedisClient.getInstance(redisHost,redisPort,redisPassWord);
-        logger.info("getting log ready!");
-        super.elasticLowerClient= ElasticLowerClient.getInstance(esHosts,userName,passWord);
-        logger.info("sending log ready!");
-    }
-    public  void redisStart(){
+    public  void restStart(){
 
         threadPoolExecutor.execute(()->{
             collectRuningLog();
@@ -69,12 +56,12 @@ public class RedisLogCollect extends BaseLogCollect{
         while (true) {
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
+                List<String> logs= PlumeRestClient.getLogs(this.restUrl+"?maxSendSize="+InitConfig.MAX_SEND_SIZE,this.restUserName,this.restPassWord);
                 collect(logs,LogMessageConstant.ES_INDEX+ LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
                 } catch (InterruptedException e) {
                     logger.error("",e);
-                } catch (LogQueueConnectException e) {
-                    logger.error("从redis队列拉取日志失败！",e);
+                } catch (Exception e) {
+                    logger.error("从plumelog-server拉取日志失败！",e);
                 }
         }
     }
@@ -82,12 +69,12 @@ public class RedisLogCollect extends BaseLogCollect{
         while (true) {
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs=redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE,InitConfig.MAX_SEND_SIZE);
+                List<String> logs= PlumeRestClient.getLogs(this.restUrl+"?maxSendSize="+InitConfig.MAX_SEND_SIZE,this.restUserName,this.restPassWord);
                 collectTrace(logs,LogMessageConstant.ES_INDEX+LogMessageConstant.LOG_TYPE_TRACE+"_"+ DateUtil.parseDateToStr(new Date(),DateUtil.DATE_FORMAT_YYYYMMDD));
                 } catch (InterruptedException e) {
                     logger.error("",e);
-                }catch (LogQueueConnectException e) {
-                    logger.error("从redis队列拉取日志失败！",e);
+                }catch (Exception e) {
+                    logger.error("从plumelog-server队列拉取日志失败！",e);
                 }
         }
     }
