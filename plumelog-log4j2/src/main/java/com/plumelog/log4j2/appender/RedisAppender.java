@@ -67,7 +67,9 @@ public class RedisAppender extends AbstractAppender {
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
-        redisClient = RedisClient.getInstance(redisHost, Integer.parseInt(redisPort), redisAuth);
+        redisClient = RedisClient.getInstance(redisHost, redisPort == null ?
+                LogMessageConstant.REDIS_DEFAULT_PORT
+                : Integer.parseInt(redisPort), redisAuth);
         return new RedisAppender(name, appName, redisHost, redisPort,redisAuth,runModel, filter, layout, true,expand);
     }
 }

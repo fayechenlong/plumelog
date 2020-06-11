@@ -74,5 +74,10 @@ public class LogMessageConstant {
      */
     public final static List<String> EXPANDS = Arrays.asList("plumelog", "sleuth");
 
+    /**
+     * redis 默认端口号
+     */
+    public final static Integer REDIS_DEFAULT_PORT = 6379;
+
 
 }

@@ -56,20 +56,24 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(ILoggingEvent event) {
         BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        MessageAppenderFactory.push(logMessage,redisClient,"plume.log.ack");
+        MessageAppenderFactory.push(logMessage, redisClient, "plume.log.ack");
     }
 
     @Override
     public void start() {
         super.start();
-        if(this.runModel!=null){
-            LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        if (this.runModel != null) {
+            LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
-        if(redisClient==null) {
-            redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
+        if (redisClient == null) {
+            redisClient = RedisClient.getInstance(this.redisHost,
+                    this.redisPort == null ?
+                            LogMessageConstant.REDIS_DEFAULT_PORT
+                            : Integer.parseInt(this.redisPort),
+                    this.redisAuth);
         }
     }
 }

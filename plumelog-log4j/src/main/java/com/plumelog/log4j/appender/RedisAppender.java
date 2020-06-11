@@ -50,14 +50,16 @@ public class RedisAppender extends AppenderSkeleton {
 
     @Override
     protected void append(LoggingEvent loggingEvent) {
-        if(this.runModel!=null){
-            LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        if (this.runModel != null) {
+            LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (redisClient == null) {
-            redisClient = RedisClient.getInstance(this.redisHost, Integer.parseInt(this.redisPort), this.redisAuth);
+            redisClient = RedisClient.getInstance(this.redisHost, this.redisPort == null ?
+                    LogMessageConstant.REDIS_DEFAULT_PORT
+                    : Integer.parseInt(this.redisPort), this.redisAuth);
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
-        MessageAppenderFactory.push(logMessage, redisClient,"plume.log.ack");
+        MessageAppenderFactory.push(logMessage, redisClient, "plume.log.ack");
     }
 
     @Override
