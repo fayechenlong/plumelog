@@ -8,6 +8,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.*;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class ElasticLowerClient {
             sendStr.append("\r\n");
         }
         String endpoint = "";
-        if (type == null) {
+        if (StringUtils.isEmpty(type)) {
             endpoint = "/" + baseIndex + "/_bulk";
         } else {
             endpoint = "/" + baseIndex + "/" + type + "/_bulk";

@@ -1,5 +1,6 @@
 package com.plumelog.server;
 
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
@@ -28,6 +29,8 @@ public class CollectStartBean implements InitializingBean {
     private String kafkaHosts;
     @Value("${plumelog.server.es.esHosts:}")
     private String esHosts;
+    @Value("${plumelog.server.es.indexType:}")
+    private String indexType;
     @Value("${plumelog.server.es.userName:}")
     private String esUserName;
     @Value("${plumelog.server.es.passWord:}")
@@ -66,6 +69,8 @@ public class CollectStartBean implements InitializingBean {
         InitConfig.MAX_SEND_SIZE = this.maxSendSize;
         InitConfig.KAFKA_GROUP_NAME = this.kafkaGroupName;
         InitConfig.MAX_INTERVAL = this.interval;
+
+        LogMessageConstant.ES_TYPE=this.indexType;
 
         logger.info("server run model:" + this.model);
         logger.info("maxSendSize:" + this.maxSendSize);

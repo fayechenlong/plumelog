@@ -39,7 +39,7 @@ public class LogMessageConstant {
 
     public final static String ES_INDEX = "plume_log_";
 
-    public final static String ES_TYPE = "plume_log";
+    public  static String ES_TYPE = "plume_log";
 
     public final static String LOG_TYPE_RUN = "run";
 

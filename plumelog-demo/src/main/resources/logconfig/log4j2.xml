@@ -6,14 +6,24 @@
             <PatternLayout pattern="%-d{yyyy-MM-dd HH:mm:ss}-[%p] [%t] [%c] %m%n"/>
         </Console>
 
-        <!-- easylog日志 -->
-<!--        <appender name="plumelog_demo" class="com.plumelog.log4j2.appender.KafkaAppender">-->
-<!--        <appName>plumelog_demo</appName>-->
-<!--        <kafkaHosts>10.103.4.37:9092,10.103.4.50:9092,10.103.4.53:9092</kafkaHosts>-->
-<!--        </appender>-->
+        <!-- 使用kafka启用下面配置 -->
+        <!-- 字段说明 -->
+        <!-- appName:应用名称 -->
+        <!-- kafkaHosts：kafka集群地址 -->
+        <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
+        <!-- expand：整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth- -->
+        <!--<KafkaAppender name="kafkaAppender" appName="plumelog_log4j2" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092">-->
+        <!--</KafkaAppender>-->
 
-        <!--10.103.4.50   172.16.249.72-->
-       <RedisAppender name="plumelog_demo" appName="plumelog_demo" redisHost="172.16.249.72" redisPort="6379" runModel="2" />
+        <!--使用redis启用下面配置-->
+        <!-- 字段说明 -->
+        <!-- appName:应用名称 -->
+        <!-- redisHost：redis地址 -->
+        <!-- redisPort：redis端口号 不配置，默认使用6379-->
+        <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
+        <!-- expand：整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth- -->
+        <RedisAppender name="plumelog_demo" appName="plumelog_demo" redisHost="172.16.249.72" redisPort="6379"
+                       runModel="1"/>
     </Appenders>
 
     <Loggers>
