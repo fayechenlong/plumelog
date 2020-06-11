@@ -57,22 +57,22 @@ public class LogMessageConstant {
     /**
      * 默认扩展 可变参数
      */
-    public static String EXPAND = "Plumelog";
+    public static String EXPAND = "plumelog";
 
     /**
      * 默认扩展
      */
-    public final static String DEFAULT_EXPAND = "Plumelog";
+    public final static String DEFAULT_EXPAND = "plumelog";
 
     /**
      * Sleuth 扩展
      */
-    public final static String SLEUTH_EXPAND = "Sleuth";
+    public final static String SLEUTH_EXPAND = "sleuth";
 
     /**
      * 所有支持的扩展
      */
-    public final static List<String> EXPANDS = Arrays.asList("Plumelog", "Sleuth");
+    public final static List<String> EXPANDS = Arrays.asList("plumelog", "sleuth");
 
 
 }
