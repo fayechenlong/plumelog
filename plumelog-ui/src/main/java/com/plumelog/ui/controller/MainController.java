@@ -2,6 +2,7 @@ package com.plumelog.ui.controller;
 
 import com.plumelog.ui.es.ElasticLowerClient;
 import com.plumelog.core.util.GfJsonUtil;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -44,8 +45,10 @@ public class MainController {
 
     private ElasticLowerClient elasticLowerClient;
 
+    private org.slf4j.Logger logger = LoggerFactory.getLogger(MainController.class);
     @RequestMapping({"/query", "/plumelog/query"})
     public String query(@RequestBody String queryStr, String index, String size, String from) {
+
         String message = "";
         String indexStr = "";
         try {
@@ -58,8 +61,11 @@ public class MainController {
                 return message;
             }
             String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
+            logger.info(indexStr);
+            logger.info(queryStr);
             return elasticLowerClient.get(url, queryStr);
         } catch (Exception e) {
+            logger.error("",e);
             return e.getMessage();
         }
     }
@@ -92,7 +98,7 @@ public class MainController {
             }
             return GfJsonUtil.toJSONString(listMap);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("",e);
         }
         return "";
     }
@@ -113,6 +119,9 @@ public class MainController {
 
     private void setElasticLowerClient() {
         if (this.elasticLowerClient == null) {
+            logger.info(esHosts);
+            logger.info(userName);
+            logger.info(passWord);
             this.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
         }
     }

@@ -52,6 +52,7 @@ public class MainController {
                 return result;
             }
         } catch (Exception e) {
+            logger.error("",e);
             result.setCode(500);
             result.setMessage("get logs error! :" + e.getMessage());
         }
