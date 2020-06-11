@@ -50,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog-logback</artifactId>
+            <artifactId>plumelog-log4j2</artifactId>
             <version>${version}</version>
         </dependency>
     </dependencies>

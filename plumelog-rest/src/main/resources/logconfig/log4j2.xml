@@ -15,7 +15,7 @@
         </appender>-->
 
         <!--10.103.4.50   172.16.249.72-->
-        <RedisAppender name="plumelog_demo" appName="plumelog_rest" redisHost="172.16.249.72" redisPort="6379" expand="Sleuth"/>
+        <RedisAppender name="plumelog_demo" appName="plumelog_rest" redisHost="172.16.249.72" redisPort="6379" expand="sleuth"/>
         <!--<RedisAppender name="easylog_demo" appName="plumelog_demo" reidsHost="10.103.4.14" redisPort="6379" />-->
         <!--整个日志采取异步输出，由于混部会影响性能，故 console和redis都采用异步输出，
             所以说有时候日志没有输出完也许应用已经可以访问了

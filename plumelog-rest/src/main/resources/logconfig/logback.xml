@@ -36,7 +36,7 @@
         <redisHost>172.16.249.72</redisHost>
         <!--<redisAuth>123456</redisAuth>-->
         <redisPort>6379</redisPort>
-        <expand>Sleuth</expand>
+        <expand>sleuth</expand>
     </appender>
 
     <!-- 日志输出级别 -->
