@@ -58,7 +58,7 @@ public class RestLogCollect extends BaseLogCollect {
         while (true) {
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE, this.restUserName, this.restPassWord);
+                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE+"&logKey="+LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
                 collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
@@ -72,7 +72,7 @@ public class RestLogCollect extends BaseLogCollect {
         while (true) {
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE, this.restUserName, this.restPassWord);
+                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE+"&logKey="+LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
                 collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);

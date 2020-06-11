@@ -36,15 +36,16 @@ public class MainController {
     private RedisClient redisClient;
 
     @RequestMapping({"/getlog", "/plumelogServer/getlog"})
-    public Result getlog(Integer maxSendSize) {
+    public Result getlog(Integer maxSendSize,String logKey) {
         if (maxSendSize == null) {
             maxSendSize = 500;
         }
         Result result = new Result();
         try {
             getRedisClient();
-            List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, maxSendSize);
+            List<String> logs = redisClient.getMessage(logKey, maxSendSize);
             if (logs != null && logs.size() > 0) {
+                logger.info("get logs success size:"+logs.size());
                 result.setCode(200);
                 result.setMessage("get logs success!");
                 result.setLogs(logs);
@@ -60,12 +61,12 @@ public class MainController {
     }
 
     @RequestMapping({"/sendLog", "/plumelogServer/sendLog"})
-    public Result sendLog(List<String> logs) {
+    public Result sendLog(List<String> logs,String logKey) {
         Result result = new Result();
         if ("redis".equals(model)) {
             try {
                 getRedisClient();
-                redisClient.putMessageList(LogMessageConstant.LOG_KEY, logs);
+                redisClient.putMessageList(logKey, logs);
             } catch (Exception e) {
                 result.setCode(500);
                 result.setMessage("send logs error! :" + e.getMessage());

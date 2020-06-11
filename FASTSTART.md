@@ -210,14 +210,13 @@
 
 * 普通日志使用
 
-   要想产生traceID，需要再拦截器里增加，如下：
+   要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里，如果是定时任务放在定时任务的最前端)
 ```java
         @Component
         public class Interceptor extends HandlerInterceptorAdapter{
-        
+            private IdWorker worker = new IdWorker(1,1,1);//雪花算法，这边不一定要用这个生成id
             @Override
             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-                IdWorker worker = new IdWorker(1,1,1);
                 TraceId.logTraceID.set(String.valueOf(worker.nextId()));//设置TraceID值，不埋此点链路ID就没有
                 return true;
             }
