@@ -23,6 +23,7 @@ import java.io.IOException;
 public class CustomFilter implements Filter {
     Logger logger = LoggerFactory.getLogger(CustomFilter.class);
 
+    private IdWorker worker = new IdWorker(1, 1, 1);
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
@@ -31,7 +32,6 @@ public class CustomFilter implements Filter {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
             String traceId = request.getHeader("TraceId");
             if (StringUtils.isEmpty(traceId)) {
-                IdWorker worker = new IdWorker(1, 1, 1);
                 TraceId.logTraceID.set(String.valueOf(worker.nextId()));
             } else {
                 TraceId.logTraceID.set(traceId);
