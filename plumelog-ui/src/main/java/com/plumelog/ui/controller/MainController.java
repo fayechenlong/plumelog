@@ -1,9 +1,7 @@
 package com.plumelog.ui.controller;
 
 import com.plumelog.ui.es.ElasticLowerClient;
-import com.plumelog.ui.util.LogUtil;
 import com.plumelog.core.util.GfJsonUtil;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -44,29 +42,31 @@ public class MainController {
     @Value("${admin.password}")
     private String adminPassWord;
 
+    private ElasticLowerClient elasticLowerClient;
+
     @RequestMapping({"/query", "/plumelog/query"})
     public String query(@RequestBody String queryStr, String index, String size, String from) {
         String message = "";
         String indexStr = "";
         try {
             //检查ES索引是否存在
-            ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+            setElasticLowerClient();
             String[] indexs = index.split(",");
             List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
             indexStr = String.join(",", reindexs);
             if ("".equals(indexStr)) {
                 return message;
             }
-            String url = "http://" + esHosts + "/" + indexStr + "/_search?from=" + from + "&size=" + size;
-            return EntityUtils.toString(LogUtil.getInfo(url, queryStr, userName, passWord), "utf-8");
-        } catch (IOException e) {
+            String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
+            return elasticLowerClient.get(url, queryStr);
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
 
     @RequestMapping({"/getServerInfo", "/plumelog/getServerInfo"})
     public String query(String index) {
-        ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+        setElasticLowerClient();
         String res = elasticLowerClient.cat(index);
         BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(res.getBytes(Charset.forName("utf8"))), Charset.forName("utf8")));
         List<String> list = new ArrayList<>();
@@ -101,7 +101,7 @@ public class MainController {
     public Map<String, Object> deleteIndex(String index, String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
-            ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+            setElasticLowerClient();
             boolean re = elasticLowerClient.deleteIndex(index);
             map.put("acknowledged", re);
         } else {
@@ -109,5 +109,11 @@ public class MainController {
             map.put("message", "管理密码错误！");
         }
         return map;
+    }
+
+    private void setElasticLowerClient() {
+        if (this.elasticLowerClient == null) {
+            this.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+        }
     }
 }

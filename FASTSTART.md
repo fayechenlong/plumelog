@@ -9,11 +9,11 @@
 
 #### （1）安装
     
-   1.安装 redis 或者 kafka（一般公司redis足够）
+   1.安装 redis 或者 kafka（一般公司redis足够） redis 官网:https://redis.io   kafka：http://kafka.apache.org
      
-   2.安装 elasticsearch
+   2.安装 elasticsearch（推荐6.8）  6.8官网下载地址:https://www.elastic.co/cn/downloads/past-releases/elasticsearch-6-8-10
     
-   3.下载安装包，plumelog-ui和plumelog-server 下载地址： https://gitee.com/frankchenlong/plumelog/releases
+   3.下载安装包，plumelog-ui和plumelog-server 下载地址：https://gitee.com/frankchenlong/plumelog/releases
    
    4.配置plumelog-server，并启动
    

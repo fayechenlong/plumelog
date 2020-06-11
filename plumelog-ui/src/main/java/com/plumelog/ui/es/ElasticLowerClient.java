@@ -4,8 +4,10 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.*;
 
 import java.io.IOException;
@@ -69,7 +71,25 @@ public class ElasticLowerClient {
             String str = new String(bytes);
             reStr = str;
         } catch (Exception e) {
+            e.printStackTrace();
             reStr = "";
+        }
+        return reStr;
+    }
+    public String get(String url,String queryStr) {
+        String reStr = "";
+        StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
+        stringEntity.setContentType("application/json");
+        Request request = new Request(
+                "GET",
+                url);
+        request.setEntity(stringEntity);
+        try {
+            Response res = client.performRequest(request);
+            return EntityUtils.toString(res.getEntity(),"utf-8");
+        } catch (Exception e) {
+            reStr = "";
+            e.printStackTrace();
         }
         return reStr;
     }
@@ -86,6 +106,7 @@ public class ElasticLowerClient {
                     existIndexList.add(index);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return existIndexList;
@@ -101,6 +122,7 @@ public class ElasticLowerClient {
                 return true;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
         return false;
