@@ -27,6 +27,12 @@ public class RestApiService {
             = ThreadPoolUtil.getPool(4, 8, 5000);
 
     public String getIndex(){
+
+        try {
+            Integer.parseInt("aaa");
+        } catch (NumberFormatException e) {
+            log.error("error:{}",e);
+        }
         threadPoolExecutor.execute(TtlRunnable.get(() -> {
             log.info("tankSay =》我是子线程的日志！");
         }));
