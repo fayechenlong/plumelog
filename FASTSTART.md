@@ -118,6 +118,8 @@
     log4j.appender.L.redisPort=6379
     #redis没有密码这一项为空或者不需要
     log4j.appender.L.redisAuth=123456
+    #日志保留天数,配置0或者不配置默认永久保留
+    admin.log.keepDays=7
 ```
    同理如果使用logback,和log4j2配置如下
     
