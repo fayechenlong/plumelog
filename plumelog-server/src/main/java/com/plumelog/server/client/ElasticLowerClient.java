@@ -8,10 +8,12 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.*;
 import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 /**
  * className：ElasticLowerClient
  * description：ElasticLowerClient
@@ -20,27 +22,28 @@ import java.util.UUID;
  * @version 1.0.0
  */
 public class ElasticLowerClient {
-    private  org.slf4j.Logger logger= LoggerFactory.getLogger(ElasticLowerClient.class);
+    private org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
     private static ElasticLowerClient instance;
     private RestClient client;
 
-    public static ElasticLowerClient getInstance(String hosts,String userName,String passWord) {
+    public static ElasticLowerClient getInstance(String hosts, String userName, String passWord) {
         if (instance == null) {
             synchronized (ElasticLowerClient.class) {
                 if (instance == null) {
-                    instance = new ElasticLowerClient(hosts,userName,passWord);
+                    instance = new ElasticLowerClient(hosts, userName, passWord);
                 }
             }
         }
         return instance;
     }
-    public ElasticLowerClient(String hosts,String userName,String passWord) {
+
+    public ElasticLowerClient(String hosts, String userName, String passWord) {
 
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, passWord));  //es账号密码
-        String[] hostsAndPorts=hosts.split(",");
+        String[] hostsAndPorts = hosts.split(",");
         HttpHost[] httpHosts = new HttpHost[hostsAndPorts.length];
-        for(int i=0;i<hostsAndPorts.length;i++){
+        for (int i = 0; i < hostsAndPorts.length; i++) {
             httpHosts[i] = HttpHost.create(hostsAndPorts[i]);
         }
         client = RestClient.builder(httpHosts).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
@@ -51,15 +54,16 @@ public class ElasticLowerClient {
             }
         }).build();
     }
-    public List<String> getExistIndices(String [] indices){
+
+    public List<String> getExistIndices(String[] indices) {
         List<String> existIndexList = new ArrayList<String>();
-        for (String index: indices){
+        for (String index : indices) {
             try {
                 Request request = new Request(
                         "HEAD",
-                        "/"+index+"");
-                Response res=client.performRequest(request);
-                if(res.getStatusLine().getStatusCode()==200){
+                        "/" + index + "");
+                Response res = client.performRequest(request);
+                if (res.getStatusLine().getStatusCode() == 200) {
                     existIndexList.add(index);
                 }
             } catch (Exception e) {
@@ -68,21 +72,22 @@ public class ElasticLowerClient {
         }
         return existIndexList;
     }
-    public void insertList(List<String> list,String baseIndex,String type) throws IOException {
-        StringBuffer sendStr=new StringBuffer();
-        for(int a=0;a<list.size();a++) {
-            String map=list.get(a);
-            String ent="{\"index\":{\"_id\":\""+ UUID.randomUUID().toString()+"\"}} ";
+
+    public void insertList(List<String> list, String baseIndex, String type) throws IOException {
+        StringBuffer sendStr = new StringBuffer();
+        for (int a = 0; a < list.size(); a++) {
+            String map = list.get(a);
+            String ent = "{\"index\":{\"_id\":\"" + UUID.randomUUID().toString() + "\"}} ";
             sendStr.append(ent);
             sendStr.append("\r\n");
             sendStr.append(map);
             sendStr.append("\r\n");
         }
-        String endpoint="";
-        if(type==null){
-            endpoint="/"+baseIndex+"/_bulk";
-        }else {
-            endpoint="/"+baseIndex+"/"+type+"/_bulk";
+        String endpoint = "";
+        if (type == null) {
+            endpoint = "/" + baseIndex + "/_bulk";
+        } else {
+            endpoint = "/" + baseIndex + "/" + type + "/_bulk";
         }
         Request request = new Request(
                 "POST",
@@ -96,11 +101,12 @@ public class ElasticLowerClient {
 
             @Override
             public void onFailure(Exception e) {
-                logger.error("ElasticSearch commit Failure!",e);
+                logger.error("ElasticSearch commit Failure!", e);
             }
         });
     }
-    public void close(){
+
+    public void close() {
         try {
             client.close();
         } catch (IOException e) {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * className：MainController
  * description：MainController
@@ -42,47 +44,48 @@ public class MainController {
     @Value("${admin.password}")
     private String adminPassWord;
 
-    @RequestMapping({"/query","/plumelog/query"})
-    public String query(@RequestBody String queryStr,String index,String size,String from) {
-        String message="";
-        String indexStr="";
+    @RequestMapping({"/query", "/plumelog/query"})
+    public String query(@RequestBody String queryStr, String index, String size, String from) {
+        String message = "";
+        String indexStr = "";
         try {
             //检查ES索引是否存在
-            ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
-            String[] indexs=index.split(",");
-            List<String> reindexs=elasticLowerClient.getExistIndices(indexs);
-            indexStr=String.join(",",reindexs);
-            if("".equals(indexStr)){
+            ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+            String[] indexs = index.split(",");
+            List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
+            indexStr = String.join(",", reindexs);
+            if ("".equals(indexStr)) {
                 return message;
             }
-            String url = "http://"+esHosts+"/"+indexStr+"/_search?from="+from+"&size="+size;
-            return EntityUtils.toString(LogUtil.getInfo(url,queryStr,userName,passWord), "utf-8");
-        }catch (IOException e){
+            String url = "http://" + esHosts + "/" + indexStr + "/_search?from=" + from + "&size=" + size;
+            return EntityUtils.toString(LogUtil.getInfo(url, queryStr, userName, passWord), "utf-8");
+        } catch (IOException e) {
             return e.getMessage();
         }
     }
-    @RequestMapping({"/getServerInfo","/plumelog/getServerInfo"})
+
+    @RequestMapping({"/getServerInfo", "/plumelog/getServerInfo"})
     public String query(String index) {
-        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance(esHosts,userName,passWord);
-        String res=elasticLowerClient.cat(index);
+        ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+        String res = elasticLowerClient.cat(index);
         BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(res.getBytes(Charset.forName("utf8"))), Charset.forName("utf8")));
-        List<String> list=new ArrayList<>();
+        List<String> list = new ArrayList<>();
         try {
             while (true) {
                 String aa = br.readLine();
-                if(StringUtils.isEmpty(aa)){
+                if (StringUtils.isEmpty(aa)) {
                     break;
                 }
                 list.add(aa);
             }
-            List<Map<String,String>> listMap=new ArrayList<>();
-            if(list.size()>0){
-                String[] title=list.get(0).split("\\s+");
-                for(int i=1;i<list.size();i++){
-                    String[] values=list.get(i).split("\\s+");
-                    Map<String,String> map=new HashMap<>();
-                    for(int j=0;j<title.length;j++){
-                        map.put(title[j],values[j]);
+            List<Map<String, String>> listMap = new ArrayList<>();
+            if (list.size() > 0) {
+                String[] title = list.get(0).split("\\s+");
+                for (int i = 1; i < list.size(); i++) {
+                    String[] values = list.get(i).split("\\s+");
+                    Map<String, String> map = new HashMap<>();
+                    for (int j = 0; j < title.length; j++) {
+                        map.put(title[j], values[j]);
                     }
                     listMap.add(map);
                 }
@@ -93,14 +96,15 @@ public class MainController {
         }
         return "";
     }
-    @RequestMapping({"/deleteIndex","/plumelog/deleteIndex"})
-    public Map<String,Object> deleteIndex(String index,String adminPassWord) {
+
+    @RequestMapping({"/deleteIndex", "/plumelog/deleteIndex"})
+    public Map<String, Object> deleteIndex(String index, String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
-        if(adminPassWord.equals(this.adminPassWord)) {
+        if (adminPassWord.equals(this.adminPassWord)) {
             ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
             boolean re = elasticLowerClient.deleteIndex(index);
             map.put("acknowledged", re);
-        }else {
+        } else {
             map.put("acknowledged", false);
             map.put("message", "管理密码错误！");
         }

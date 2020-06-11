@@ -14,7 +14,7 @@ import java.util.List;
 public class Result {
     private Integer code;
     private String message;
-    private List<String> logs=new ArrayList<>();
+    private List<String> logs = new ArrayList<>();
 
     public Integer getCode() {
         return code;

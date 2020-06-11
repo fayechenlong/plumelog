@@ -2,7 +2,6 @@ package com.plumelog.server.client;
 
 import com.plumelog.server.controller.Result;
 import com.plumelog.server.util.GfJsonUtil;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -30,8 +29,8 @@ import java.util.List;
  */
 public class PlumeRestClient {
     public static List<String> getLogs(String url, String userName, String password) throws IOException {
-        List<String> logs=new ArrayList<>();
-        Result result=new Result();
+        List<String> logs = new ArrayList<>();
+        Result result = new Result();
         StringEntity stringEntity = new StringEntity("utf-8");
         stringEntity.setContentType("application/json");
         RequestConfig requestConfig = RequestConfig.custom()
@@ -50,13 +49,13 @@ public class PlumeRestClient {
         post.setEntity(stringEntity);
         post.setConfig(requestConfig);
         HttpResponse response = client.execute(post);
-        String re=EntityUtils.toString(response.getEntity());
-        if(!StringUtils.isEmpty(re)){
-            result= GfJsonUtil.parseObject(re,Result.class);
+        String re = EntityUtils.toString(response.getEntity());
+        if (!StringUtils.isEmpty(re)) {
+            result = GfJsonUtil.parseObject(re, Result.class);
         }
-        if(result!=null){
-            if(result.getCode()==200){
-                logs=result.getLogs();
+        if (result != null) {
+            if (result.getCode() == 200) {
+                logs = result.getLogs();
             }
         }
         return logs;

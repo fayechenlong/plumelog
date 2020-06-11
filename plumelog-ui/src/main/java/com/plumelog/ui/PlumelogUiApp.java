@@ -7,9 +7,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.plumelog"})
-public class PlumelogUiApp
-{
-    public static void main( String[] args ){
+public class PlumelogUiApp {
+    public static void main(String[] args) {
         SpringApplication.run(PlumelogUiApp.class, args);
     }
 }

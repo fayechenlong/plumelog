@@ -23,7 +23,7 @@ import java.io.IOException;
  */
 public class LogUtil {
 
-    public static HttpEntity getInfo(String url,String queryStr,String userName,String password) throws IOException {
+    public static HttpEntity getInfo(String url, String queryStr, String userName, String password) throws IOException {
         StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
         stringEntity.setContentType("application/json");
         RequestConfig requestConfig = RequestConfig.custom()
