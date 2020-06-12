@@ -83,8 +83,6 @@ public class CollectStartBean implements InitializingBean {
                 logger.error("can not find kafkaHosts config! please check the plumelog.properties(plumelog.server.kafka.kafkaHosts) ");
                 return;
             }
-            logger.info("kafkaHosts:" + kafkaHosts);
-            logger.info("esHosts:" + esHosts);
             KafkaLogCollect kafkaLogCollect = new KafkaLogCollect(this.kafkaHosts, this.esHosts, this.esUserName, this.esPassWord);
             kafkaLogCollect.kafkaStart();
         }
@@ -103,8 +101,6 @@ public class CollectStartBean implements InitializingBean {
                 logger.error("redis config error! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
                 return;
             }
-            logger.info("redisHost:" + redisHost);
-            logger.info("esHosts:" + esHosts);
             RedisLogCollect redisLogCollect = new RedisLogCollect(ip, port, this.redisPassWord, this.esHosts, this.esUserName, this.esPassWord);
             redisLogCollect.redisStart();
         }
