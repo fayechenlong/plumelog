@@ -68,12 +68,26 @@ public class ElasticLowerClient {
                     existIndexList.add(index);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("",e);
             }
         }
         return existIndexList;
     }
-
+    public boolean existIndice(String indice) {
+        List<String> existIndexList = new ArrayList<String>();
+            try {
+                Request request = new Request(
+                        "HEAD",
+                        "/" + indice + "");
+                Response res = client.performRequest(request);
+                if (res.getStatusLine().getStatusCode() == 200) {
+                    return true;
+                }
+            } catch (Exception e) {
+                logger.error("",e);
+            }
+        return false;
+    }
     public void insertList(List<String> list, String baseIndex, String type) throws IOException {
         StringBuffer sendStr = new StringBuffer();
         for (int a = 0; a < list.size(); a++) {
@@ -91,7 +105,7 @@ public class ElasticLowerClient {
             endpoint = "/" + baseIndex + "/" + type + "/_bulk";
         }
         Request request = new Request(
-                "POST",
+                "PUT",
                 endpoint);
         request.setJsonEntity(sendStr.toString());
         client.performRequestAsync(request, new ResponseListener() {
@@ -111,7 +125,7 @@ public class ElasticLowerClient {
         try {
             client.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("",e);
         }
     }
 
