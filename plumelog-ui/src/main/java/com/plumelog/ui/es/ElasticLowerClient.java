@@ -76,7 +76,8 @@ public class ElasticLowerClient {
         }
         return reStr;
     }
-    public String get(String url,String queryStr) {
+
+    public String get(String url, String queryStr) {
         String reStr = "";
         StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
         stringEntity.setContentType("application/json");
@@ -86,7 +87,7 @@ public class ElasticLowerClient {
         request.setEntity(stringEntity);
         try {
             Response res = client.performRequest(request);
-            return EntityUtils.toString(res.getEntity(),"utf-8");
+            return EntityUtils.toString(res.getEntity(), "utf-8");
         } catch (Exception e) {
             reStr = "";
             e.printStackTrace();

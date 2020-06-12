@@ -4,6 +4,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.DateUtil;
 import com.plumelog.ui.es.ElasticLowerClient;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,9 @@ import java.util.Date;
  * @version 1.0.0
  */
 @Component
-public class AutoDeleteLogs {
+public class AutoDeleteLogs implements InitializingBean {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(AutoDeleteLogs.class);
+    private ElasticLowerClient elasticLowerClient;
     @Value("${admin.log.keepDays:0}")
     private int keepDays;
     @Value("${es.esHosts}")
@@ -33,24 +35,31 @@ public class AutoDeleteLogs {
     @Value("${es.passWord:}")
     private String passWord;
 
-    @Scheduled(cron="0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     //@Scheduled(cron="0/5 * * * * *")
-    public void deleteLogs(){
-        if(keepDays>0){
-            ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE,-keepDays);
-            Date date = cal.getTime();
-            String runLogIndex= LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
-            elasticLowerClient.deleteIndex(runLogIndex);
-            String traceLogIndex= LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
-            elasticLowerClient.deleteIndex(traceLogIndex);
-
-            logger.info("delete success!:"+runLogIndex);
-            logger.info("delete success!:"+traceLogIndex);
-        }else {
-            logger.info("do not delete");
+    public void deleteLogs() {
+        if (keepDays > 0) {
+            try {
+                logger.info("begin delete {} days ago logs!", keepDays);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -keepDays);
+                Date date = cal.getTime();
+                String runLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
+                elasticLowerClient.deleteIndex(runLogIndex);
+                String traceLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
+                elasticLowerClient.deleteIndex(traceLogIndex);
+                logger.info("delete success! index:" + runLogIndex);
+                logger.info("delete success! index:" + traceLogIndex);
+            } catch (Exception e) {
+                logger.error("delete logs error!", e);
+            }
+        } else {
+            logger.info("unwanted delete logs");
         }
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+    }
 }

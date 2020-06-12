@@ -70,7 +70,7 @@ public class CollectStartBean implements InitializingBean {
         InitConfig.KAFKA_GROUP_NAME = this.kafkaGroupName;
         InitConfig.MAX_INTERVAL = this.interval;
 
-        LogMessageConstant.ES_TYPE=this.indexType;
+        LogMessageConstant.ES_TYPE = this.indexType;
 
         logger.info("server run model:" + this.model);
         logger.info("maxSendSize:" + this.maxSendSize);

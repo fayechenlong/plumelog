@@ -39,7 +39,8 @@ public class RestLogCollect extends BaseLogCollect {
         this.restPassWord = restPassWord;
         this.restUrl = restUrl;
         super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-        logger.info("sending log ready!");
+        logger.info("elasticSearch init success!esHosts:{}", esHosts);
+        logger.info("restUrl:{}", restUrl);
     }
 
 
@@ -51,14 +52,14 @@ public class RestLogCollect extends BaseLogCollect {
         threadPoolExecutor.execute(() -> {
             collectTraceLog();
         });
-
+        logger.info("RestLogCollect is starting!");
     }
 
     private void collectRuningLog() {
         while (true) {
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE+"&logKey="+LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
+                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
                 collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
@@ -72,7 +73,7 @@ public class RestLogCollect extends BaseLogCollect {
         while (true) {
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE+"&logKey="+LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
+                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
                 collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);

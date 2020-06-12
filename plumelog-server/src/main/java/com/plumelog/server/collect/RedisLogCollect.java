@@ -35,10 +35,11 @@ public class RedisLogCollect extends BaseLogCollect {
      */
     public RedisLogCollect(String redisHost, int redisPort, String esHosts, String userName, String passWord) {
 
-        this.redisClient = RedisClient.getInstance(redisHost, redisPort, "");
-        logger.info("getting log ready!");
         super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-        logger.info("sending log ready!");
+        logger.info("elasticSearch init success!esHosts:{}", esHosts);
+        this.redisClient = RedisClient.getInstance(redisHost, redisPort, "");
+        logger.info("redis init success!redisHost:{} redisPort:{}", redisHost, redisPort);
+
     }
 
     /**
@@ -53,10 +54,11 @@ public class RedisLogCollect extends BaseLogCollect {
      */
     public RedisLogCollect(String redisHost, int redisPort, String redisPassWord, String esHosts, String userName, String passWord) {
 
-        this.redisClient = RedisClient.getInstance(redisHost, redisPort, redisPassWord);
-        logger.info("getting log ready!");
         super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-        logger.info("sending log ready!");
+        logger.info("elasticSearch init success!esHosts:{}", esHosts);
+        this.redisClient = RedisClient.getInstance(redisHost, redisPort, redisPassWord);
+        logger.info("redis init success!redisHost:{} redisPort:{}", redisHost, redisPort);
+
     }
 
     public void redisStart() {
@@ -67,7 +69,7 @@ public class RedisLogCollect extends BaseLogCollect {
         threadPoolExecutor.execute(() -> {
             collectTraceLog();
         });
-
+        logger.info("RedisLogCollect is starting!");
     }
 
     private void collectRuningLog() {

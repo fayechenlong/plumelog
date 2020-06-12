@@ -26,18 +26,18 @@ public class BaseLogCollect {
     public void sendLog(String index, List<String> sendList) {
         try {
             elasticLowerClient.insertList(sendList, index, LogMessageConstant.ES_TYPE);
-            logger.info("logList insert es success! count:" + sendList.size());
+            logger.info("logList insert es success! count:{}", sendList.size());
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("logList insert es failed!", e);
         }
     }
 
     public void sendTraceLogList(String index, List<String> sendTraceLogList) {
         try {
             elasticLowerClient.insertList(sendTraceLogList, index, LogMessageConstant.ES_TYPE);
-            logger.info("traceLogList insert es success! count:" + sendTraceLogList.size());
+            logger.info("traceLogList insert es success! count:{}", sendTraceLogList.size());
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("traceLogList insert es failed!", e);
         }
     }
 }

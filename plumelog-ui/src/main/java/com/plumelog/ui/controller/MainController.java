@@ -3,6 +3,7 @@ package com.plumelog.ui.controller;
 import com.plumelog.ui.es.ElasticLowerClient;
 import com.plumelog.core.util.GfJsonUtil;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 @RestController
 @CrossOrigin
-public class MainController {
+public class MainController implements InitializingBean {
 
     @Value("${es.esHosts}")
     private String esHosts;
@@ -46,6 +47,7 @@ public class MainController {
     private ElasticLowerClient elasticLowerClient;
 
     private org.slf4j.Logger logger = LoggerFactory.getLogger(MainController.class);
+
     @RequestMapping({"/query", "/plumelog/query"})
     public String query(@RequestBody String queryStr, String index, String size, String from) {
 
@@ -53,7 +55,6 @@ public class MainController {
         String indexStr = "";
         try {
             //检查ES索引是否存在
-            setElasticLowerClient();
             String[] indexs = index.split(",");
             List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
             indexStr = String.join(",", reindexs);
@@ -61,18 +62,17 @@ public class MainController {
                 return message;
             }
             String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
-            logger.info(indexStr);
-            logger.info(queryStr);
+            logger.info("queryURL:" + url);
+            logger.info("queryStr:" + queryStr);
             return elasticLowerClient.get(url, queryStr);
         } catch (Exception e) {
-            logger.error("",e);
+            logger.error("", e);
             return e.getMessage();
         }
     }
 
     @RequestMapping({"/getServerInfo", "/plumelog/getServerInfo"})
     public String query(String index) {
-        setElasticLowerClient();
         String res = elasticLowerClient.cat(index);
         BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(res.getBytes(Charset.forName("utf8"))), Charset.forName("utf8")));
         List<String> list = new ArrayList<>();
@@ -98,7 +98,7 @@ public class MainController {
             }
             return GfJsonUtil.toJSONString(listMap);
         } catch (IOException e) {
-            logger.error("",e);
+            logger.error("", e);
         }
         return "";
     }
@@ -107,7 +107,6 @@ public class MainController {
     public Map<String, Object> deleteIndex(String index, String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
-            setElasticLowerClient();
             boolean re = elasticLowerClient.deleteIndex(index);
             map.put("acknowledged", re);
         } else {
@@ -117,12 +116,14 @@ public class MainController {
         return map;
     }
 
-    private void setElasticLowerClient() {
+    @Override
+    public void afterPropertiesSet() throws Exception {
         if (this.elasticLowerClient == null) {
-            logger.info(esHosts);
-            logger.info(userName);
-            logger.info(passWord);
+            logger.info("esHosts:" + esHosts);
+            logger.info("es.userName:" + userName);
+            logger.info("es.passWord:" + passWord);
             this.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+            logger.info("Initializing elasticLowerClient success! esHosts:{}", esHosts);
         }
     }
 }

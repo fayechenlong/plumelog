@@ -4,6 +4,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.redis.RedisClient;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
@@ -23,7 +24,7 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @PropertySource(value = "classpath:plumelog.properties", ignoreResourceNotFound = true)
-public class MainController {
+public class MainController implements InitializingBean {
 
     private org.slf4j.Logger logger = LoggerFactory.getLogger(MainController.class);
     @Value("${plumelog.server.redis.redisHost:127.0.0.1:6379}")
@@ -36,23 +37,22 @@ public class MainController {
     private RedisClient redisClient;
 
     @RequestMapping({"/getlog", "/plumelogServer/getlog"})
-    public Result getlog(Integer maxSendSize,String logKey) {
+    public Result getlog(Integer maxSendSize, String logKey) {
         if (maxSendSize == null) {
             maxSendSize = 500;
         }
         Result result = new Result();
         try {
-            getRedisClient();
             List<String> logs = redisClient.getMessage(logKey, maxSendSize);
             if (logs != null && logs.size() > 0) {
-                logger.info("get logs success size:"+logs.size());
+                logger.info("get logs success size:" + logs.size());
                 result.setCode(200);
                 result.setMessage("get logs success!");
                 result.setLogs(logs);
                 return result;
             }
         } catch (Exception e) {
-            logger.error("",e);
+            logger.error("", e);
             result.setCode(500);
             result.setMessage("get logs error! :" + e.getMessage());
         }
@@ -62,11 +62,10 @@ public class MainController {
     }
 
     @RequestMapping({"/sendLog", "/plumelogServer/sendLog"})
-    public Result sendLog(List<String> logs,String logKey) {
+    public Result sendLog(List<String> logs, String logKey) {
         Result result = new Result();
         if ("redis".equals(model)) {
             try {
-                getRedisClient();
                 redisClient.putMessageList(logKey, logs);
             } catch (Exception e) {
                 result.setCode(500);
@@ -81,7 +80,8 @@ public class MainController {
         return result;
     }
 
-    private void getRedisClient() throws LogQueueConnectException {
+    @Override
+    public void afterPropertiesSet() throws Exception {
         if (this.redisClient == null) {
             if (StringUtils.isEmpty(redisHost)) {
                 logger.error("can not find redisHost config! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
@@ -98,6 +98,7 @@ public class MainController {
                 throw new LogQueueConnectException("redis 写入失败！:redis config error");
             }
             this.redisClient = RedisClient.getInstance(ip, port, redisPassWord);
+            logger.info("Initializing redis success! host:{} password:{}", redisHost, redisPassWord);
         }
     }
 }

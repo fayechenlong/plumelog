@@ -26,13 +26,16 @@ public class KafkaLogCollect extends BaseLogCollect {
 
     public KafkaLogCollect(String kafkaHosts, String esHosts, String userName, String passWord) {
         super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
+        logger.info("elasticSearch init success!esHosts:{}", esHosts);
         this.kafkaConsumer = KafkaConsumerClient.getInstance(kafkaHosts, InitConfig.KAFKA_GROUP_NAME, InitConfig.MAX_SEND_SIZE).getKafkaConsumer();
+        logger.info("kafkaConsumer init success!kafkaHosts:{}", kafkaHosts);
         this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY, LogMessageConstant.LOG_KEY + "_" + LogMessageConstant.LOG_TYPE_TRACE));
+        logger.info("kafkaConsumer subscribe ready!");
         logger.info("sending log ready!");
     }
 
     public void kafkaStart() {
-        logger.info("getting log ready!");
+        logger.info("KafkaLogCollect is starting!");
         while (true) {
             ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
             List<String> logList = new ArrayList();
