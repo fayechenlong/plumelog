@@ -118,13 +118,13 @@ export default {
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }
-      let _index = 'plume_log_trace_*'
+      let _index = 'plume_log_trace*'
 
       if(dateList.length>0){
         _index = dateList.join(',')
       }
 
-      let url= process.env.VUE_APP_API+'/query?index='+_index+'&size=1000&from=0';
+      let url= process.env.VUE_APP_API+'/query?size=1000&from=0&index='+_index;
 
       let filter = {
         "query": {
@@ -166,10 +166,12 @@ export default {
   mounted(){
     if(this.$route.query.traceId){
       this.traceId = this.$route.query.traceId;
-      this.timeRange = JSON.parse(_.get(this.$route.query,'timeRange','[]'))
     }
     else if(sessionStorage['cache_traceId']){
       this.traceId = sessionStorage['cache_traceId'];
+    }
+    if(this.$route.query.timeRange){
+      this.timeRange = JSON.parse(_.get(this.$route.query,'timeRange','[]'))
     }
     if(this.traceId){
       this.doSearch();

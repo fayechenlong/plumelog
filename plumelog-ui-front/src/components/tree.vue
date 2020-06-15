@@ -4,7 +4,7 @@
             <i @click="toggle"><Tooltip :disabled="toolTip==''" offset="-22"  placement="left-start" class="icon" :class="{'disable':toolTip==''}" :content="toolTip"></Tooltip></i>
             <div class="title">{{data.method}}</div>
             <div class="time">
-                应用名称：{{data.appName}} <b v-if="data.serverName">（{{data.serverName}}）</b><template v-if="data.end_time>=data.start_time">&nbsp;&nbsp;花费时间：{{data.end_time - data.start_time}}ms</template>
+                应用名称：{{data.appName}} <b v-if="data.serverName">（{{data.serverName}}）</b><span v-html="spendTime"></span>
             </div>
         </div>
         <div v-if="!close" class="children">
@@ -18,6 +18,7 @@
     </div>
 </template>
 <script>
+import _ from 'lodash';
 export default {
     name: "Tree",
     props: {
@@ -33,6 +34,21 @@ export default {
         }
     },
     computed:{
+        spendTime(){
+            let _spendTime = _.get(this.data,'end_time',0) - _.get(this.data,'start_time',0);
+            let color = "green"
+            if(_spendTime>=1000){
+                color= 'red'
+            }
+            else if(_spendTime>=500){
+                color= 'yellow'
+            }
+
+            if(_spendTime>=0){
+                return `<b class="${color}">&nbsp;&nbsp;花费时间：${_spendTime}ms</b>`
+            }   
+            return ''
+        },
         toolTip(){
             return this.data.children && this.data.children.length ? this.close ? '点击展开':'点击收起' : ''
         }
@@ -66,6 +82,19 @@ export default {
     }
 }
 </script>
+<style lang="less">
+b{
+    &.green{
+        color: darkgreen;
+    }
+    &.yellow{
+        color: rgb(218, 153, 33);
+    }
+    &.red{
+        color: red;
+    }
+}
+</style>
 <style lang="less" scoped>
 
     @keyframes scale {
