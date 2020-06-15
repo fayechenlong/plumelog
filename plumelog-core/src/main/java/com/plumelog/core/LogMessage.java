@@ -1,6 +1,15 @@
 package com.plumelog.core;
 
-
+/**
+ * className：LogMessage
+ * description：LogMessage
+ *             appName 应用名称用来区分日志属于哪个应用
+ *             serverName 应用运行所属IP地址
+ *             traceId 应用traceId，配置了拦截器才能自动生成
+ *             logType 日志类型，区分运行日志还是链路日志
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class LogMessage {
     private String appName;
     private String serverName;

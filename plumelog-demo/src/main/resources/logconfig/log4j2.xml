@@ -1,30 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info" packages="com.plumelog.log4j2.appender">
     <Appenders>
-        <!--<Console name="console" target="SYSTEM_OUT">
-            &lt;!&ndash;控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） &ndash;&gt;
+        <Console name="console" target="SYSTEM_OUT">
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
-            &lt;!&ndash;这个都知道是输出日志的格式 &ndash;&gt;
             <PatternLayout pattern="%-d{yyyy-MM-dd HH:mm:ss}-[%p] [%t] [%c] %m%n"/>
-        </Console>-->
+        </Console>
 
-        <!-- easylog日志 -->
-        <appender name="plumelog_demo" class="com.plumelog.log4j2.appender.KafkaAppender">
-        <appName>plumelog_demo</appName>
-        <kafkaHosts>10.103.4.37:9092,10.103.4.50:9092,10.103.4.53:9092</kafkaHosts>
-        </appender>
+        <!-- 使用kafka启用下面配置 -->
+        <!-- 字段说明 -->
+        <!-- appName:应用名称 -->
+        <!-- kafkaHosts：kafka集群地址 -->
+        <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
+        <!-- expand：整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth- -->
+        <!--<KafkaAppender name="kafkaAppender" appName="plumelog_log4j2" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092">-->
+        <!--</KafkaAppender>-->
 
-        <!--10.103.4.50   172.16.249.72-->
-       <!-- <RedisAppender name="plumelog_demo" appName="plumelog_demo" reidsHost="10.103.4.50" redisPort="6379" />
-        &lt;!&ndash;<RedisAppender name="plumelog_demo" appName="plumelog_demo" redisHost="10.103.4.14" redisPort="6379" />&ndash;&gt;
-        &lt;!&ndash;整个日志采取异步输出，由于混部会影响性能，故 console和redis都采用异步输出，
-            所以说有时候日志没有输出完也许应用已经可以访问了
-         &ndash;&gt;-->
+        <!--使用redis启用下面配置-->
+        <!-- 字段说明 -->
+        <!-- appName:应用名称 -->
+        <!-- redisHost：redis地址 -->
+        <!-- redisPort：redis端口号 不配置，默认使用6379-->
+        <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
+        <!-- expand：整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth- -->
+        <RedisAppender name="plumelog_demo" appName="plumelog_demo" redisHost="172.16.249.72" redisPort="6379"
+                       runModel="1"/>
     </Appenders>
 
     <Loggers>
         <root level="info" includeLocation="true">
-            <!--<appender-ref ref="console"/>-->
+            <appender-ref ref="console"/>
             <appender-ref ref="plumelog_demo"/>
         </root>
     </Loggers>

@@ -9,7 +9,14 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
-
+/**
+ * className：KafkaProducerFactory
+ * description：kafka Producer Factory
+ * time：2020-05-11.16:17
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class KafkaProducerFactory implements PooledObjectFactory<KafkaProducer> {
     private Properties props=new Properties();
     KafkaProducerFactory(String hosts){

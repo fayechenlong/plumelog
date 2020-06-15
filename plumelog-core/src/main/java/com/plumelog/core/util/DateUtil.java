@@ -8,7 +8,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * 日期工具类
+ * className：DateUtil
+ * description：DateUtil
+ *
+ * @author Frank.chen
+ * @version 1.0.0
  */
 public class DateUtil {
 

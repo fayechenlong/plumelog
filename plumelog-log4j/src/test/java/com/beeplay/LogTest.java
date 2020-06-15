@@ -15,5 +15,6 @@ public class LogTest
         TraceId.logTraceID.set(UUID.randomUUID().toString());
         logger.info("{}","I am log name:"+UUID.randomUUID().toString());
         logger.info("{}","I am log name:"+UUID.randomUUID().toString());
+        //logger.error(null);
     }
 }

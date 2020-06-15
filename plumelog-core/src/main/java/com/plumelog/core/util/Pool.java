@@ -5,7 +5,13 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import java.io.Closeable;
 
-
+/**
+ * className：Pool
+ * description：abstract Pool
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public abstract class Pool<T> implements Closeable {
 
   protected GenericObjectPool<T> internalPool;

@@ -1,7 +1,13 @@
 package com.plumelog.service;
 
+import com.alibaba.ttl.TtlRunnable;
+import com.plumelog.core.TraceId;
+import com.plumelog.core.util.ThreadPoolUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * className：RestApiService
@@ -12,11 +18,24 @@ import org.springframework.stereotype.Service;
  * @version 1.0.0
  */
 @Service
+@Slf4j
 public class RestApiService {
     @Autowired
     FeignClientTest feignClientTest;
 
+    private static ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool(4, 8, 5000);
+
     public String getIndex(){
+
+        try {
+            Integer.parseInt("aaa");
+        } catch (NumberFormatException e) {
+            log.error("error:{}",e);
+        }
+        threadPoolExecutor.execute(TtlRunnable.get(() -> {
+            log.info("tankSay =》我是子线程的日志！");
+        }));
        return  feignClientTest.testFeign(100);
     }
 }

@@ -25,8 +25,8 @@ public class MainService {
     @Autowired
     TankService tankService;
 
-   @Reference
-   EasyLogDubboService easyLogDubboService;
+   //@Reference
+   //EasyLogDubboService easyLogDubboService;
 
     @Trace
     public void testLog(String data) {
@@ -43,7 +43,7 @@ public class MainService {
             tankService.tankSay(data);
 
         }catch (Exception e){
-            logger.error("异常日志展示",e);
+            logger.error("异常日志展示");
         }
         logger.warn("警告日志展示！");
     }

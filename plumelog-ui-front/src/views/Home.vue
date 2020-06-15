@@ -62,14 +62,21 @@
             </tr>
         </table>
 
-        <div id="myChart"></div>
-
+        <Carousel v-model="slideIndex" loop>
+          <CarouselItem>
+            <div id="myChart" class="chart"></div>
+          </CarouselItem>
+          <CarouselItem>
+              <div id="errorChart" class="chart"></div>
+          </CarouselItem>
+        </Carousel>
+      
         <div style="clear:both"></div>
         <table class="tbl_filters">
           <tr>
               <td class="key">内容</td>
               <td>
-                <input class="txt ivu-input" @keyup.enter="doSearch()" style="width:711px" placeholder="输入搜索内容" v-model="searchKey" />
+                <Input class="txt" @on-enter="doSearch()" :clearable="true" style="width:711px" placeholder="输入搜索内容" v-model="searchKey" />
               </td>
             </tr>
             <tr>
@@ -83,109 +90,62 @@
       </template>
        <div style="clear:both"></div>
     </div>
+    <div style="position:relative;margin-top:30px;">
+      <div style="position:absolute;top:-30px;right:20px">共 <b>{{totalCount}}</b> 条数据</div>
+      <div class="tip_table"><Icon size="14" type="md-star-outline" /> 表格字段宽度可拖拽调节，双击或点击箭头可查看详情</div>
+          <Table size="small" border highlight-row :columns="showColumns" :content="self" @on-row-dblclick="dblclick" :row-class-name="getRowName" :data="list.hits">
+            <template slot-scope="{ row }" slot="className">
+              {{row.className | substr}}
+              <Icon type="ios-search" v-if="row.logLevel" @click="doSearch('className',row)" />
+            </template>
+            <template slot-scope="{ row }" slot="logLevel">
+              {{row.logLevel}}
+              <Icon type="ios-search" v-if="row.logLevel" @click="doSearch('logLevel',row)" />
+            </template>
+            <template slot-scope="{ row }" slot="serverName">
+              {{row.serverName}}
+              <Icon type="ios-search" v-if="row.serverName" @click="doSearch('serverName',row)" />
+            </template>
+            <template slot-scope="{ row }" slot="appName">
+              {{row.appName}}
+              <Icon type="ios-search" v-if="row.appName" @click="doSearch('appName',row)" />
+            </template>
+            <template slot-scope="{ row }" slot="traceId">
+              <a :href="'./#/trace?traceId='+row.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{row.traceId}}</a>
+              <Icon type="ios-search" v-if="row.traceId" @click="doSearch('traceId',row)" />
+            </template>
+            <template  slot-scope="{ row }" slot="content">
+              <div v-html="substr((row.highlightCnt || row.content),200)"></div>
+            </template>
+          </Table>
+    </div>
 
-    <div style="float:right;margin-right:20px;margin-bottom:5px">共 <b>{{totalCount}}</b> 条数据</div>
-    <table v-if="list.hits.length>0" cellspacing="0" cellpadding="0"  class="table table_detail">
-      <thead>
-        <tr>
-          <th scope="col" style="width:180px">时间</th>
-          <th scope="col" style="width:80px">日志等级</th>
-          <th scope="col" style="width:150px">服务器名称</th>
-          <th scope="col" style="width:150px">应用名称</th>
-          <th scope="col" style="width:170px">追踪码</th>
-          <th scope="col">类名</th>
-          <th scope="col">内容</th>
-          <th scope="col" style="width:70px">操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template  v-for="item in list.hits">
-          <tr class="normal" :class="item._source.logLevel" :key="item._id" @dblclick="showDetail(item)">
-            <td>{{item._source.dtTime | filterTime}}</td>
-            <td class="icon">{{item._source.logLevel}}<Icon type="ios-search" @click="doSearch('logLevel',item)"/></td>
-            <td class="icon">{{item._source.serverName}}<Icon type="ios-search" @click="doSearch('serverName',item)"/></td>
-            <td class="icon">{{item._source.appName}}<Icon type="ios-search" @click="doSearch('appName',item)" /></td>
-            <td class="icon"> <a :href="'./#/trace?traceId='+item._source.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{item._source.traceId}}</a><Icon type="ios-search" v-if="item._source.traceId" @click="doSearch('traceId',item)" /></td>
-            <td class="icon" style="width:150px">{{item._source.className | substr}}<Icon type="ios-search" @click="doSearch('className',item)" /></td>
-            <td class='td_cnt'>
-              <div class="cnt" v-html="showContent(item)"></div>
-            </td>
-            <td><a style="color:#0081e9;user-select:none;" @click="showDetail(item)">{{item.show?'收起':'展开'}}</a></td>
-          </tr>
-          <tr v-show="item.show" :key="'cols_'+item._id" >
-            <td colspan="8">
-               <table class="detail_table">
-                  <template v-for="contentItem in contentItems">
-                    <tr v-if="item._source[contentItem.value]" :key="contentItem.value">
-                      <td class="key"><div>{{contentItem.name}}</div></td>
-                      <td class="value" v-if="contentItem.value == 'content'">
-                        <div class="code_wrap">
-                          <div v-html="hightLightCode(item._source.content)"></div>
-                        </div>
-                      </td>
-                      <td class="value" v-else>{{item._source[contentItem.value]}}</td>
-                    </tr>
-                  </template>
-              </table>
-            </td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
     <nav v-if="totalCount && parseInt(totalCount/size) > 0" class="page_nav" aria-label="Page navigation example">
-      <ul class="pagination justify-content-center">
+      <div class="pnl_select">
+        <span class="name">显示字段：</span>
+         <Select v-model="showColumnTitles" multiple placeholder="选择要显示的字段" @on-change="columnsChange" :max-tag-count="2" style="width:270px">
+          <Option v-for="item in allColumns" :value="item.value" :key="item.value">{{ item.label }}</Option>
+        </Select>
+      </div>
+     
+      <ul class="pagination justify-content-center" style="float:right;margin-right:30px">
         <li class="page-item" :class="{'disabled': !isShowLastPage }">
           <a class="page-link" href="javascript:void(0)" @click="prevePage" tabindex="-1">上一页</a>
         </li>
         <li class="page-item" :class="{'disabled': !haveNextPage }">
           <a class="page-link" href="javascript:void(0)" @click="nextPage">下一页</a>
         </li>
+        <li class="page-item">
+          <div class="page-count">跳转至第 <InputNumber style="width:50px" size="small" :min="1" :max="parseInt(totalCount/size)+1" v-model="jumpPageIndex" /> 页 <Button @click="goPage" style="font-size:12px" size="small">确定</Button></div>
+        </li>
         <li class="page-item"><div class="page-count">第{{parseInt(from/size)+1}}页 / 共{{  parseInt(totalCount/size)+1}}页</div></li>
       </ul>
     </nav>
-
-    
-
-    <!-- Modal -->
-    <!-- <div class="modal fade show" style="display:block" v-if="content.title" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-scrollable" style="max-width:1200px" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{content.title}}</h5>
-            <button type="button" class="close" @click="content={}" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-              <table>
-                <template  v-for="item in contentItems">
-                  <tr v-if="content._source[item.value]" :key="item.value">
-                    <td class="key"><div>{{item.name}}</div></td>
-                    <td v-if="item.value == 'dtTime'">{{content._source[item.value] | filterTime}}</td>
-                    <td v-else-if="item.value == 'content'">
-                      <div class="code_wrap">
-                        <div v-html="hightLightCode(content.content)"></div>
-                      </div>
-                    </td>
-                    <td v-else>{{content._source[item.value]}}</td>
-                  </tr>
-                </template>
-              </table>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="content={}"  data-dismiss="modal">关闭</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-backdrop fade show" v-if="content.title"></div> -->
     
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
 import axios from '@/services/http'
 import _ from 'lodash'
 import moment from 'moment'
@@ -195,30 +155,43 @@ import 'view-design/dist/styles/iview.css';
 import logHeader from '@/components/logHeader.vue'
 import "@/assets/less/base.less";
 import dateOption from './dateOption';
-
+import $ from 'jquery'
+import expandRow from '@/components/table-expand.vue';
 
 export default {
   name: "Home",
   data(){
    return {
+     slideIndex:0,
+     self:this,
+     jumpPageIndex:1,
      chartData:[],
+     showColumnTitles: ['logLevel','serverName','appName','traceId','className'],
+     allColumns:[
+       {
+         label:'日志等级',
+         value:'logLevel'
+       },
+       {
+         label:'服务器名称',
+         value:'serverName'
+       },
+       {
+         label:'应用名称',
+         value:'appName'
+       },
+       {
+         label:'追踪码',
+         value:'traceId'
+       },
+       {
+         label:'类名',
+         value:'className'
+       }
+     ],
      showFilter: true,
      api: process.env.api,
      dateOption,
-     contentItems:[
-       {
-        'name': '类名',
-        'value': 'className'
-       },
-       {
-        'name': '方法名',
-        'value': 'method'
-       },
-       {
-        'name': '内容',
-        'value': 'content'
-       }
-     ],
      dateTimeRange:[moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')],
      content:{
        _source:{}
@@ -234,12 +207,96 @@ export default {
        hits:[]
      },
      size:30,
-     from:0
+     from:0,
+     columns:[
+       {
+            type: 'expand',
+            width: 50,
+            render: (h, params) => {
+                return h(expandRow, {
+                    props: {
+                        row: params.row,
+                        searchKey: this.searchKey
+                    }
+                })
+            }
+        },
+       {
+            title: '时间',
+            key: 'dtTime',
+            sortable: true,
+            width:150,
+            resizable: true,
+            render: (h, params) => {
+              return h('div', moment(params.row.dtTime).format('YYYY-MM-DD HH:mm:ss'))
+            }
+        },
+        {
+            title: '日志等级',
+            key: 'logLevel',
+            align:'center',
+            slot: 'logLevel',
+            className: 'icon',
+            resizable: true,
+            sortable: true,
+            width:120
+        },
+        {
+            title: '服务器名称',
+            align:'center',
+            key: 'serverName',
+            slot: 'serverName',
+            className: 'icon',
+            sortable: true,
+            resizable: true,
+            width:150
+        },
+        {
+            title: '应用名称',
+            align:'center',
+            key: 'appName',
+            slot: 'appName',
+            className: 'icon',
+            sortable: true,
+            resizable: true,
+            width:150
+        },
+        {
+            title: '追踪码',
+            align:'center',
+            key: 'traceId',
+            width:170,
+            className: 'icon',
+            sortable: true,
+            resizable: true,
+            slot: 'traceId',
+        },
+        {
+            title: '类名',
+            align:'center',
+            key: 'className',
+            slot: 'className',
+            className: 'icon',
+            sortable: true,
+            width:270
+        },
+        {
+            title: '内容',
+            align:'center',
+            key: 'content',
+            slot:'content',
+            ellipsis:true
+        }
+     ],
+     sort:[{
+        "dtTime":"desc"
+     }]
    }
   },
   components: {
     // HelloWorld
-    logHeader
+    logHeader,
+    expandRow
   },
   filters:{
     substr(str){
@@ -253,6 +310,17 @@ export default {
     }
   },
   computed:{
+    showColumns(){
+      var columns =[this.columns[0],this.columns[1]];
+      for(let title of this.showColumnTitles){
+        let _c = _.find(this.columns,['key',title]);
+        if(_c){
+          columns.push(_c)
+        }
+      }
+      columns.push(_.find(this.columns,['key','content']))
+      return columns;
+    },
     chartInterval(){
       if(this.dateTimeRange.length>0){
         let _range = (new Date(this.dateTimeRange[1])).getTime() - (new Date(this.dateTimeRange[0])).getTime();
@@ -291,10 +359,11 @@ export default {
       }
     },
     totalCount(){
-      if(!this.list.total){
+      let value = _.get(this.list,'total.value',0)
+      if(!this.list.total && value==0){
         return 0
       }
-      return this.list.total.value || this.list.total
+      return value || this.list.total
     },
     isShowLastPage(){
       return this.from > 0 
@@ -307,6 +376,31 @@ export default {
     }
   },
   methods:{
+    columnsChange(){
+      this.list.hists = _.clone(this.list.hists);
+      localStorage['cache_showColumnTitles'] = JSON.stringify(this.showColumnTitles);
+    },
+    substr(str,limit){
+      limit = limit || 30;
+      if(str.length>limit){
+        return str.substring(0,limit)+'...';
+      }
+      return str;
+    },
+    getRowName(row,index){
+      return row.logLevel+' '+row.id
+    },
+    dblclick(row,index){
+      var ele = $('.'+row.id);
+      ele.find('.ivu-table-cell-expand').click();
+    },
+    sortChange({key,order}){
+      let sort = {};
+      sort[key]=order;
+      this.sort = [sort]
+      $('.row_detail').remove();
+      this.doSearch();
+    },
     setShowFilter(show){
       this.showFilter = !this.showFilter;
       if(this.showFilter ){
@@ -325,6 +419,14 @@ export default {
 
         // 绘制图表
         myChart.setOption({
+            title: {
+                text: '数量',
+                left: 'center',
+                top: 20,
+                textStyle: {
+                    color: '#333'
+                }
+            },
             tooltip: {
               formatter(p,ticket){
                 return '时间：'+p.name+'<br/>数量：'+p.value+'条'
@@ -349,7 +451,7 @@ export default {
             },
             series: [{
                 name: '数量',
-                type: 'line',
+                type: 'bar',
                 data: _.map(this.chartData,(d)=>{
                   return d.doc_count
                 }),
@@ -360,16 +462,59 @@ export default {
             }]
         });
     },
+    drawErrorLine(data){
+        let errorChart = this.$echarts.init(document.getElementById('errorChart'))
+        window.addEventListener('resize',() => { errorChart.resize(); });
+        errorChart.setOption({
+            title: {
+                text: '错误率',
+                left: 'center',
+                top: 20,
+                textStyle: {
+                    color: '#333'
+                }
+            },
+            tooltip: {
+              formatter(p,ticket){
+                return '时间：'+p.name+'<br/>错误率：'+p.value*100+'%'
+              },
+              extraCssText:'text-align:left'
+            },
+            xAxis: {
+                data: _.map(data,(d)=>{
+                  return  moment(d.key).format(this.chartInterval.format) 
+                }),
+                axisLabel:{
+                  fontSize:12,
+                  color:'#666',
+                  // rotate:30
+                }
+            },
+            yAxis: {
+               axisLabel:{
+                  fontSize:12,
+                  color:'#666',
+                }
+            },
+            series: [{
+                name: '数量',
+                type: 'bar',
+                data: _.map(data,(d)=>{
+                  return d.doc_count
+                }),
+                itemStyle:{
+                    borderColor: 'rgb(255, 0, 0)',
+                    color: 'rgba(255, 0, 0,0.6)'
+                }
+            }]
+        })
+    },
     getShouldFilter(){
       let filters = [];
       let date=[];
       for(let itemKey in this.filter)
       {
         if(this.filter[itemKey]){
-          // filters.push({
-          //   "term":{
-          //     [itemKey]:this.filter[itemKey].replace(/,/g,' '),
-          //   }
            filters.push({
             "match_phrase":{
               [itemKey]:{
@@ -424,31 +569,10 @@ export default {
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
         }
     },
-    hightLightCode(code){
-
-      if(this.searchKey){
-         let re = new RegExp("(" + this.searchKey.replace(/\*/g,'') + ")", "gmi");
-          code = code.replace(re, '<em>$1</em>');
-      }
-
-      if(code.indexOf('java.')>-1){
-        return '<pre style="word-break:break-all">'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>"
-      }
-      else
-      {
-          return '<div style="word-break:break-all">'+code.replace(/\n/g,'<br/>')+"</div>";
-      }
-    },
-    showContent(item){
-      return _.get(item,"highlight.content[0]","") || _.get(item,"_source.content","")
-    },
-    showDetail(item){
-      item.show = !item.show
-    },
     doSearch(keyName,item){
 
       if(keyName && item){
-        this.filter[keyName] = item._source[keyName]
+        this.filter[keyName] = item[keyName]
       }
 
       //列出范围内的日期
@@ -487,11 +611,7 @@ export default {
                 "content" : {}
             }
         },
-        "sort":[
-          {
-            "dtTime":"desc"
-          }
-        ]
+        "sort":this.sort
       };
 
       this.$Loading.start();
@@ -506,8 +626,9 @@ export default {
 
         _searchData.hits = _.map(_searchData.hits,item=>{
           return {
-            show:false,
-            ...item
+            id:item._id,
+            highlightCnt:_.get(item,"highlight.content[0]",""),
+            ...item._source,
           }
         })
 
@@ -529,7 +650,6 @@ export default {
             "date_histogram": {
               "field": "dtTime",
               "interval": this.chartInterval.value,
-              
               "min_doc_count": 0
             }
           }
@@ -540,6 +660,108 @@ export default {
         this.chartData = _.get(data,'data.aggregations.2.buckets',[]);
         this.drawLine();
       })
+
+      this.getErrorRate(dateList).then(data=>{
+        console.log('errorData',data)
+        this.drawErrorLine(data)
+      });
+    },
+    getErrorRate(dateList){
+        let startDate=new Date(this.dateTimeRange[0]);
+        let endDate=new Date(this.dateTimeRange[1]);
+        let _promise =[];
+        //按时间查询日志数量
+        let query = {};
+        let aggs = {
+          "dataCount":{
+            "date_histogram": {
+              "field": "dtTime",
+              "interval": this.chartInterval.value,
+              "min_doc_count": 0
+            }
+          }
+        }
+        query = { 
+          "query": {
+              "bool": {
+                "must": [{
+                  "range":{
+                    "dtTime":{
+                      "gte": Date.parse(startDate),
+                      "lt": Date.parse(endDate)
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          aggs
+        }
+
+        let _errorQuery = {
+          "query": {
+              "bool": {
+                "must": [{
+                  "range":{
+                    "dtTime":{
+                      "gte": Date.parse(startDate),
+                      "lt": Date.parse(endDate)
+                    }
+                  }
+                },{
+                  "match_phrase":{
+                    'logLevel':{
+                      "query":'ERROR'
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          aggs
+        }
+   
+
+        let url= process.env.VUE_APP_API+'/query?size=1000&from=0&index='+dateList.join(',')
+
+        _promise.push(axios.post(url,query).then(data=>{
+          return _.get(data,'data.aggregations.dataCount.buckets',[])
+        }))
+        _promise.push(axios.post(url,_errorQuery).then(data=>{
+          return _.get(data,'data.aggregations.dataCount.buckets',[])
+        }))
+
+        return Promise.all(_promise).then(datas=>{
+          let totalDatas = datas[0];
+          let errorDatas = datas[1];
+          if(errorDatas.length==0 || errorDatas.length<totalDatas.length){
+            return []
+          }
+          else
+          {
+            let _array = [];
+            for(var i=0;i<errorDatas.length;i++){
+              let key = errorDatas[i].key;
+              let _errorCount = errorDatas[i].doc_count;
+              let _totalCount = totalDatas[i].doc_count;
+              if(_errorCount<=0 || _totalCount<=0)
+              {
+                _array.push({
+                  key,
+                  doc_count:0
+                })
+              }
+              else
+              {
+                _array.push({
+                  key,
+                  doc_count:(_errorCount/_totalCount).toFixed(2)
+                })
+              }
+            }
+            return _array
+          }
+        })
     },
     prevePage(){
       let from = this.from - this.size
@@ -554,6 +776,13 @@ export default {
       let from = this.from + this.size
       this.from = from;   
       this.doSearch();
+    },
+    goPage(){
+      this.from = (this.jumpPageIndex-1) * this.size;
+      if(this.from >0)
+      {
+        this.doSearch();
+      }
     }
   },
   watch:{
@@ -568,50 +797,142 @@ export default {
     }
   },
   mounted(){
+    let titles = localStorage['cache_showColumnTitles'];
+    if(titles){
+      this.showColumnTitles = JSON.parse(titles)
+    }
     this.doSearch();
   }
 };
 </script>
 <style lang="less">
+  .ivu-table-wrapper{
+    overflow: unset;
+  }
 
+  .tip_table{
+    position:absolute;
+    top:-30px;
+    left:10px;
+    color:#aaa;
+    font-size:12px;
+  }
+
+  .ivu-table-row-highlight td,.ivu-table-row-hover td
+  {
+    background-color:#ebf7ff !important;
+  }
+  .ivu-table-row:nth-child(2n) td{
+    background-color: #f8f8f9
+  }
+  .ivu-table-small td
+  {
+    height: 30px;
+  }
+  .ivu-table
+  {
+    font-size:12px;
+    overflow: unset;
+
+    tr.WARN{
+      td{
+        background: #fff1d7;
+      }
+    }
+
+    tr.ERROR{
+      td{
+        background: #f7b8a8;
+      }
+    }
+
+    .ivu-table-cell{
+      position: relative;
+    }
+
+    .ivu-table-header
+    {
+       position:sticky !important;
+       top:-1px; 
+       z-index: 10;       
+    }
+    td{
+        position: relative;
+        &.ivu-table-expanded-cell{
+          padding:0;
+        }
+        &.icon{
+          &:hover{
+            i{
+                display: inline;
+              }
+          }
+          i{
+              cursor: pointer;
+              position: absolute;
+              top: 2px;
+              right:5px;
+              font-size: 16px;
+              display:none;
+          }
+      }
+      em{
+        background: #ff0;
+      }
+    }
+
+    .detail_table
+    {
+      width:100%;
+      margin: 10px auto 30px auto;
+
+      .key{
+        width:150px;
+        text-align: right;
+        padding-right:20px;
+        vertical-align: top;
+        font-weight:700;
+        div{
+          width:150px;
+        }
+      }
+      .value{
+        text-align: left;
+         vertical-align: top;
+      }
+      tr{
+        background: none !important;
+        td{
+          padding-top:10px;
+          border: none;
+          height: auto;
+        }
+      }
+    }
+  }
 </style>
 <style lang="less" src="../assets/less/filters.less" scoped></style>
 <style lang="less" scoped>
 
 
-  #myChart{
-    position: absolute;
-    top: 20px;
-    left: 900px;
-    width: calc(100% - 900px);
-    min-width: 300px;
-    height: 300px;
-  }
-
-  .detail_table
+  .ivu-carousel
   {
-    width:100%;
-
-    .key{
-      width:150px;
-      text-align: right;
-      padding-right:20px;
-      div{
-        width:150px;
-      }
-    }
-    .value{
-      text-align: left;
-    }
-    tr{
-      background: none !important;
-      td{
-       
-        padding: 5px;
-        border:none
-      }
-    }
+    position: absolute;
+     top: 20px;
+      left: 900px;
+      width: calc(100% - 900px);
+      min-width: 300px;
+      height: 300px;
   }
+
+  .chart{
+    position: relative;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    height: 280px;
+  }
+
 
   .icon_arrow
   {

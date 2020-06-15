@@ -1,14 +1,18 @@
 package com.plumelog.log4j2.util;
 
 import com.plumelog.core.LogMessageThreadLocal;
+import com.plumelog.core.TraceId;
 import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.util.DateUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
+
+import java.util.Date;
 
 import static org.apache.logging.log4j.message.ParameterizedMessageFactory.INSTANCE;
 
@@ -23,17 +27,41 @@ import static org.apache.logging.log4j.message.ParameterizedMessageFactory.INSTA
  */
 public class LogMessageUtil {
 
+    private static String isExpandRunLog(LogEvent logEvent) {
+        String traceId = null;
+        if (LogMessageConstant.EXPAND.equals(LogMessageConstant.SLEUTH_EXPAND)) {
+            if (!logEvent.getContextData().isEmpty()) {
+                traceId = logEvent.getContextData().toMap().get(LogMessageConstant.TRACE_ID);
+                TraceId.logTraceID.set(traceId);
+            }
+        }
+        return traceId;
+    }
+
+
     public static BaseLogMessage getLogMessage(String appName, LogEvent logEvent) {
+        String traceId = isExpandRunLog(logEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(logEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {
+            if (!LogMessageConstant.EXPAND.equals(LogMessageConstant.DEFAULT_EXPAND) && traceId != null) {
+                traceMessage.setTraceId(traceId);
+            }
             return TraceLogMessageFactory.getTraceLogMessage(
                     traceMessage, appName, logEvent.getTimeMillis());
         }
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, logEvent.getTimeMillis());
         logMessage.setClassName(logEvent.getLoggerName());
-        logMessage.setMethod(logEvent.getThreadName());
+        if (LogMessageConstant.RUN_MODEL == 1) {
+            logMessage.setMethod(logEvent.getThreadName());
+        } else {
+            StackTraceElement atackTraceElement = logEvent.getSource();
+            String method = atackTraceElement.getMethodName();
+            String line = String.valueOf(atackTraceElement.getLineNumber());
+            logMessage.setMethod(method + "(" +atackTraceElement.getFileName()+":"+ line + ")");
+            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(logEvent.getTimeMillis()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        }
         logMessage.setLogLevel(logEvent.getLevel().toString());
         return logMessage;
     }
@@ -62,7 +90,7 @@ public class LogMessageUtil {
     }
 
     private static String packageMessage(String message, Object[] args) {
-        if (message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
+        if (message!=null&&message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
             return INSTANCE.newMessage(message, args).getFormattedMessage();
         }
         return TraceLogMessageFactory.packageMessage(message, args);

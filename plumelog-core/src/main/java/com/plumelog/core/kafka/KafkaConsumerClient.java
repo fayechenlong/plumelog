@@ -5,6 +5,14 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import java.util.Properties;
 
+/**
+ * className：KafkaConsumerClient
+ * description：kafka Consumer instance
+ * time：2020-05-11.16:17
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class KafkaConsumerClient {
     private static KafkaConsumerClient instance;
     private KafkaConsumer kafkaConsumer;

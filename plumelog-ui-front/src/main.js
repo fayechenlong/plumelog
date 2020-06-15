@@ -10,6 +10,7 @@ let echarts = require('echarts/lib/echarts')
 // 引入柱状图组件
 require('echarts/lib/chart/bar')
 require('echarts/lib/chart/line')
+require('echarts/lib/chart/pie')
 // 引入提示框和title组件
 require('echarts/lib/component/tooltip')
 require('echarts/lib/component/title')
@@ -18,7 +19,6 @@ Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false;
 Vue.use(ViewUI);
 
-console.log('process.env.api:'+process.env.VUE_APP_API)
 
 ViewUI.LoadingBar.config({
   color: '#5cb85c',

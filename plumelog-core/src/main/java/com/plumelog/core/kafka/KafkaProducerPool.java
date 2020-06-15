@@ -5,7 +5,12 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
 /**
- * kafka生产者池
+ * className：KafkaProducerPool
+ * description：kafka Producer Pool
+ * time：2020-05-11.16:17
+ *
+ * @author Frank.chen
+ * @version 1.0.0
  */
 public class KafkaProducerPool extends Pool<KafkaProducer> {
 

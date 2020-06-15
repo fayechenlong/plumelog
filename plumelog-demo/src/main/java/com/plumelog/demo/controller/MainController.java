@@ -16,7 +16,7 @@ public class MainController {
     @RequestMapping("/index")
     @Trace
     public String index(String data) {
-        logger.info("I am MainController");
+        logger.info("I am MainController" + System.getProperty("user.home"));
         if(data==null||"".equals(data)){
             data="你啥都没有输入！";
         }

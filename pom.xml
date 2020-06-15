@@ -5,13 +5,13 @@
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog</artifactId>
     <packaging>pom</packaging>
-    <version>2.1.1</version>
+    <version>2.2</version>
     <description>The parent project of plumelog</description>
     <url>https://gitee.com/frankchenlong/plumelog</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
-        <redis.version>3.1.0</redis.version>
+        <redis.version>3.3.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
         <elasticsearch.version>7.7.0</elasticsearch.version>
@@ -40,35 +40,35 @@
             <url>${distribution.repository.url}/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <scm>
-        <url>https://gitee.com/frankchenlong/plumelog</url>
-        <connection>scm:git:https://gitee.com/frankchenlong/plumelog.git</connection>
-        <developerConnection>scm:git:https://gitee.com/frankchenlong/plumelog.git</developerConnection>
-    </scm>
-    <developers>
-        <developer>
-            <name>frank.chen</name>
-            <email>409111252@qq.com</email>
-            <url>http://www.plumelog.com</url>
-        </developer>
-        <developer>
-            <name>tank</name>
-            <email>252720074@qq.com</email>
-            <url>http://www.plumelog.com</url>
-        </developer>
-        <developer>
-            <name>will.Young</name>
-            <email>delicious28@gmail.com</email>
-            <url>http://www.plumelog.com</url>
-        </developer>
-    </developers>
+<!--    <licenses>-->
+<!--        <license>-->
+<!--            <name>Apache License, Version 2.0</name>-->
+<!--            <url>http://www.apache.org/licenses/LICENSE-2.0</url>-->
+<!--            <distribution>repo</distribution>-->
+<!--        </license>-->
+<!--    </licenses>-->
+<!--    <scm>-->
+<!--        <url>https://gitee.com/frankchenlong/plumelog</url>-->
+<!--        <connection>scm:git:https://gitee.com/frankchenlong/plumelog.git</connection>-->
+<!--        <developerConnection>scm:git:https://gitee.com/frankchenlong/plumelog.git</developerConnection>-->
+<!--    </scm>-->
+<!--    <developers>-->
+<!--        <developer>-->
+<!--            <name>frank.chen</name>-->
+<!--            <email>409111252@qq.com</email>-->
+<!--            <url>http://www.plumelog.com</url>-->
+<!--        </developer>-->
+<!--        <developer>-->
+<!--            <name>tank</name>-->
+<!--            <email>252720074@qq.com</email>-->
+<!--            <url>http://www.plumelog.com</url>-->
+<!--        </developer>-->
+<!--        <developer>-->
+<!--            <name>will.Young</name>-->
+<!--            <email>delicious28@gmail.com</email>-->
+<!--            <url>http://www.plumelog.com</url>-->
+<!--        </developer>-->
+<!--    </developers>-->
 <!--    <distributionManagement>-->
 <!--        <snapshotRepository>-->
 <!--            <id>ossrh</id>-->

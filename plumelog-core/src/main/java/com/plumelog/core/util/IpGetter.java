@@ -7,11 +7,12 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 /**
- * IP工具类
+ * className：IpGetter
+ * description：本机IP获取工具类
+ * time：2020-05-11.16:17
  *
- * @author chenlongfei
- * @version 2017-03-16
- * @see IpGetter
+ * @author Frank.chen
+ * @version 1.0.0
  */
 public class IpGetter {
 

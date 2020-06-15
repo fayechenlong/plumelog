@@ -183,6 +183,10 @@ export default {
           alert('删除成功');
           this.password = '';
         }
+        else
+        {
+          alert(results[0].data.message);
+        }
         this.getTraceInfo();
       })
     },
