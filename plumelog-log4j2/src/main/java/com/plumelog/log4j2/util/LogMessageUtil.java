@@ -59,7 +59,7 @@ public class LogMessageUtil {
             StackTraceElement atackTraceElement = logEvent.getSource();
             String method = atackTraceElement.getMethodName();
             String line = String.valueOf(atackTraceElement.getLineNumber());
-            logMessage.setMethod(method + "(" + line + ")");
+            logMessage.setMethod(method + "(" +atackTraceElement.getFileName()+":"+ line + ")");
             logMessage.setDateTime(DateUtil.parseDateToStr(new Date(logEvent.getTimeMillis()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
         }
         logMessage.setLogLevel(logEvent.getLevel().toString());
@@ -90,7 +90,7 @@ public class LogMessageUtil {
     }
 
     private static String packageMessage(String message, Object[] args) {
-        if (message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
+        if (message!=null&&message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
             return INSTANCE.newMessage(message, args).getFormattedMessage();
         }
         return TraceLogMessageFactory.packageMessage(message, args);

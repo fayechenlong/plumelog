@@ -57,7 +57,7 @@ public class LogMessageUtil {
             StackTraceElement atackTraceElement = iLoggingEvent.getCallerData()[0];
             String method = atackTraceElement.getMethodName();
             String line = String.valueOf(atackTraceElement.getLineNumber());
-            logMessage.setMethod(method + "(" + line + ")");
+            logMessage.setMethod(method + "(" +atackTraceElement.getFileName()+":"+ line + ")");
             logMessage.setDateTime(DateUtil.parseDateToStr(new Date(iLoggingEvent.getTimeStamp()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
         }
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
@@ -86,7 +86,7 @@ public class LogMessageUtil {
     }
 
     private static String packageMessage(String message, Object[] args) {
-        if (message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
+        if (message!=null&&message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
             return MessageFormatter.arrayFormat(message, args).getMessage();
         }
         return TraceLogMessageFactory.packageMessage(message, args);

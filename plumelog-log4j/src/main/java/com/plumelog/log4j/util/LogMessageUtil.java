@@ -42,7 +42,7 @@ public class LogMessageUtil {
             LocationInfo locationInfo=loggingEvent.getLocationInformation();
             String method=locationInfo.getMethodName();
             String line=locationInfo.getLineNumber();
-            logMessage.setMethod(method+"("+line+")");
+            logMessage.setMethod(method+"("+locationInfo.getFileName()+":"+line+")");
             logMessage.setDateTime(DateUtil.parseDateToStr(new Date(loggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
         }
         logMessage.setLogLevel(loggingEvent.getLevel().toString());
@@ -57,7 +57,7 @@ public class LogMessageUtil {
                 msg = LogExceptionStackTrace.erroStackTrace(
                         logEvent.getThrowableInformation().getThrowable()).toString();
             }
-            if (logEvent.getRenderedMessage().indexOf(LogMessageConstant.DELIM_STR) > 0) {
+            if (logEvent.getRenderedMessage()!=null&&logEvent.getRenderedMessage().indexOf(LogMessageConstant.DELIM_STR) > 0) {
                 FormattingTuple format = MessageFormatter.format(logEvent.getRenderedMessage(), msg);
                 return format.getMessage();
             }
