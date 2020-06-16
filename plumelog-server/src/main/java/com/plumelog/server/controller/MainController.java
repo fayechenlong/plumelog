@@ -23,7 +23,6 @@ import java.util.List;
  */
 @RestController
 @CrossOrigin
-@PropertySource(value = "classpath:plumelog.properties", ignoreResourceNotFound = true)
 public class MainController implements InitializingBean {
 
     private org.slf4j.Logger logger = LoggerFactory.getLogger(MainController.class);
