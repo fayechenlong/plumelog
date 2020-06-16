@@ -20,7 +20,6 @@ import org.springframework.util.StringUtils;
  * @version 1.0.0
  */
 @Component
-@PropertySource(value = "classpath:plumelog.properties", ignoreResourceNotFound = true)
 public class CollectStartBean implements InitializingBean {
 
     @Value("${plumelog.server.model:redis}")
