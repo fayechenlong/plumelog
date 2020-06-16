@@ -62,7 +62,7 @@
             </tr>
         </table>
 
-        <Carousel v-model="slideIndex" loop>
+        <Carousel v-model="slideIndex" arrow="never">
           <CarouselItem>
             <div id="myChart" class="chart"></div>
           </CarouselItem>
@@ -618,6 +618,7 @@ export default {
       
       let searchUrl = url+'&size='+this.size+"&from="+this.from;
       axios.post(searchUrl,esFilter).then(data=>{
+        
         this.$Loading.finish();
         let _searchData = _.get(data,'data.hits',{
           total:0,
