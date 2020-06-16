@@ -17,7 +17,7 @@
    
    4.配置plumelog-server，并启动
    
-   配置文件 plumelog-server/config/plumelog.properties 详解：
+   配置文件 plumelog-server/application.properties 详解：
 
 ```properties
     #值为4种 redis,kafka,rest,restServer
