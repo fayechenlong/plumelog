@@ -120,7 +120,7 @@
           </Table>
     </div>
 
-    <nav v-if="totalCount && parseInt(totalCount/size) > 0" class="page_nav" aria-label="Page navigation example">
+    <nav class="page_nav" aria-label="Page navigation example">
       <div class="pnl_select">
         <span class="name">显示字段：</span>
          <Select v-model="showColumnTitles" multiple placeholder="选择要显示的字段" @on-change="columnsChange" :max-tag-count="2" style="width:270px">
@@ -128,7 +128,7 @@
         </Select>
       </div>
      
-      <ul class="pagination justify-content-center" style="float:right;margin-right:30px">
+      <ul  v-if="totalCount && parseInt(totalCount/size) > 0"  class="pagination justify-content-center" style="float:right;margin-right:30px">
         <li class="page-item" :class="{'disabled': !isShowLastPage }">
           <a class="page-link" href="javascript:void(0)" @click="prevePage" tabindex="-1">上一页</a>
         </li>
