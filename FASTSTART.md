@@ -222,7 +222,13 @@
             }
         }
 ```   
-
+spring cloud 项目,同时注意log配置文件也要加上<expand>sleuth</expand>
+```xml
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-sleuth</artifactId>
+            </dependency>
+``` 
 * [链路追踪使用](/plumelog-trace/README.md)
 
 * TraceId跨线程传递
