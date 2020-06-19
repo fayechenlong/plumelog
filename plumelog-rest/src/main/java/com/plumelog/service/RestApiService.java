@@ -27,6 +27,7 @@ public class RestApiService {
             = ThreadPoolUtil.getPool(4, 8, 5000);
 
     public String getIndex(){
+        log.info("pppp");
 
         try {
             Integer.parseInt("aaa");
