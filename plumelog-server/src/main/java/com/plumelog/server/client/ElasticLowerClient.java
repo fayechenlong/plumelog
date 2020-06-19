@@ -6,6 +6,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -68,26 +69,28 @@ public class ElasticLowerClient {
                     existIndexList.add(index);
                 }
             } catch (Exception e) {
-                logger.error("",e);
+                logger.error("", e);
             }
         }
         return existIndexList;
     }
+
     public boolean existIndice(String indice) {
         List<String> existIndexList = new ArrayList<String>();
-            try {
-                Request request = new Request(
-                        "HEAD",
-                        "/" + indice + "");
-                Response res = client.performRequest(request);
-                if (res.getStatusLine().getStatusCode() == 200) {
-                    return true;
-                }
-            } catch (Exception e) {
-                logger.error("",e);
+        try {
+            Request request = new Request(
+                    "HEAD",
+                    "/" + indice + "");
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
             }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
         return false;
     }
+
     public void insertList(List<String> list, String baseIndex, String type) throws IOException {
         StringBuffer sendStr = new StringBuffer();
         for (int a = 0; a < list.size(); a++) {
@@ -111,7 +114,12 @@ public class ElasticLowerClient {
         client.performRequestAsync(request, new ResponseListener() {
             @Override
             public void onSuccess(Response response) {
-                logger.info("ElasticSearch commit success!");
+                try {
+                    String responseStr = EntityUtils.toString(response.getEntity());
+                    logger.info("ElasticSearch commit, message:{}", responseStr);
+                } catch (IOException e) {
+                    logger.info("ElasticSearch commit!", e);
+                }
             }
 
             @Override
@@ -125,7 +133,7 @@ public class ElasticLowerClient {
         try {
             client.close();
         } catch (IOException e) {
-            logger.error("",e);
+            logger.error("", e);
         }
     }
 
