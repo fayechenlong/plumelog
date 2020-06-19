@@ -222,7 +222,7 @@
             }
         }
 ```   
-spring cloud 项目,同时注意log配置文件也要加上<expand>sleuth</expand>
+  spring cloud 项目引入sleuth
 ```xml
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
