@@ -29,7 +29,7 @@ public class KafkaLogCollect extends BaseLogCollect {
         logger.info("elasticSearch init success!esHosts:{}", esHosts);
         this.kafkaConsumer = KafkaConsumerClient.getInstance(kafkaHosts, InitConfig.KAFKA_GROUP_NAME, InitConfig.MAX_SEND_SIZE).getKafkaConsumer();
         logger.info("kafkaConsumer init success!kafkaHosts:{}", kafkaHosts);
-        this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY, LogMessageConstant.LOG_KEY + "_" + LogMessageConstant.LOG_TYPE_TRACE));
+        this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY, LogMessageConstant.LOG_KEY_TRACE));
         logger.info("kafkaConsumer subscribe ready!");
         logger.info("sending log ready!");
     }
