@@ -259,7 +259,7 @@
 
 * springcloud(fegin)的分布式系统traceId传递,参考plumelog-rest项目
 
-* [docker版本安装](/DOCKER.md)
+* [docker版本安装](/docker-file/DOCKER.md)
 
 ### 三、联系交流
 
