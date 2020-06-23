@@ -117,9 +117,7 @@
     log4j.appender.L.redisHost=172.16.249.72
     log4j.appender.L.redisPort=6379
     #redis没有密码这一项为空或者不需要
-    log4j.appender.L.redisAuth=123456
-    #日志保留天数,配置0或者不配置默认永久保留
-    admin.log.keepDays=7
+    #log4j.appender.L.redisAuth=123456
 ```
    同理如果使用logback,和log4j2配置如下
     
@@ -260,6 +258,8 @@
 * [Dubbo的分布式系统traceId传递 ](/plumelog-dubbo/README.md)
 
 * springcloud(fegin)的分布式系统traceId传递,参考plumelog-rest项目
+
+* [docker版本安装](/docker-file/DOCKER.md)
 
 ### 三、联系交流
 
