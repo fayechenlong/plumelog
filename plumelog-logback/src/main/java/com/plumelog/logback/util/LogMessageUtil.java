@@ -86,7 +86,7 @@ public class LogMessageUtil {
     }
 
     private static String packageMessage(String message, Object[] args) {
-        if (message!=null&&message.indexOf(LogMessageConstant.DELIM_STR) > 0) {
+        if (message!=null&&message.indexOf(LogMessageConstant.DELIM_STR) > -1) {
             return MessageFormatter.arrayFormat(message, args).getMessage();
         }
         return TraceLogMessageFactory.packageMessage(message, args);
