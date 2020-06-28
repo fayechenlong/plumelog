@@ -57,7 +57,7 @@ public class LogMessageUtil {
                 msg = LogExceptionStackTrace.erroStackTrace(
                         logEvent.getThrowableInformation().getThrowable()).toString();
             }
-            if (logEvent.getRenderedMessage()!=null&&logEvent.getRenderedMessage().indexOf(LogMessageConstant.DELIM_STR) > 0) {
+            if (logEvent.getRenderedMessage()!=null&&logEvent.getRenderedMessage().indexOf(LogMessageConstant.DELIM_STR) > -1) {
                 FormattingTuple format = MessageFormatter.format(logEvent.getRenderedMessage(), msg);
                 return format.getMessage();
             }
