@@ -6,12 +6,20 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +47,12 @@ public class ElasticLowerClient {
         return instance;
     }
 
+    /**
+     * 带密码认证的
+     * @param hosts
+     * @param userName
+     * @param passWord
+     */
     public ElasticLowerClient(String hosts, String userName, String passWord) {
 
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -55,6 +69,40 @@ public class ElasticLowerClient {
                 return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
             }
         }).build();
+    }
+
+    /**
+     * 带ssl认证的
+     * @param hosts
+     * @param keyStorePass
+     * @param sslFile
+     * @param keyStoreName
+     */
+    public ElasticLowerClient(String hosts, String keyStorePass, String sslFile, String keyStoreName) {
+
+        try {
+            Path keyStorePath = Paths.get(sslFile);
+            KeyStore truststore = KeyStore.getInstance(keyStoreName);
+            try (InputStream is = Files.newInputStream(keyStorePath)) {
+                truststore.load(is, keyStorePass.toCharArray());
+            }
+            SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
+            final SSLContext sslContext = sslBuilder.build();
+            String[] hostsAndPorts = hosts.split(",");
+            HttpHost[] httpHosts = new HttpHost[hostsAndPorts.length];
+            for (int i = 0; i < hostsAndPorts.length; i++) {
+                httpHosts[i] = HttpHost.create(hostsAndPorts[i]);
+            }
+            client = RestClient.builder(httpHosts).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+                @Override
+                public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+                    httpClientBuilder.disableAuthCaching();
+                    return httpClientBuilder.setSSLContext(sslContext);
+                }
+            }).build();
+        } catch (Exception e) {
+            logger.error("ElasticSearch init fail!", e);
+        }
     }
 
     public List<String> getExistIndices(String[] indices) {
