@@ -88,6 +88,13 @@ public class RedisClient extends AbstractClient {
         List<String> list=new ArrayList<>();
         try {
         sj=jedisPool.getResource();
+        Long count=sj.llen(key);
+        if(count<size){
+            size=count.intValue();
+        }
+        if(size==0){
+            return list;
+        }
         List<Response<String>> listRes=new ArrayList<>();
             Pipeline pl=sj.pipelined();
             for(int i=0;i<size;i++) {
