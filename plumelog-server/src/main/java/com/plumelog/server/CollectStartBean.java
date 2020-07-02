@@ -6,7 +6,9 @@ import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -56,6 +58,8 @@ public class CollectStartBean implements InitializingBean {
     private String REST_MODE_NAME = "rest";
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     public CollectStartBean() {
 
@@ -82,7 +86,7 @@ public class CollectStartBean implements InitializingBean {
                 logger.error("can not find kafkaHosts config! please check the plumelog.properties(plumelog.server.kafka.kafkaHosts) ");
                 return;
             }
-            KafkaLogCollect kafkaLogCollect = new KafkaLogCollect(this.kafkaHosts, this.esHosts, this.esUserName, this.esPassWord);
+            KafkaLogCollect kafkaLogCollect = new KafkaLogCollect(this.kafkaHosts, this.esHosts, this.esUserName, this.esPassWord,applicationEventPublisher);
             kafkaLogCollect.kafkaStart();
         }
         if (REDIS_MODE_NAME.equals(model)) {
@@ -100,7 +104,7 @@ public class CollectStartBean implements InitializingBean {
                 logger.error("redis config error! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
                 return;
             }
-            RedisLogCollect redisLogCollect = new RedisLogCollect(ip, port, this.redisPassWord, this.esHosts, this.esUserName, this.esPassWord);
+            RedisLogCollect redisLogCollect = new RedisLogCollect(ip, port, this.redisPassWord, this.esHosts, this.esUserName, this.esPassWord,applicationEventPublisher);
             redisLogCollect.redisStart();
         }
         if (REST_MODE_NAME.equals(model)) {
