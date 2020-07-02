@@ -1,12 +1,10 @@
 package com.plumelog.server.controller;
 
-import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.redis.RedisClient;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;

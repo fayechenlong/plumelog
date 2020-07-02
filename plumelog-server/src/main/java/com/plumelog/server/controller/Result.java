@@ -8,7 +8,7 @@ import java.util.List;
  * description：
  * time：2020/6/10  19:20
  *
- * @author jdd
+ * @author Frank.chen
  * @version 1.0.0
  */
 public class Result {

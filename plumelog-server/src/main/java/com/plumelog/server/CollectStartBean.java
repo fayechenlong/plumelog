@@ -7,7 +7,6 @@ import com.plumelog.server.collect.RestLogCollect;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -16,7 +15,7 @@ import org.springframework.util.StringUtils;
  * description：日誌搜集spring bean
  * time：2020/6/10  17:44
  *
- * @author jdd
+ * @author Frank.chen
  * @version 1.0.0
  */
 @Component
