@@ -79,12 +79,15 @@ public class MainController implements InitializingBean {
         return result;
     }
 
+
+
+
     @Override
     public void afterPropertiesSet() throws Exception {
         if (this.redisClient == null) {
             if (StringUtils.isEmpty(redisHost)) {
                 logger.error("can not find redisHost config! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
-                throw new LogQueueConnectException("redis 写入失败！:can not find redisHost config");
+                throw new LogQueueConnectException("redis 初始化失败！:can not find redisHost config");
             }
             String[] hs = redisHost.split(":");
             int port = 6379;
@@ -94,7 +97,7 @@ public class MainController implements InitializingBean {
                 port = Integer.valueOf(hs[1]);
             } else {
                 logger.error("redis config error! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
-                throw new LogQueueConnectException("redis 写入失败！:redis config error");
+                throw new LogQueueConnectException("redis 初始化失败！:redis config error");
             }
             this.redisClient = RedisClient.getInstance(ip, port, redisPassWord);
             logger.info("Initializing redis success! host:{} password:{}", redisHost, redisPassWord);

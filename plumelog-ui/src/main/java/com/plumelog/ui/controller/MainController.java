@@ -1,5 +1,9 @@
 package com.plumelog.ui.controller;
 
+import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.WarningRule;
+import com.plumelog.core.exception.LogQueueConnectException;
+import com.plumelog.core.redis.RedisClient;
 import com.plumelog.ui.es.ElasticLowerClient;
 import com.plumelog.core.util.GfJsonUtil;
 import org.slf4j.LoggerFactory;
@@ -34,17 +38,19 @@ public class MainController implements InitializingBean {
 
     @Value("${es.esHosts}")
     private String esHosts;
-
     @Value("${es.userName:}")
     private String userName;
-
     @Value("${es.passWord:}")
     private String passWord;
-
     @Value("${admin.password}")
     private String adminPassWord;
-
+    @Value("${plumelog.server.redis.redisHost:127.0.0.1:6379}")
+    private String redisHost;
+    @Value("${plumelog.server.redis.redisPassWord:}")
+    private String redisPassWord;
     private ElasticLowerClient elasticLowerClient;
+
+    private RedisClient redisClient;
 
     private org.slf4j.Logger logger = LoggerFactory.getLogger(MainController.class);
 
@@ -115,7 +121,26 @@ public class MainController implements InitializingBean {
         }
         return map;
     }
-
+    @RequestMapping({"/getWarningRuleList", "/plumelog/getWarningRuleList"})
+    public Object getWarningRuleList() {
+        Map<String,String> map=redisClient.hgetAll(LogMessageConstant.WARN_RULE_KEY);
+        return map;
+    }
+    @RequestMapping({"/saveWarningRuleList", "/plumelog/saveWarningRuleList"})
+    public Object saveWarningRule(String id, WarningRule warningRule) {
+        String warningRuleStr=GfJsonUtil.toJSONString(warningRule);
+        redisClient.hset(LogMessageConstant.WARN_RULE_KEY,id,warningRuleStr);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success",true);
+        return result;
+    }
+    @RequestMapping({"/deleteWarningRule", "/plumelog/deleteWarningRule"})
+    public Object deleteWarningRule(String id) {
+        redisClient.hdel(LogMessageConstant.WARN_RULE_KEY,id);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success",true);
+        return result;
+    }
     @Override
     public void afterPropertiesSet() throws Exception {
         if (this.elasticLowerClient == null) {
@@ -124,6 +149,24 @@ public class MainController implements InitializingBean {
             logger.info("es.passWord:" + passWord);
             this.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
             logger.info("Initializing elasticLowerClient success! esHosts:{}", esHosts);
+        }
+        if (this.redisClient == null) {
+            if (StringUtils.isEmpty(redisHost)) {
+                logger.error("can not find redisHost config! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
+                throw new LogQueueConnectException("redis 初始化失败！:can not find redisHost config");
+            }
+            String[] hs = redisHost.split(":");
+            int port = 6379;
+            String ip = "127.0.0.1";
+            if (hs.length == 2) {
+                ip = hs[0];
+                port = Integer.valueOf(hs[1]);
+            } else {
+                logger.error("redis config error! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
+                throw new LogQueueConnectException("redis 初始化失败！:redis config error");
+            }
+            this.redisClient = RedisClient.getInstance(ip, port, redisPassWord);
+            logger.info("Initializing redis success! host:{} password:{}", redisHost, redisPassWord);
         }
     }
 }

@@ -79,5 +79,10 @@ public class LogMessageConstant {
      */
     public final static Integer REDIS_DEFAULT_PORT = 6379;
 
+    /**
+     * 错误报警规则key
+     */
+    public static final String WARN_RULE_KEY="plumelog:warnRule";
+
 
 }
