@@ -4,6 +4,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.redis.RedisClient;
+import com.plumelog.ui.dto.WarningRuleDto;
 import com.plumelog.ui.es.ElasticLowerClient;
 import com.plumelog.core.util.GfJsonUtil;
 import org.slf4j.LoggerFactory;
@@ -123,8 +124,23 @@ public class MainController implements InitializingBean {
     }
     @RequestMapping({"/getWarningRuleList", "/plumelog/getWarningRuleList"})
     public Object getWarningRuleList() {
+        List<WarningRuleDto> list=new ArrayList<>();
         Map<String,String> map=redisClient.hgetAll(LogMessageConstant.WARN_RULE_KEY);
-        return map;
+        for(Map.Entry<String, String> entry : map.entrySet()){
+            String mapKey = entry.getKey();
+            String mapValue = entry.getValue();
+            WarningRule warningRule=GfJsonUtil.parseObject(mapValue,WarningRule.class);
+            WarningRuleDto warningRuleDto=new WarningRuleDto();
+            warningRuleDto.setId(mapKey);
+            warningRuleDto.setAppName(warningRule.getAppName());
+            warningRuleDto.setClassName(warningRule.getClassName());
+            warningRuleDto.setReceiver(warningRule.getReceiver());
+            warningRuleDto.setWebhookUrl(warningRule.getWebhookUrl());
+            warningRuleDto.setTime(warningRule.getTime());
+            warningRuleDto.setErrorCount(warningRule.getErrorCount());
+            list.add(warningRuleDto);
+        }
+        return list;
     }
     @RequestMapping({"/saveWarningRuleList", "/plumelog/saveWarningRuleList"})
     public Object saveWarningRule(String id, WarningRule warningRule) {
