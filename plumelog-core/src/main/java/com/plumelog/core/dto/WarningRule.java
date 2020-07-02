@@ -12,6 +12,8 @@ public class WarningRule {
 
     private String appName;
     private String className;
+    private String receiver;
+    private String webhookUrl;
     private int errorCount;
 
 }
