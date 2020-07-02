@@ -2,9 +2,9 @@ package com.plumelog.ui.controller;
 
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
+import com.plumelog.core.dto.WarningRuleDto;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.redis.RedisClient;
-import com.plumelog.ui.dto.WarningRuleDto;
 import com.plumelog.ui.es.ElasticLowerClient;
 import com.plumelog.core.util.GfJsonUtil;
 import org.slf4j.LoggerFactory;

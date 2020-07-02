@@ -1,4 +1,4 @@
-package com.plumelog.ui.dto;
+package com.plumelog.core.dto;
 
 import com.plumelog.core.dto.WarningRule;
 
