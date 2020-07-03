@@ -143,7 +143,7 @@ public class MainController implements InitializingBean {
         return list;
     }
     @RequestMapping({"/saveWarningRuleList", "/plumelog/saveWarningRuleList"})
-    public Object saveWarningRule(String id, WarningRule warningRule) {
+    public Object saveWarningRule(String id, @RequestBody WarningRule warningRule) {
         String warningRuleStr=GfJsonUtil.toJSONString(warningRule);
         redisClient.hset(LogMessageConstant.WARN_RULE_KEY,id,warningRuleStr);
         Map<String, Object> result = new HashMap<>();
