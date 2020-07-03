@@ -184,7 +184,8 @@ public class ElasticLowerClient {
             public void onSuccess(Response response) {
                 try {
                     String responseStr = EntityUtils.toString(response.getEntity());
-                    logger.info("ElasticSearch commit, message:{}", responseStr);
+                    logger.info("ElasticSearch commit! success");
+                    logger.debug("responseStr:{}",responseStr);
                 } catch (IOException e) {
                     logger.info("ElasticSearch commit!", e);
                 }
