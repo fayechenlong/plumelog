@@ -17,7 +17,8 @@
             <tr>
               <td class="key">应用名称</td>
               <td>
-                <Input class="txt" name="appName" v-model="filter.appName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true" />
+                <Input class="txt txtAppName" name="appName" v-model="filter.appName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true" />
+                <Checkbox v-model="isExclude">排除</Checkbox>
               </td>
             </tr>
             <tr>
@@ -162,6 +163,7 @@ export default {
   name: "Home",
   data(){
    return {
+     isExclude:false,
      slideIndex:0,
      self:this,
      jumpPageIndex:1,
@@ -363,6 +365,7 @@ export default {
       if(!this.list.total && value==0){
         return 0
       }
+      if(value == 0 ) return 0;
       return value || this.list.total
     },
     isShowLastPage(){
@@ -514,7 +517,10 @@ export default {
       let date=[];
       for(let itemKey in this.filter)
       {
-        if(this.filter[itemKey]){
+        if(this.isExclude && itemKey == 'appName'){
+          continue;
+        }
+        else if(this.filter[itemKey]){
            filters.push({
             "match_phrase":{
               [itemKey]:{
@@ -603,6 +609,16 @@ export default {
           }
         }
       };
+
+      if(this.isExclude && this.filter['appName']){
+        query.query.bool['must_not']=[{
+          "match_phrase":{
+              'appName':{
+                "query":this.filter['appName'].replace(/,/g,' ')
+              }
+            }
+        }]
+      }
 
       let esFilter = {
         ...query,
