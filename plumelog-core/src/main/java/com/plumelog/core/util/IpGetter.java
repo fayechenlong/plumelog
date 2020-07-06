@@ -1,6 +1,7 @@
 package com.plumelog.core.util;
 
 
+import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +20,7 @@ public class IpGetter {
     /**
      * 当前IP。类初始化时调用一次就可以了
      */
-    public final static String CURRENT_IP = getIp();
+    public final static String CURRENT_IP = findFirstNonLoopbackAddress();
 
     /**
      * 单网卡名称
@@ -107,5 +108,51 @@ public class IpGetter {
 
         }
         return localHostAddress;
+    }
+
+    /**
+     * 参考SpringCloud获取IP的代码
+     *
+     * @return
+     */
+    public static String findFirstNonLoopbackAddress() {
+        InetAddress result = null;
+        try {
+            int lowest = Integer.MAX_VALUE;
+            for (Enumeration<NetworkInterface> nics = NetworkInterface
+                    .getNetworkInterfaces(); nics.hasMoreElements(); ) {
+                NetworkInterface ifc = nics.nextElement();
+                if (ifc.isUp()) {
+                    if (ifc.getIndex() < lowest || result == null) {
+                        lowest = ifc.getIndex();
+                    } else if (result != null) {
+                        continue;
+                    }
+
+                    for (Enumeration<InetAddress> addrs = ifc
+                            .getInetAddresses(); addrs.hasMoreElements(); ) {
+                        InetAddress address = addrs.nextElement();
+                        if (address instanceof Inet4Address
+                                && !address.isLoopbackAddress()) {
+                            result = address;
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (result != null) {
+            return result.getHostAddress();
+        }
+
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        return "127.0.0.1";
     }
 }
