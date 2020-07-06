@@ -62,14 +62,14 @@
             </tr>
         </table>
 
-        <Carousel v-model="slideIndex" arrow="never">
+        <!-- <Carousel v-model="slideIndex" arrow="never">
           <CarouselItem>
             <div id="myChart" class="chart"></div>
           </CarouselItem>
           <CarouselItem>
               <div id="errorChart" class="chart"></div>
           </CarouselItem>
-        </Carousel>
+        </Carousel> -->
       
         <div style="clear:both"></div>
         <table class="tbl_filters">
@@ -409,7 +409,7 @@ export default {
         })
       }
     },
-     drawLine(){
+    drawLine(){
         if(this.chartData.length==0){
           return false;
         }
@@ -657,15 +657,15 @@ export default {
         }
       }
 
-      axios.post(process.env.VUE_APP_API+'/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
-        this.chartData = _.get(data,'data.aggregations.2.buckets',[]);
-        this.drawLine();
-      })
+      // axios.post(process.env.VUE_APP_API+'/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
+      //   this.chartData = _.get(data,'data.aggregations.2.buckets',[]);
+      //   this.drawLine();
+      // })
 
-      this.getErrorRate(dateList).then(data=>{
-        console.log('errorData',data)
-        this.drawErrorLine(data)
-      });
+      // this.getErrorRate(dateList).then(data=>{
+      //   console.log('errorData',data)
+      //   this.drawErrorLine(data)
+      // });
     },
     getErrorRate(dateList){
         let startDate=new Date(this.dateTimeRange[0]);
