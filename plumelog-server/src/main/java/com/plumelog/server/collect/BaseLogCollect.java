@@ -44,9 +44,9 @@ public class BaseLogCollect {
         }
     }
 
-    protected void publisherMonitorEvent(List<String> logs, String type) {
+    protected void publisherMonitorEvent(List<String> logs) {
         if (logs.size()>0){
-            applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, logs, type));
+            applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, logs));
         }
 
     }

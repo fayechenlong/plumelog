@@ -20,27 +20,19 @@ public class PlumelogMonitorEvent extends ApplicationEvent {
      */
     List<String> logs;
 
-    /**
-     * 消息类型
-     */
-    String type;
 
     /**
      * Create a new ApplicationEvent.
      *
      * @param source the object on which the event initially occurred (never {@code null})
      */
-    public PlumelogMonitorEvent(Object source, List<String> logs,String type) {
+    public PlumelogMonitorEvent(Object source, List<String> logs) {
         super(source);
         this.logs = logs;
-        this.type = type;
     }
 
     public List<String> getLogs() {
         return logs;
     }
 
-    public String getType() {
-        return type;
-    }
 }

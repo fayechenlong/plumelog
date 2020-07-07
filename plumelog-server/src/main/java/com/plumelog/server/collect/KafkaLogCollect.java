@@ -52,11 +52,10 @@ public class KafkaLogCollect extends BaseLogCollect {
                 }
             });
             if (logList.size() > 0) {
-                publisherMonitorEvent(logList,LogMessageConstant.LOG_TYPE_RUN);
+                publisherMonitorEvent(logList);
                 super.sendLog(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD), logList);
             }
             if (sendlogList.size() > 0) {
-                publisherMonitorEvent(sendlogList,LogMessageConstant.LOG_TYPE_TRACE);
                 super.sendTraceLogList(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD), sendlogList);
             }
         }

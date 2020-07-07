@@ -80,7 +80,7 @@ public class RedisLogCollect extends BaseLogCollect {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
                 List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
                 //发布一个事件
-                publisherMonitorEvent(logs,LogMessageConstant.LOG_TYPE_RUN);
+                publisherMonitorEvent(logs);
                 collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
@@ -95,8 +95,6 @@ public class RedisLogCollect extends BaseLogCollect {
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
                 List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
-                //发布一个事件
-                publisherMonitorEvent(logs,LogMessageConstant.LOG_TYPE_TRACE);
                 collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);

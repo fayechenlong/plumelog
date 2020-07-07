@@ -39,7 +39,7 @@ public class LogMessageConstant {
 
     public final static String ES_INDEX = "plume_log_";
 
-    public  static String ES_TYPE = "plume_log";
+    public static String ES_TYPE = "plume_log";
 
     public final static String LOG_TYPE_RUN = "run";
 
@@ -82,7 +82,29 @@ public class LogMessageConstant {
     /**
      * 错误报警规则key
      */
-    public static final String WARN_RULE_KEY="plumelog:warnRule";
+    public static final String WARN_RULE_KEY = "plumelog:warnRule";
+
+
+    /**
+     * 错误日志监控统计key
+     */
+    public static final String PLUMELOG_MONITOR_KEY = "plumelog:monitor:";
+
+    /**
+     * 错误日志监控统计key对应的map里的key time
+     */
+    public static final String PLUMELOG_MONITOR_KEY_MAP_FILED_TIME = "time";
+
+    /**
+     * 错误日志监控统计key对应的map里的key count
+     */
+    public static final String PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT = "count";
+
+
+    /**
+     * 记录报警日志的key
+     */
+    public static final String PLUMELOG_MONITOR_MESSAGE_KEY = "plumelog_monitor_message_key";
 
 
 }
