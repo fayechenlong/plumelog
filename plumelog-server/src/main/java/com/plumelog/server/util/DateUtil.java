@@ -506,7 +506,6 @@ public class DateUtil {
         }
 
         if (date != null) {
-            System.out.println("生成的日期:" + DateUtil.parseDateToStr(date, DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS, "--null--"));
             return true;
         }
         return false;

@@ -16,6 +16,7 @@ public class WarningRule {
     private String webhookUrl;
     private int errorCount;
     private int time;
+    private int status;
 
     public String getAppName() {
         return appName;
@@ -63,5 +64,13 @@ public class WarningRule {
 
     public void setTime(int time) {
         this.time = time;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

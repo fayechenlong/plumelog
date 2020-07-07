@@ -138,6 +138,7 @@ public class MainController implements InitializingBean {
             warningRuleDto.setWebhookUrl(warningRule.getWebhookUrl());
             warningRuleDto.setTime(warningRule.getTime());
             warningRuleDto.setErrorCount(warningRule.getErrorCount());
+            warningRuleDto.setStatus(warningRule.getStatus());
             list.add(warningRuleDto);
         }
         return list;
