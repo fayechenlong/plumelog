@@ -53,6 +53,9 @@ public class PlumeLogMonitorRuleConfig {
 
     private static void parserConfig(String config) {
         WarningRule warningRule = JSON.parseObject(config, WarningRule.class);
+        if (warningRule.getStatus() == 0) {
+            return;
+        }
         if (configMap.containsKey(warningRule.getAppName())) {
             List<WarningRule> warningRules = configMap.get(warningRule.getAppName());
             warningRules.add(warningRule);
