@@ -145,7 +145,6 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         if (!StringUtils.isEmpty(className)) {
             key = key + ":" + className;
         }
-        System.out.println(key);
         return key;
     }
 
