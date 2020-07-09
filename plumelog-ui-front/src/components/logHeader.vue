@@ -8,11 +8,11 @@
             <li class="nav-item" :class="{'active':pageName=='Trace'}">
                 <a class="nav-link" href="./#/trace">链路追踪</a>
             </li>
-            <li class="nav-item" :class="{'active':pageName=='Chart'}">
+            <!-- <li class="nav-item" :class="{'active':pageName=='Chart'}">
                 <a class="nav-link" href="./#/chart">数据统计</a>
-            </li>
+            </li> -->
             <li class="nav-item" :class="{'active':pageName=='Warn'}">
-                <a class="nav-link" href="./#/warn">报警设置</a>
+                <a class="nav-link" href="./#/warn">报警管理</a>
             </li>
             <li class="nav-item" :class="{'active':pageName=='Size'}">
                 <a class="nav-link" href="./#/size">管理</a>
