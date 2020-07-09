@@ -182,7 +182,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             if (redisClient.setNx(warningKey + KEY_NX, 5)) {
                 logger.info(plumeLogMonitorTextMessage.getText());
                 response = client.execute(request);
-                sendMesageES(plumeLogMonitorTextMessage.getText());
+                sendMesageES(plumeLogMonitorTextMessage.getText(), rule);
             }
             redisClient.set(warningKey, warningKey);
             redisClient.expireAt(warningKey, Long.parseLong(String.valueOf(rule.getTime())));
@@ -194,17 +194,20 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
 
     /**
      * 报警记录加入至ES
+     *
      * @param msg 报警信息
      */
-    private void sendMesageES(String msg) {
+    private void sendMesageES(String msg, WarningRule rule) {
         try {
             JSONObject object = new JSONObject();
-            object.put("monitor_message",msg);
-            object.put("time",System.currentTimeMillis());
+            object.put("monitor_message", msg);
+            object.put("time", System.currentTimeMillis());
+            object.put("appName", rule.getAppName());
+            object.put("className", rule.getClassName());
             elasticLowerClient.insertList(Arrays.asList(object.toJSONString()),
                     LogMessageConstant.PLUMELOG_MONITOR_MESSAGE_KEY,
                     LogMessageConstant.ES_TYPE);
-            logger.info("monitor message insert es success,{}",msg);
+            logger.info("monitor message insert es success,{}", msg);
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("monitor message insert es failed!", e);
