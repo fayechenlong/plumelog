@@ -30,6 +30,8 @@ public class PlumeLogMonitorRuleConfig {
 
     private static ConcurrentHashMap<String, List<WarningRule>> configMap = new ConcurrentHashMap<>();
 
+    private static ConcurrentHashMap<String, List<WarningRule>> backConfigMap = new ConcurrentHashMap<>();
+
 
     /**
      * @param appName
@@ -42,13 +44,15 @@ public class PlumeLogMonitorRuleConfig {
         return configMap.get(appName);
     }
 
-    public void initMonitorRuleConfig() {
-        Map<String, String> configMap = redisClient.hgetAll(LogMessageConstant.WARN_RULE_KEY);
-        Collection<String> values = configMap.values();
+    public synchronized void initMonitorRuleConfig() {
+        Map<String, String> configs = redisClient.hgetAll(LogMessageConstant.WARN_RULE_KEY);
+        Collection<String> values = configs.values();
         Iterator<String> iterator = values.iterator();
+        backConfigMap.clear();
         while (iterator.hasNext()) {
             parserConfig(iterator.next());
         }
+        configMap = backConfigMap;
     }
 
     private static void parserConfig(String config) {
@@ -56,14 +60,14 @@ public class PlumeLogMonitorRuleConfig {
         if (warningRule.getStatus() == 0) {
             return;
         }
-        if (configMap.containsKey(warningRule.getAppName())) {
-            List<WarningRule> warningRules = configMap.get(warningRule.getAppName());
+        if (backConfigMap.containsKey(warningRule.getAppName())) {
+            List<WarningRule> warningRules = backConfigMap.get(warningRule.getAppName());
             warningRules.add(warningRule);
-            configMap.put(warningRule.getAppName(), warningRules);
+            backConfigMap.put(warningRule.getAppName(), warningRules);
         } else {
             List<WarningRule> lists = new ArrayList<>();
             lists.add(warningRule);
-            configMap.put(warningRule.getAppName(), lists);
+            backConfigMap.put(warningRule.getAppName(), lists);
         }
     }
 
