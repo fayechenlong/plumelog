@@ -55,6 +55,9 @@ public class PlumeLogMonitorTextMessage {
 
         private String className;
 
+        private String monitorUrl;
+
+
         public Builder(String appName) {
             this.appName = appName;
         }
@@ -80,17 +83,23 @@ public class PlumeLogMonitorTextMessage {
             return this;
         }
 
+        public Builder monitorUrl(String monitorUrl) {
+            this.monitorUrl = monitorUrl;
+            return this;
+        }
+
         @Override
         public String toString() {
 
             StringBuilder builder = new StringBuilder();
-            builder.append("报警通知：").append('\n').append("应用名 【").append(appName).append("】").append('\n');
+            builder.append("#### 报警通知：").append(" \n> ").append("应用名 【").append(appName).append("】\n\n>");
             if (!StringUtils.isEmpty(className)) {
-                builder.append("类名【").append(className).append("】").append('\n');
+                builder.append("类名【").append(className).append("】 \n\n> ");
             }
-            builder.append("时间区间【").append(time).append("】秒").append('\n');
-            builder.append("错误阀值【").append(errorCount).append("】条数").append('\n');
-            builder.append("实际错误【").append(count).append("】条数").append('\n');
+            builder.append("时间区间【").append(time).append("】秒 \n\n> ");
+            builder.append("错误阀值【").append(errorCount).append("】条数 \n\n> ");
+            builder.append("实际错误【").append(count).append("】条数 \n\n> ");
+            builder.append("[点击查看](").append(monitorUrl).append(") \n\n");
             return builder.toString();
         }
 

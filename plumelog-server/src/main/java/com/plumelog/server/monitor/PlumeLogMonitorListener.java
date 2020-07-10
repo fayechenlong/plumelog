@@ -14,6 +14,7 @@ import com.plumelog.server.client.ElasticLowerClient;
 import com.taobao.api.ApiException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,9 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     private RedisClient redisClient;
 
     private static final String WARNING_NOTICE = ":WARNING:NOTICE";
+
+    @Value("${plumelog.ui.url:127.0.0.1:8989}")
+    private String url;
 
     /**
      * 当KEY设置过期时间时加的后缀
@@ -162,16 +166,18 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
                         .errorCount(rule.getErrorCount())
                         .time(rule.getTime())
                         .count(count)
+                        .monitorUrl(getMonitorMessageURL(rule))
                         .build();
         if (!StringUtils.isEmpty(rule.getReceiver())) {
             plumeLogMonitorTextMessage.setAtMobiles(Arrays.asList(rule.getReceiver().split(",")));
         }
         DingTalkClient client = new DefaultDingTalkClient(rule.getWebhookUrl());
         OapiRobotSendRequest request = new OapiRobotSendRequest();
-        request.setMsgtype("text");
-        OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
-        text.setContent(plumeLogMonitorTextMessage.getText());
-        request.setText(text);
+        request.setMsgtype("markdown");
+        OapiRobotSendRequest.Markdown markdown = new OapiRobotSendRequest.Markdown();
+        markdown.setTitle("报警通知");
+        markdown.setText(plumeLogMonitorTextMessage.getText());
+        request.setMarkdown(markdown);
         OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
         at.setAtMobiles(plumeLogMonitorTextMessage.getAtMobiles());
         at.setIsAtAll(plumeLogMonitorTextMessage.isAtAll());
@@ -182,7 +188,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             if (redisClient.setNx(warningKey + KEY_NX, 5)) {
                 logger.info(plumeLogMonitorTextMessage.getText());
                 response = client.execute(request);
-                sendMesageES(plumeLogMonitorTextMessage.getText(), rule);
+                sendMesageES(rule, count);
             }
             redisClient.set(warningKey, warningKey);
             redisClient.expireAt(warningKey, Long.parseLong(String.valueOf(rule.getTime())));
@@ -194,23 +200,34 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
 
     /**
      * 报警记录加入至ES
-     *
-     * @param msg 报警信息
      */
-    private void sendMesageES(String msg, WarningRule rule) {
+    private void sendMesageES(WarningRule rule, long count) {
         try {
-            JSONObject object = new JSONObject();
-            object.put("monitor_message", msg);
-            object.put("time", System.currentTimeMillis());
-            object.put("appName", rule.getAppName());
-            object.put("className", rule.getClassName());
+            JSONObject object = (JSONObject) JSONObject.toJSON(rule);
+            object.put("count", count);
+            object.put("dataTime", System.currentTimeMillis());
             elasticLowerClient.insertList(Arrays.asList(object.toJSONString()),
                     LogMessageConstant.PLUMELOG_MONITOR_MESSAGE_KEY,
                     LogMessageConstant.ES_TYPE);
-            logger.info("monitor message insert es success,{}", msg);
+            logger.info("monitor message insert es success");
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("monitor message insert es failed!", e);
         }
+    }
+
+    private String getMonitorMessageURL(WarningRule rule) {
+        //换算毫秒数
+        int time = rule.getTime() * 1000;
+        long currentTime = System.currentTimeMillis();
+        //开始时间
+        long startTime = currentTime - time;
+        StringBuilder builder = new StringBuilder(64);
+        builder.append(url).append("?appName=").append(rule.getAppName())
+                .append("&className=").append(rule.getClassName())
+                .append("&logLevel=ERROR")
+                .append("&time=").append(startTime).append(",").append(currentTime);
+        System.out.println(builder.toString());
+        return builder.toString();
     }
 }
