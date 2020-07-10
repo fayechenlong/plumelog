@@ -227,7 +227,7 @@
                 <artifactId>spring-cloud-starter-sleuth</artifactId>
             </dependency>
 ``` 
-* [链路追踪使用](/plumelog-trace/README.md)
+* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
 * TraceId跨线程传递
 
@@ -255,11 +255,11 @@
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
 ```       
-* [Dubbo的分布式系统traceId传递 ](/plumelog-dubbo/README.md)
+* [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
 
 * springcloud(fegin)的分布式系统traceId传递,参考plumelog-rest项目
 
-* [docker版本安装](/docker-file/DOCKER.md)
+* [docker版本安装点我](/docker-file/DOCKER.md)
 
 ### 三、联系交流
 
