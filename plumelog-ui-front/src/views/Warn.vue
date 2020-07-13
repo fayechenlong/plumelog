@@ -2,8 +2,8 @@
   <div class="pnl_wraper">
      <log-header></log-header>
 
-       <Tabs active-key="管理" >
-        <Tab-pane label="管理" key="管理">
+       <Tabs active-key="报警设置" >
+        <Tab-pane label="报警设置" key="报警设置">
           <Button icon="ios-add" @click="add" class="btn_add">添加</Button>
           <div style="clear:both"></div>
           <Table height="600" :content="self" :columns="columns" :data="warnData">
@@ -16,7 +16,7 @@
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">添加报警设置</h5>
+                  <h5 class="modal-title">{{isEdit?'修改':'添加'}}报警设置</h5>
                   <button type="button" class="close" data-dismiss="modal" @click="showDialog=false" aria-label="关闭">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -41,21 +41,30 @@
                     <FormItem label="时间间隔" required>
                         <Input v-model="dataInfo.time" type="number" placeholder="输入时间间隔(s)"  />
                     </FormItem>
+                    <FormItem label="状态">
+                         <i-switch v-model="dataInfo.status" size="large">
+                            <span slot="open">开启</span>
+                            <span slot="close">关闭</span>
+                        </i-switch>
+                    </FormItem>
                   </Form>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="showDialog=false">关闭</button>
-                  <button type="button" class="btn btn-primary" @click="save">添加</button>
+                  <button type="button" class="btn btn-primary" @click="save">{{isEdit?'保存':'添加'}}</button>
                 </div>
               </div>
             </div>
           </div>
         </Tab-pane>
-         <Tab-pane label="日志" key="日志">
+         <Tab-pane label="报警记录" key="报警记录">
            <ul class="logList">
              <li v-for="(log,index) in logs" :key="index">
-               <div class="time">{{formatTime(log.time)}}</div>
-               <div class="cnt"><pre>{{log.monitor_message}}</pre></div>
+               <div class="time">{{formatTime(log.dataTime)}}</div>
+               <div class="cnt"><span class="key">应用名称: </span><a href="javascript:void(0)" @click="doSearch({appName:log.appName})">{{log.appName}}</a></div>
+               <div class="cnt"><span class="key">类名: </span><a href="javascript:void(0)" @click="doSearch({className:log.className})">{{log.className}}</a></div>
+               <div class="cnt"><span class="key">时间区间: </span>{{log.time}}秒</div>
+               <div class="cnt"><span class="key">实际错误: </span>{{log.errorCount}}条</div>
              </li>
            </ul>
             <Button @click="getMore" v-if="showMore" class="btn_more">加载更多</Button>
@@ -86,7 +95,8 @@ export default {
         className: '',
         receiver:'',
         webhookUrl:'',
-        time: 60
+        time: 60,
+        status:false,
     },
     pageSize:50,
     from:0,
@@ -135,6 +145,7 @@ export default {
     ],
     self:this,
     showMore:true,
+    isEdit:false
    }
   },
   computed:{
@@ -146,6 +157,7 @@ export default {
   methods:{
     add(){
       this.initDataInfo();
+      this.isEdit = false;
       this.showDialog = true;
     },
     del(index){
@@ -161,6 +173,7 @@ export default {
     },
     edit(index){
       this.dataInfo = this.warnData[index];
+      this.isEdit = true;
       this.showDialog = true;
     },
     save(){
@@ -187,19 +200,23 @@ export default {
       this.setData(this.dataInfo);
 
     },
-    initDataInfo(){
+    initDataInfo() {
       this.dataInfo = {
         appName: '',
         className: '',
         receiver:'',
         webhookUrl:'',
         errorCount: 10,
+        status:true,
         time: 60
-      }
+      };
     },
     setData(info){
-       let id = info.id || Date.now();
-       axios.post(process.env.VUE_APP_API+'/saveWarningRuleList?id='+id,info).then(data=>{
+       let _info = _.clone(info)
+       let id = _info.id || Date.now();
+      
+       _info.status = _info.status ? 1 : 0;
+       axios.post(process.env.VUE_APP_API+'/saveWarningRuleList?id='+id,_info).then(data=>{
          if(data.data.success){
            this.$Message.success('保存成功');
            this.showDialog = false;
@@ -211,7 +228,12 @@ export default {
       this.$Loading.start();
       axios.get(process.env.VUE_APP_API+'/getWarningRuleList').then(data=>{
          this.$Loading.finish();
-         this.warnData = _.get(data,'data',[]);
+         this.warnData = _.get(data,'data',[]).map(item=>{
+           return {
+             ...item,
+             status:item.status ==1
+           }
+         });
        })
     },
     formatTime(time){
@@ -227,7 +249,7 @@ export default {
             "match_all": {}
         },
         "sort" : [
-           { "time" : "desc" },
+           { "dataTime" : "desc" },
         ]
       }).then(data=>{
         let logs=_.get(data,"data.hits.hits",[]).map(item=>{
@@ -248,6 +270,15 @@ export default {
     getMore(){
       this.from += this.pageSize;
       this.getLog();
+    },
+    doSearch(info){
+      this.$router.push({
+        name:"Home",
+        query:{
+          ...info,
+          logLevel:'ERROR'
+        }
+      })
     }
   },
   mounted(){
@@ -269,7 +300,14 @@ export default {
       margin-bottom:10px;
     }
     .cnt{
-      
+      .key{
+        display: inline-block;
+        width:80px;
+        padding-right:10px;
+        text-align: right;
+        font-size:12px;
+        font-weight: 700;
+      }
     }
   }
 }

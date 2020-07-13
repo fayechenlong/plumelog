@@ -11,14 +11,14 @@
            <div class="pnl_size" v-if="sizeInfo.length>0">
              <Table height="600" @on-selection-change="changeSizeSelect" :content="self" :columns="columns_size" :data="sizeInfo">
                <template slot-scope="{ row, index }" slot="action">
-                <Button type="error" size="small" @click="remove(index)">删除</Button>
+                <Button type="info" size="small" @click="showDetail(index)">详情</Button>
                </template>
              </Table>
           </div>
         </Tab-pane>
         <Tab-pane label="链路数据" name="trace" key="链路数据">
           <div class="pnl_size" v-if="traceInfo.length>0">
-             <Table height="600" @on-selection-change="changeTraceSelect" :content="self" :columns="columns_size" :data="traceInfo">
+             <Table height="600" @on-selection-change="changeTraceSelect" :content="self" :columns="columns_trace" :data="traceInfo">
                <template slot-scope="{ row, index }" slot="action">
                 <Button type="error" size="small" @click="remove(index)">删除</Button>
                </template>
@@ -62,6 +62,7 @@ import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
 import logHeader from '@/components/logHeader.vue'
 import "@/assets/less/base.less";
+import expandRow from '@/components/size-expand.vue';
 
 
 export default {
@@ -74,7 +75,7 @@ export default {
      size_selection:[],
      trace_selection:[],
      currentTab:'run',
-     columns_size:[
+     columns_trace:[
        {
         type: 'selection',
         width: 60,
@@ -119,13 +120,65 @@ export default {
                 h('span', params.row['pri.store.size']+'（'+ params.row['store.size']+'）')
             ]);
         }
+      }
+     ],
+     columns_size:[
+       {
+        type: 'selection',
+        width: 60,
+        align: 'center'
       },
-      // {
-      //     title: '操作',
-      //     slot: 'action',
-      //     width: 150,
-      //     align: 'center'
-      // }
+      {
+        type: 'expand',
+        width: 50,
+        render: (h, params) => {
+            return h(expandRow, {
+                props: {
+                    row: params.row,
+                }
+            })
+        }
+      },
+      {
+        title: '健康',
+        key:'health',
+         width: 100,
+        render: (h, params) => {
+            return h('div', [
+                h('i', {
+                   'class':params.row.health
+                })
+            ]);
+        }
+      },
+      {
+        title: '时间',
+        key:'index',
+        sortable: true,
+        sortType:"desc",//初始化排序
+        render:(h,params)=>{
+          let _index = params.row.index.replace('plume_log_trace_','').replace('plume_log_run_','');;
+          if(_index.length>=8){
+            _index = _index.substring(0,4)+'-'+_index.substring(4,6)+'-'+_index.substring(6,8)
+          }
+          return h('span',_index)
+        }
+      },
+      {
+        title:'条数',
+        key:'docs.count',
+        sortable: true
+      },
+      {
+        title:'大小',
+        key:'pri.store.size',
+        sortable: true,
+        render: (h, params) => {
+            return h('div', [
+                h('span', params.row['pri.store.size']+'（'+ params.row['store.size']+'）')
+            ]);
+        }
+      }
      ],
      sizeInfo:[],
      traceInfo:[],
@@ -144,7 +197,8 @@ export default {
     }
   },
   components: {
-    logHeader
+    logHeader,
+    expandRow
   },
   methods:{
     closeModal(){

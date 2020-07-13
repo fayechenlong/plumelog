@@ -800,6 +800,32 @@ export default {
       {
         this.doSearch();
       }
+    },
+    init(){
+      this.clear();
+      let titles = localStorage['cache_showColumnTitles'];
+      if(titles){
+        this.showColumnTitles = JSON.parse(titles)
+      }
+      
+      if(this.$route.query.appName){
+        this.filter['appName'] = this.$route.query.appName;
+      }
+      if(this.$route.query.className){
+        this.filter['className'] = this.$route.query.className;
+      }
+      if(this.$route.query.logLevel){
+        this.filter['logLevel'] = this.$route.query.logLevel;
+      }
+      if(this.$route.query.time){
+        let times = this.$route.query.time.split(',');
+        if(times.length>1){
+          this.dateTimeRange = [moment(parseInt(times[0])).format('YYYY-MM-DD HH:mm:ss'),moment(parseInt(times[1])).format('YYYY-MM-DD HH:mm:ss')]
+          this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
+        }
+      }
+
+      this.doSearch();
     }
   },
   watch:{
@@ -811,14 +837,11 @@ export default {
         this.from = 0;
       },
       deep:true
-    }
+    },
+    "$route": "init"
   },
   mounted(){
-    let titles = localStorage['cache_showColumnTitles'];
-    if(titles){
-      this.showColumnTitles = JSON.parse(titles)
-    }
-    this.doSearch();
+    this.init();
   }
 };
 </script>
