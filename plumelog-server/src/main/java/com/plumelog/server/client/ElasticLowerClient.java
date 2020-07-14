@@ -49,6 +49,7 @@ public class ElasticLowerClient {
 
     /**
      * 带密码认证的
+     *
      * @param hosts
      * @param userName
      * @param passWord
@@ -73,6 +74,7 @@ public class ElasticLowerClient {
 
     /**
      * 带ssl认证的
+     *
      * @param hosts
      * @param keyStorePass
      * @param sslFile
@@ -139,7 +141,56 @@ public class ElasticLowerClient {
         return false;
     }
 
+    public boolean creatIndice(String indice) {
+        List<String> existIndexList = new ArrayList<String>();
+        try {
+            Request request = new Request(
+                    "PUT",
+                    "/" + indice + "");
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return false;
+    }
+
+    private void creatFieldData(String baseIndex, String field, String type) {
+
+        String ent = "{\"properties\":{\"" + field + "\":{\"type\":\"text\",\"fielddata\":true}}} ";
+        String endpoint = "";
+        if (StringUtils.isEmpty(type)) {
+            endpoint = "/" + baseIndex + "/_mapping";
+        } else {
+            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
+        }
+        try {
+            Request request = new Request(
+                    "PUT",
+                    endpoint);
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() != 200) {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.info(responseStr);
+            }
+        }catch (Exception e){
+            logger.error("", e);
+        }
+    }
+
     public void insertList(List<String> list, String baseIndex, String type) throws IOException {
+
+        if (!existIndice(baseIndex)) {
+            creatIndice(baseIndex);
+            logger.info("creatIndex:{}", baseIndex);
+            creatFieldData(baseIndex, "appName", type);
+            logger.info("creatFieldData appName");
+            creatFieldData(baseIndex, "logLevel", type);
+            logger.info("creatFieldData logLevel");
+        }
         StringBuffer sendStr = new StringBuffer();
         for (int a = 0; a < list.size(); a++) {
             String map = list.get(a);
@@ -164,9 +215,10 @@ public class ElasticLowerClient {
             public void onSuccess(Response response) {
                 try {
                     String responseStr = EntityUtils.toString(response.getEntity());
-                    logger.info("ElasticSearch commit success！");
+                    logger.info("ElasticSearch commit! success");
+                    logger.debug("responseStr:{}", responseStr);
                 } catch (IOException e) {
-                    logger.info("ElasticSearch commit Failure!", e);
+                    logger.info("ElasticSearch commit!", e);
                 }
             }
 
