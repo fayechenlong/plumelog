@@ -326,6 +326,10 @@ export default {
   {
     z-index: 1000;
   }
+  .modal-backdrop
+  {
+    z-index:900;
+  }
   .ivu-tabs-nav-scroll
   {
     margin-top:20px;
