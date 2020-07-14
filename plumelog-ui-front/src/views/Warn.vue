@@ -5,8 +5,9 @@
        <Tabs active-key="报警设置" >
         <Tab-pane label="报警设置" key="报警设置">
           <Button icon="ios-add" @click="add" class="btn_add">添加</Button>
+          <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="removeSelect" type="error">删除所选</Button>
           <div style="clear:both"></div>
-          <Table height="600" :content="self" :columns="columns" :data="warnData">
+          <Table height="600" :content="self" :columns="columns" @on-selection-change="changeSelect"  :data="warnData">
             <template slot-scope="{ row, index }" slot="action">
               <Button size="small" @click="edit(index)">修改</Button>&nbsp;&nbsp;
               <Button type="error" size="small" @click="del(index)">删除</Button>
@@ -58,23 +59,26 @@
           </div>
         </Tab-pane>
          <Tab-pane label="报警记录" key="报警记录">
-           <ul class="logList">
-             <li v-for="(log,index) in logs" :key="index">
-               <div class="time">{{formatTime(log.dataTime)}}</div>
-               <div class="cnt"><span class="key">应用名称: </span>{{log.appName}}</div>
-               <div class="cnt"><span class="key">类名: </span>{{log.className}}</div>
-               <div class="cnt"><span class="key">时间区间: </span>{{log.time}}秒</div>
-               <div class="cnt"><span class="key">实际错误: </span>{{log.errorCount}}条</div>
-               <div class="btn_showDetail">
-                 <a href="javascript:void(0)" @click="doSearch(log)">查看详情>></a>
-               </div>
-             </li>
-           </ul>
-            <Button @click="getMore" v-if="showMore" class="btn_more">加载更多</Button>
+           <div v-if="logs.length>0">
+              <Button icon="ios-trash" class="btn_clear"  @click="clearWarn">清空记录</Button>
+              <ul class="logList">
+                <li v-for="(log,index) in logs" :key="index">
+                  <div class="time">{{formatTime(log.dataTime)}}</div>
+                  <div class="cnt"><span class="key">应用名称: </span>{{log.appName}}</div>
+                  <div class="cnt"><span class="key">类名: </span>{{log.className}}</div>
+                  <div class="cnt"><span class="key">时间区间: </span>{{log.time}}秒</div>
+                  <div class="cnt"><span class="key">实际错误: </span>{{log.errorCount}}条</div>
+                  <div class="btn_showDetail">
+                    <a href="javascript:void(0)" @click="doSearch(log)">查看详情>></a>
+                  </div>
+                </li>
+              </ul>
+              <Button @click="getMore" v-if="showMore" class="btn_more">加载更多</Button>
+           </div>
+            <div v-else style="text-align:center;padding-top:50px">暂无数据</div>
         </Tab-pane>
        </Tabs>
-
-     
+      <confirm-delete v-model="showConfirm" @on-confirm="confirmPassword"></confirm-delete>
   </div>
 </template>
 
@@ -87,12 +91,15 @@ import moment from 'moment'
 import dateOption from './dateOption';
 import 'view-design/dist/styles/iview.css';
 import logHeader from '@/components/logHeader.vue'
+import confirmDelete from '@/components/confirmDelete.vue'
 import "@/assets/less/base.less";
 
 export default {
   name: "Warn",
   data(){
    return {
+    selection:[],
+    showConfirm:false,
     dataInfo: {
         appName: '',
         className: '',
@@ -107,6 +114,11 @@ export default {
     warnData:[],
     showDialog:false,
     columns:[
+      {
+        type: 'selection',
+        width: 60,
+        align: 'center'
+      },
       {
         title: 'ID',
         width:150,
@@ -152,25 +164,54 @@ export default {
    }
   },
   computed:{
-   
+    isDisabled(){
+      return this.selection.length==0;
+    }
   },
   components: {
-    logHeader
+    logHeader,
+    confirmDelete
   },
   methods:{
+    removeSelect(){
+       if(this.selection.length>0 && confirm('确认要删除所选的监控么')){
+          var ps = [];
+          for(var info of this.selection){
+            ps.push(this.delIndex(info))
+          }
+          Promise.all(ps).then(()=>{
+             this.$Message.success('删除成功');
+              this.getData();
+          })
+       }
+    },
+    changeSelect(selection){
+      this.selection = selection;
+    },
     add(){
       this.initDataInfo();
       this.isEdit = false;
       this.showDialog = true;
     },
+    delIndex(_info){
+      return new Promise((res,rej)=>{
+        axios.post(process.env.VUE_APP_API+'/deleteWarningRule?id='+_info.id).then(data=>{
+          if(data.data.success){
+           res();
+          }
+          else
+          {
+            rej();
+          }
+        })
+      })
+    },
     del(index){
       let _info = this.warnData[index];
       if(confirm('确认要删除ID为 '+_info.id+' 的监控么')){
-         axios.post(process.env.VUE_APP_API+'/deleteWarningRule?id='+_info.id).then(data=>{
-          if(data.data.success){
+        this.delIndex(_info).then(()=>{
             this.$Message.success('删除成功');
             this.getData();
-          }
         })
       }
     },
@@ -284,6 +325,22 @@ export default {
           logLevel:'ERROR'
         }
       })
+    },
+    clearWarn(){
+      this.showConfirm = true;
+    },
+    confirmPassword(pwd){
+      axios.get(process.env.VUE_APP_API+'/deleteIndex?index=plumelog_monitor_message_key&adminPassWord='+pwd).then(result=>{
+        console.log(result)
+        if(result.data.acknowledged){
+           alert('删除成功');
+           this.logs=[];
+        }
+        else
+        {
+          alert(results[0].data.message);
+        }
+      })
     }
   },
   mounted(){
@@ -293,6 +350,12 @@ export default {
 }
 </script>
 <style lang="less">
+
+.ivu-tabs-tabpane
+{
+  text-align: left;
+}
+
 .logList
 {
   li{
@@ -342,5 +405,14 @@ export default {
   {
     float: right;
     margin:10px 20px 10px 0;
+  }
+  .btn_delete
+  {
+    float: right;
+    margin: 10px 10px 10px 0;
+  }
+  .btn_clear
+  {
+    margin:0 0 20px 10px;
   }
 </style>
