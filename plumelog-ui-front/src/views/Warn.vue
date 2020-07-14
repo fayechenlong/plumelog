@@ -61,10 +61,13 @@
            <ul class="logList">
              <li v-for="(log,index) in logs" :key="index">
                <div class="time">{{formatTime(log.dataTime)}}</div>
-               <div class="cnt"><span class="key">应用名称: </span><a href="javascript:void(0)" @click="doSearch({appName:log.appName})">{{log.appName}}</a></div>
-               <div class="cnt"><span class="key">类名: </span><a href="javascript:void(0)" @click="doSearch({className:log.className})">{{log.className}}</a></div>
+               <div class="cnt"><span class="key">应用名称: </span>{{log.appName}}</div>
+               <div class="cnt"><span class="key">类名: </span>{{log.className}}</div>
                <div class="cnt"><span class="key">时间区间: </span>{{log.time}}秒</div>
                <div class="cnt"><span class="key">实际错误: </span>{{log.errorCount}}条</div>
+               <div class="btn_showDetail">
+                 <a href="javascript:void(0)" @click="doSearch(log)">查看详情>></a>
+               </div>
              </li>
            </ul>
             <Button @click="getMore" v-if="showMore" class="btn_more">加载更多</Button>
@@ -275,7 +278,9 @@ export default {
       this.$router.push({
         name:"Home",
         query:{
-          ...info,
+          className:info.className,
+          appName:info.appName,
+          time:info.dataTime-1000*60+','+info.dataTime,
           logLevel:'ERROR'
         }
       })
@@ -298,6 +303,12 @@ export default {
       padding-bottom:8px;
       border-bottom:1px dotted #ccc;
       margin-bottom:10px;
+    }
+    .btn_showDetail {
+      margin-top:10px;
+      padding-left:20px;
+      font-size:12px;
+
     }
     .cnt{
       .key{
