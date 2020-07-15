@@ -57,29 +57,36 @@ public class RestLogCollect extends BaseLogCollect {
 
     private void collectRuningLog() {
         while (true) {
+            List<String> logs = new ArrayList<>();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
-                collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
+            }
+            try {
+                logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
             } catch (Exception e) {
                 logger.error("从plumelog-server拉取日志失败！", e);
             }
+            collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
+
         }
     }
 
     private void collectTraceLog() {
         while (true) {
+            List<String> logs = new ArrayList<>();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
-                collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
+            }
+            try {
+                logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
             } catch (Exception e) {
                 logger.error("从plumelog-server队列拉取日志失败！", e);
             }
+            collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
         }
     }
 

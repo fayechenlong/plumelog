@@ -125,7 +125,7 @@ public class CollectStartBean implements InitializingBean {
             logger.info("load config success!");
             serverStart();
         } catch (Exception e) {
-            logger.error("plumelog server running fail!", e);
+            logger.error("plumelog server starting failed!", e);
         }
     }
 }

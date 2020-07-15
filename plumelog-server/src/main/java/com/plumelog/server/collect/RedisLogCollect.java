@@ -76,31 +76,38 @@ public class RedisLogCollect extends BaseLogCollect {
 
     private void collectRuningLog() {
         while (true) {
+            List<String> logs = new ArrayList<>();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
-                //发布一个事件
-                publisherMonitorEvent(logs);
-                collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
+            }
+            try {
+                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
+            //发布一个事件
+            publisherMonitorEvent(logs);
+            collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
+
         }
     }
 
     private void collectTraceLog() {
         while (true) {
+            List<String> logs = new ArrayList<>();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
-                collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
+            }
+            try {
+                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
+            collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
         }
     }
 

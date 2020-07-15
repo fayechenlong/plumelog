@@ -35,22 +35,30 @@ public class KafkaLogCollect extends BaseLogCollect {
         logger.info("sending log ready!");
         this.applicationEventPublisher = applicationEventPublisher;
     }
-
     public void kafkaStart() {
+        threadPoolExecutor.execute(() -> {
+            collectRuningLog();
+        });
         logger.info("KafkaLogCollect is starting!");
+    }
+    public void collectRuningLog() {
         while (true) {
-            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
             List<String> logList = new ArrayList();
             List<String> sendlogList = new ArrayList();
-            records.forEach(record -> {
-                logger.debug("get log:" + record.value() + "  logType:" + record.topic());
-                if (record.topic().equals(LogMessageConstant.LOG_KEY)) {
-                    logList.add(record.value());
-                }
-                if (record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)) {
-                    sendlogList.add(record.value());
-                }
-            });
+            try {
+                ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
+                records.forEach(record -> {
+                    logger.debug("get log:" + record.value() + "  logType:" + record.topic());
+                    if (record.topic().equals(LogMessageConstant.LOG_KEY)) {
+                        logList.add(record.value());
+                    }
+                    if (record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)) {
+                        sendlogList.add(record.value());
+                    }
+                });
+            }catch (Exception e){
+                logger.error("get logs from kafka failed! ",e);
+            }
             if (logList.size() > 0) {
                 publisherMonitorEvent(logList);
                 super.sendLog(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD), logList);

@@ -46,10 +46,12 @@ public class BaseLogCollect {
 
     protected void publisherMonitorEvent(List<String> logs) {
         if (logs.size()>0){
-            applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, logs));
+            try {
+                applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, logs));
+            }catch (Exception e){
+                logger.error("publisherMonitorEvent error!", e);
+            }
         }
 
     }
-
-
 }
