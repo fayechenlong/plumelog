@@ -87,6 +87,7 @@
                 <Select v-if="searchOptions.length>0" v-model="selectOption" style="width:80px;margin-right:10px">
                     <Option value="AND" key="AND">AND</Option>
                     <Option value="OR" key="OR">OR</Option>
+                    <Option value="NOT" key="NOT">NOT</Option>
                 </Select>
                 <Input class="txt" @on-enter="addTag()" :clearable="true" v-model="tag" placeholder="输入搜索条件" style="width:196px;"   />
                 <Button icon="md-add" @click="addTag" style="margin-left:10px">添加</Button>
