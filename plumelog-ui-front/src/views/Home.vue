@@ -17,7 +17,15 @@
             <tr>
               <td class="key">应用名称</td>
               <td>
-                <Input class="txt txtAppName" name="appName" v-model="filter.appName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true" />
+                <AutoComplete
+                  v-model="filter.appName"
+                  :data="appNameComplete"
+                  @on-search="searchAppName"
+                  class="txt txtAppName" 
+                  placeholder="搜索多个请用逗号或空格隔开" 
+                  :clearable="true"
+                  :filter-method="completeFilter">
+                </AutoComplete>
                 <Checkbox v-model="isExclude">排除</Checkbox>
               </td>
             </tr>
@@ -188,6 +196,7 @@ export default {
    return {
      isSearching:false,
      tag:"",
+     appNameComplete:[],
      useSearchQuery:false,
      selectOption:'AND',
      isExclude:false,
@@ -418,6 +427,27 @@ export default {
     }
   },
   methods:{
+    completeFilter(value,option){
+      return option.indexOf(value)==0;
+    },
+    searchAppName(value){
+      if(this.appNameComplete.length==0){
+        axios.post(process.env.VUE_APP_API+'/query?index=plume_log_run_*&from=0&size=5000',{
+          "aggs":{
+              "dataCount":{
+                  "terms":{
+                      "field":"appName"
+                  }
+              }
+          }
+        }).then(data=>{
+        let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
+          return item.key
+        });
+          this.appNameComplete = buckets;
+        })
+      }
+    },
     closeTag(index){
       this.searchOptions.splice(index,1);
     },
