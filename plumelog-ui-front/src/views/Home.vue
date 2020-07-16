@@ -186,6 +186,7 @@ export default {
   name: "Home",
   data(){
    return {
+     isSearching:false,
      tag:"",
      useSearchQuery:false,
      selectOption:'AND',
@@ -646,6 +647,11 @@ export default {
     },
     doSearch(keyName,item){
 
+
+      if(this.isSearching){
+        return false;
+      }
+
       if(keyName && item){
 
         if(keyName == 'appName' && this.isExclude && this.filter[keyName]){
@@ -660,7 +666,6 @@ export default {
       //列出范围内的日期
       let dateList=[];
       let startDate = _.clone(new Date(this.dateTimeRange[0]));
-
       let shouldFilter = this.getShouldFilter();
       
       if(startDate){
@@ -715,8 +720,9 @@ export default {
       this.$Loading.start();
       
       let searchUrl = url+'&size='+this.size+"&from="+this.from;
+      this.isSearching = true;
       axios.post(searchUrl,esFilter).then(data=>{
-        
+        this.isSearching = false;
         this.$Loading.finish();
         let _searchData = _.get(data,'data.hits',{
           total:0,
@@ -884,7 +890,6 @@ export default {
       }
     },
     init(){
-      this.clear();
       let titles = localStorage['cache_showColumnTitles'];
       if(titles){
         this.showColumnTitles = JSON.parse(titles)
@@ -897,7 +902,7 @@ export default {
         this.filter['className'] = this.$route.query.className;
       }
       if(this.$route.query.logLevel){
-        this.filter['logLevel'] = this.$route.query.logLevel;
+        this.filter['logLevel'] = [this.$route.query.logLevel];
       }
       if(this.$route.query.time){
         let times = this.$route.query.time.split(',');
@@ -906,8 +911,9 @@ export default {
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
         }
       }
-
-      this.doSearch();
+      setTimeout(()=>{
+        this.doSearch();
+      },100)
     }
   },
   watch:{
@@ -919,11 +925,13 @@ export default {
         this.from = 0;
       },
       deep:true
-    },
-    "$route": "init"
+    }
+  },
+  activated(){
+   this.init();
   },
   mounted(){
-    this.init();
+    //this.init();
   }
 };
 </script>

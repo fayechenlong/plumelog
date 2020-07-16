@@ -316,6 +316,7 @@ export default {
       this.getLog();
     },
     doSearch(info){
+      this.$emit('init',{})
       this.$router.push({
         name:"Home",
         query:{
