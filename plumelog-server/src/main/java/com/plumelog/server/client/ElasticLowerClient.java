@@ -138,8 +138,28 @@ public class ElasticLowerClient {
         }
         return false;
     }
+    public boolean creatIndice(String indice) {
+        List<String> existIndexList = new ArrayList<String>();
+        try {
+            Request request = new Request(
+                    "PUT",
+                    "/" + indice + "");
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return false;
+    }
 
     public void insertList(List<String> list, String baseIndex, String type) throws IOException {
+
+        if(!existIndice(baseIndex)){
+            creatIndice(baseIndex);
+            logger.info("creatIndex:{}",baseIndex);
+        }
         StringBuffer sendStr = new StringBuffer();
         for (int a = 0; a < list.size(); a++) {
             String map = list.get(a);
