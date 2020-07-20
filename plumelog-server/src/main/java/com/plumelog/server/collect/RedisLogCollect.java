@@ -25,42 +25,10 @@ public class RedisLogCollect extends BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(RedisLogCollect.class);
     private RedisClient redisClient;
 
-    /**
-     * 无密码redis
-     *
-     * @param redisHost
-     * @param redisPort
-     * @param esHosts
-     * @param userName
-     * @param passWord
-     */
-    public RedisLogCollect(String redisHost, int redisPort, String esHosts, String userName, String passWord) {
-
-        super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-        logger.info("elasticSearch init success!esHosts:{}", esHosts);
-        this.redisClient = RedisClient.getInstance(redisHost, redisPort, "");
-        logger.info("redis init success!redisHost:{} redisPort:{}", redisHost, redisPort);
-
-    }
-
-    /**
-     * 有密码redis
-     *
-     * @param redisHost
-     * @param redisPort
-     * @param redisPassWord
-     * @param esHosts
-     * @param userName
-     * @param passWord
-     */
-    public RedisLogCollect(String redisHost, int redisPort, String redisPassWord, String esHosts, String userName, String passWord, ApplicationEventPublisher applicationEventPublisher) {
-
-        super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-        logger.info("elasticSearch init success!esHosts:{}", esHosts);
-        this.redisClient = RedisClient.getInstance(redisHost, redisPort, redisPassWord);
-        logger.info("redis init success!redisHost:{} redisPort:{}", redisHost, redisPort);
-        this.applicationEventPublisher = applicationEventPublisher;
-
+    public RedisLogCollect(ElasticLowerClient elasticLowerClient, RedisClient redisClient, ApplicationEventPublisher applicationEventPublisher) {
+        super.elasticLowerClient = elasticLowerClient;
+        this.redisClient = redisClient;
+        super.applicationEventPublisher = applicationEventPublisher;
     }
 
     public void redisStart() {

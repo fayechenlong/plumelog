@@ -8,4 +8,16 @@ public class InitConfig {
     public static int MAX_INTERVAL = 100;
     //kafka消费组名称
     public static String KAFKA_GROUP_NAME = "logConsumer";
+
+    //kafka消费组名称
+    public static String START_MODEL = "redis";
+
+    public final static String KAFKA_MODE_NAME = "kafka";
+    public final static String REDIS_MODE_NAME = "redis";
+    public final static String REST_MODE_NAME = "rest";
+
+
+    public static String restUserName = "";
+    public static String restPassWord = "";
+    public static String restUrl = "";
 }

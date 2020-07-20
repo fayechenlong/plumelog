@@ -7,6 +7,7 @@ import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.client.PlumeRestClient;
 import com.plumelog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,24 +26,15 @@ public class RestLogCollect extends BaseLogCollect {
     private String restPassWord = "";
     private String restUrl = "";
 
-    /**
-     * 无密码redis
-     *
-     * @param restUrl
-     * @param esHosts
-     * @param userName
-     * @param passWord
-     */
-    public RestLogCollect(String restUrl, String esHosts, String userName, String passWord, String restUserName, String restPassWord) {
+    public RestLogCollect(ElasticLowerClient elasticLowerClient, ApplicationEventPublisher applicationEventPublisher) {
 
-        this.restUserName = restUserName;
-        this.restPassWord = restPassWord;
-        this.restUrl = restUrl;
-        super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-        logger.info("elasticSearch init success!esHosts:{}", esHosts);
+        this.restUserName = InitConfig.restUserName;
+        this.restPassWord = InitConfig.restPassWord;
+        this.restUrl = InitConfig.restUrl;
+        super.elasticLowerClient = elasticLowerClient;
+        super.applicationEventPublisher = applicationEventPublisher;
         logger.info("restUrl:{}", restUrl);
     }
-
 
     public void restStart() {
 
@@ -68,6 +60,8 @@ public class RestLogCollect extends BaseLogCollect {
             } catch (Exception e) {
                 logger.error("从plumelog-server拉取日志失败！", e);
             }
+            //发布一个事件
+            publisherMonitorEvent(logs);
             collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
 
         }
