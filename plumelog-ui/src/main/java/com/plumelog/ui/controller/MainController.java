@@ -9,6 +9,7 @@ import com.plumelog.ui.es.ElasticLowerClient;
 import com.plumelog.core.util.GfJsonUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,22 +36,14 @@ import java.util.Map;
  */
 @RestController
 @CrossOrigin
-public class MainController implements InitializingBean {
+public class MainController {
 
-    @Value("${es.esHosts}")
-    private String esHosts;
-    @Value("${es.userName:}")
-    private String userName;
-    @Value("${es.passWord:}")
-    private String passWord;
+
     @Value("${admin.password}")
     private String adminPassWord;
-    @Value("${plumelog.server.redis.redisHost:127.0.0.1:6379}")
-    private String redisHost;
-    @Value("${plumelog.server.redis.redisPassWord:}")
-    private String redisPassWord;
+    @Autowired
     private ElasticLowerClient elasticLowerClient;
-
+    @Autowired
     private RedisClient redisClient;
 
     private org.slf4j.Logger logger = LoggerFactory.getLogger(MainController.class);
@@ -157,33 +150,5 @@ public class MainController implements InitializingBean {
         Map<String, Object> result = new HashMap<>();
         result.put("success",true);
         return result;
-    }
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (this.elasticLowerClient == null) {
-            logger.info("esHosts:" + esHosts);
-            logger.info("es.userName:" + userName);
-            logger.info("es.passWord:" + passWord);
-            this.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-            logger.info("Initializing elasticLowerClient success! esHosts:{}", esHosts);
-        }
-        if (this.redisClient == null) {
-            if (StringUtils.isEmpty(redisHost)) {
-                logger.error("can not find redisHost config! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
-                throw new LogQueueConnectException("redis 初始化失败！:can not find redisHost config");
-            }
-            String[] hs = redisHost.split(":");
-            int port = 6379;
-            String ip = "127.0.0.1";
-            if (hs.length == 2) {
-                ip = hs[0];
-                port = Integer.valueOf(hs[1]);
-            } else {
-                logger.error("redis config error! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
-                throw new LogQueueConnectException("redis 初始化失败！:redis config error");
-            }
-            this.redisClient = RedisClient.getInstance(ip, port, redisPassWord);
-            logger.info("Initializing redis success! host:{} password:{}", redisHost, redisPassWord);
-        }
     }
 }

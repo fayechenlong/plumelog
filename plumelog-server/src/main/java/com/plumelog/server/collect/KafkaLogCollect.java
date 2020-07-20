@@ -1,9 +1,7 @@
 package com.plumelog.server.collect;
 
-import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.kafka.KafkaConsumerClient;
 import com.plumelog.server.util.DateUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -21,26 +19,26 @@ import java.util.*;
  * @version 1.0.0
  */
 public class KafkaLogCollect extends BaseLogCollect {
-
     private org.slf4j.Logger logger = LoggerFactory.getLogger(KafkaLogCollect.class);
+
     private KafkaConsumer<String, String> kafkaConsumer;
 
-    public KafkaLogCollect(String kafkaHosts, String esHosts, String userName, String passWord, ApplicationEventPublisher applicationEventPublisher) {
-        super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
-        logger.info("elasticSearch init success!esHosts:{}", esHosts);
-        this.kafkaConsumer = KafkaConsumerClient.getInstance(kafkaHosts, InitConfig.KAFKA_GROUP_NAME, InitConfig.MAX_SEND_SIZE).getKafkaConsumer();
-        logger.info("kafkaConsumer init success!kafkaHosts:{}", kafkaHosts);
+    public KafkaLogCollect(ElasticLowerClient elasticLowerClient, KafkaConsumer kafkaConsumer, ApplicationEventPublisher applicationEventPublisher) {
+        super.elasticLowerClient = elasticLowerClient;
+        this.kafkaConsumer = kafkaConsumer;
         this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY, LogMessageConstant.LOG_KEY_TRACE));
+        super.applicationEventPublisher = applicationEventPublisher;
         logger.info("kafkaConsumer subscribe ready!");
         logger.info("sending log ready!");
-        this.applicationEventPublisher = applicationEventPublisher;
     }
+
     public void kafkaStart() {
         threadPoolExecutor.execute(() -> {
             collectRuningLog();
         });
         logger.info("KafkaLogCollect is starting!");
     }
+
     public void collectRuningLog() {
         while (true) {
             List<String> logList = new ArrayList();
@@ -56,8 +54,8 @@ public class KafkaLogCollect extends BaseLogCollect {
                         sendlogList.add(record.value());
                     }
                 });
-            }catch (Exception e){
-                logger.error("get logs from kafka failed! ",e);
+            } catch (Exception e) {
+                logger.error("get logs from kafka failed! ", e);
             }
             if (logList.size() > 0) {
                 publisherMonitorEvent(logList);
