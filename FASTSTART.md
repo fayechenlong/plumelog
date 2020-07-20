@@ -31,7 +31,7 @@
     #plumelog.server.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
     #plumelog.server.kafka.kafkaGroupName=logConsumer
     
-    #如果使用redis,启用下面配置
+     #redis配置,3.0版本必须配置redis地址，因为需要监控报警
     plumelog.server.redis.redisHost=172.16.249.72:6379
     #如果使用redis有密码,启用下面配置
     #plumelog.server.redis.redisPassWord=123456
@@ -72,7 +72,12 @@
     #ES如果有密码,启用下面配置
     #es.userName=elastic
     #es.passWord=easylog123456
-    
+
+    #redis配置,3.0版本必须配置redis地址，因为需要监控报警
+    plumelog.server.redis.redisHost=172.16.247.69:6380
+    #如果使用redis有密码,启用下面配置
+    #plumelog.server.redis.redisPassWord=123456
+
     #管理密码，手动删除日志的时候需要输入的密码
     admin.password=123456
 ```
@@ -86,7 +91,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j</artifactId>
-       <version>2.2.2</version>
+       <version>3.0</version>
    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -128,7 +133,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-logback</artifactId>
-       <version>2.2.2</version>
+       <version>3.0</version>
    </dependency>
 ```  
 * 配置
@@ -171,7 +176,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j2</artifactId>
-       <version>2.2.2</version>
+       <version>3.0</version>
    </dependency>       
 ```   
 * 配置
@@ -227,7 +232,7 @@
                 <artifactId>spring-cloud-starter-sleuth</artifactId>
             </dependency>
 ``` 
-* [链路追踪使用](/plumelog-trace/README.md)
+* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
 * TraceId跨线程传递
 
@@ -243,7 +248,25 @@
                       logger.info("子线程日志展示");
           });
 ```        
-      
+* 错误报警说明
+
+   在ui的报警管理里配置报警规则：
+   
+   字段说明：
+     
+     1.应用名称   需要错误报警的应用名称（appName）
+     
+     2.模块名称   需要错误报警的className
+     
+     3.接收人  填手机号码，所有人填写ALL
+     
+     4.钉钉钩子地址  钉钉群机器人webhook地址
+     
+     5.错误数量 错误累计超过多少条报警
+     
+     6.时间间隔  错误在多少秒内累计到上面错误数量开始报警
+     
+   报警记录里为报警历史记录，点击可以直接连接到错误内容
       
    #### 修饰Runnable和Callable
    
@@ -255,11 +278,11 @@
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
 ```       
-* [Dubbo的分布式系统traceId传递 ](/plumelog-dubbo/README.md)
+* [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
 
 * springcloud(fegin)的分布式系统traceId传递,参考plumelog-rest项目
 
-* [docker版本安装](/docker-file/DOCKER.md)
+* [docker版本安装点我](/docker-file/DOCKER.md)
 
 ### 三、联系交流
 

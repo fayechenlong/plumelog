@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import Trace from "../views/Trace.vue";
 import Size from "../views/Size.vue";
 import Chart from "../views/Chart.vue";
+import Warn from "../views/Warn.vue";
 
 Vue.use(VueRouter);
 
@@ -27,6 +28,11 @@ const routes = [
     path: "/chart",
     name: "Chart",
     component: Chart
+  },
+  {
+    path: "/warn",
+    name: "Warn",
+    component: Warn
   }
 ];
 

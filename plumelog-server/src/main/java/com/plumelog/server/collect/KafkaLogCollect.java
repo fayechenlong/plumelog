@@ -8,6 +8,7 @@ import com.plumelog.server.util.DateUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.Duration;
 import java.util.*;
@@ -24,7 +25,7 @@ public class KafkaLogCollect extends BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(KafkaLogCollect.class);
     private KafkaConsumer<String, String> kafkaConsumer;
 
-    public KafkaLogCollect(String kafkaHosts, String esHosts, String userName, String passWord) {
+    public KafkaLogCollect(String kafkaHosts, String esHosts, String userName, String passWord, ApplicationEventPublisher applicationEventPublisher) {
         super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
         logger.info("elasticSearch init success!esHosts:{}", esHosts);
         this.kafkaConsumer = KafkaConsumerClient.getInstance(kafkaHosts, InitConfig.KAFKA_GROUP_NAME, InitConfig.MAX_SEND_SIZE).getKafkaConsumer();
@@ -32,24 +33,34 @@ public class KafkaLogCollect extends BaseLogCollect {
         this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY, LogMessageConstant.LOG_KEY_TRACE));
         logger.info("kafkaConsumer subscribe ready!");
         logger.info("sending log ready!");
+        this.applicationEventPublisher = applicationEventPublisher;
     }
-
     public void kafkaStart() {
+        threadPoolExecutor.execute(() -> {
+            collectRuningLog();
+        });
         logger.info("KafkaLogCollect is starting!");
+    }
+    public void collectRuningLog() {
         while (true) {
-            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
             List<String> logList = new ArrayList();
             List<String> sendlogList = new ArrayList();
-            records.forEach(record -> {
-                logger.debug("get log:" + record.value() + "  logType:" + record.topic());
-                if (record.topic().equals(LogMessageConstant.LOG_KEY)) {
-                    logList.add(record.value());
-                }
-                if (record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)) {
-                    sendlogList.add(record.value());
-                }
-            });
+            try {
+                ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
+                records.forEach(record -> {
+                    logger.debug("get log:" + record.value() + "  logType:" + record.topic());
+                    if (record.topic().equals(LogMessageConstant.LOG_KEY)) {
+                        logList.add(record.value());
+                    }
+                    if (record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)) {
+                        sendlogList.add(record.value());
+                    }
+                });
+            }catch (Exception e){
+                logger.error("get logs from kafka failed! ",e);
+            }
             if (logList.size() > 0) {
+                publisherMonitorEvent(logList);
                 super.sendLog(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD), logList);
             }
             if (sendlogList.size() > 0) {

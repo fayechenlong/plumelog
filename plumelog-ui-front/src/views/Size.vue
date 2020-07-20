@@ -11,7 +11,7 @@
            <div class="pnl_size" v-if="sizeInfo.length>0">
              <Table height="600" @on-selection-change="changeSizeSelect" :content="self" :columns="columns_size" :data="sizeInfo">
                <template slot-scope="{ row, index }" slot="action">
-                <Button type="error" size="small" @click="remove(index)">删除</Button>
+                <Button type="info" size="small" @click="showDetail(index)">详情</Button>
                </template>
              </Table>
           </div>
@@ -62,6 +62,7 @@ import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
 import logHeader from '@/components/logHeader.vue'
 import "@/assets/less/base.less";
+import expandRow from '@/components/size-expand.vue';
 
 
 export default {
@@ -79,6 +80,17 @@ export default {
         type: 'selection',
         width: 60,
         align: 'center'
+      },
+      {
+        type: 'expand',
+        width: 50,
+        render: (h, params) => {
+            return h(expandRow, {
+                props: {
+                    row: params.row,
+                }
+            })
+        }
       },
       {
         title: '健康',
@@ -119,13 +131,7 @@ export default {
                 h('span', params.row['pri.store.size']+'（'+ params.row['store.size']+'）')
             ]);
         }
-      },
-      // {
-      //     title: '操作',
-      //     slot: 'action',
-      //     width: 150,
-      //     align: 'center'
-      // }
+      }
      ],
      sizeInfo:[],
      traceInfo:[],
@@ -144,7 +150,8 @@ export default {
     }
   },
   components: {
-    logHeader
+    logHeader,
+    expandRow
   },
   methods:{
     closeModal(){

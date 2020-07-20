@@ -8,6 +8,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,12 +53,13 @@ public class RedisLogCollect extends BaseLogCollect {
      * @param userName
      * @param passWord
      */
-    public RedisLogCollect(String redisHost, int redisPort, String redisPassWord, String esHosts, String userName, String passWord) {
+    public RedisLogCollect(String redisHost, int redisPort, String redisPassWord, String esHosts, String userName, String passWord, ApplicationEventPublisher applicationEventPublisher) {
 
         super.elasticLowerClient = ElasticLowerClient.getInstance(esHosts, userName, passWord);
         logger.info("elasticSearch init success!esHosts:{}", esHosts);
         this.redisClient = RedisClient.getInstance(redisHost, redisPort, redisPassWord);
         logger.info("redis init success!redisHost:{} redisPort:{}", redisHost, redisPort);
+        this.applicationEventPublisher = applicationEventPublisher;
 
     }
 
@@ -74,29 +76,38 @@ public class RedisLogCollect extends BaseLogCollect {
 
     private void collectRuningLog() {
         while (true) {
+            List<String> logs = new ArrayList<>();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
-                collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
+            }
+            try {
+                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
+            //发布一个事件
+            publisherMonitorEvent(logs);
+            collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
+
         }
     }
 
     private void collectTraceLog() {
         while (true) {
+            List<String> logs = new ArrayList<>();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
-                List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
-                collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
             } catch (InterruptedException e) {
                 logger.error("", e);
+            }
+            try {
+                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
+            collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
         }
     }
 

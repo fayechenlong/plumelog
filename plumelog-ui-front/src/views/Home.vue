@@ -17,13 +17,22 @@
             <tr>
               <td class="key">应用名称</td>
               <td>
-                <Input class="txt" name="appName" v-model="filter.appName" placeholder="搜索多个请用逗号或空格隔开" :clearable="true" />
+                <AutoComplete
+                  v-model="filter.appName"
+                  :data="appNameComplete"
+                  @on-search="searchAppName"
+                  class="txt txtAppName" 
+                  placeholder="搜索多个请用逗号或空格隔开" 
+                  :clearable="true"
+                  :filter-method="completeFilter">
+                </AutoComplete>
+                <Checkbox v-model="isExclude">排除</Checkbox>
               </td>
             </tr>
             <tr>
               <td class="key">日志等级</td>
               <td>
-                <Select v-model="filter.logLevel" placeholder="请选择日志等级">
+                <Select v-model="filter.logLevel" multiple placeholder="请选择日志等级">
                     <Option value="" key="ALL">所有</Option>
                     <Option value="INFO" key="INFO">INFO</Option>
                     <Option value="ERROR" key="ERROR">ERROR</Option>
@@ -62,28 +71,51 @@
             </tr>
         </table>
 
-        <!-- <Carousel v-model="slideIndex" arrow="never">
+        <Carousel v-model="slideIndex" arrow="never">
           <CarouselItem>
             <div id="myChart" class="chart"></div>
           </CarouselItem>
           <CarouselItem>
               <div id="errorChart" class="chart"></div>
           </CarouselItem>
-        </Carousel> -->
+        </Carousel>
       
         <div style="clear:both"></div>
-        <table class="tbl_filters">
-          <tr>
+        <table class="tbl_filters" style="width:865px">
+            <tr v-if="!useSearchQuery">
               <td class="key">内容</td>
               <td>
-                <Input class="txt" @on-enter="doSearch()" :clearable="true" style="width:711px" placeholder="输入搜索内容" v-model="searchKey" />
+                <Input class="txt" @on-enter="doSearch()" :clearable="true" style="width:605px" placeholder="输入搜索内容" v-model="searchKey" />
+                <a href="javascript:void(0)" @click="useSearchQuery=true" class="link_changeModal">切换为条件模式</a>
+              </td>
+            </tr>
+             <tr v-if="useSearchQuery">
+              <td class="key">条件</td>
+              <td>
+                <Select v-if="searchOptions.length>0" v-model="selectOption" style="width:80px;margin-right:10px">
+                    <Option value="AND" key="AND">AND</Option>
+                    <Option value="OR" key="OR">OR</Option>
+                    <Option value="NOT" key="NOT">NOT</Option>
+                </Select>
+                <Input class="txt" @on-enter="addTag()" :clearable="true" v-model="tag" placeholder="输入搜索条件" style="width:196px;"   />
+                <Button icon="md-add" @click="addTag" style="margin-left:10px">添加</Button>
+                <a href="javascript:void(0)" @click="useSearchQuery=false" class="link_changeModal">切换为内容模式</a>
+              </td>
+            </tr>
+            <tr v-if="useSearchQuery">
+              <td></td>
+              <td>
+                <Tag closable v-for="(tag,index) in searchOptions" @on-close="closeTag(index)" :key="index">
+                  <template v-if="index>0">{{tag.type}}&nbsp;</template>
+                  {{tag.tag}}
+                  </Tag>
               </td>
             </tr>
             <tr>
               <td></td>
-              <td style='padding-top:8px'>
+              <td style='padding-top:8px;text-align:right'>
+                <Button style="margin-right:10px" @click="clear">重置</Button>
                 <Button type="primary" icon="ios-search" @click="doSearch">查询</Button>
-                <Button style="margin-left:10px" @click="clear">重置</Button>
               </td>
             </tr>
         </table>
@@ -162,10 +194,17 @@ export default {
   name: "Home",
   data(){
    return {
+     isSearching:false,
+     tag:"",
+     appNameComplete:[],
+     useSearchQuery:false,
+     selectOption:'AND',
+     isExclude:false,
      slideIndex:0,
      self:this,
      jumpPageIndex:1,
      chartData:[],
+     searchOptions:[],
      showColumnTitles: ['logLevel','serverName','appName','traceId','className'],
      allColumns:[
        {
@@ -310,6 +349,17 @@ export default {
     }
   },
   computed:{
+    searchQuery(){
+      var query="";
+      for(var i=0;i<this.searchOptions.length;i++){
+        var item = this.searchOptions[i];
+        if(i>0){
+          query+=" "+item.type+" ";
+        }
+        query+='"'+item.tag+'"';
+      }
+      return query;
+    },
     showColumns(){
       var columns =[this.columns[0],this.columns[1]];
       for(let title of this.showColumnTitles){
@@ -363,6 +413,7 @@ export default {
       if(!this.list.total && value==0){
         return 0
       }
+      if(value == 0 ) return 0;
       return value || this.list.total
     },
     isShowLastPage(){
@@ -376,6 +427,39 @@ export default {
     }
   },
   methods:{
+    completeFilter(value,option){
+      return option.indexOf(value)==0;
+    },
+    searchAppName(value){
+      if(this.appNameComplete.length==0){
+        axios.post(process.env.VUE_APP_API+'/query?index=plume_log_run_*&from=0&size=5000',{
+          "aggs":{
+              "dataCount":{
+                  "terms":{
+                      "field":"appName"
+                  }
+              }
+          }
+        }).then(data=>{
+        let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
+          return item.key
+        });
+          this.appNameComplete = buckets;
+        })
+      }
+    },
+    closeTag(index){
+      this.searchOptions.splice(index,1);
+    },
+    addTag(){
+      if(this.tag){
+        this.searchOptions.push({
+          type:this.selectOption,
+          tag:this.tag
+        })
+        this.tag="";
+      }
+    },
     columnsChange(){
       this.list.hists = _.clone(this.list.hists);
       localStorage['cache_showColumnTitles'] = JSON.stringify(this.showColumnTitles);
@@ -476,7 +560,7 @@ export default {
             },
             tooltip: {
               formatter(p,ticket){
-                return '时间：'+p.name+'<br/>错误率：'+p.value*100+'%'
+                return '时间：'+p.name+'<br/>错误率：'+parseInt(p.value*100)+'%'
               },
               extraCssText:'text-align:left'
             },
@@ -514,21 +598,43 @@ export default {
       let date=[];
       for(let itemKey in this.filter)
       {
-        if(this.filter[itemKey]){
-           filters.push({
-            "match_phrase":{
-              [itemKey]:{
-                "query":this.filter[itemKey].replace(/,/g,' ')
-              }
+        if(this.isExclude && itemKey == 'appName'){
+          continue;
+        }
+        else if(this.filter[itemKey]){
+
+          let _data = this.filter[itemKey];
+          let query = '';
+          //判断是否是数组
+          if(Array.isArray(_data)){
+           query=_data.join(',');
+            if(query){
+               filters.push({
+                "query_string":{
+                  "query":query,
+                  "default_field": itemKey
+                }
+              })
             }
-          })
+          }
+          else
+          {
+            query = _data.replace(/,/g,' ');
+            filters.push({
+              "match_phrase":{
+                [itemKey]:{
+                  "query":query
+                }
+              }
+            })
+          }
         }
       }
 
-      if(this.searchKey){
+      if((this.searchQuery && this.useSearchQuery) || (this.searchKey && !this.useSearchQuery)){
         filters.push({
             "query_string":{
-              "query": this.searchKey,
+              "query": this.useSearchQuery ? this.searchQuery : this.searchKey,
               "default_field": "content"
             }
           })
@@ -571,14 +677,25 @@ export default {
     },
     doSearch(keyName,item){
 
+
+      if(this.isSearching){
+        return false;
+      }
+
       if(keyName && item){
-        this.filter[keyName] = item[keyName]
+
+        if(keyName == 'appName' && this.isExclude && this.filter[keyName]){
+          this.filter[keyName]+=','+item[keyName]
+        }
+        else
+        {
+          this.filter[keyName] = item[keyName]
+        }
       }
 
       //列出范围内的日期
       let dateList=[];
       let startDate = _.clone(new Date(this.dateTimeRange[0]));
-
       let shouldFilter = this.getShouldFilter();
       
       if(startDate){
@@ -604,6 +721,22 @@ export default {
         }
       };
 
+      if(this.isExclude && this.filter['appName']){
+
+        let mustNotArr=[];
+        for(let appName of this.filter['appName'].split(',')){
+          mustNotArr.push({
+              "match_phrase":{
+                  'appName':{
+                    "query":appName.replace(/,/g,' ')
+                  }
+                }
+            })
+        }
+
+        query.query.bool['must_not']=mustNotArr;
+      }
+
       let esFilter = {
         ...query,
         "highlight": {
@@ -617,8 +750,9 @@ export default {
       this.$Loading.start();
       
       let searchUrl = url+'&size='+this.size+"&from="+this.from;
+      this.isSearching = true;
       axios.post(searchUrl,esFilter).then(data=>{
-        
+        this.isSearching = false;
         this.$Loading.finish();
         let _searchData = _.get(data,'data.hits',{
           total:0,
@@ -657,15 +791,15 @@ export default {
         }
       }
 
-      // axios.post(process.env.VUE_APP_API+'/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
-      //   this.chartData = _.get(data,'data.aggregations.2.buckets',[]);
-      //   this.drawLine();
-      // })
+      axios.post(process.env.VUE_APP_API+'/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
+        this.chartData = _.get(data,'data.aggregations.2.buckets',[]);
+        this.drawLine();
+      })
 
-      // this.getErrorRate(dateList).then(data=>{
-      //   console.log('errorData',data)
-      //   this.drawErrorLine(data)
-      // });
+      this.getErrorRate(dateList).then(data=>{
+        console.log('errorData',data)
+        this.drawErrorLine(data)
+      });
     },
     getErrorRate(dateList){
         let startDate=new Date(this.dateTimeRange[0]);
@@ -784,6 +918,32 @@ export default {
       {
         this.doSearch();
       }
+    },
+    init(){
+      let titles = localStorage['cache_showColumnTitles'];
+      if(titles){
+        this.showColumnTitles = JSON.parse(titles)
+      }
+      
+      if(this.$route.query.appName){
+        this.filter['appName'] = this.$route.query.appName;
+      }
+      if(this.$route.query.className){
+        this.filter['className'] = this.$route.query.className;
+      }
+      if(this.$route.query.logLevel){
+        this.filter['logLevel'] = [this.$route.query.logLevel];
+      }
+      if(this.$route.query.time){
+        let times = this.$route.query.time.split(',');
+        if(times.length>1){
+          this.dateTimeRange = [moment(parseInt(times[0])).format('YYYY-MM-DD HH:mm:ss'),moment(parseInt(times[1])).format('YYYY-MM-DD HH:mm:ss')]
+          this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
+        }
+      }
+      setTimeout(()=>{
+        this.doSearch();
+      },100)
     }
   },
   watch:{
@@ -797,12 +957,11 @@ export default {
       deep:true
     }
   },
+  activated(){
+   this.init();
+  },
   mounted(){
-    let titles = localStorage['cache_showColumnTitles'];
-    if(titles){
-      this.showColumnTitles = JSON.parse(titles)
-    }
-    this.doSearch();
+    //this.init();
   }
 };
 </script>
@@ -920,8 +1079,8 @@ export default {
   {
     position: absolute;
      top: 20px;
-      left: 900px;
-      width: calc(100% - 900px);
+      right: 10px;
+      width: calc(100% - 1000px);
       min-width: 300px;
       height: 300px;
   }
