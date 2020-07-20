@@ -48,9 +48,6 @@ public class ClientConfig {
         if (StringUtils.isEmpty(esHosts)) {
             return null;
         }
-        if (StringUtils.isEmpty(esUserName)) {
-            return null;
-        }
         return ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord);
     }
 }
