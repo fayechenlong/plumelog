@@ -17,7 +17,7 @@
             <tr>
               <td class="key">应用名称</td>
               <td>
-                <AutoComplete
+                <!-- <AutoComplete
                   v-model="filter.appName"
                   :data="appNameComplete"
                   @on-search="searchAppName"
@@ -25,7 +25,16 @@
                   placeholder="搜索多个请用逗号或空格隔开" 
                   :clearable="true"
                   :filter-method="completeFilter">
-                </AutoComplete>
+                </AutoComplete> -->
+                <Select v-model="filter.appNames" 
+                        class="txt txtAppName" 
+                        filterable 
+                        multiple 
+                        allow-create
+                        :loading="completeFilterLoading"
+                >
+                    <Option v-for="item in appNameComplete" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                </Select>
                 <Checkbox v-model="isExclude">排除</Checkbox>
               </td>
             </tr>
@@ -113,9 +122,9 @@
             </tr>
             <tr>
               <td></td>
-              <td style='padding-top:8px;text-align:right'>
-                <Button style="margin-right:10px" @click="clear">重置</Button>
-                <Button type="primary" icon="ios-search" @click="doSearch">查询</Button>
+              <td style='padding-top:8px;'>
+                <Button type="primary" icon="ios-search" style="margin-right:10px" @click="doSearch">查询</Button>
+                <Button  @click="clear">重置</Button>
               </td>
             </tr>
         </table>
@@ -196,6 +205,7 @@ export default {
    return {
      isSearching:false,
      tag:"",
+     completeFilterLoading:false,
      appNameComplete:[],
      useSearchQuery:false,
      selectOption:'AND',
@@ -430,8 +440,9 @@ export default {
     completeFilter(value,option){
       return option.indexOf(value)==0;
     },
-    searchAppName(value){
+    searchAppName(){
       if(this.appNameComplete.length==0){
+        this.completeFilterLoading = true;
         axios.post(process.env.VUE_APP_API+'/query?index=plume_log_run_*&from=0&size=5000',{
           "aggs":{
               "dataCount":{
@@ -441,9 +452,14 @@ export default {
               }
           }
         }).then(data=>{
-        let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
-          return item.key
-        });
+          this.completeFilterLoading = false;
+          let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
+            //return item.key
+            return {
+              label:item.key,
+              value:item.value
+            }
+          });
           this.appNameComplete = buckets;
         })
       }
@@ -797,7 +813,6 @@ export default {
       })
 
       this.getErrorRate(dateList).then(data=>{
-        console.log('errorData',data)
         this.drawErrorLine(data)
       });
     },
@@ -943,6 +958,7 @@ export default {
       }
       setTimeout(()=>{
         this.doSearch();
+        this.searchAppName();
       },100)
     }
   },
