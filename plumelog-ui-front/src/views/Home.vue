@@ -419,12 +419,7 @@ export default {
       }
     },
     totalCount(){
-      let value = _.get(this.list,'total.value',0)
-      if(!this.list.total && value==0){
-        return 0
-      }
-      if(value == 0 ) return 0;
-      return value || this.list.total
+      return _.get(this.list,'total.value',_.get(this.list,'total',0))
     },
     isShowLastPage(){
       return this.from > 0 
