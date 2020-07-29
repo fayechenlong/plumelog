@@ -268,7 +268,7 @@ export default {
             {
               _array.push({
                 key,
-                doc_count:(_errorCount/_totalCount).toFixed(2)
+                doc_count:(_errorCount/_totalCount).toFixed(4)
               })
             }
           }
@@ -332,6 +332,7 @@ export default {
       })
 
       this.getErrorRate().then(data=>{
+        console.log(data);
         this.draw(data,{
           chartId:'chart_errorRate',
           title: {

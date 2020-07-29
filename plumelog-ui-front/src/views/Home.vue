@@ -17,7 +17,7 @@
             <tr>
               <td class="key">应用名称</td>
               <td>
-                <!-- <AutoComplete
+                <AutoComplete
                   v-model="filter.appName"
                   :data="appNameComplete"
                   @on-search="searchAppName"
@@ -25,15 +25,15 @@
                   placeholder="搜索多个请用逗号或空格隔开" 
                   :clearable="true"
                   :filter-method="completeFilter">
-                </AutoComplete> -->
-                <Select v-model="filter.appNames" 
+                </AutoComplete>
+                <!-- <Select v-model="filter.appNames" 
                         class="txt txtAppName" 
                         filterable  
                         allow-create
                         :loading="completeFilterLoading"
                 >
                     <Option v-for="item in appNameComplete" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                </Select>
+                </Select> -->
                 <Checkbox v-model="isExclude">排除</Checkbox>
               </td>
             </tr>
@@ -448,11 +448,11 @@ export default {
         }).then(data=>{
           this.completeFilterLoading = false;
           let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
-            //return item.key
-            return {
-              label:item.key,
-              value:item.value
-            }
+            return item.key
+            // return {
+            //   label:item.key,
+            //   value:item.value
+            // }
           });
           this.appNameComplete = buckets;
         })
@@ -899,7 +899,7 @@ export default {
               {
                 _array.push({
                   key,
-                  doc_count:(_errorCount/_totalCount).toFixed(2)
+                  doc_count:(_errorCount/_totalCount).toFixed(4)
                 })
               }
             }
