@@ -28,8 +28,7 @@
                 </AutoComplete> -->
                 <Select v-model="filter.appNames" 
                         class="txt txtAppName" 
-                        filterable 
-                        multiple 
+                        filterable  
                         allow-create
                         :loading="completeFilterLoading"
                 >
