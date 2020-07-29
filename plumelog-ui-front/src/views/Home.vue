@@ -444,6 +444,8 @@ export default {
                   }
               }
           }
+        },{
+          timeout:30000
         }).then(data=>{
           this.completeFilterLoading = false;
           let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
