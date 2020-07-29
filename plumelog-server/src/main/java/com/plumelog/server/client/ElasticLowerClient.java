@@ -159,8 +159,6 @@ public class ElasticLowerClient {
 
     private void creatFieldData(String baseIndex, String field, String type) {
 
-        //String ent = "{\"properties\":{\"" + field + "\":{\"type\":\"text\",\"fielddata\":true,\"fields\": {\"raw\": {\"type\": \"keyword\"}}}}} ";
-
         String ent = "{\"properties\":{\"" + field + "\":{\"type\":\"keyword\"}}} ";
         String endpoint = "";
         if (StringUtils.isEmpty(type)) {
