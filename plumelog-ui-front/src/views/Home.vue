@@ -20,7 +20,6 @@
                 <AutoComplete
                   v-model="filter.appName"
                   :data="appNameComplete"
-                  @on-search="searchAppName"
                   class="txt txtAppName" 
                   placeholder="搜索多个请用逗号或空格隔开" 
                   :clearable="true"
