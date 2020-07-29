@@ -570,7 +570,7 @@ export default {
             },
             tooltip: {
               formatter(p,ticket){
-                return '时间：'+p.name+'<br/>错误率：'+parseInt(p.value*100)+'%'
+                return '时间：'+p.name+'<br/>错误率：'+p.value*100+'%'
               },
               extraCssText:'text-align:left'
             },
