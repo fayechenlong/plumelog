@@ -178,15 +178,15 @@ public class MainController {
         return result;
     }
     @RequestMapping({"/addExtendfield", "/plumelog/addExtendfield"})
-    public Object addExtendfield(String appName,String field) {
-        redisClient.hset(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, UUID.randomUUID().toString(),field);
+    public Object addExtendfield(String appName,String field,String fieldName) {
+        redisClient.hset(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, field,fieldName);
         Map<String, Object> result = new HashMap<>();
         result.put("success",true);
         return result;
     }
     @RequestMapping({"/delExtendfield", "/plumelog/delExtendfield"})
-    public Object delExtendfield(String appName,String fieldid) {
-        redisClient.hdel(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, fieldid);
+    public Object delExtendfield(String appName,String field) {
+        redisClient.hdel(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, field);
         Map<String, Object> result = new HashMap<>();
         result.put("success",true);
         return result;
