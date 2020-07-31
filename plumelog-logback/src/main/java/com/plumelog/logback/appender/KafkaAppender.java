@@ -6,6 +6,7 @@ import ch.qos.logback.core.AppenderBase;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
+import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.logback.util.LogMessageUtil;
@@ -47,7 +48,12 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(ILoggingEvent event) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        MessageAppenderFactory.push(logMessage, kafkaClient,"plume.log.ack");
+        final String message=LogMessageUtil.getLogMessage(logMessage,event);
+        if(logMessage instanceof RunLogMessage){
+            MessageAppenderFactory.push(LogMessageConstant.LOG_KEY,message, kafkaClient, "plume.log.ack");
+        }else {
+            MessageAppenderFactory.push(logMessage, kafkaClient, "plume.log.ack");
+        }
     }
     @Override
     public void start() {

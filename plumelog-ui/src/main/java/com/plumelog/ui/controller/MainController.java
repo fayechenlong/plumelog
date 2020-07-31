@@ -22,10 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * className：MainController
@@ -147,6 +144,44 @@ public class MainController {
     @RequestMapping({"/deleteWarningRule", "/plumelog/deleteWarningRule"})
     public Object deleteWarningRule(String id) {
         redisClient.hdel(LogMessageConstant.WARN_RULE_KEY,id);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success",true);
+        return result;
+    }
+
+
+
+    @RequestMapping({"/getAppNameList", "/plumelog/getAppNameList"})
+    public Object getAppNameList() {
+        Map<String,String> map=redisClient.hgetAll(LogMessageConstant.EXTEND_APP_KEY);
+        return map;
+    }
+    @RequestMapping({"/addAppName", "/plumelog/addAppName"})
+    public Object addAppName(String appName) {
+        redisClient.hset(LogMessageConstant.EXTEND_APP_KEY, UUID.randomUUID().toString(),appName);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success",true);
+        return result;
+    }
+    @RequestMapping({"/delAppName", "/plumelog/delAppName"})
+    public Object delAppName(String id) {
+        String appName=redisClient.hget(LogMessageConstant.EXTEND_APP_KEY, id);
+        redisClient.hdel(LogMessageConstant.EXTEND_APP_KEY, id);
+        redisClient.del(LogMessageConstant.EXTEND_APP_MAP_KEY+appName);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success",true);
+        return result;
+    }
+    @RequestMapping({"/addExtendfield", "/plumelog/addExtendfield"})
+    public Object addExtendfield(String appName,String field) {
+        redisClient.hset(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, UUID.randomUUID().toString(),field);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success",true);
+        return result;
+    }
+    @RequestMapping({"/delExtendfield", "/plumelog/delExtendfield"})
+    public Object delExtendfield(String appName,String fieldid) {
+        redisClient.hdel(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, fieldid);
         Map<String, Object> result = new HashMap<>();
         result.put("success",true);
         return result;

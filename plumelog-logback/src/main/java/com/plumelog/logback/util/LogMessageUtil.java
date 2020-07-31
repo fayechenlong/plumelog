@@ -10,11 +10,18 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.DateUtil;
+import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
 import org.slf4j.helpers.MessageFormatter;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * className：TraceAspect
@@ -35,6 +42,21 @@ public class LogMessageUtil {
             }
         }
         return traceId;
+    }
+
+    /**
+     * 扩展字段
+     * @param baseLogMessage
+     * @param iLoggingEvent
+     * @return
+     */
+    public static String getLogMessage(BaseLogMessage baseLogMessage,final ILoggingEvent iLoggingEvent){
+        Map<String, String> mdc= iLoggingEvent.getMDCPropertyMap();
+        Map<String, Object> map=GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage),Map.class);
+        if(mdc!=null) {
+            map.putAll(mdc);
+        }
+        return GfJsonUtil.toJSONString(map);
     }
 
     public static BaseLogMessage getLogMessage(final String appName, final ILoggingEvent iLoggingEvent) {

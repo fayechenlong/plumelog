@@ -5,6 +5,7 @@ import ch.qos.logback.core.AppenderBase;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
+import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.logback.util.LogMessageUtil;
 
@@ -55,8 +56,13 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        MessageAppenderFactory.push(logMessage, redisClient, "plume.log.ack");
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
+        final String message=LogMessageUtil.getLogMessage(logMessage,event);
+        if(logMessage instanceof RunLogMessage){
+            MessageAppenderFactory.push(LogMessageConstant.LOG_KEY,message, redisClient, "plume.log.ack");
+        }else {
+            MessageAppenderFactory.push(logMessage, redisClient, "plume.log.ack");
+        }
     }
 
     @Override

@@ -99,4 +99,29 @@ public class MessageAppenderFactory {
             }
         });
     }
+
+    public static void push(String redisKey,String baseLogMessage, AbstractClient client, String logOutPutKey) {
+
+        threadPoolExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                logOutPut = cache.getIfPresent(logOutPutKey);
+                if (logOutPut == null || logOutPut) {
+                    try {
+                        client.pushMessage(redisKey, baseLogMessage);
+                        //写入成功重置异常数量
+                        logOutPut = true;
+                        exceptionCount = 0;
+                        cache.put(logOutPutKey, true);
+                    } catch (LogQueueConnectException e) {
+                        exceptionCount++;
+                        if (exceptionCount > maxExceptionCount) {
+                            cache.put(logOutPutKey, false);
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+    }
 }

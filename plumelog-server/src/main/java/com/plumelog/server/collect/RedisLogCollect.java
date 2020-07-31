@@ -82,7 +82,7 @@ public class RedisLogCollect extends BaseLogCollect {
     private void collect(List<String> logs, String index) {
         if (logs.size() > 0) {
             logs.forEach(log -> {
-                logger.debug("get log:" + log);
+                logger.info("get log:" + log);
                 super.logList.add(log);
             });
             if (super.logList.size() > 0) {

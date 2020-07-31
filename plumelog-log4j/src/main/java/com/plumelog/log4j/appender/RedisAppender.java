@@ -1,6 +1,7 @@
 package com.plumelog.log4j.appender;
 
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.log4j.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.dto.BaseLogMessage;
@@ -58,8 +59,13 @@ public class RedisAppender extends AppenderSkeleton {
                     LogMessageConstant.REDIS_DEFAULT_PORT
                     : Integer.parseInt(this.redisPort), this.redisAuth);
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
-        MessageAppenderFactory.push(logMessage, redisClient, "plume.log.ack");
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, loggingEvent);
+        final String message=LogMessageUtil.getLogMessage(logMessage,loggingEvent);
+        if(logMessage instanceof RunLogMessage){
+            MessageAppenderFactory.push(LogMessageConstant.LOG_KEY,message, redisClient, "plume.log.ack");
+        }else {
+            MessageAppenderFactory.push(logMessage, redisClient, "plume.log.ack");
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.plumelog.log4j2.appender;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
+import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
 import com.plumelog.log4j2.util.LogMessageUtil;
 import org.apache.logging.log4j.core.Filter;
@@ -43,11 +44,13 @@ public class KafkaAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent logEvent) {
-        if (kafkaClient == null) {
-            kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, logEvent);
+        final String message=LogMessageUtil.getLogMessage(logMessage,logEvent);
+        if(logMessage instanceof RunLogMessage){
+            MessageAppenderFactory.push(LogMessageConstant.LOG_KEY,message, kafkaClient, "plume.log.ack");
+        }else {
+            MessageAppenderFactory.push(logMessage, kafkaClient, "plume.log.ack");
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, logEvent);
-        MessageAppenderFactory.push(logMessage, kafkaClient, "plume.log.ack");
 
     }
 
