@@ -31,9 +31,16 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+        <appName>plumelog_server</appName>
+        <redisHost>r-bp1132b8856581c4pd.redis.rds.aliyuncs.com</redisHost>
+        <redisPort>16379</redisPort>
+        <redisAuth>!jkl1234</redisAuth>
+    </appender>
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
+<!--        <appender-ref ref="plumelog" />-->
     </root>
 </configuration>

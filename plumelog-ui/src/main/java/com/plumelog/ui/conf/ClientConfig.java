@@ -19,15 +19,15 @@ import org.springframework.util.StringUtils;
 @Configuration
 public class ClientConfig {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ClientConfig.class);
-    @Value("${es.esHosts}")
+    @Value("${plumelog.es.esHosts}")
     private String esHosts;
-    @Value("${es.userName:}")
+    @Value("${plumelog.es.userName:}")
     private String userName;
-    @Value("${es.passWord:}")
+    @Value("${plumelog.es.passWord:}")
     private String passWord;
-    @Value("${plumelog.server.redis.redisHost:127.0.0.1:6379}")
+    @Value("${plumelog.redis.redisHost:127.0.0.1:6379}")
     private String redisHost;
-    @Value("${plumelog.server.redis.redisPassWord:}")
+    @Value("${plumelog.redis.redisPassWord:}")
     private String redisPassWord;
 
 

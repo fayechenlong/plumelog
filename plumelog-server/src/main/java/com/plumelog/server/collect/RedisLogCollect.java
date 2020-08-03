@@ -45,6 +45,11 @@ public class RedisLogCollect extends BaseLogCollect {
     private void collectRuningLog() {
         while (true) {
             List<String> logs = new ArrayList<>();
+            if(logger.isDebugEnabled()){
+                logs.forEach(log->{
+                    logger.debug(log);
+                });
+            }
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -55,16 +60,19 @@ public class RedisLogCollect extends BaseLogCollect {
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
+            super.sendLog(super.getRunLogIndex(), logs);
             //发布一个事件
             publisherMonitorEvent(logs);
-            collect(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
-
         }
     }
-
     private void collectTraceLog() {
         while (true) {
             List<String> logs = new ArrayList<>();
+            if(logger.isDebugEnabled()){
+                logs.forEach(log->{
+                    logger.debug(log);
+                });
+            }
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -75,37 +83,7 @@ public class RedisLogCollect extends BaseLogCollect {
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
-            collectTrace(logs, LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD));
-        }
-    }
-
-    private void collect(List<String> logs, String index) {
-        if (logs.size() > 0) {
-            logs.forEach(log -> {
-                logger.info("get log:" + log);
-                super.logList.add(log);
-            });
-            if (super.logList.size() > 0) {
-                List<String> logList = new ArrayList();
-                logList.addAll(super.logList);
-                super.logList.clear();
-                super.sendLog(index, logList);
-            }
-        }
-    }
-
-    private void collectTrace(List<String> logs, String index) {
-        if (logs.size() > 0) {
-            logs.forEach(log -> {
-                logger.debug("get log:" + log);
-                super.traceLogList.add(log);
-            });
-            if (super.traceLogList.size() > 0) {
-                List<String> logList = new ArrayList();
-                logList.addAll(super.traceLogList);
-                super.traceLogList.clear();
-                super.sendTraceLogList(index, logList);
-            }
+            super.sendTraceLogList(super.getTraceLogIndex(), logs);
         }
     }
 }

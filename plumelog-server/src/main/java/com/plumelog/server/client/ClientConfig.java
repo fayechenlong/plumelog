@@ -24,33 +24,33 @@ import org.springframework.util.StringUtils;
 @Configuration
 public class ClientConfig implements InitializingBean {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
-    @Value("${plumelog.server.model:redis}")
+    @Value("${plumelog.model:redis}")
     private String model;
-    @Value("${plumelog.server.kafka.kafkaHosts:}")
+    @Value("${plumelog.kafka.kafkaHosts:}")
     private String kafkaHosts;
-    @Value("${plumelog.server.es.esHosts:}")
+    @Value("${plumelog.es.esHosts:}")
     private String esHosts;
-    @Value("${plumelog.server.es.indexType:}")
+    @Value("${plumelog.es.indexType:}")
     private String indexType;
-    @Value("${plumelog.server.es.userName:}")
+    @Value("${plumelog.es.userName:}")
     private String esUserName;
-    @Value("${plumelog.server.es.passWord:}")
+    @Value("${plumelog.es.passWord:}")
     private String esPassWord;
-    @Value("${plumelog.server.redis.redisHost:127.0.0.1:6379}")
+    @Value("${plumelog.redis.redisHost:127.0.0.1:6379}")
     private String redisHost;
-    @Value("${plumelog.server.redis.redisPassWord:}")
+    @Value("${plumelog.redis.redisPassWord:}")
     private String redisPassWord;
-    @Value("${plumelog.server.maxSendSize:5000}")
+    @Value("${plumelog.maxSendSize:5000}")
     public int maxSendSize = 5000;
-    @Value("${plumelog.server.interval:100}")
+    @Value("${plumelog.interval:100}")
     public int interval = 100;
-    @Value("${plumelog.server.kafka.kafkaGroupName:logConsumer}")
+    @Value("${plumelog.kafka.kafkaGroupName:logConsumer}")
     public String kafkaGroupName = "logConsumer";
-    @Value("${plumelog.server.rest.restUrl:}")
+    @Value("${plumelog.rest.restUrl:}")
     private String restUrl;
-    @Value("${plumelog.server.rest.restUserName:}")
+    @Value("${plumelog.rest.restUserName:}")
     private String restUserName;
-    @Value("${plumelog.server.rest.restPassWord:}")
+    @Value("${plumelog.rest.restPassWord:}")
     private String restPassWord;
 
 
