@@ -5,12 +5,10 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.client.PlumeRestClient;
-import com.plumelog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
