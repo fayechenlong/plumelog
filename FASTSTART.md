@@ -15,49 +15,66 @@
     
    3.下载安装包，plumelog-ui和plumelog-server 下载地址：https://gitee.com/frankchenlong/plumelog/releases
    
+   备注：3.1版本以后UI和server合并，plumelog-ui这个项目可以不用部署
+   
    4.配置plumelog-server，并启动
    
    配置文件 plumelog-server/application.properties 详解：
 
 ```properties
-    #值为4种 redis,kafka,rest,restServer
-    #redis 表示用redis当队列
-    #kafka 表示用kafka当队列
-    #rest 表示从rest接口取日志
-    #restServer 表示作为rest接口服务器启动
-    plumelog.model=redis
-    
-    #如果使用kafka,启用下面配置
-    #plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
-    #plumelog.kafka.kafkaGroupName=logConsumer
-    
-     #redis配置,3.0版本必须配置redis地址，因为需要监控报警
-    plumelog.redis.redisHost=172.16.249.72:6379
-    #如果使用redis有密码,启用下面配置
-    #plumelog.redis.redisPassWord=123456
-    
-    #如果使用rest,启用下面配置
-    #plumelog.rest.restUrl=http://127.0.0.1:8891/getlog
-    #plumelog.rest.restUserName=plumelog
-    #plumelog.rest.restPassWord=123456
-    
-    #elasticsearch相关配置
-    plumelog.es.esHosts=172.16.251.196:9200
-    #ES7.*已经去除了索引type字段，所以如果是es7不用配置这个，7.*以下不配置这个会报错
-    plumelog.es.indexType=plumelog
-    #ES设置密码,启用下面配置
-    #plumelog.es.userName=elastic
-    #plumelog.es.passWord=plumelog123456
-    
-    #单次拉取日志条数
-    plumelog.maxSendSize=5000
-    #拉取时间间隔，kafka不生效
-    plumelog.interval=1000
-
-    #plumelog-ui的地址 如果不配置，报警信息里不可以点连接
-    plumelog.ui.url=http://10.33.102.70:8080
+   spring.application.name=plumelog_server
+   server.port=8891
+   spring.thymeleaf.mode=LEGACYHTML5
+   spring.mvc.view.prefix=classpath:/templates/
+   spring.mvc.view.suffix=.html
+   spring.mvc.static-path-pattern=/plumelog/**
+   
+   #值为4种 redis,kafka,rest,restServer
+   #redis 表示用redis当队列
+   #kafka 表示用kafka当队列
+   #rest 表示从rest接口取日志
+   #restServer 表示作为rest接口服务器启动
+   #ui 表示单独作为ui启动
+   plumelog.model=redis
+   
+   #如果使用kafka,启用下面配置
+   #plumelog.kafka.kafkaHosts=127.0.0.1:9092,127.0.0.1:9092,127.0.0.1:9092
+   #plumelog.kafka.kafkaGroupName=logConsumer
+   
+   #redis配置,3.0版本必须配置redis地址，因为需要监控报警
+   plumelog.redis.redisHost=127.0.0.1:6379
+   #如果使用redis有密码,启用下面配置
+   plumelog.redis.redisPassWord=!jkl1234
+   
+   #如果使用rest,启用下面配置
+   #plumelog.rest.restUrl=http://127.0.0.1:8891/getlog
+   #plumelog.rest.restUserName=plumelog
+   #plumelog.rest.restPassWord=123456
+   
+   #elasticsearch相关配置
+   plumelog.es.esHosts=127.0.0.1:9200
+   #ES7.*已经去除了索引type字段，所以如果是es7不用配置这个，7.*以下不配置这个会报错
+   #plumelog.es.indexType=plumelog
+   #ES设置密码,启用下面配置
+   plumelog.es.userName=elastic
+   plumelog.es.passWord=123456
+   
+   #单次拉取日志条数
+   plumelog.maxSendSize=5000
+   #拉取时间间隔，kafka不生效
+   plumelog.interval=1000
+   
+   #plumelog-ui的地址 如果不配置，报警信息里不可以点连接
+   plumelog.ui.url=http://127.0.0.1:8080
+   
+   #管理密码，手动删除日志的时候需要输入的密码
+   admin.password=123456
+   #日志保留天数,配置0或者不配置默认永久保留
+   admin.log.keepDays=15
 ```       
-   5.配置plume-ui,并启动，默认端口8989
+   5.配置plume-ui（3.1后合并到server）,并启动，默认端口8989
+   
+   备注：3.1版本以后UI和server合并，这个项目可以不用部署
    
    配置文件 plumelog-ui/application.properties 详解：
    
@@ -71,13 +88,13 @@
     
     
     #elasticsearch地址
-    plumelog.es.esHosts=172.16.251.196:9200
+    plumelog.es.esHosts=127.0.0.1:9200
     #ES如果有密码,启用下面配置
     #plumelog.es.userName=elastic
     #plumelog.es.passWord=easylog123456
 
     #redis配置,3.0版本必须配置redis地址，因为需要监控报警
-    plumelog.server.redis.redisHost=172.16.247.69:6380
+    plumelog.server.redis.redisHost=127.0.0.1:6379
     #如果使用redis有密码,启用下面配置
     #plumelog.server.redis.redisPassWord=123456
 
