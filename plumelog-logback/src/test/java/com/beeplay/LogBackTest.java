@@ -1,9 +1,13 @@
 package com.beeplay;
 
 import com.plumelog.core.TraceId;
+import com.plumelog.core.util.DateUtil;
+import com.plumelog.core.util.IdWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class LogBackTest {
@@ -13,8 +17,12 @@ public class LogBackTest {
      */
     public static void main(String[] args) {
 
-        TraceId.logTraceID.set(UUID.randomUUID().toString());
-        logger.info("{}","I am log name:"+UUID.randomUUID().toString());
-        logger.info("{}","I am log name:"+UUID.randomUUID().toString());
+        for(int a=0;a<100000;a++) {
+            TraceId.logTraceID.set(UUID.randomUUID().toString().replace("-", ""));
+            MDC.put("orderid", "1");
+            MDC.put("userid", "4");
+            MDC.put("sheis", "3");
+            logger.info("{}{}", "tongji",a);
+        }
     }
 }

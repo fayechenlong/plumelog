@@ -45,11 +45,7 @@ public class RedisLogCollect extends BaseLogCollect {
     private void collectRuningLog() {
         while (true) {
             List<String> logs = new ArrayList<>();
-            if(logger.isDebugEnabled()){
-                logs.forEach(log->{
-                    logger.debug(log);
-                });
-            }
+
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -57,6 +53,11 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
+                if(logger.isDebugEnabled()){
+                logs.forEach(log->{
+                    logger.debug(log);
+                });
+                }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
@@ -68,11 +69,7 @@ public class RedisLogCollect extends BaseLogCollect {
     private void collectTraceLog() {
         while (true) {
             List<String> logs = new ArrayList<>();
-            if(logger.isDebugEnabled()){
-                logs.forEach(log->{
-                    logger.debug(log);
-                });
-            }
+
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -80,6 +77,11 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
+                if(logger.isDebugEnabled()){
+                    logs.forEach(log->{
+                        logger.debug(log);
+                    });
+                }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }

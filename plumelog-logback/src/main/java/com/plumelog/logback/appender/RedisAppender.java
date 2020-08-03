@@ -7,7 +7,11 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.redis.RedisClient;
+import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.logback.util.LogMessageUtil;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * className：RedisAppender
@@ -25,6 +29,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private String redisAuth;
     private String runModel;
     private String expand;
+    private int maxCount=100;
 
     public String getExpand() {
         return expand;
@@ -54,17 +59,22 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         this.runModel = runModel;
     }
 
+    public void setMaxCount(int maxCount) {
+        this.maxCount = maxCount;
+    }
+
     @Override
     protected void append(ILoggingEvent event) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
-        final String message=LogMessageUtil.getLogMessage(logMessage,event);
-        if(logMessage instanceof RunLogMessage){
-            MessageAppenderFactory.push(LogMessageConstant.LOG_KEY,message, redisClient, "plume.log.ack");
-        }else {
-            MessageAppenderFactory.push(logMessage, redisClient, "plume.log.ack");
+        if (logMessage instanceof RunLogMessage) {
+            final String message = LogMessageUtil.getLogMessage(logMessage, event);
+            MessageAppenderFactory.pushRundataQueue(message);
+        } else {
+            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
-
+    private static ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool();
     @Override
     public void start() {
         super.start();
@@ -80,6 +90,18 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
                             LogMessageConstant.REDIS_DEFAULT_PORT
                             : Integer.parseInt(this.redisPort),
                     this.redisAuth);
+        }
+
+        for(int a=0;a<5;a++){
+
+            threadPoolExecutor.execute(()->{
+
+                MessageAppenderFactory.startRunLog(redisClient,maxCount);
+            });
+            threadPoolExecutor.execute(()->{
+
+                MessageAppenderFactory.startTraceLog(redisClient,maxCount);
+            });
         }
     }
 }

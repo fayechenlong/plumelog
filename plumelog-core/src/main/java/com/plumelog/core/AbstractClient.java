@@ -19,7 +19,7 @@ public abstract class AbstractClient {
 
     public void pushMessage(String key, String strings) throws LogQueueConnectException {
     }
-
+    public void putMessageList(String key, List<String> list) throws LogQueueConnectException{}
     public static AbstractClient getClient() {
         return client;
     }

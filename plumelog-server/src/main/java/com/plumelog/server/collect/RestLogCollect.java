@@ -50,11 +50,7 @@ public class RestLogCollect extends BaseLogCollect {
     private void collectRuningLog() {
         while (true) {
             List<String> logs = new ArrayList<>();
-            if(logger.isDebugEnabled()){
-                logs.forEach(log->{
-                    logger.debug(log);
-                });
-            }
+
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -62,6 +58,11 @@ public class RestLogCollect extends BaseLogCollect {
             }
             try {
                 logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
+                if(logger.isDebugEnabled()){
+                    logs.forEach(log->{
+                        logger.debug(log);
+                    });
+                }
             } catch (Exception e) {
                 logger.error("从plumelog-server拉取日志失败！", e);
             }
@@ -74,11 +75,6 @@ public class RestLogCollect extends BaseLogCollect {
     private void collectTraceLog() {
         while (true) {
             List<String> logs = new ArrayList<>();
-            if(logger.isDebugEnabled()){
-                logs.forEach(log->{
-                    logger.debug(log);
-                });
-            }
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -86,6 +82,11 @@ public class RestLogCollect extends BaseLogCollect {
             }
             try {
                 logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
+                if(logger.isDebugEnabled()){
+                    logs.forEach(log->{
+                        logger.debug(log);
+                    });
+                }
             } catch (Exception e) {
                 logger.error("从plumelog-server队列拉取日志失败！", e);
             }

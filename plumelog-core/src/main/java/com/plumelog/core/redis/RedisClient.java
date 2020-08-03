@@ -122,7 +122,8 @@ public class RedisClient extends AbstractClient {
         return obj;
     }
 
-    public void putMessageList(String key, List<String> list) {
+    @Override
+    public void putMessageList(String key, List<String> list) throws LogQueueConnectException{
         Jedis sj = jedisPool.getResource();
         try {
             Pipeline pl = sj.pipelined();
@@ -130,6 +131,8 @@ public class RedisClient extends AbstractClient {
                 pl.rpush(key, str);
             });
             pl.sync();
+        } catch (Exception e) {
+            throw new LogQueueConnectException("redis 写入失败！", e);
         } finally {
             sj.close();
         }

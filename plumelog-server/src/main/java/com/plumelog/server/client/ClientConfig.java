@@ -70,6 +70,7 @@ public class ClientConfig implements InitializingBean {
             logger.error("redis config error! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
             return null;
         }
+        logger.info("redis host:{},port:{}",ip,port);
         return RedisClient.getInstance(ip, port, redisPassWord);
     }
 
