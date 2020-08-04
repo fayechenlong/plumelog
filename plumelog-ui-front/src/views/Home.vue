@@ -1,9 +1,8 @@
 <template>
   <div class="pnl_wraper">
-    <div class="icon_arrow" :class="{'up':showFilter,'down':!showFilter}" @click="setShowFilter">
-      <Icon type="ios-arrow-up" v-show="showFilter"  />
+    <div class="icon_arrow down" v-if="!showFilter" @click="setShowFilter">
       <Icon type="ios-arrow-down" v-show="!showFilter" />
-      <span class="text">{{showFilter?'收起':'展开'}}</span>
+      <span class="text">展开</span>
     </div>
     <div class="pnl_filters" >
       <template v-if="showFilter">
@@ -140,7 +139,7 @@
             </tr>
             <tr>
               <td></td>
-              <td style='padding-top:8px;'>
+              <td style='padding-top:8px;position:relative'>
                 <Button type="primary" icon="ios-search" style="margin-right:10px" @click="doSearch">查询</Button>
                 <Button  @click="clear">重置</Button>
               </td>
@@ -150,6 +149,10 @@
        <div style="clear:both"></div>
     </div>
     <div style="position:relative;margin-top:30px;">
+       <div class="icon_arrow up" v-if="showFilter" @click="setShowFilter">
+        <Icon type="ios-arrow-up" v-show="showFilter" />
+        <span class="text">收起</span>
+      </div>
       <div style="position:absolute;top:-30px;right:20px">共 <b>{{totalCount}}</b> 条数据</div>
       <div class="tip_table"><Icon size="14" type="md-star-outline" /> 表格字段宽度可拖拽调节，双击或点击箭头可查看详情</div>
           <Table size="small" border highlight-row :columns="showColumns" :content="self" @on-row-dblclick="dblclick" :row-class-name="getRowName" :data="list.hits">
@@ -399,6 +402,22 @@ export default {
         if(_c){
           columns.push(_c)
         }
+        else
+        {
+          //从allColmns里获取label和value
+
+          var item  = _.find(this.allColumns,(o)=>{return o.value == title});
+          if(item){
+            columns.push({
+              title: item.label,
+              align:'center',
+              key: item.value,
+              ellipsis:true
+            })
+          }
+
+          
+        }
       }
       columns.push(_.find(this.columns,['key','content']))
       return columns;
@@ -458,6 +477,28 @@ export default {
       this.getExtendList();
     },
     getExtendList(){
+        this.allColumns = [
+          {
+            label:'日志等级',
+            value:'logLevel'
+          },
+          {
+            label:'服务器名称',
+            value:'serverName'
+          },
+          {
+            label:'应用名称',
+            value:'appName'
+          },
+          {
+            label:'追踪码',
+            value:'traceId'
+          },
+          {
+            label:'类名',
+            value:'className'
+          }
+        ];
         if(this.filter.appName){
           axios.post(process.env.VUE_APP_API+'/getExtendfieldList?appName='+this.filter.appName).then(data=>{
               let _data = _.get(data,'data',{});
@@ -467,6 +508,10 @@ export default {
                       field:item,
                       fieldName:_data[item]
                   });
+                  this.allColumns.push({
+                    label:_data[item],
+                    value:item
+                  })
               }
               this.extendList = list;
           })
@@ -474,6 +519,7 @@ export default {
         else
         {
           this.extendList=[];
+          this.extendOptions=[];
         }
     },
     completeFilter(value,option){
@@ -1041,6 +1087,7 @@ export default {
       setTimeout(()=>{
         this.doSearch();
         this.searchAppName();
+        this.getExtendList();
       },100)
     }
   },
@@ -1197,7 +1244,7 @@ export default {
     cursor: pointer;
     position: absolute;
     font-size:20px;
-    top: 325px;
+    top: -50px;
     left: 50%;
     transform: translateX(-50%);
     width:100px;
