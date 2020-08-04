@@ -61,8 +61,8 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         List<String> logs = event.getLogs();
         List<RunLogMessage> runlogs = new ArrayList<>();
         logs.forEach(logString -> {
-            RunLogMessage runLogMessage=JSON.parseObject(logString, RunLogMessage.class);
-            if(runLogMessage.getLogLevel().toUpperCase().equals("ERROR")) {
+            RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
+            if (runLogMessage.getLogLevel().toUpperCase().equals("ERROR")) {
                 runlogs.add(runLogMessage);
             }
         });
@@ -77,11 +77,11 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      */
     public void parserLogMessage(List<RunLogMessage> logMessages) {
         logMessages.forEach(runLogMessage -> {
-                List<WarningRule> monitorRuleConfig = plumeLogMonitorRuleConfig.getMonitorRuleConfig(runLogMessage.getAppName());
-                if (monitorRuleConfig != null) {
-                    //运行规则
-                    enforcementRules(monitorRuleConfig, runLogMessage);
-                }
+            List<WarningRule> monitorRuleConfig = plumeLogMonitorRuleConfig.getMonitorRuleConfig(runLogMessage.getAppName());
+            if (monitorRuleConfig != null) {
+                //运行规则
+                enforcementRules(monitorRuleConfig, runLogMessage);
+            }
         });
 
     }
@@ -174,14 +174,17 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         String warningKey = key + WARNING_NOTICE;
         if (redisClient.setNx(warningKey + KEY_NX, 5)) {
             logger.info(plumeLogMonitorTextMessage.getText());
-            //send to dingtalk
-            sendToDingTalk(plumeLogMonitorTextMessage, rule.getWebhookUrl());
+            //default send to dingtalk
+            if (rule.getHookServe() == 1) {
+                sendToDingTalk(plumeLogMonitorTextMessage, rule.getWebhookUrl());
+            } else {
+                WechatClient.sendToWeChat(plumeLogMonitorTextMessage, rule.getWebhookUrl());
+            }
             sendMesageES(rule, count);
         }
         redisClient.set(warningKey, warningKey);
         redisClient.expireAt(warningKey, Long.parseLong(String.valueOf(rule.getTime())));
     }
-
 
 
     /**
