@@ -146,9 +146,18 @@ public class MessageAppenderFactory {
                 int count=rundataQueue.drainTo(logs, maxCount);
                 if(count>0) {
                     push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
+                }else{
+                    String log=rundataQueue.take();
+                    logs.add(log);
+                    push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                try {
+                    Thread.sleep(100);
+                }catch (InterruptedException interruptedException ){
+
+                }
             }
         }
 
@@ -161,9 +170,18 @@ public class MessageAppenderFactory {
                 int count=tracedataQueue.drainTo(logs, maxCount);
                 if(count>0) {
                     push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
+                }else{
+                    String log=tracedataQueue.take();
+                    logs.add(log);
+                    push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                try {
+                    Thread.sleep(100);
+                }catch (InterruptedException interruptedException ){
+
+                }
             }
         }
     }
