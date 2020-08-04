@@ -31,20 +31,14 @@ public class MessageAppenderFactory {
 
     private static Boolean logOutPut = true;
 
-    private static BlockingQueue<String> rundataQueue = new LinkedBlockingQueue<>(100000);
-    private static BlockingQueue<String> tracedataQueue = new LinkedBlockingQueue<>(100000);
+    private static BlockingQueue<String> rundataQueue = new LinkedBlockingQueue<>(10000);
+    private static BlockingQueue<String> tracedataQueue = new LinkedBlockingQueue<>(10000);
 
     /**
      * 当下游异常的时候，状态缓存时间
      */
     private final static Cache<String, Boolean> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(10, TimeUnit.SECONDS).build();
-
-    /**
-     * 设置阻塞队列为5000，防止OOM
-     */
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool(4, 8, 5000);
 
     public static void push(BaseLogMessage baseLogMessage) {
         LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
@@ -57,66 +51,6 @@ public class MessageAppenderFactory {
     public static void pushTracedataQueue(String message) {
         tracedataQueue.add(message);
     }
-
-    /**
-     * 带队列宕机保护的push方法
-     *
-     * @param baseLogMessage
-     * @param client
-     * @param logOutPutKey
-     */
-//    public static void push(BaseLogMessage baseLogMessage, AbstractClient client, String logOutPutKey) {
-//        final String redisKey =
-//                baseLogMessage instanceof RunLogMessage
-//                        ? LogMessageConstant.LOG_KEY
-//                        : LogMessageConstant.LOG_KEY_TRACE;
-//        threadPoolExecutor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                logOutPut = cache.getIfPresent(logOutPutKey);
-//                if (logOutPut == null || logOutPut) {
-//                    try {
-//                        client.pushMessage(redisKey, GfJsonUtil.toJSONString(baseLogMessage));
-//                        //写入成功重置异常数量
-//                        logOutPut = true;
-//                        exceptionCount = 0;
-//                        cache.put(logOutPutKey, true);
-//                    } catch (LogQueueConnectException e) {
-//                        exceptionCount++;
-//                        if (exceptionCount > maxExceptionCount) {
-//                            cache.put(logOutPutKey, false);
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//    }
-
-//    public static void push(String redisKey, String baseLogMessage, AbstractClient client, String logOutPutKey) {
-//
-//        threadPoolExecutor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                logOutPut = cache.getIfPresent(logOutPutKey);
-//                if (logOutPut == null || logOutPut) {
-//                    try {
-//                        client.pushMessage(redisKey, baseLogMessage);
-//                        //写入成功重置异常数量
-//                        logOutPut = true;
-//                        exceptionCount = 0;
-//                        cache.put(logOutPutKey, true);
-//                    } catch (LogQueueConnectException e) {
-//                        exceptionCount++;
-//                        if (exceptionCount > maxExceptionCount) {
-//                            cache.put(logOutPutKey, false);
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//    }
 
     public static void push(String redisKey, List<String> baseLogMessage, AbstractClient client, String logOutPutKey) {
         logOutPut = cache.getIfPresent(logOutPutKey);

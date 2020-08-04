@@ -87,8 +87,6 @@ public class RedisClient extends AbstractClient {
             return false;
         }
         try {
-
-
             Jedis jedis = jedisPool.getResource();
             Long result = (Long) jedis.evalsha(jedis.scriptLoad(script), Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
             jedis.close();
@@ -124,8 +122,9 @@ public class RedisClient extends AbstractClient {
 
     @Override
     public void putMessageList(String key, List<String> list) throws LogQueueConnectException{
-        Jedis sj = jedisPool.getResource();
+        Jedis sj=null;
         try {
+            sj = jedisPool.getResource();
             Pipeline pl = sj.pipelined();
             list.forEach(str -> {
                 pl.rpush(key, str);
@@ -134,7 +133,9 @@ public class RedisClient extends AbstractClient {
         } catch (Exception e) {
             throw new LogQueueConnectException("redis 写入失败！", e);
         } finally {
-            sj.close();
+            if(sj!=null) {
+                sj.close();
+            }
         }
 
     }
