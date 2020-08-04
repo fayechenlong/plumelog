@@ -23,7 +23,8 @@
                   class="txt txtAppName" 
                   placeholder="搜索多个请用逗号或空格隔开" 
                   :clearable="true"
-                  :filter-method="completeFilter">
+                  :filter-method="completeFilter"
+                  @on-change="appNameChange">
                 </AutoComplete>
                 <!-- <Select v-model="filter.appNames" 
                         class="txt txtAppName" 
@@ -89,6 +90,25 @@
       
         <div style="clear:both"></div>
         <table class="tbl_filters" style="width:865px">
+            <tr v-if="extendList.length>0">
+              <td class="key">扩展字段</td>
+              <td>
+                <Select v-model="select_extend" placeholder="选择扩展字段" style="width:150px;margin-right:10px">
+                  <Option v-for="extend in extendList" :value="extend.field" :key="extend.field">{{ extend.fieldName }}</Option>
+                </Select>
+                <Input class="txt" @on-enter="addExtendTag" :clearable="true" v-model="extendTag" placeholder="输入查询内容" style="width:445px;"   />
+                <Button icon="md-add" @click="addExtendTag" style="margin-left:10px">添加</Button>
+              </td>
+            </tr>
+            <tr v-if="extendOptions.length>0">
+              <td></td>
+              <td>
+                <Tag closable v-for="(tag,index) in extendOptions" size="medium" @on-close="closeExtendTag(index)" :key="index">
+                  <template v-if="index>0">{{tag.type}}&nbsp;</template>
+                  {{tag.field}}:{{tag.tag}}
+                  </Tag>
+              </td>
+            </tr>
             <tr v-if="!useSearchQuery">
               <td class="key">内容</td>
               <td>
@@ -203,6 +223,10 @@ export default {
    return {
      isSearching:false,
      tag:"",
+     extendTag:"",
+     extendList:[],
+     extendOptions:[],
+     select_extend:"",
      completeFilterLoading:false,
      appNameComplete:[],
      useSearchQuery:false,
@@ -430,35 +454,89 @@ export default {
     }
   },
   methods:{
+    appNameChange(){
+      this.getExtendList();
+    },
+    getExtendList(){
+        if(this.filter.appName){
+          axios.post(process.env.VUE_APP_API+'/getExtendfieldList?appName='+this.filter.appName).then(data=>{
+              let _data = _.get(data,'data',{});
+              let list = [];
+              for(var item in _data){
+                  list.push({
+                      field:item,
+                      fieldName:_data[item]
+                  });
+              }
+              this.extendList = list;
+          })
+        }
+        else
+        {
+          this.extendList=[];
+        }
+    },
     completeFilter(value,option){
       return option.indexOf(value)==0;
     },
     searchAppName(){
       if(this.appNameComplete.length==0){
-        this.completeFilterLoading = true;
-        axios.post(process.env.VUE_APP_API+'/query?index=plume_log_run_*&from=0&size=5000',{
-          "aggs":{
-              "dataCount":{
-                  "terms":{
-                      "field":"appName"
-                  }
-              }
-          }
-        }).then(data=>{
-          this.completeFilterLoading = false;
-          let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
-            return item.key
-            // return {
-            //   label:item.key,
-            //   value:item.value
-            // }
-          });
-          this.appNameComplete = buckets;
-        })
+
+        if(sessionStorage['cache_appNames']){
+            this.appNameComplete = JSON.parse(sessionStorage['cache_appNames'])
+        }
+        else
+        {
+          this.completeFilterLoading = true;
+          axios.post(process.env.VUE_APP_API+'/query?index=plume_log_run_*&from=0&size=5000',{
+            "aggs":{
+                "dataCount":{
+                    "terms":{
+                        "field":"appName"
+                    }
+                }
+            }
+          }).then(data=>{
+            this.completeFilterLoading = false;
+            let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
+              return item.key
+            });
+            sessionStorage['cache_appNames'] = JSON.stringify(buckets);
+            this.appNameComplete = buckets;
+          })
+        }
       }
+    },
+    closeExtendTag(index){
+      this.extendOptions.splice(index,1);
     },
     closeTag(index){
       this.searchOptions.splice(index,1);
+    },
+    addExtendTag(){
+      if(this.extendTag){
+
+        //同样的field只能出现一次，有的话覆盖
+        var isExistField = false;
+        for(var i=0;i<this.extendOptions.length;i++){
+          if(this.extendOptions[i].field == this.select_extend){
+            this.extendOptions[i]={
+              field:this.select_extend,
+              tag:this.extendTag
+            }
+            isExistField = true;
+            break;
+          }
+        }
+
+        if(!isExistField){
+          this.extendOptions.push({
+            field:this.select_extend,
+            tag:this.extendTag
+          })
+        }
+        this.extendTag="";
+      }
     },
     addTag(){
       if(this.tag){
@@ -638,6 +716,17 @@ export default {
             })
           }
         }
+      }
+
+      for(var extend of this.extendOptions)
+      {
+        filters.push({
+          "match_phrase":{
+            [extend.field]:{
+              "query":extend.tag
+            }
+          }
+        })
       }
 
       if((this.searchQuery && this.useSearchQuery) || (this.searchKey && !this.useSearchQuery)){
@@ -1108,7 +1197,7 @@ export default {
     cursor: pointer;
     position: absolute;
     font-size:20px;
-    top: 290px;
+    top: 325px;
     left: 50%;
     transform: translateX(-50%);
     width:100px;

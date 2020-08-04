@@ -11,6 +11,9 @@
             <!-- <li class="nav-item" :class="{'active':pageName=='Chart'}">
                 <a class="nav-link" href="./#/chart">数据统计</a>
             </li> -->
+            <li class="nav-item" :class="{'active':pageName=='Expand'}">
+                <a class="nav-link" href="./#/expand">扩展字段</a>
+            </li>
             <li class="nav-item" :class="{'active':pageName=='Warn'}">
                 <a class="nav-link" href="./#/warn">报警管理</a>
             </li>

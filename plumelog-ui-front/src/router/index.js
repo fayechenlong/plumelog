@@ -5,6 +5,7 @@ import Trace from "../views/Trace.vue";
 import Size from "../views/Size.vue";
 import Chart from "../views/Chart.vue";
 import Warn from "../views/Warn.vue";
+import Expand from "../views/Expand.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,11 @@ const routes = [
     path: "/size",
     name: "Size",
     component: Size
+  },
+  {
+    path: "/expand",
+    name: "Expand",
+    component: Expand
   },
   {
     path: "/chart",
