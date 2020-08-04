@@ -6,12 +6,10 @@ import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.redis.RedisClient;
-import com.plumelog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,11 +43,7 @@ public class RedisLogCollect extends BaseLogCollect {
     private void collectRuningLog() {
         while (true) {
             List<String> logs = new ArrayList<>();
-            if(logger.isDebugEnabled()){
-                logs.forEach(log->{
-                    logger.debug(log);
-                });
-            }
+
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -57,6 +51,11 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
+                if(logger.isDebugEnabled()){
+                logs.forEach(log->{
+                    logger.debug(log);
+                });
+                }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
@@ -68,11 +67,7 @@ public class RedisLogCollect extends BaseLogCollect {
     private void collectTraceLog() {
         while (true) {
             List<String> logs = new ArrayList<>();
-            if(logger.isDebugEnabled()){
-                logs.forEach(log->{
-                    logger.debug(log);
-                });
-            }
+
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -80,6 +75,11 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
+                if(logger.isDebugEnabled()){
+                    logs.forEach(log->{
+                        logger.debug(log);
+                    });
+                }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }

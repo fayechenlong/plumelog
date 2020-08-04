@@ -193,34 +193,12 @@ public class MainController {
         return result;
     }
 
-
-
-    @RequestMapping({"/getAppNameList", "/plumelog/getAppNameList"})
-    public Object getAppNameList() {
-        Map<String,String> map=redisClient.hgetAll(LogMessageConstant.EXTEND_APP_KEY);
-        return map;
-    }
     @RequestMapping({"/getExtendfieldList", "/plumelog/getExtendfieldList"})
     public Object getExtendfieldList(String appName) {
         Map<String,String> map=redisClient.hgetAll(LogMessageConstant.EXTEND_APP_MAP_KEY+appName);
         return map;
     }
-    @RequestMapping({"/addAppName", "/plumelog/addAppName"})
-    public Object addAppName(String appName) {
-        redisClient.hset(LogMessageConstant.EXTEND_APP_KEY, UUID.randomUUID().toString(),appName);
-        Map<String, Object> result = new HashMap<>();
-        result.put("success",true);
-        return result;
-    }
-    @RequestMapping({"/delAppName", "/plumelog/delAppName"})
-    public Object delAppName(String id) {
-        String appName=redisClient.hget(LogMessageConstant.EXTEND_APP_KEY, id);
-        redisClient.hdel(LogMessageConstant.EXTEND_APP_KEY, id);
-        redisClient.del(LogMessageConstant.EXTEND_APP_MAP_KEY+appName);
-        Map<String, Object> result = new HashMap<>();
-        result.put("success",true);
-        return result;
-    }
+
     @RequestMapping({"/addExtendfield", "/plumelog/addExtendfield"})
     public Object addExtendfield(String appName,String field,String fieldName) {
         redisClient.hset(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, field,fieldName);
