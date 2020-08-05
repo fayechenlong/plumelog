@@ -26,7 +26,6 @@
         <module>plumelog-dubbo</module>
         <module>plumelog-trace</module>
         <module>plumelog-demo-dubbo</module>
-        <module>plumelog-ui</module>
         <module>plumelog-rest</module>
     </modules>
     <name>plumelog</name>
