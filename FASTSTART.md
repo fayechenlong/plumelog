@@ -113,7 +113,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j</artifactId>
-       <version>3.0</version>
+       <version>3.1</version>
    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -155,7 +155,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-logback</artifactId>
-       <version>3.0</version>
+       <version>3.1</version>
    </dependency>
 ```  
 * 配置
@@ -198,7 +198,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j2</artifactId>
-       <version>3.0</version>
+       <version>3.1</version>
    </dependency>       
 ```   
 * 配置
@@ -232,6 +232,29 @@
   </loggers>
 ```    
 #### （3）示例(所有的列子都在plumelog-demo里面)
+
+### 配置详解
+
+RedisAppender
+
+|  字段值   | 用途  |
+|  ----  | ----  |
+| appName  | 自定义应用名称 |
+| redisHost  | redis地址 |
+| redisPort  | redis端口号 |
+| runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
+| expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
+| maxCount  | 批量提交日志数量，默认100 |
+
+KafkaAppender
+
+|  字段值   | 用途  |
+|  ----  | ----  |
+| appName  | 自定义应用名称 |
+| kafkaHosts  | kafka集群地址，用逗号隔开 |
+| runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
+| expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
+| maxCount  | 批量提交日志数量，默认100 |
 
 * 普通日志使用
 
