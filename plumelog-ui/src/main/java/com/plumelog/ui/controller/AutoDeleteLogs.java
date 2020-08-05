@@ -26,13 +26,13 @@ public class AutoDeleteLogs implements InitializingBean {
     private ElasticLowerClient elasticLowerClient;
     @Value("${admin.log.keepDays:0}")
     private int keepDays;
-    @Value("${es.esHosts}")
+    @Value("${plumelog.es.esHosts}")
     private String esHosts;
 
-    @Value("${es.userName:}")
+    @Value("${plumelog.es.userName:}")
     private String userName;
 
-    @Value("${es.passWord:}")
+    @Value("${plumelog.es.passWord:}")
     private String passWord;
 
     @Scheduled(cron = "0 0 0 * * ?")
