@@ -31,7 +31,7 @@
                         <Input v-model="dataInfo.className" placeholder="输入模块名称" />
                     </FormItem>
                     <FormItem label="接收者" required>
-                        <Input type="textarea" :rows="4" v-model="dataInfo.receiver" placeholder="输入接收者（逗号分隔）"  />
+                        <Input type="textarea" :rows="4" v-model="dataInfo.receiver" placeholder="输入接收者（逗号分隔）; 如果包含all表示@所有人"  />
                     </FormItem>
                       <FormItem label="平台" required>
                           <Select v-model="dataInfo.hookServe" placeholder="请选择报警平台" >

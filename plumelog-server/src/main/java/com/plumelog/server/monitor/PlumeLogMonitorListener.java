@@ -169,7 +169,14 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
                         .monitorUrl(getMonitorMessageURL(rule))
                         .build();
         if (!StringUtils.isEmpty(rule.getReceiver())) {
-            plumeLogMonitorTextMessage.setAtMobiles(Arrays.asList(rule.getReceiver().split(",")));
+            String[] split = rule.getReceiver().split(",");
+            List<String> receivers = new ArrayList<String>(Arrays.asList(split));
+            if (receivers.contains("all") || receivers.contains("ALL")) {
+                plumeLogMonitorTextMessage.setAtAll(true);
+               receivers.remove("all");
+                receivers.remove("ALL");
+            }
+            plumeLogMonitorTextMessage.setAtMobiles(receivers);
         }
         String warningKey = key + WARNING_NOTICE;
         if (redisClient.setNx(warningKey + KEY_NX, 5)) {

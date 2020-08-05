@@ -20,7 +20,8 @@ public class WechatClient {
         requestBody.put("markdown", content);
         HttpClient.doPost(URL, GfJsonUtil.toJSONString(requestBody));
 
-        if (plumeLogMonitorTextMessage.isAtAll() || plumeLogMonitorTextMessage.getAtMobiles() != null) {
+        boolean atMobiles = plumeLogMonitorTextMessage.getAtMobiles() != null && plumeLogMonitorTextMessage.getAtMobiles().size()> 0;
+        if (plumeLogMonitorTextMessage.isAtAll() || atMobiles) {
             requestBody.clear();
             content.clear();
             List<String> mobiles = plumeLogMonitorTextMessage.getAtMobiles();
