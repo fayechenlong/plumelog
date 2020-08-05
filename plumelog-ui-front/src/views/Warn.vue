@@ -31,9 +31,14 @@
                         <Input v-model="dataInfo.className" placeholder="输入模块名称" />
                     </FormItem>
                     <FormItem label="接收者" required>
-                        <Input v-model="dataInfo.receiver" placeholder="输入接收者"  />
+                        <Input type="textarea" :rows="4" v-model="dataInfo.receiver" placeholder="输入接收者（逗号分隔）"  />
                     </FormItem>
-                    <FormItem label="钉钉钩子" required>
+                      <FormItem label="平台" required>
+                          <Select v-model="dataInfo.hookServe" placeholder="请选择报警平台" >
+                              <Option v-for="item in hookServeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                          </Select>
+                      </FormItem>
+                    <FormItem label="钩子" required>
                         <Input v-model="dataInfo.webhookUrl" placeholder="输入钉钉钩子地址"  />
                     </FormItem>
                     <FormItem label="错误数量" required>
@@ -100,12 +105,15 @@ export default {
    return {
     selection:[],
     showConfirm:false,
+    hookServeList: [{value: 1, label:'钉钉'},{value: 2, label:'企业微信'}],
+    hookServeMap: {"1":'钉钉', "2":'企业微信'},
     dataInfo: {
         appName: '',
         className: '',
         receiver:'',
         webhookUrl:'',
         time: 60,
+        hookServe: 1,
         status:false,
     },
     pageSize:50,
@@ -142,6 +150,14 @@ export default {
         width:150,
         key:'errorCount'
       },
+        {
+            title: '平台',
+            key:'hookServe',
+            width: 100,
+            render:  (h, r) => {
+                return h('span', this.hookServeMap[r.row.hookServe])
+            }
+        },
       {
         title: 'webHook',
         key:'webhookUrl'
