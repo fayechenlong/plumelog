@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 /** axios 请求连接等待时间 **/
-axios.defaults.timeout = 5000
+axios.defaults.timeout = 300000
 /** axios Request 配置 **/
 axios.interceptors.request.use(
   config => {

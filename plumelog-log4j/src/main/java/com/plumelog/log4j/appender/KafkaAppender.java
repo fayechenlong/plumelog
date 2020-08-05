@@ -1,12 +1,17 @@
 package com.plumelog.log4j.appender;
 
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * className：KafkaAppender
@@ -21,6 +26,7 @@ public class KafkaAppender extends AppenderSkeleton {
     private String kafkaHosts;
     private String runModel;
     private String topic;
+    private int maxCount=100;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -38,6 +44,11 @@ public class KafkaAppender extends AppenderSkeleton {
         this.runModel = runModel;
     }
 
+    public void setMaxCount(int maxCount) {
+        this.maxCount = maxCount;
+    }
+    private static ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool();
     @Override
     protected void append(LoggingEvent loggingEvent) {
         if(this.runModel!=null){
@@ -45,9 +56,25 @@ public class KafkaAppender extends AppenderSkeleton {
         }
         if (kafkaClient == null) {
             kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
+            for(int a=0;a<5;a++){
+
+                threadPoolExecutor.execute(()->{
+
+                    MessageAppenderFactory.startRunLog(kafkaClient,maxCount);
+                });
+                threadPoolExecutor.execute(()->{
+
+                    MessageAppenderFactory.startTraceLog(kafkaClient,maxCount);
+                });
+            }
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
-        MessageAppenderFactory.push(logMessage, kafkaClient,"plume.log.ack");
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, loggingEvent);
+        if (logMessage instanceof RunLogMessage) {
+            final String message = LogMessageUtil.getLogMessage(logMessage, loggingEvent);
+            MessageAppenderFactory.pushRundataQueue(message);
+        } else {
+            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
+        }
     }
 
     @Override

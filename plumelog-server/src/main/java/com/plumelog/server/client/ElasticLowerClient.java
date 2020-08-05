@@ -4,6 +4,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -106,25 +107,6 @@ public class ElasticLowerClient {
             logger.error("ElasticSearch init fail!", e);
         }
     }
-
-    public List<String> getExistIndices(String[] indices) {
-        List<String> existIndexList = new ArrayList<String>();
-        for (String index : indices) {
-            try {
-                Request request = new Request(
-                        "HEAD",
-                        "/" + index + "");
-                Response res = client.performRequest(request);
-                if (res.getStatusLine().getStatusCode() == 200) {
-                    existIndexList.add(index);
-                }
-            } catch (Exception e) {
-                logger.error("", e);
-            }
-        }
-        return existIndexList;
-    }
-
     public boolean existIndice(String indice) {
         List<String> existIndexList = new ArrayList<String>();
         try {
@@ -176,7 +158,7 @@ public class ElasticLowerClient {
                 String responseStr = EntityUtils.toString(res.getEntity());
                 logger.info(responseStr);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("", e);
         }
     }
@@ -227,6 +209,80 @@ public class ElasticLowerClient {
                 logger.error("ElasticSearch commit Failure!", e);
             }
         });
+    }
+
+
+    public String cat(String index) {
+        String reStr = "";
+        Request request = new Request(
+                "GET",
+                "/_cat/indices/" + index + "?v");
+        try {
+            Response res = client.performRequest(request);
+
+            InputStream inputStream = res.getEntity().getContent();
+            byte[] bytes = new byte[0];
+            bytes = new byte[inputStream.available()];
+            inputStream.read(bytes);
+            String str = new String(bytes);
+            reStr = str;
+        } catch (Exception e) {
+            e.printStackTrace();
+            reStr = "";
+        }
+        return reStr;
+    }
+
+    public String get(String url, String queryStr) {
+        String reStr = "";
+        StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
+        stringEntity.setContentType("application/json");
+        Request request = new Request(
+                "GET",
+                url);
+        request.setEntity(stringEntity);
+        try {
+            Response res = client.performRequest(request);
+            return EntityUtils.toString(res.getEntity(), "utf-8");
+        } catch (Exception e) {
+            reStr = "";
+            e.printStackTrace();
+        }
+        return reStr;
+    }
+
+    public List<String> getExistIndices(String[] indices) {
+        List<String> existIndexList = new ArrayList<String>();
+        for (String index : indices) {
+            try {
+                Request request = new Request(
+                        "HEAD",
+                        "/" + index + "");
+                Response res = client.performRequest(request);
+                if (res.getStatusLine().getStatusCode() == 200) {
+                    existIndexList.add(index);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return existIndexList;
+    }
+
+    public boolean deleteIndex(String index) {
+        try {
+            Request request = new Request(
+                    "DELETE",
+                    "/" + index + "");
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 
     public void close() {

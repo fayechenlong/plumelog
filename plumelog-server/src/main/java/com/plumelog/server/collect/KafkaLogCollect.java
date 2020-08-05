@@ -2,7 +2,6 @@ package com.plumelog.server.collect;
 
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.server.util.DateUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,9 @@ public class KafkaLogCollect extends BaseLogCollect {
             try {
                 ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
                 records.forEach(record -> {
-                    logger.debug("get log:" + record.value() + "  logType:" + record.topic());
+                    if(logger.isDebugEnabled()) {
+                        logger.debug("get log:" + record.value() + "  logType:" + record.topic());
+                    }
                     if (record.topic().equals(LogMessageConstant.LOG_KEY)) {
                         logList.add(record.value());
                     }
@@ -58,11 +59,11 @@ public class KafkaLogCollect extends BaseLogCollect {
                 logger.error("get logs from kafka failed! ", e);
             }
             if (logList.size() > 0) {
+                super.sendLog(super.getRunLogIndex(), logList);
                 publisherMonitorEvent(logList);
-                super.sendLog(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD), logList);
             }
             if (sendlogList.size() > 0) {
-                super.sendTraceLogList(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD), sendlogList);
+                super.sendTraceLogList(super.getTraceLogIndex(), sendlogList);
             }
         }
     }

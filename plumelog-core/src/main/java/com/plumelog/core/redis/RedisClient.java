@@ -49,12 +49,23 @@ public class RedisClient extends AbstractClient {
         config.setMaxWaitMillis(MAX_WAIT);
         config.setTestOnBorrow(TEST_ON_BORROW);
         if (pass != null && !"".equals(pass)) {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass);
+            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass,0);
         } else {
             jedisPool = new JedisPool(config, host, port, TIMEOUT);
         }
     }
-
+    private RedisClient(String host, int port, String pass,int db) {
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxTotal(MAX_ACTIVE);
+        config.setMaxIdle(MAX_IDLE);
+        config.setMaxWaitMillis(MAX_WAIT);
+        config.setTestOnBorrow(TEST_ON_BORROW);
+        if (pass != null && !"".equals(pass)) {
+            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass,db);
+        } else {
+            jedisPool = new JedisPool(config, host, port, TIMEOUT);
+        }
+    }
     @Override
     public void pushMessage(String key, String strings) throws LogQueueConnectException {
         Jedis sj = null;
@@ -76,8 +87,6 @@ public class RedisClient extends AbstractClient {
             return false;
         }
         try {
-
-
             Jedis jedis = jedisPool.getResource();
             Long result = (Long) jedis.evalsha(jedis.scriptLoad(script), Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
             jedis.close();
@@ -111,16 +120,22 @@ public class RedisClient extends AbstractClient {
         return obj;
     }
 
-    public void putMessageList(String key, List<String> list) {
-        Jedis sj = jedisPool.getResource();
+    @Override
+    public void putMessageList(String key, List<String> list) throws LogQueueConnectException{
+        Jedis sj=null;
         try {
+            sj = jedisPool.getResource();
             Pipeline pl = sj.pipelined();
             list.forEach(str -> {
                 pl.rpush(key, str);
             });
             pl.sync();
+        } catch (Exception e) {
+            throw new LogQueueConnectException("redis 写入失败！", e);
         } finally {
-            sj.close();
+            if(sj!=null) {
+                sj.close();
+            }
         }
 
     }

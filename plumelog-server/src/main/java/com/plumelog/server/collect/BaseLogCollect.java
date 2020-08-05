@@ -4,11 +4,12 @@ import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.server.monitor.PlumelogMonitorEvent;
+import com.plumelog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -20,16 +21,22 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(BaseLogCollect.class);
-    public List<String> logList = new CopyOnWriteArrayList();
-    public List<String> traceLogList = new CopyOnWriteArrayList();
     public ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     public ElasticLowerClient elasticLowerClient;
     protected ApplicationEventPublisher applicationEventPublisher;
 
+    public String getRunLogIndex(){
+        return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
+    }
+    public String getTraceLogIndex(){
+        return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
+    }
     public void sendLog(String index, List<String> sendList) {
         try {
-            elasticLowerClient.insertList(sendList, index, LogMessageConstant.ES_TYPE);
-            logger.info("logList insert es success! count:{}", sendList.size());
+            if(sendList.size()>0) {
+                elasticLowerClient.insertList(sendList, index, LogMessageConstant.ES_TYPE);
+                logger.info("logList insert es success! count:{}", sendList.size());
+            }
         } catch (Exception e) {
             logger.error("logList insert es failed!", e);
         }
@@ -37,8 +44,10 @@ public class BaseLogCollect {
 
     public void sendTraceLogList(String index, List<String> sendTraceLogList) {
         try {
-            elasticLowerClient.insertList(sendTraceLogList, index, LogMessageConstant.ES_TYPE);
-            logger.info("traceLogList insert es success! count:{}", sendTraceLogList.size());
+            if(sendTraceLogList.size()>0) {
+                elasticLowerClient.insertList(sendTraceLogList, index, LogMessageConstant.ES_TYPE);
+                logger.info("traceLogList insert es success! count:{}", sendTraceLogList.size());
+            }
         } catch (Exception e) {
             logger.error("traceLogList insert es failed!", e);
         }

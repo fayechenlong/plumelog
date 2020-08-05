@@ -17,6 +17,7 @@ public class WarningRule {
     private int errorCount;
     private int time;
     private int status;
+    private int hookServe = 1; // 1 DingTalk 2 Wechat
 
     public String getAppName() {
         return appName;
@@ -72,5 +73,13 @@ public class WarningRule {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public int getHookServe() {
+        return hookServe;
+    }
+
+    public void setHookServe(int hookServe) {
+        this.hookServe = hookServe;
     }
 }

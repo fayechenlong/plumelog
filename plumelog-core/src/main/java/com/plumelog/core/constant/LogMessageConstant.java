@@ -68,11 +68,15 @@ public class LogMessageConstant {
      * Sleuth 扩展
      */
     public final static String SLEUTH_EXPAND = "sleuth";
+    /**
+     * Sleuth 扩展
+     */
+    public final static String MDC_EXPAND = "mdc";
 
     /**
      * 所有支持的扩展
      */
-    public final static List<String> EXPANDS = Arrays.asList("plumelog", "sleuth");
+    public final static List<String> EXPANDS = Arrays.asList("plumelog", "sleuth","mdc");
 
     /**
      * redis 默认端口号
@@ -84,6 +88,15 @@ public class LogMessageConstant {
      */
     public static final String WARN_RULE_KEY = "plumelog:warnRule";
 
+
+    /**
+     * 配置扩展字段的APPNAME列表
+     */
+    public static final String EXTEND_APP_KEY = "plumelog:extend:appName";
+    /**
+     * 扩展字段列表
+     */
+    public static final String EXTEND_APP_MAP_KEY = "plumelog:extend:";
 
     /**
      * 错误日志监控统计key

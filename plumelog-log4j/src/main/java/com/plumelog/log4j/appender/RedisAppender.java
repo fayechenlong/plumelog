@@ -1,12 +1,17 @@
 package com.plumelog.log4j.appender;
 
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.redis.RedisClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * className：RedisAppender
@@ -23,6 +28,7 @@ public class RedisAppender extends AppenderSkeleton {
     private String redisAuth;
     private String redisKey;
     private String runModel;
+    private int maxCount=100;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -48,6 +54,11 @@ public class RedisAppender extends AppenderSkeleton {
         this.runModel = runModel;
     }
 
+    public void setMaxCount(int maxCount) {
+        this.maxCount = maxCount;
+    }
+    private static ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool();
     @Override
     protected void append(LoggingEvent loggingEvent) {
         if (this.runModel != null) {
@@ -57,9 +68,25 @@ public class RedisAppender extends AppenderSkeleton {
             redisClient = RedisClient.getInstance(this.redisHost, this.redisPort == null ?
                     LogMessageConstant.REDIS_DEFAULT_PORT
                     : Integer.parseInt(this.redisPort), this.redisAuth);
+            for(int a=0;a<5;a++){
+
+                threadPoolExecutor.execute(()->{
+
+                    MessageAppenderFactory.startRunLog(redisClient,maxCount);
+                });
+                threadPoolExecutor.execute(()->{
+
+                    MessageAppenderFactory.startTraceLog(redisClient,maxCount);
+                });
+            }
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
-        MessageAppenderFactory.push(logMessage, redisClient, "plume.log.ack");
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, loggingEvent);
+        if (logMessage instanceof RunLogMessage) {
+            final String message = LogMessageUtil.getLogMessage(logMessage, loggingEvent);
+            MessageAppenderFactory.pushRundataQueue(message);
+        } else {
+            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
+        }
     }
 
     @Override

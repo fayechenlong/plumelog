@@ -3,7 +3,10 @@ package com.plumelog.log4j2.appender;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
+import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
+import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j2.util.LogMessageUtil;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -15,6 +18,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.io.Serializable;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * className：KafkaAppender
@@ -30,27 +34,32 @@ public class KafkaAppender extends AbstractAppender {
     private String kafkaHosts;
     private String runModel;
     private String expand;
+    private int maxCount=500;
 
     protected KafkaAppender(String name, String appName, String kafkaHosts, String runModel, Filter filter, Layout<? extends Serializable> layout,
-                            final boolean ignoreExceptions, String expand) {
+                            final boolean ignoreExceptions, String expand,int maxCount) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.kafkaHosts = kafkaHosts;
         this.runModel = runModel;
         this.expand = expand;
+        this.maxCount=maxCount;
 
     }
 
     @Override
     public void append(LogEvent logEvent) {
-        if (kafkaClient == null) {
-            kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, logEvent);
+        if (logMessage instanceof RunLogMessage) {
+            final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
+            MessageAppenderFactory.pushRundataQueue(message);
+        } else {
+            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, logEvent);
-        MessageAppenderFactory.push(logMessage, kafkaClient, "plume.log.ack");
 
     }
-
+    private static ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool();
     @PluginFactory
     public static KafkaAppender createAppender(
             @PluginAttribute("name") String name,
@@ -59,6 +68,7 @@ public class KafkaAppender extends AbstractAppender {
             @PluginAttribute("topic") String topic,
             @PluginAttribute("expand") String expand,
             @PluginAttribute("runModel") String runModel,
+            @PluginAttribute("maxCount") int maxCount,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
         if (runModel != null) {
@@ -70,6 +80,21 @@ public class KafkaAppender extends AbstractAppender {
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
-        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand);
+        if(maxCount==0){
+            maxCount=100;
+        }
+        final int count=maxCount;
+        for(int a=0;a<5;a++){
+
+            threadPoolExecutor.execute(()->{
+
+                MessageAppenderFactory.startRunLog(kafkaClient,count);
+            });
+            threadPoolExecutor.execute(()->{
+
+                MessageAppenderFactory.startTraceLog(kafkaClient,count);
+            });
+        }
+        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand,maxCount);
     }
 }

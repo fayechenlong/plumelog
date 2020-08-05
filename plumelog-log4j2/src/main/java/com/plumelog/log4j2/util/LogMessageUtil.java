@@ -7,12 +7,14 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.DateUtil;
+import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 
 import java.util.Date;
+import java.util.Map;
 
 import static org.apache.logging.log4j.message.ParameterizedMessageFactory.INSTANCE;
 
@@ -38,7 +40,20 @@ public class LogMessageUtil {
         return traceId;
     }
 
-
+    /**
+     * 扩展字段
+     * @param baseLogMessage
+     * @param logEvent
+     * @return
+     */
+    public static String getLogMessage(BaseLogMessage baseLogMessage,final LogEvent logEvent){
+        Map<String, String> mdc= logEvent.getContextData().toMap();
+        Map<String, Object> map= GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage),Map.class);
+        if(mdc!=null) {
+            map.putAll(mdc);
+        };
+        return GfJsonUtil.toJSONString(map);
+    }
     public static BaseLogMessage getLogMessage(String appName, LogEvent logEvent) {
         String traceId = isExpandRunLog(logEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();

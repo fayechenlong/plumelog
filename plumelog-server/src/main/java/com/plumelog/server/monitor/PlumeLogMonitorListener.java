@@ -2,16 +2,11 @@ package com.plumelog.server.monitor;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dingtalk.api.DefaultDingTalkClient;
-import com.dingtalk.api.DingTalkClient;
-import com.dingtalk.api.request.OapiRobotSendRequest;
-import com.dingtalk.api.response.OapiRobotSendResponse;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.server.client.ElasticLowerClient;
-import com.taobao.api.ApiException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.plumelog.server.monitor.DingTalkClient.sendToDingTalk;
 
 /**
  * className：PlumeLogMonitorListener
@@ -64,7 +61,10 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         List<String> logs = event.getLogs();
         List<RunLogMessage> runlogs = new ArrayList<>();
         logs.forEach(logString -> {
-            runlogs.add(JSON.parseObject(logString, RunLogMessage.class));
+            RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
+            if (runLogMessage.getLogLevel().toUpperCase().equals("ERROR")) {
+                runlogs.add(runLogMessage);
+            }
         });
         //解析日志
         parserLogMessage(runlogs);
@@ -169,34 +169,30 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
                         .monitorUrl(getMonitorMessageURL(rule))
                         .build();
         if (!StringUtils.isEmpty(rule.getReceiver())) {
-            plumeLogMonitorTextMessage.setAtMobiles(Arrays.asList(rule.getReceiver().split(",")));
-        }
-        DingTalkClient client = new DefaultDingTalkClient(rule.getWebhookUrl());
-        OapiRobotSendRequest request = new OapiRobotSendRequest();
-        request.setMsgtype("markdown");
-        OapiRobotSendRequest.Markdown markdown = new OapiRobotSendRequest.Markdown();
-        markdown.setTitle("报警通知");
-        markdown.setText(plumeLogMonitorTextMessage.getText());
-        request.setMarkdown(markdown);
-        OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
-        at.setAtMobiles(plumeLogMonitorTextMessage.getAtMobiles());
-        at.setIsAtAll(plumeLogMonitorTextMessage.isAtAll());
-        request.setAt(at);
-        OapiRobotSendResponse response = null;
-        try {
-            String warningKey = key + WARNING_NOTICE;
-            if (redisClient.setNx(warningKey + KEY_NX, 5)) {
-                logger.info(plumeLogMonitorTextMessage.getText());
-                response = client.execute(request);
-                sendMesageES(rule, count);
+            String[] split = rule.getReceiver().split(",");
+            List<String> receivers = new ArrayList<String>(Arrays.asList(split));
+            if (receivers.contains("all") || receivers.contains("ALL")) {
+                plumeLogMonitorTextMessage.setAtAll(true);
+               receivers.remove("all");
+                receivers.remove("ALL");
             }
-            redisClient.set(warningKey, warningKey);
-            redisClient.expireAt(warningKey, Long.parseLong(String.valueOf(rule.getTime())));
-        } catch (ApiException e) {
-            e.printStackTrace();
-            logger.error(response.getErrmsg());
+            plumeLogMonitorTextMessage.setAtMobiles(receivers);
         }
+        String warningKey = key + WARNING_NOTICE;
+        if (redisClient.setNx(warningKey + KEY_NX, 5)) {
+            logger.info(plumeLogMonitorTextMessage.getText());
+            //default send to dingtalk
+            if (rule.getHookServe() == 1) {
+                sendToDingTalk(plumeLogMonitorTextMessage, rule.getWebhookUrl());
+            } else {
+                WechatClient.sendToWeChat(plumeLogMonitorTextMessage, rule.getWebhookUrl());
+            }
+            sendMesageES(rule, count);
+        }
+        redisClient.set(warningKey, warningKey);
+        redisClient.expireAt(warningKey, Long.parseLong(String.valueOf(rule.getTime())));
     }
+
 
     /**
      * 报警记录加入至ES
