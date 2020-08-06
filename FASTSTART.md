@@ -277,6 +277,16 @@ KafkaAppender
                 <artifactId>spring-cloud-starter-sleuth</artifactId>
             </dependency>
 ``` 
+* 扩展字段MDC用法，例如
+```java
+            MDC.put("orderid", "1");
+            MDC.put("userid", "4");
+            logger.info("扩展字段");
+``` 
+
+   1.在系统扩展字段里添加扩展字段，字段值为 orderid 显示值为 订单编号
+   2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
+
 * [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
 * TraceId跨线程传递
