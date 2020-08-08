@@ -45,4 +45,23 @@ public class KafkaProducerClient extends AbstractClient {
         }
 
     }
+    @Override
+    public void putMessageList(String topic, List<String> list) throws LogQueueConnectException {
+        KafkaProducer kafkaProducer=null;
+        try {
+            kafkaProducer=kafkaProducerPool.getResource();
+            for(int a=0;a<list.size();a++){
+                String message=list.get(a);
+                kafkaProducer.send(new ProducerRecord<String, String>(topic, message));
+            };
+        }catch (Exception e){
+            throw new LogQueueConnectException("kafka 写入失败！",e);
+        }finally {
+            if(kafkaProducer!=null){
+                kafkaProducerPool.returnResource(kafkaProducer);
+            }
+        }
+
+    }
+
 }
