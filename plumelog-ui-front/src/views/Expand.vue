@@ -171,6 +171,7 @@ export default {
                 "aggs":{
                     "dataCount":{
                         "terms":{
+                            "size":1000,
                             "field":"appName"
                         }
                     }
