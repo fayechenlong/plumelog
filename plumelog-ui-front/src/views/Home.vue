@@ -534,15 +534,17 @@ export default {
         else
         {
           this.completeFilterLoading = true;
-          axios.post(process.env.VUE_APP_API+'/query?index=plume_log_run_*&from=0&size=5000',{
-            "aggs":{
-                "dataCount":{
-                    "terms":{
-                        "size":1000,
-                        "field":"appName"
-                    }
-                }
-            }
+          let q = "plume_log_run_" + moment().format("YYYYMMDD")
+          axios.post(process.env.VUE_APP_API+'/query?index='+q+'&from=0&size=0',{
+              "size": 0,
+              "aggregations": {
+                  "dataCount": {
+                      "terms": {
+                          "size": 1000,
+                          "field": "appName"
+                      }
+                  }
+              }
           }).then(data=>{
             this.completeFilterLoading = false;
             let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{

@@ -4,7 +4,7 @@
 <template>
     <div>
         <Row class="expand-row">
-            <Col span="24">
+            <Col span="24" style="max-height: 200px; overflow: scroll">
                <ul>
                    <li v-for="item in list">
                         <span class="key">{{item.key}}</span>&nbsp;&nbsp;
@@ -47,16 +47,17 @@
         methods:{
             getAppNameCount(index){
                 let query = {
-                    "aggs":{
-                        "dataCount":{
-                            "terms":{
-                                "size":1000,
-                                "field":"appName"
+                    "size": 0,
+                    "aggregations": {
+                        "dataCount": {
+                            "terms": {
+                                "size": 1000,
+                                "field": "appName"
                             }
                         }
                     }
                 }
-                let url= process.env.VUE_APP_API+'/query?size=1000&from=0&index='+index;
+                let url= process.env.VUE_APP_API+'/query?size=0&from=0&index='+index;
                 axios.post(url,query).then(data=>{
                     this.list = _.get(data,'data.aggregations.dataCount.buckets',[])
                 })

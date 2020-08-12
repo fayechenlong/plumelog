@@ -207,7 +207,7 @@ export default {
        this.size_selection =[];
        this.trace_selection = [];
        this.$Loading.start();
-       axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_run_2*').then(data=>{
+       axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_run_*').then(data=>{
          this.$Loading.finish();
          this.sizeInfo = _.get(data,'data',[]);
        })
