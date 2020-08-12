@@ -207,7 +207,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             JSONObject object = (JSONObject) JSONObject.toJSON(rule);
             object.put("count", count);
             object.put("dataTime", System.currentTimeMillis());
-            elasticLowerClient.insertList(Arrays.asList(object.toJSONString()),
+            elasticLowerClient.insertListComm(Arrays.asList(object.toJSONString()),
                     LogMessageConstant.PLUMELOG_MONITOR_MESSAGE_KEY,
                     LogMessageConstant.ES_TYPE);
             logger.info("monitor message insert es success");

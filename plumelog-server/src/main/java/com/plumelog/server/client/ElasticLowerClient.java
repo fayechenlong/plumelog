@@ -107,6 +107,7 @@ public class ElasticLowerClient {
             logger.error("ElasticSearch init fail!", e);
         }
     }
+
     public boolean existIndice(String indice) {
         List<String> existIndexList = new ArrayList<String>();
         try {
@@ -141,7 +142,7 @@ public class ElasticLowerClient {
 
     private void creatFieldData(String baseIndex, String field, String type) {
 
-        String ent = "{\"properties\":{\"" + field + "\":{\"type\":\"keyword\"}}} ";
+        String ent = "{\"properties\":{\"" + field + "\":{\"type\":\"keyword\"},}} ";
         String endpoint = "";
         if (StringUtils.isEmpty(type)) {
             endpoint = "/" + baseIndex + "/_mapping";
@@ -162,17 +163,89 @@ public class ElasticLowerClient {
             logger.error("", e);
         }
     }
+    private void creatFieldDataLog(String baseIndex,String type) {
 
-    public void insertList(List<String> list, String baseIndex, String type) throws IOException {
+        String ent = "{\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+                "\"logLevel\":{\"type\":\"keyword\"}," +
+                "\"serverName\":{\"type\":\"keyword\"}," +
+                "\"traceId\":{\"type\":\"keyword\"}," +
+                "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}" +
+                "}} ";
+        String endpoint = "";
+        if (StringUtils.isEmpty(type)) {
+            endpoint = "/" + baseIndex + "/_mapping";
+        } else {
+            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
+        }
+        try {
+            Request request = new Request(
+                    "PUT",
+                    endpoint);
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() != 200) {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.info(responseStr);
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+    }
+    private void creatFieldDataTrace(String baseIndex,String type) {
+
+        String ent = "{\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+                "\"traceId\":{\"type\":\"keyword\"}" +
+                "}} ";
+        String endpoint = "";
+        if (StringUtils.isEmpty(type)) {
+            endpoint = "/" + baseIndex + "/_mapping";
+        } else {
+            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
+        }
+        try {
+            Request request = new Request(
+                    "PUT",
+                    endpoint);
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() != 200) {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.info(responseStr);
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+    }
+    public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
 
         if (!existIndice(baseIndex)) {
             creatIndice(baseIndex);
             logger.info("creatIndex:{}", baseIndex);
-            creatFieldData(baseIndex, "appName", type);
-            logger.info("creatFieldData appName");
-            creatFieldData(baseIndex, "logLevel", type);
-            logger.info("creatFieldData logLevel");
+            creatFieldDataLog(baseIndex, type);
+            logger.info("creatFieldData {}",baseIndex);
         }
+        insertList(list,baseIndex,type);
+    }
+    public void insertListTrace(List<String> list, String baseIndex, String type) throws IOException {
+
+        if (!existIndice(baseIndex)) {
+            creatIndice(baseIndex);
+            logger.info("creatIndex:{}", baseIndex);
+            creatFieldDataTrace(baseIndex, type);
+            logger.info("creatFieldData {}",baseIndex);
+        }
+        insertList(list,baseIndex,type);
+    }
+    public void insertListComm(List<String> list, String baseIndex, String type) throws IOException {
+
+        if (!existIndice(baseIndex)) {
+            creatIndice(baseIndex);
+            logger.info("creatIndex:{}", baseIndex);
+        }
+        insertList(list,baseIndex,type);
+    }
+    private void insertList(List<String> list, String baseIndex, String type) throws IOException {
+
         StringBuffer sendStr = new StringBuffer();
         for (int a = 0; a < list.size(); a++) {
             String map = list.get(a);
@@ -210,7 +283,6 @@ public class ElasticLowerClient {
             }
         });
     }
-
 
     public String cat(String index) {
         String reStr = "";
