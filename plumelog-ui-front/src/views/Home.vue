@@ -535,16 +535,16 @@ export default {
         {
           this.completeFilterLoading = true;
           let q = "plume_log_run_" + moment().format("YYYYMMDD")
-          axios.post(process.env.VUE_APP_API+'/query?index='+q+'&from=0&size=0',{
-              "size": 0,
-              "aggregations": {
-                  "dataCount": {
-                      "terms": {
-                          "size": 1000,
-                          "field": "appName"
-                      }
-                  }
+          axios.post(process.env.VUE_APP_API+'/query?index='+q+'&from=0&size=0&appName',{
+            "size": 0,
+            "aggregations": {
+              "dataCount": {
+                "terms": {
+                  "size": 1000,
+                  "field": "appName"
+                }
               }
+            }
           }).then(data=>{
             this.completeFilterLoading = false;
             let buckets = _.get(data,'data.aggregations.dataCount.buckets',[]).map(item=>{
@@ -553,6 +553,7 @@ export default {
             sessionStorage['cache_appNames'] = JSON.stringify(buckets);
             this.appNameComplete = buckets;
           })
+
         }
       }
     },
@@ -1088,7 +1089,7 @@ export default {
         this.doSearch();
         this.searchAppName();
         this.getExtendList();
-      },100)
+      },0)
     }
   },
   watch:{
