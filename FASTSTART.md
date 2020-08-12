@@ -244,7 +244,8 @@ RedisAppender
 | redisPort  | redis端口号 |
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
-| maxCount  | 批量提交日志数量，默认100 |
+| maxCount  | （3.1）批量提交日志数量，默认100 |
+| logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 
 KafkaAppender
 
