@@ -687,7 +687,7 @@ export default {
         window.addEventListener('resize',() => { errorChart.resize(); });
         errorChart.setOption({
             title: {
-                text: '错误率',
+                text: '错误数',
                 left: 'center',
                 top: 20,
                 textStyle: {
@@ -696,7 +696,7 @@ export default {
             },
             tooltip: {
               formatter(p,ticket){
-                return '时间：'+p.name+'<br/>错误率：'+p.value*100+'%'
+                return '时间：'+p.name+'<br/>错误数：'+p.value
               },
               extraCssText:'text-align:left'
             },
@@ -927,7 +927,7 @@ export default {
             ]
           }
         },
-        "aggs": {
+        "aggregations": {
           "2": {
             "date_histogram": {
               "field": "dtTime",
@@ -938,7 +938,7 @@ export default {
         }
       }
 
-      axios.post(process.env.VUE_APP_API+'/query?index='+dateList.join(',')+'&from=0&size=50',chartFilter).then(data=>{
+      axios.post(process.env.VUE_APP_API+'/query?index='+dateList.join(',')+'&from=0&size=0&chartData',chartFilter).then(data=>{
         this.chartData = _.get(data,'data.aggregations.2.buckets',[]);
         this.drawLine();
       })
@@ -954,11 +954,13 @@ export default {
         //按时间查询日志数量
         let query = {};
         let aggs = {
-          "dataCount":{
-            "date_histogram": {
-              "field": "dtTime",
-              "interval": this.chartInterval.value,
-              "min_doc_count": 0
+          "aggregations": {
+            "dataCount": {
+              "date_histogram": {
+                "field": "dtTime",
+                "interval": this.chartInterval.value,
+                "min_doc_count": 0
+              }
             }
           }
         }
@@ -976,7 +978,7 @@ export default {
               ]
             }
           },
-          aggs
+        ...aggs
         }
 
         let _errorQuery = {
@@ -999,23 +1001,19 @@ export default {
               ]
             }
           },
-          aggs
+          ...aggs
         }
    
 
-        let url= process.env.VUE_APP_API+'/query?size=1000&from=0&index='+dateList.join(',')
+        let url= process.env.VUE_APP_API+'/query?size=0&from=0&index='+dateList.join(',')+ "&errChat"
 
-        _promise.push(axios.post(url,query).then(data=>{
-          return _.get(data,'data.aggregations.dataCount.buckets',[])
-        }))
         _promise.push(axios.post(url,_errorQuery).then(data=>{
           return _.get(data,'data.aggregations.dataCount.buckets',[])
         }))
 
         return Promise.all(_promise).then(datas=>{
-          let totalDatas = datas[0];
-          let errorDatas = datas[1];
-          if(errorDatas.length==0 || errorDatas.length<totalDatas.length){
+          let errorDatas = datas[0];
+          if(errorDatas.length==0){
             return []
           }
           else
@@ -1024,8 +1022,7 @@ export default {
             for(var i=0;i<errorDatas.length;i++){
               let key = errorDatas[i].key;
               let _errorCount = errorDatas[i].doc_count;
-              let _totalCount = totalDatas[i].doc_count;
-              if(_errorCount<=0 || _totalCount<=0)
+              if(_errorCount<=0)
               {
                 _array.push({
                   key,
@@ -1036,7 +1033,7 @@ export default {
               {
                 _array.push({
                   key,
-                  doc_count:(_errorCount/_totalCount).toFixed(4)
+                  doc_count:_errorCount
                 })
               }
             }
