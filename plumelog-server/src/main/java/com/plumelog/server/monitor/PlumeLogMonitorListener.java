@@ -6,6 +6,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.redis.RedisClient;
+import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,8 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      */
     private static final String KEY_NX = ":NX";
 
+
+
     @Autowired
     private ElasticLowerClient elasticLowerClient;
 
@@ -62,6 +65,8 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         List<RunLogMessage> runlogs = new ArrayList<>();
         logs.forEach(logString -> {
             RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
+            //redisClient.sadd(AppNameCache.APP_NAME_SET,runLogMessage.getAppName());
+            AppNameCache.appName.add(runLogMessage.getAppName());
             if (runLogMessage.getLogLevel().toUpperCase().equals("ERROR")) {
                 runlogs.add(runLogMessage);
             }

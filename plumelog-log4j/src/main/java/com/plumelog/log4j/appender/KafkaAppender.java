@@ -11,6 +11,7 @@ import com.plumelog.core.kafka.KafkaProducerClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -27,6 +28,7 @@ public class KafkaAppender extends AppenderSkeleton {
     private String runModel;
     private String topic;
     private int maxCount=100;
+    private int logQueueSize=10000;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -47,6 +49,11 @@ public class KafkaAppender extends AppenderSkeleton {
     public void setMaxCount(int maxCount) {
         this.maxCount = maxCount;
     }
+
+    public void setLogQueueSize(int logQueueSize) {
+        this.logQueueSize = logQueueSize;
+    }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
     @Override
@@ -59,11 +66,11 @@ public class KafkaAppender extends AppenderSkeleton {
             for(int a=0;a<5;a++){
 
                 threadPoolExecutor.execute(()->{
-
+                    MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
                     MessageAppenderFactory.startRunLog(kafkaClient,maxCount);
                 });
                 threadPoolExecutor.execute(()->{
-
+                    MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
                     MessageAppenderFactory.startTraceLog(kafkaClient,maxCount);
                 });
             }

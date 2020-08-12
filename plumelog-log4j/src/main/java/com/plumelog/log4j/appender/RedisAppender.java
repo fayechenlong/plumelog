@@ -11,6 +11,7 @@ import com.plumelog.core.redis.RedisClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -29,6 +30,7 @@ public class RedisAppender extends AppenderSkeleton {
     private String redisKey;
     private String runModel;
     private int maxCount=100;
+    private int logQueueSize=10000;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -57,6 +59,11 @@ public class RedisAppender extends AppenderSkeleton {
     public void setMaxCount(int maxCount) {
         this.maxCount = maxCount;
     }
+
+    public void setLogQueueSize(int logQueueSize) {
+        this.logQueueSize = logQueueSize;
+    }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
     @Override
@@ -71,11 +78,11 @@ public class RedisAppender extends AppenderSkeleton {
             for(int a=0;a<5;a++){
 
                 threadPoolExecutor.execute(()->{
-
+                    MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
                     MessageAppenderFactory.startRunLog(redisClient,maxCount);
                 });
                 threadPoolExecutor.execute(()->{
-
+                    MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
                     MessageAppenderFactory.startTraceLog(redisClient,maxCount);
                 });
             }

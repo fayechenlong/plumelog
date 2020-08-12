@@ -18,6 +18,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.io.Serializable;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -35,15 +36,17 @@ public class KafkaAppender extends AbstractAppender {
     private String runModel;
     private String expand;
     private int maxCount=500;
+    private int logQueueSize=10000;
 
     protected KafkaAppender(String name, String appName, String kafkaHosts, String runModel, Filter filter, Layout<? extends Serializable> layout,
-                            final boolean ignoreExceptions, String expand,int maxCount) {
+                            final boolean ignoreExceptions, String expand,int maxCount,int logQueueSize) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.kafkaHosts = kafkaHosts;
         this.runModel = runModel;
         this.expand = expand;
         this.maxCount=maxCount;
+        this.logQueueSize=logQueueSize;
 
     }
 
@@ -69,6 +72,7 @@ public class KafkaAppender extends AbstractAppender {
             @PluginAttribute("expand") String expand,
             @PluginAttribute("runModel") String runModel,
             @PluginAttribute("maxCount") int maxCount,
+            @PluginAttribute("logQueueSize") int logQueueSize,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
         if (runModel != null) {
@@ -87,14 +91,14 @@ public class KafkaAppender extends AbstractAppender {
         for(int a=0;a<5;a++){
 
             threadPoolExecutor.execute(()->{
-
+                MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
                 MessageAppenderFactory.startRunLog(kafkaClient,count);
             });
             threadPoolExecutor.execute(()->{
-
+                MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
                 MessageAppenderFactory.startTraceLog(kafkaClient,count);
             });
         }
-        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand,maxCount);
+        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand,maxCount,logQueueSize);
     }
 }

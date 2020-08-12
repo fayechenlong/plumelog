@@ -6,6 +6,7 @@ import com.plumelog.core.dto.WarningRuleDto;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
+import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,5 +214,10 @@ public class MainController {
         Map<String, Object> result = new HashMap<>();
         result.put("success",true);
         return result;
+    }
+    @RequestMapping({"/getAppNames", "/plumelog/getAppNames"})
+    public Object getAppNames() {
+        //return redisClient.smembers(AppNameCache.APP_NAME_SET);
+        return AppNameCache.appName;
     }
 }

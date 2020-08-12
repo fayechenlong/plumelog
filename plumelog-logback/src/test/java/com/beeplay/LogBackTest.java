@@ -17,7 +17,7 @@ public class LogBackTest {
      */
     public static void main(String[] args) {
 
-        for(int a=0;a<100000;a++) {
+        for(int a=0;a<100;a++) {
             TraceId.logTraceID.set(UUID.randomUUID().toString().replace("-", ""));
             MDC.put("orderid", "1");
             MDC.put("userid", "4");

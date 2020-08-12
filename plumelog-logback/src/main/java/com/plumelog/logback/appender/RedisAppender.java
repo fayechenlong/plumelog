@@ -11,6 +11,7 @@ import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.logback.util.LogMessageUtil;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -30,6 +31,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private String runModel;
     private String expand;
     private int maxCount=100;
+    private int logQueueSize=10000;
 
     public String getExpand() {
         return expand;
@@ -61,6 +63,10 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     public void setMaxCount(int maxCount) {
         this.maxCount = maxCount;
+    }
+
+    public void setLogQueueSize(int logQueueSize) {
+        this.logQueueSize = logQueueSize;
     }
 
     @Override
@@ -95,11 +101,11 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         for(int a=0;a<5;a++){
 
             threadPoolExecutor.execute(()->{
-
+                MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
                 MessageAppenderFactory.startRunLog(redisClient,maxCount);
             });
             threadPoolExecutor.execute(()->{
-
+                MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
                 MessageAppenderFactory.startTraceLog(redisClient,maxCount);
             });
         }

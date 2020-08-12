@@ -31,8 +31,8 @@ public class MessageAppenderFactory {
 
     private static Boolean logOutPut = true;
 
-    private static BlockingQueue<String> rundataQueue = new LinkedBlockingQueue<>(10000);
-    private static BlockingQueue<String> tracedataQueue = new LinkedBlockingQueue<>(10000);
+    public static BlockingQueue<String> rundataQueue;
+    public static BlockingQueue<String> tracedataQueue;
 
     /**
      * 当下游异常的时候，状态缓存时间

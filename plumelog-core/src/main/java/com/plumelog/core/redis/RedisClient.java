@@ -209,7 +209,22 @@ public class RedisClient extends AbstractClient {
             sj.close();
         }
     }
-
+    public void sadd(String key, String value) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.sadd(key,value);
+        } finally {
+            sj.close();
+        }
+    }
+    public Set<String> smembers(String key) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            return sj.smembers(key);
+        } finally {
+            sj.close();
+        }
+    }
 
     public void del(String key) {
         Jedis sj = jedisPool.getResource();
