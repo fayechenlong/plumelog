@@ -263,10 +263,11 @@ KafkaAppender
 ```java
         @Component
         public class Interceptor extends HandlerInterceptorAdapter{
-            private IdWorker worker = new IdWorker(1,1,1);//雪花算法，这边不一定要用这个生成如果用这个，不通的项目应用参数不要一样，否则会重复
             @Override
             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-                TraceId.logTraceID.set(String.valueOf(worker.nextId()));//设置TraceID值，不埋此点链路ID就没有
+                String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+                String traceid= uuid.substring(uuid.length() - 7);
+                TraceId.logTraceID.set(traceid);//设置TraceID值，不埋此点链路ID就没有
                 return true;
             }
         }
@@ -277,6 +278,10 @@ KafkaAppender
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-sleuth</artifactId>
             </dependency>
+``` 
+   skywalking traceid获取方式
+```java
+     String traceId = TraceContext.traceId();  
 ``` 
 * 扩展字段MDC用法，例如
 ```java
