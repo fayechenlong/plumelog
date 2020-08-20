@@ -1,12 +1,12 @@
 #!/bin/sh
 #create by 2020-06-19 xiaobai021sdo
 #update by 2020-08-10 xiaobai021sdo
+#update by 2020-08-20 xiaobai021sdo
 #获取当前路径
 basedir=$(cd "$(dirname "$0")"; pwd)
 
 #创建配置文件目录
 mkdir -p $basedir/plumelog-server/config/
-mkdir -p $basedir/plumelog-ui/config/
 
 #plumelog-server配置文件写入
 cat << EOF >$basedir/plumelog-server/config/application.properties
