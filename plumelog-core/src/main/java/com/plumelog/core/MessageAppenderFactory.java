@@ -45,11 +45,15 @@ public class MessageAppenderFactory {
         producer.send(baseLogMessage);
     }
     public static void pushRundataQueue(String message) {
-        rundataQueue.add(message);
+        if(message!=null) {
+            rundataQueue.add(message);
+        }
     }
 
     public static void pushTracedataQueue(String message) {
-        tracedataQueue.add(message);
+        if(message!=null) {
+            tracedataQueue.add(message);
+        }
     }
 
     public static void push(String redisKey, List<String> baseLogMessage, AbstractClient client, String logOutPutKey) {
