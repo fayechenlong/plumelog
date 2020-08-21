@@ -39,7 +39,7 @@
             <tr>
               <td class="key">日志等级</td>
               <td>
-                <Select v-model="filter.logLevel" multiple placeholder="请选择日志等级">
+                <Select v-model="filter.logLevel" placeholder="请选择日志等级">
                     <Option value="" key="ALL">所有</Option>
                     <Option value="INFO" key="INFO">INFO</Option>
                     <Option value="ERROR" key="ERROR">ERROR</Option>
