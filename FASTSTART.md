@@ -113,7 +113,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j</artifactId>
-       <version>3.1</version>
+       <version>3.1.3</version>
    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -155,7 +155,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-logback</artifactId>
-       <version>3.1</version>
+       <version>3.1.3</version>
    </dependency>
 ```  
 * 配置
@@ -198,7 +198,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j2</artifactId>
-       <version>3.1</version>
+       <version>3.1.3</version>
    </dependency>       
 ```   
 * 配置
@@ -289,26 +289,6 @@ KafkaAppender
             MDC.put("userid", "4");
             logger.info("扩展字段");
 ``` 
-
-   1.在系统扩展字段里添加扩展字段，字段值为 orderid 显示值为 订单编号
-   2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
-
-* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
-
-* TraceId跨线程传递
-
-    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog-demo也有）
-
-    #### 修饰线程池
-
-```java
-        private static ExecutorService executorService = TtlExecutors.getTtlExecutorService(
-                    new ThreadPoolExecutor(8, 8,0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>()));
-          //省去每次Runnable和Callable传入线程池时的修饰，这个逻辑可以在线程池中完成      
-          executorService.execute(() -> {
-                      logger.info("子线程日志展示");
-          });
-```        
 * 错误报警说明
 
    在ui的报警管理里配置报警规则：
@@ -328,7 +308,25 @@ KafkaAppender
      6.时间间隔  错误在多少秒内累计到上面错误数量开始报警
      
    报警记录里为报警历史记录，点击可以直接连接到错误内容
-      
+   1.在系统扩展字段里添加扩展字段，字段值为 orderid 显示值为 订单编号
+   2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
+
+* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
+
+* TraceId跨线程传递
+
+    如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog-demo也有）
+
+    #### 修饰线程池
+
+```java
+        private static ExecutorService executorService = TtlExecutors.getTtlExecutorService(
+                    new ThreadPoolExecutor(8, 8,0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>()));
+          //省去每次Runnable和Callable传入线程池时的修饰，这个逻辑可以在线程池中完成      
+          executorService.execute(() -> {
+                      logger.info("子线程日志展示");
+          });
+```        
    #### 修饰Runnable和Callable
    
 ```java
