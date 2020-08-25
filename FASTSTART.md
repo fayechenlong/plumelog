@@ -94,9 +94,9 @@
     #plumelog.es.passWord=easylog123456
 
     #redis配置,3.0版本必须配置redis地址，因为需要监控报警
-    plumelog.server.redis.redisHost=127.0.0.1:6379
+    plumelog.redis.redisHost=127.0.0.1:6379
     #如果使用redis有密码,启用下面配置
-    #plumelog.server.redis.redisPassWord=123456
+    #plumelog.redis.redisPassWord=123456
 
     #管理密码，手动删除日志的时候需要输入的密码
     admin.password=123456
