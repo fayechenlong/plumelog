@@ -90,15 +90,19 @@ public class RedisAppender extends AbstractAppender {
         if(maxCount==0){
             maxCount=100;
         }
+        if(logQueueSize==0){
+            logQueueSize=10000;
+        }
+        final int queueSize=logQueueSize;
         final int count=maxCount;
         for(int a=0;a<5;a++){
 
             threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
+                MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(queueSize);
                 MessageAppenderFactory.startRunLog(redisClient,count);
             });
             threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
+                MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(queueSize);
                 MessageAppenderFactory.startTraceLog(redisClient,count);
             });
         }
