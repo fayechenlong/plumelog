@@ -16,6 +16,8 @@ public class InitConfig {
     public final static String REDIS_MODE_NAME = "redis";
     public final static String REST_MODE_NAME = "rest";
 
+    public  static int ES_INDEX_SHARDS = 5;
+
 
     public static String restUserName = "";
     public static String restPassWord = "";
