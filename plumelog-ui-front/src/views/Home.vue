@@ -198,7 +198,12 @@
           <a class="page-link" href="javascript:void(0)" @click="nextPage">下一页</a>
         </li>
         <li class="page-item">
-          <div class="page-count">跳转至第 <InputNumber style="width:50px" size="small" :min="1" :max="parseInt(totalCount/size)+1" v-model="jumpPageIndex" /> 页 <Button @click="goPage" style="font-size:12px" size="small">确定</Button></div>
+          <div class="page-count">每页  <Select @on-change="doSearch" v-model="size" size="small" style="width:100px">
+            <Option v-for="item in sizeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select> 条</div>
+        </li>
+        <li class="page-item">
+          <div class="page-count">跳转至第 <InputNumber style="width:80px" size="small" :min="1" :max="parseInt(totalCount/size)+1" v-model="jumpPageIndex" /> 页 <Button @click="goPage" style="font-size:12px" size="small">确定</Button></div>
         </li>
         <li class="page-item"><div class="page-count">第{{parseInt(from/size)+1}}页 / 共{{  parseInt(totalCount/size)+1}}页</div></li>
       </ul>
@@ -224,6 +229,7 @@ export default {
   name: "Home",
   data(){
    return {
+     sizeList: [{label:"30", value:30},{label:"50", value:50},{label:"100", value:100},{label:"200", value:200},{label:"500", value:500}],
      isSearching:false,
      tag:"",
      extendTag:"",
@@ -240,7 +246,7 @@ export default {
      jumpPageIndex:1,
      chartData:[],
      searchOptions:[],
-     showColumnTitles: ['logLevel','serverName','appName','traceId','className'],
+     showColumnTitles: ['appName','traceId'],
      allColumns:[
        {
          label:'日志等级',
