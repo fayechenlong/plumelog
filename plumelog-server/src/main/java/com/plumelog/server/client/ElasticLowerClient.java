@@ -130,6 +130,8 @@ public class ElasticLowerClient {
             Request request = new Request(
                     "PUT",
                     "/" + indice + "");
+            String ent = "{\"settings\":{\"number_of_shards\":20,\"number_of_replicas\":1}}";
+            request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
                 return true;
