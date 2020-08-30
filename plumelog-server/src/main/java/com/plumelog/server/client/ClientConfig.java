@@ -38,6 +38,8 @@ public class ClientConfig implements InitializingBean {
     private String esPassWord;
     @Value("${plumelog.es.shards:5}")
     private int shards;
+    @Value("${plumelog.es.replicas:1}")
+    private int replicas;
     @Value("${plumelog.redis.redisHost:127.0.0.1:6379}")
     private String redisHost;
     @Value("${plumelog.redis.redisPassWord:}")
@@ -108,6 +110,7 @@ public class ClientConfig implements InitializingBean {
         InitConfig.MAX_INTERVAL = this.interval;
         InitConfig.START_MODEL = this.model;
         InitConfig.ES_INDEX_SHARDS=this.shards;
+        InitConfig.ES_INDEX_REPLICAS=this.replicas;
         LogMessageConstant.ES_TYPE = this.indexType;
 
         InitConfig.restUrl = this.restUrl;
