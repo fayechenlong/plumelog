@@ -263,7 +263,16 @@ public class RedisClient extends AbstractClient {
         }
         return value;
     }
-
+    public Long llen(String key) {
+        Long value = 0L;
+        Jedis sj = jedisPool.getResource();
+        try {
+            value= sj.llen(key);
+        } finally {
+            sj.close();
+        }
+        return value;
+    }
     public Map<String, String> hgetAll(String key) {
         Map<String, String> value = new HashMap<>();
         Jedis sj = jedisPool.getResource();
