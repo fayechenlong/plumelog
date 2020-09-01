@@ -41,7 +41,7 @@
         },
         methods:{
             hightLightCode(code){
-                code = code.replace(/\\n\\tat/g,"\n").replace(/\\n###/g, "\n");
+                code = code.replace(/\\n\\t/g,"\n").replace(/\\n\\tat/g,"\n").replace(/\\n/g, '\n');
                 if(code.indexOf('java.')>-1){
                     return '<pre style="word-break:break-all">'+Prism.highlight(code.replace(/\n/g,'<br/>'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>"
                 }

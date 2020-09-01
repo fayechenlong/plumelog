@@ -480,7 +480,7 @@ export default {
   },
   methods:{
     replaceOf(content) {
-      return content.replace(/\\n\\tat/g,"\n").replace(/\\n###/g, "\n")
+      return content.replace(/\\n\\t/g,"\n").replace(/\\n\\tat/g,"\n").replace(/\\n/g, '\n')
     },
     appNameChange(){
       this.getExtendList();
