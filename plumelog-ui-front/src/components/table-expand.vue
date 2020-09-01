@@ -23,7 +23,9 @@
                         </tr>
                         <tr>
                           <td class="key">内容</td>
-                          <td class="value" v-html="hightLightCode(row.content)"></td>
+                          <td class="value" >
+                            <div style="white-space: pre-wrap;" v-html="row.highlightCnt || row.content"></div>
+                          </td>
                         </tr>
                       </table>
                 </span>

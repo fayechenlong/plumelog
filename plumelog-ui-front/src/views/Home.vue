@@ -1,5 +1,5 @@
 <template>
-  <div class="pnl_wraper">
+  <div id="top" class="pnl_wraper">
     <div class="icon_arrow down" v-if="!showFilter" @click="setShowFilter">
       <Icon type="ios-arrow-down" v-show="!showFilter" />
       <span class="text">展开</span>
@@ -176,8 +176,8 @@
               <a :href="'./#/trace?traceId='+row.traceId+'&timeRange='+JSON.stringify(dateTimeRange)" title="点击查看链路追踪">{{row.traceId}}</a>
               <Icon type="ios-search" v-if="row.traceId" @click="doSearch('traceId',row)" />
             </template>
-            <template  slot-scope="{ row }" slot="content">
-              <div v-html="substr((row.highlightCnt || row.content),200)"></div>
+            <template slot-scope="{ row }" slot="content">
+              <div style="white-space: pre-wrap;max-height: 100px;" v-html="row.highlightCnt || row.content"></div>
             </template>
           </Table>
     </div>
@@ -206,6 +206,7 @@
           <div class="page-count">跳转至第 <InputNumber style="width:80px" size="small" :min="1" :max="parseInt(totalCount/size)+1" v-model="jumpPageIndex" /> 页 <Button @click="goPage" style="font-size:12px" size="small">确定</Button></div>
         </li>
         <li class="page-item"><div class="page-count">第{{parseInt(from/size)+1}}页 / 共{{  parseInt(totalCount/size)+1}}页</div></li>
+        <li class="page-item"><div class="page-count"><a href="#top">返回顶部</a></div></li>
       </ul>
     </nav>
     
@@ -305,10 +306,10 @@ export default {
             title: '时间',
             key: 'dtTime',
             sortable: true,
-            width:150,
+            width:180,
             resizable: true,
             render: (h, params) => {
-              return h('div', moment(params.row.dtTime).format('YYYY-MM-DD HH:mm:ss'))
+              return h('div', moment(params.row.dtTime).format('YYYY-MM-DD HH:mm:ss.SSS'))
             }
         },
         {
@@ -362,10 +363,9 @@ export default {
         },
         {
             title: '内容',
-            align:'center',
+            align:'left',
             key: 'content',
-            slot:'content',
-            ellipsis:true
+            slot:'content'
         }
      ],
      sort:[{
@@ -416,7 +416,7 @@ export default {
           if(item){
             columns.push({
               title: item.label,
-              align:'center',
+              align: 'center',
               key: item.value,
               ellipsis:true
             })
@@ -895,7 +895,9 @@ export default {
         ...query,
         "highlight": {
             "fields" : {
-                "content" : {}
+                "content" : {
+                  "fragment_size": 2147483647
+                }
             }
         },
         "sort":this.sort
@@ -1118,6 +1120,9 @@ export default {
 };
 </script>
 <style lang="less">
+  .ivu-table {
+    line-height: 14px;
+  }
   .ivu-table-wrapper{
     overflow: unset;
   }
@@ -1128,6 +1133,7 @@ export default {
     left:10px;
     color:#aaa;
     font-size:12px;
+
   }
 
   .ivu-table-row-highlight td,.ivu-table-row-hover td
@@ -1154,7 +1160,7 @@ export default {
 
     tr.ERROR{
       td{
-        background: #f7b8a8;
+        background: #ffeae5;
       }
     }
 
@@ -1172,6 +1178,9 @@ export default {
         position: relative;
         &.ivu-table-expanded-cell{
           padding:0;
+        }
+        &.content{
+          word-break:break-all;
         }
         &.icon{
           &:hover{
