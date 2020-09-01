@@ -177,7 +177,7 @@
               <Icon type="ios-search" v-if="row.traceId" @click="doSearch('traceId',row)" />
             </template>
             <template slot-scope="{ row }" slot="content">
-              <div style="white-space: pre-wrap;max-height: 100px;" v-html="row.highlightCnt || row.content"></div>
+              <div style="white-space: pre-wrap; max-height: 100px;" v-html="replaceOf(row.highlightCnt || row.content)"></div>
             </template>
           </Table>
     </div>
@@ -479,6 +479,9 @@ export default {
     }
   },
   methods:{
+    replaceOf(content) {
+      return content.replace(/\\n\\tat/g,"\n").replace(/\\n###/g, "\n")
+    },
     appNameChange(){
       this.getExtendList();
     },
@@ -1175,6 +1178,7 @@ export default {
        z-index: 10;       
     }
     td{
+        padding: 3px 0;
         position: relative;
         &.ivu-table-expanded-cell{
           padding:0;

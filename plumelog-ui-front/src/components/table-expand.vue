@@ -23,8 +23,8 @@
                         </tr>
                         <tr>
                           <td class="key">内容</td>
-                          <td class="value" >
-                            <div style="white-space: pre-wrap;" v-html="row.highlightCnt || row.content"></div>
+                          <td class="value" v-html="hightLightCode(row.highlightCnt ||row.content)">
+                            <div style="white-space: pre-wrap;" ></div>
                           </td>
                         </tr>
                       </table>
@@ -41,17 +41,13 @@
         },
         methods:{
             hightLightCode(code){
-                if(this.searchKey){
-                    let re = new RegExp("(" + this.searchKey.replace(/\*/g,'') + ")", "gmi");
-                    code = code.replace(re, '<em>$1</em>');
-                }
-
+                code = code.replace(/\\n\\tat/g,"\n").replace(/\\n###/g, "\n");
                 if(code.indexOf('java.')>-1){
-                    return '<pre style="word-break:break-all">'+Prism.highlight(code, Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>"
+                    return '<pre style="word-break:break-all">'+Prism.highlight(code.replace(/\n/g,'<br/>'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>"
                 }
                 else
                 {
-                    return '<div style="word-break:break-all">'+code.replace(/\n/g,'<br/>')+"</div>";
+                    return '<div style="word-break:break-all">'+code.replace(/\n/g,'<br/>').replace(/\tat/g,'')+"</div>";
                 }
             }
         }
