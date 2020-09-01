@@ -359,13 +359,14 @@ export default {
             slot: 'className',
             className: 'icon',
             sortable: true,
+            resizable: true,
             width:270
         },
         {
             title: '内容',
             align:'left',
             key: 'content',
-            slot:'content'
+            slot:'content',
         }
      ],
      sort:[{
@@ -391,9 +392,9 @@ export default {
   },
   computed:{
     searchQuery(){
-      var query="";
-      for(var i=0;i<this.searchOptions.length;i++){
-        var item = this.searchOptions[i];
+      let query="";
+      for(let i=0;i<this.searchOptions.length;i++){
+        let item = this.searchOptions[i];
         if(i>0){
           query+=" "+item.type+" ";
         }
@@ -402,7 +403,7 @@ export default {
       return query;
     },
     showColumns(){
-      var columns =[this.columns[0],this.columns[1]];
+      let columns =[this.columns[0],this.columns[1]];
       for(let title of this.showColumnTitles){
         let _c = _.find(this.columns,['key',title]);
         if(_c){
@@ -411,21 +412,25 @@ export default {
         else
         {
           //从allColmns里获取label和value
-
-          var item  = _.find(this.allColumns,(o)=>{return o.value == title});
+          let item  = _.find(this.allColumns,(o)=>{return o.value == title});
           if(item){
-            columns.push({
+            let col = {
               title: item.label,
               align: 'center',
-              key: item.value,
-              ellipsis:true
-            })
+              resizable:true,
+              key: item.value
+            };
+            if(item.width) {
+              col.width = item.width
+            } else {
+              col.width = 200
+            }
+            columns.push(col)
           }
-
-          
         }
       }
       columns.push(_.find(this.columns,['key','content']))
+      this.columns = columns; //让新加入的拓展字段，可以被vue管理
       return columns;
     },
     chartInterval(){
@@ -512,7 +517,7 @@ export default {
           axios.post(process.env.VUE_APP_API+'/getExtendfieldList?appName='+this.filter.appName).then(data=>{
               let _data = _.get(data,'data',{});
               let list = [];
-              for(var item in _data){
+              for(let item in _data){
                   list.push({
                       field:item,
                       fieldName:_data[item]
@@ -576,8 +581,8 @@ export default {
       if(this.extendTag){
 
         //同样的field只能出现一次，有的话覆盖
-        var isExistField = false;
-        for(var i=0;i<this.extendOptions.length;i++){
+        let isExistField = false;
+        for(let i=0;i<this.extendOptions.length;i++){
           if(this.extendOptions[i].field == this.select_extend){
             this.extendOptions[i]={
               field:this.select_extend,
@@ -621,7 +626,7 @@ export default {
       return row.logLevel+' '+row.id
     },
     dblclick(row,index){
-      var ele = $('.'+row.id);
+      let ele = $('.'+row.id);
       ele.find('.ivu-table-cell-expand').click();
     },
     sortChange({key,order}){
@@ -649,6 +654,10 @@ export default {
 
         // 绘制图表
         myChart.setOption({
+          grid: {
+            x: 70,
+            y: 10
+          },
             title: {
                 text: '数量',
                 left: 'center',
@@ -660,6 +669,9 @@ export default {
             tooltip: {
               formatter(p,ticket){
                 return '时间：'+p.name+'<br/>数量：'+p.value+'条'
+              },
+              position:function(p){   //其中p为当前鼠标的位置
+                return [p[0]-50, p[1]-25];
               },
               extraCssText:'text-align:left'
             },
@@ -677,6 +689,9 @@ export default {
                axisLabel:{
                   fontSize:12,
                   color:'#666',
+                  formatter : function (value) {
+                      return value > 1000 ? value/1000 + "k": value
+                   }
                 }
             },
             series: [{
@@ -696,6 +711,10 @@ export default {
         let errorChart = this.$echarts.init(document.getElementById('errorChart'))
         window.addEventListener('resize',() => { errorChart.resize(); });
         errorChart.setOption({
+          grid: {
+            x: 70,
+            y: 10
+          },
             title: {
                 text: '错误数',
                 left: 'center',
@@ -707,6 +726,9 @@ export default {
             tooltip: {
               formatter(p,ticket){
                 return '时间：'+p.name+'<br/>错误数：'+p.value
+              },
+              position:function(p){   //其中p为当前鼠标的位置
+                return [p[0]-50, p[1] - 10];
               },
               extraCssText:'text-align:left'
             },
@@ -724,6 +746,9 @@ export default {
                axisLabel:{
                   fontSize:12,
                   color:'#666',
+                 formatter : function (value) {
+                   return value > 1000 ? value/1000 + "k": value
+                 }
                 }
             },
             series: [{
@@ -777,7 +802,7 @@ export default {
         }
       }
 
-      for(var extend of this.extendOptions)
+      for(let extend of this.extendOptions)
       {
         filters.push({
           "match_phrase":{
@@ -1031,7 +1056,7 @@ export default {
           else
           {
             let _array = [];
-            for(var i=0;i<errorDatas.length;i++){
+            for(let i=0;i<errorDatas.length;i++){
               let key = errorDatas[i].key;
               let _errorCount = errorDatas[i].doc_count;
               if(_errorCount<=0)
@@ -1252,7 +1277,8 @@ export default {
 
   .chart{
     position: relative;
-    top: 20px;
+    top: 38px;
+    padding-left:20px;
     left: 0;
     width: 100%;
     height: 280px;
