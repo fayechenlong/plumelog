@@ -21,6 +21,11 @@ const routes = [
     component: Home
   },
   {
+    path: "/top",
+    name: "Home",
+    component: Home
+  },
+  {
     path: "/size",
     name: "Size",
     component: Size

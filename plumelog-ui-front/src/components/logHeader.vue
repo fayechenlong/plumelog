@@ -21,7 +21,7 @@
                 <a class="nav-link" href="./#/size">管理</a>
             </li>
         </ul>
-        <div class="version">Version 3.0.0</div>
+        <div class="version">Version 3.2.0</div>
     </nav>
 </template>
 <script>
