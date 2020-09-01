@@ -24,7 +24,6 @@
                         <tr>
                           <td class="key">内容</td>
                           <td class="value" v-html="hightLightCode(row.highlightCnt ||row.content)">
-                            <div style="white-space: pre-wrap;" ></div>
                           </td>
                         </tr>
                       </table>
@@ -43,11 +42,11 @@
             hightLightCode(code){
                 code = code.replace(/\\n\\t/g,"\n").replace(/\\n\\tat/g,"\n").replace(/\\n/g, '\n');
                 if(code.indexOf('java.')>-1){
-                    return '<pre style="word-break:break-all">'+Prism.highlight(code.replace(/\n/g,'<br/>'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>"
+                    return '<pre style="word-break:break-all;white-space: normal;">'+Prism.highlight(code.replace(/\n/g,'<br/>'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>"
                 }
                 else
                 {
-                    return '<div style="word-break:break-all">'+code.replace(/\n/g,'<br/>').replace(/\tat/g,'')+"</div>";
+                    return '<div style="word-break:break-all;white-space: normal;">'+code.replace(/\n/g,'<br/>').replace(/\tat/g,'')+"</div>";
                 }
             }
         }
