@@ -54,6 +54,15 @@ plumelog.ui.url=http://localhost:8891
 admin.password=123456
 #日志保留天数,配置0或者不配置默认永久保留
 admin.log.keepDays=15
+
+spring.thymeleaf.mode=LEGACYHTML5
+spring.mvc.view.prefix=classpath:/templates/
+spring.mvc.view.suffix=.html
+spring.mvc.static-path-pattern=/plumelog/**
+
+plumelog.es.shards=20
+plumelog.es.replicas=1
+
 EOF
 
 
