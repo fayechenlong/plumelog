@@ -1,5 +1,6 @@
 package com.plumelog.server.client;
 
+import com.plumelog.server.InitConfig;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -130,6 +131,8 @@ public class ElasticLowerClient {
             Request request = new Request(
                     "PUT",
                     "/" + indice + "");
+            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":1}}";
+            request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
                 return true;
