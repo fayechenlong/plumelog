@@ -10,7 +10,7 @@
           {{danger_str}}
         </div>
         <log-header></log-header>
-        
+
         <table class='tbl_filters'>
           <tbody>
             <tr>
@@ -19,15 +19,15 @@
                 <AutoComplete
                   v-model="filter.appName"
                   :data="appNameComplete"
-                  class="txt txtAppName" 
-                  placeholder="搜索多个请用逗号或空格隔开" 
+                  class="txt txtAppName"
+                  placeholder="搜索多个请用逗号或空格隔开"
                   :clearable="true"
                   :filter-method="completeFilter"
                   @on-change="appNameChange">
                 </AutoComplete>
-                <!-- <Select v-model="filter.appNames" 
-                        class="txt txtAppName" 
-                        filterable  
+                <!-- <Select v-model="filter.appNames"
+                        class="txt txtAppName"
+                        filterable
                         allow-create
                         :loading="completeFilterLoading"
                 >
@@ -73,7 +73,7 @@
             <tr>
               <td class="key">日期和时间</td>
               <td>
-                  <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm" placeholder="选择日期与时间" style="width: 280px"></DatePicker>
+                  <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChange" type="datetimerange" :options="dateOption" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期与时间" style="width: 315px"></DatePicker>
               </td>
             </tr>
         </table>
@@ -86,17 +86,17 @@
               <div id="errorChart" class="chart"></div>
           </CarouselItem>
         </Carousel>
-      
+
         <div style="clear:both"></div>
-        <table class="tbl_filters" style="width:865px">
+        <table class="tbl_filters" style="width:900px">
             <tr v-if="extendList.length>0">
               <td class="key">扩展字段</td>
               <td>
                 <Select v-model="select_extend" placeholder="选择扩展字段" style="width:150px;margin-right:10px">
                   <Option v-for="extend in extendList" :value="extend.field" :key="extend.field">{{ extend.fieldName }}</Option>
                 </Select>
-                <Input class="txt" @on-enter="addExtendTag" :clearable="true" v-model="extendTag" placeholder="输入查询内容" style="width:445px;"   />
-                <Button icon="md-add" @click="addExtendTag" style="margin-left:10px">添加</Button>
+                <Input class="txt" @on-enter="addExtendTag" :clearable="true" v-model="extendTag" placeholder="输入查询内容" style="width:478px;"   />
+                <Button icon="md-add" @click="addExtendTag" style="margin-left:10px;width:100px">添加</Button>
               </td>
             </tr>
             <tr v-if="extendOptions.length>0">
@@ -111,7 +111,7 @@
             <tr v-if="!useSearchQuery">
               <td class="key">内容</td>
               <td>
-                <Input class="txt" @on-enter="doSearch()" :clearable="true" style="width:605px" placeholder="输入搜索内容" v-model="searchKey" />
+                <Input class="txt" @on-enter="doSearch()" :clearable="true" style="width:638px" placeholder="输入搜索内容" v-model="searchKey" />
                 <a href="javascript:void(0)" @click="useSearchQuery=true" class="link_changeModal">切换为条件模式</a>
               </td>
             </tr>
@@ -189,7 +189,7 @@
           <Option v-for="item in allColumns" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
       </div>
-     
+
       <ul  v-if="totalCount && parseInt(totalCount/size) > 0"  class="pagination justify-content-center" style="float:right;margin-right:30px">
         <li class="page-item" :class="{'disabled': !isShowLastPage }">
           <a class="page-link" href="javascript:void(0)" @click="prevePage" tabindex="-1">上一页</a>
@@ -209,7 +209,7 @@
         <li class="page-item"><div class="page-count"><a href="#top">返回顶部</a></div></li>
       </ul>
     </nav>
-    
+
   </div>
 </template>
 
@@ -217,7 +217,7 @@
 import axios from '@/services/http'
 import _ from 'lodash'
 import moment from 'moment'
-import '@/assets/prism.js' 
+import '@/assets/prism.js'
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
 import logHeader from '@/components/logHeader.vue'
@@ -474,7 +474,7 @@ export default {
       return _.get(this.list,'total.value',_.get(this.list,'total',0))
     },
     isShowLastPage(){
-      return this.from > 0 
+      return this.from > 0
     },
     haveNextPage(){
       if(this.totalCount>(this.from+this.size))
@@ -677,7 +677,7 @@ export default {
             },
             xAxis: {
                 data: _.map(this.chartData,(d)=>{
-                  return  moment(d.key).format(this.chartInterval.format) 
+                  return  moment(d.key).format(this.chartInterval.format)
                 }),
                 axisLabel:{
                   fontSize:12,
@@ -734,7 +734,7 @@ export default {
             },
             xAxis: {
                 data: _.map(data,(d)=>{
-                  return  moment(d.key).format(this.chartInterval.format) 
+                  return  moment(d.key).format(this.chartInterval.format)
                 }),
                 axisLabel:{
                   fontSize:12,
@@ -879,18 +879,18 @@ export default {
       let dateList=[];
       let startDate = _.clone(new Date(this.dateTimeRange[0]));
       let shouldFilter = this.getShouldFilter();
-      
+
       if(startDate){
          while(startDate<=this.dateTimeRange[1]){
           dateList.push('plume_log_run_'+moment(startDate).format('YYYYMMDD'))
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }
-     
+
       if(dateList.length==0){
         dateList.push('plume_log_run_'+moment().format('YYYYMMDD'));
       }
-          
+
       let url= process.env.VUE_APP_API+'/query?index='+dateList.join(',');
 
       let query = {
@@ -932,7 +932,7 @@ export default {
       };
 
       this.$Loading.start();
-      
+
       let searchUrl = url+'&size='+this.size+"&from="+this.from;
       this.isSearching = true;
       axios.post(searchUrl,esFilter).then(data=>{
@@ -952,7 +952,7 @@ export default {
         })
 
          this.list = _searchData;
-        
+
       })
 
 
@@ -1001,7 +1001,7 @@ export default {
             }
           }
         }
-        query = { 
+        query = {
           "query": {
               "bool": {
                 "must": [{
@@ -1040,7 +1040,7 @@ export default {
           },
           ...aggs
         }
-   
+
 
         let url= process.env.VUE_APP_API+'/query?size=0&from=0&index='+dateList.join(',')+ "&errChat"
 
@@ -1084,12 +1084,12 @@ export default {
       {
         from = 0;
       }
-      this.from = from;   
-      this.doSearch();   
+      this.from = from;
+      this.doSearch();
     },
     nextPage(){
       let from = this.from + this.size
-      this.from = from;   
+      this.from = from;
       this.doSearch();
     },
     goPage(){
@@ -1104,7 +1104,7 @@ export default {
       if(titles){
         this.showColumnTitles = JSON.parse(titles)
       }
-      
+
       if(this.$route.query.appName){
         this.filter['appName'] = this.$route.query.appName;
       }
@@ -1117,7 +1117,7 @@ export default {
       if(this.$route.query.time){
         let times = this.$route.query.time.split(',');
         if(times.length>1){
-          this.dateTimeRange = [moment(parseInt(times[0])).format('YYYY-MM-DD HH:mm:ss'),moment(parseInt(times[1])).format('YYYY-MM-DD HH:mm:ss')]
+          this.dateTimeRange = [moment(parseInt(times[0])-1000).format('YYYY-MM-DD HH:mm:ss'),moment(parseInt(times[1])+1000).format('YYYY-MM-DD HH:mm:ss')]
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
         }
       }
@@ -1199,8 +1199,8 @@ export default {
     .ivu-table-header
     {
        position:sticky !important;
-       top:-1px; 
-       z-index: 10;       
+       top:-1px;
+       z-index: 10;
     }
     td{
         padding: 3px 0;
@@ -1296,7 +1296,7 @@ export default {
     width:100px;
     height:50px;
     z-index:10;
-    
+
     &.down{
       top: 10px;
     }
