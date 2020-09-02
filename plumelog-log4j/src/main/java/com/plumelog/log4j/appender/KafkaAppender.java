@@ -29,6 +29,7 @@ public class KafkaAppender extends AppenderSkeleton {
     private String topic;
     private int maxCount=100;
     private int logQueueSize=10000;
+    private int threadPoolSize=5;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -54,6 +55,10 @@ public class KafkaAppender extends AppenderSkeleton {
         this.logQueueSize = logQueueSize;
     }
 
+    public void setKafkaClient(KafkaProducerClient kafkaClient) {
+        this.kafkaClient = kafkaClient;
+    }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
     @Override
@@ -63,14 +68,14 @@ public class KafkaAppender extends AppenderSkeleton {
         }
         if (kafkaClient == null) {
             kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
-            for(int a=0;a<5;a++){
+            for(int a=0;a<this.threadPoolSize;a++){
 
                 threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
+                    MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
                     MessageAppenderFactory.startRunLog(kafkaClient,maxCount);
                 });
                 threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
+                    MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
                     MessageAppenderFactory.startTraceLog(kafkaClient,maxCount);
                 });
             }

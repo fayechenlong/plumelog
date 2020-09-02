@@ -42,6 +42,8 @@ public class ClientConfig implements InitializingBean {
     private String redisHost;
     @Value("${plumelog.redis.redisPassWord:}")
     private String redisPassWord;
+    @Value("${plumelog.redis.redisDb:0}")
+    private int redisDb=0;
     @Value("${plumelog.maxSendSize:5000}")
     public int maxSendSize = 5000;
     @Value("${plumelog.interval:100}")
@@ -74,7 +76,7 @@ public class ClientConfig implements InitializingBean {
             return null;
         }
         logger.info("redis host:{},port:{}",ip,port);
-        return RedisClient.getInstance(ip, port, redisPassWord);
+        return RedisClient.getInstance(ip, port, redisPassWord,redisDb);
     }
 
     @Bean
