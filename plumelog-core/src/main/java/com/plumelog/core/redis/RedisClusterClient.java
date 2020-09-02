@@ -1,9 +1,11 @@
 package com.plumelog.core.redis;
 
+import com.plumelog.core.AbstractClient;
+import com.plumelog.core.exception.LogQueueConnectException;
 import redis.clients.jedis.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
+
 /**
  * className：RedisClusterClient
  * description：RedisClusterClient instance
@@ -12,10 +14,14 @@ import java.util.Set;
  * @author Frank.chen
  * @version 1.0.0
  */
-public class RedisClusterClient {
+public class RedisClusterClient extends AbstractClient {
     private static  RedisClusterClient instance;
     private JedisCluster jedisCluster = null;
-
+    private static final String script = "local rs=redis.call(" +
+            "'setnx',KEYS[1],ARGV[1]);" +
+            "if(rs<1) then return 0;end;" +
+            "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
+            "return 1;";
     public static RedisClusterClient getInstance(String hosts) {
         if (instance == null) {
             synchronized (RedisClusterClient.class) {
@@ -35,22 +41,6 @@ public class RedisClusterClient {
         }
         jedisCluster = new JedisCluster(jedisClusterNodes);
     }
-    public void pushMessage(String key, String strings) {
-        try {
-            jedisCluster.rpush(key, strings);
-        }finally {
-            jedisCluster.close();
-        }
-    }
-    public String getMessage(String key) {
-        String obj;
-        try {
-            obj=jedisCluster.lpop(key);
-        }finally {
-            jedisCluster.close();
-        }
-        return obj;
-    }
 
     public List<String> getMessage(String key, long size) {
         List<String> list;
@@ -61,5 +51,39 @@ public class RedisClusterClient {
             jedisCluster.close();
         }
         return list;
+    }
+
+    @Override
+    public void pushMessage(String key, String strings) throws LogQueueConnectException {
+        Jedis sj = null;
+        try {
+            jedisCluster.rpush(key, strings);
+        } catch (Exception e) {
+            throw new LogQueueConnectException("redis 写入失败！", e);
+        } finally {
+            if (sj != null) {
+                sj.close();
+            }
+        }
+
+    }
+
+    public boolean existsKey(String key) {
+        try {
+            return jedisCluster.exists(key);
+        } finally {
+            jedisCluster.close();
+        }
+
+    }
+
+    public String getMessage(String key) {
+        String obj;
+        try {
+            obj = jedisCluster.lpop(key);
+        } finally {
+            jedisCluster.close();
+        }
+        return obj;
     }
 }

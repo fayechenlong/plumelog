@@ -28,9 +28,11 @@ public class RedisAppender extends AppenderSkeleton {
     private String redisPort;
     private String redisAuth;
     private String redisKey;
+    private int redisDb=0;
     private String runModel;
     private int maxCount=100;
     private int logQueueSize=10000;
+    private int threadPoolSize=5;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -52,6 +54,10 @@ public class RedisAppender extends AppenderSkeleton {
         this.redisKey = redisKey;
     }
 
+    public void setRedisDb(int redisDb) {
+        this.redisDb = redisDb;
+    }
+
     public void setRunModel(String runModel) {
         this.runModel = runModel;
     }
@@ -64,6 +70,10 @@ public class RedisAppender extends AppenderSkeleton {
         this.logQueueSize = logQueueSize;
     }
 
+    public void setThreadPoolSize(int threadPoolSize) {
+        this.threadPoolSize = threadPoolSize;
+    }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
     @Override
@@ -74,8 +84,8 @@ public class RedisAppender extends AppenderSkeleton {
         if (redisClient == null) {
             redisClient = RedisClient.getInstance(this.redisHost, this.redisPort == null ?
                     LogMessageConstant.REDIS_DEFAULT_PORT
-                    : Integer.parseInt(this.redisPort), this.redisAuth);
-            for(int a=0;a<5;a++){
+                    : Integer.parseInt(this.redisPort), this.redisAuth,this.redisDb);
+            for(int a=0;a<this.threadPoolSize;a++){
 
                 threadPoolExecutor.execute(()->{
                     MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
