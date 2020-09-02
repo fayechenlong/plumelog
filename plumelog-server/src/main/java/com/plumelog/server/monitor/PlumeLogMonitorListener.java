@@ -224,7 +224,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         //开始时间
         long startTime = currentTime - time;
         StringBuilder builder = new StringBuilder(64);
-        builder.append(url).append("?appName=").append(rule.getAppName())
+        builder.append(url).append("/#/?appName=").append(rule.getAppName())
                 .append("&className=").append(rule.getClassName())
                 .append("&logLevel=ERROR")
                 .append("&time=").append(startTime).append(",").append(currentTime);
