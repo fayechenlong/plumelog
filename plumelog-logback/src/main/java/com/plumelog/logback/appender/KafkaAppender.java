@@ -31,6 +31,7 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private String expand;
     private int maxCount=100;
     private int logQueueSize=10000;
+    private int threadPoolSize=5;
 
     public String getExpand() {
         return expand;
@@ -60,6 +61,10 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
         this.logQueueSize = logQueueSize;
     }
 
+    public void setThreadPoolSize(int threadPoolSize) {
+        this.threadPoolSize = threadPoolSize;
+    }
+
     @Override
     protected void append(ILoggingEvent event) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
@@ -85,14 +90,14 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             LogMessageConstant.EXPAND = expand;
         }
 
-        for(int a=0;a<5;a++){
+        for(int a=0;a<this.threadPoolSize;a++){
 
             threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
+                MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
                 MessageAppenderFactory.startRunLog(kafkaClient,maxCount);
             });
             threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
+                MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
                 MessageAppenderFactory.startTraceLog(kafkaClient,maxCount);
             });
         }

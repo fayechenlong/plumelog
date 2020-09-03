@@ -31,11 +31,11 @@ public class RedisClient extends AbstractClient {
             "return 1;";
 
 
-    public static RedisClient getInstance(String host, int port, String pass) {
+    public static RedisClient getInstance(String host, int port, String pass,int db) {
         if (instance == null) {
             synchronized (RedisClient.class) {
                 if (instance == null) {
-                    instance = new RedisClient(host, port, pass);
+                    instance = new RedisClient(host, port, pass,db);
                 }
             }
         }

@@ -28,10 +28,12 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private String redisHost;
     private String redisPort;
     private String redisAuth;
+    private int redisDb=0;
     private String runModel;
     private String expand;
     private int maxCount=100;
     private int logQueueSize=10000;
+    private int threadPoolSize=5;
 
     public String getExpand() {
         return expand;
@@ -55,6 +57,14 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     public void setRedisAuth(String redisAuth) {
         this.redisAuth = redisAuth;
+    }
+
+    public void setRedisDb(int redisDb) {
+        this.redisDb = redisDb;
+    }
+
+    public void setThreadPoolSize(int threadPoolSize) {
+        this.threadPoolSize = threadPoolSize;
     }
 
     public void setRunModel(String runModel) {
@@ -95,10 +105,10 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
                     this.redisPort == null ?
                             LogMessageConstant.REDIS_DEFAULT_PORT
                             : Integer.parseInt(this.redisPort),
-                    this.redisAuth);
+                    this.redisAuth,this.redisDb);
         }
 
-        for(int a=0;a<5;a++){
+        for(int a=0;a<this.threadPoolSize;a++){
 
             threadPoolExecutor.execute(()->{
                 MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
