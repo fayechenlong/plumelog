@@ -153,11 +153,16 @@ public class MainController {
     }
 
     @RequestMapping({"/deleteQueue", "/plumelog/deleteQueue"})
-    public Map<String, Object> deleteQueue() {
+    public Map<String, Object> deleteQueue(String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
+        if (adminPassWord.equals(this.adminPassWord)) {
         redisClient.del(LogMessageConstant.LOG_KEY);
         redisClient.del(LogMessageConstant.LOG_KEY_TRACE);
         map.put("acknowledged", true);
+        } else {
+            map.put("acknowledged", false);
+            map.put("message", "管理密码错误！");
+        }
         return map;
     }
 
