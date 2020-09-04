@@ -114,7 +114,7 @@ export default {
       let startDate = new Date(this.timeRange[0]);
       if(startDate){
          while(startDate<=new Date(this.timeRange[1])){
-          dateList.push('plume_log_trace_'+moment(startDate).format('YYYYMMDD'))
+          dateList.push('plume_log_trace_'+moment(startDate).format('YYYYMMDD') + '*')
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }

@@ -168,7 +168,7 @@ export default {
         }
         else
         {
-            let q = "plume_log_run_" + moment().format("YYYYMMDD")
+            let q = "plume_log_run_" + moment().format("YYYYMMDD") + '*'
             axios.post(process.env.VUE_APP_API+'/query?index='+q+'&from=0&size=0',{
                 "size": 0,
                 "aggregations": {

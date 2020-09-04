@@ -273,7 +273,8 @@ export default {
      showFilter: true,
      api: process.env.api,
      dateOption,
-     dateTimeRange:[moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')],
+
+     dateTimeRange:[moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD HH:mm:ss')],
      content:{
        _source:{}
      },
@@ -551,7 +552,7 @@ export default {
         else
         {
           this.completeFilterLoading = true;
-          let q = "plume_log_run_" + moment().format("YYYYMMDD")
+          let q = "plume_log_run_" + moment().format("YYYYMMDD") + '*'
           axios.post(process.env.VUE_APP_API+'/query?index='+q+'&from=0&size=0&appName',{
             "size": 0,
             "aggregations": {
@@ -885,13 +886,13 @@ export default {
 
       if(startDate){
          while(startDate<=this.dateTimeRange[1]){
-          dateList.push('plume_log_run_'+moment(startDate).format('YYYYMMDD'))
+          dateList.push('plume_log_run_'+moment(startDate).format('YYYYMMDD') + '*')
           startDate = new Date(startDate.setDate(startDate.getDate()+1));
         }
       }
 
       if(dateList.length==0){
-        dateList.push('plume_log_run_'+moment().format('YYYYMMDD'));
+        dateList.push('plume_log_run_'+moment().format('YYYYMMDD') + '*');
       }
 
       let url= process.env.VUE_APP_API+'/query?index='+dateList.join(',');

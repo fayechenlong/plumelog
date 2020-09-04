@@ -4,8 +4,8 @@
 <template>
     <div>
         <Row class="expand-row">
-            <Col span="24" style="max-height: 200px; overflow: scroll">
-               <ul>
+            <Col span="24" style="min-height: 50px; max-height: 200px; overflow: scroll">
+               <ul style="padding: 5px 0">
                    <li v-for="item in list">
                         <span class="key">{{item.key}}</span>&nbsp;&nbsp;
                         <span class="value">{{item.doc_count}}条</span>

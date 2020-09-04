@@ -4,7 +4,12 @@
       <log-header></log-header>
       <div style="clear:both"></div>
     </div>
-    
+    <Row >
+      <Col :span="5">
+        请选择日期：<DatePicker ref='datePicker' v-model="currentDate" @on-change="dateChange" type="date"  format="yyyy-MM-dd" placeholder="选择日期" style="width: 200px"></DatePicker>
+        <Button type="primary" style="margin-left: 10px" shape="circle" icon="ios-search" @click="dateChange"></Button>
+      </Col>
+    </Row>
     <div class="pnl_sizes">
       <Tabs active-key="运行数据" @on-click="changeTab">
         <Tab-pane label="运行数据" name="run" key="运行数据">
@@ -26,7 +31,7 @@
           </div>
         </Tab-pane>
       </Tabs>
-      <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="checkRemove" type="error">删除所选</Button>
+      <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="checkRemove" type="error">清空所选</Button>
     </div>
     <div class="modal fade show model_pwd" style="display:block" v-if="showModal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -69,6 +74,7 @@ export default {
   name: "Size",
   data(){
    return {
+     currentDate:null,
      showModal:false,
      password:'',
      self:this,
@@ -110,9 +116,11 @@ export default {
         sortable: true,
         sortType:"desc",//初始化排序
         render:(h,params)=>{
-          let _index = params.row.index.replace('plume_log_trace_','').replace('plume_log_run_','');;
-          if(_index.length>=8){
+          let _index = params.row.index.replace('plume_log_trace_','').replace('plume_log_run_','')
+          if(_index.length==8){
             _index = _index.substring(0,4)+'-'+_index.substring(4,6)+'-'+_index.substring(6,8)
+          } else if(_index.length == 10) {
+            _index = _index.substring(0,4)+'-'+_index.substring(4,6)+'-'+_index.substring(6,8) + " " + _index.substring(8,10)
           }
           return h('span',_index)
         }
@@ -154,6 +162,9 @@ export default {
     expandRow
   },
   methods:{
+    dateChange() {
+      this.getTraceInfo()
+    },
     closeModal(){
       this.showModal = false;
       this.password = '';
@@ -207,12 +218,16 @@ export default {
        this.size_selection =[];
        this.trace_selection = [];
        this.$Loading.start();
-       axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_run_*').then(data=>{
+       if(!this.currentDate) {
+         this.currentDate = new Date()
+       }
+
+       axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_run_' + moment(this.currentDate).format('YYYYMMDD') + "*").then(data=>{
          this.$Loading.finish();
          this.sizeInfo = _.get(data,'data',[]);
        })
 
-        axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_trace_*').then(data=>{
+        axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_trace_' + moment(this.currentDate).format('YYYYMMDD') + "*").then(data=>{
          this.$Loading.finish();
          this.traceInfo = _.get(data,'data',[]);
        })
