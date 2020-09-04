@@ -44,7 +44,9 @@
                 if(code.indexOf('java.')>-1){
                     return '<pre style="word-break:break-all;white-space: normal;">'+Prism.highlight(code.replace(/\n/g,'<br/>'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+"</pre>"
                 }
-                else
+                else if(code.indexOf("xml") > 0) {
+                   return '<xmp>' + code + '</xmp>'
+                } else
                 {
                     return '<div style="word-break:break-all;white-space: normal;">'+code.replace(/\n/g,'<br/>').replace(/\tat/g,'')+"</div>";
                 }

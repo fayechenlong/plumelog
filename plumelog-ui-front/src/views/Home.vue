@@ -485,6 +485,9 @@ export default {
   },
   methods:{
     replaceOf(content) {
+      if(content.indexOf("xml") >0) {
+        return '<xmp>' + content + '</xmp>'
+      }
       return content.replace(/\\n\\t/g,"\n").replace(/\\n\\tat/g,"\n").replace(/\\n/g, '\n')
     },
     appNameChange(){
