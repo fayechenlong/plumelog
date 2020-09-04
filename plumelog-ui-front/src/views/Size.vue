@@ -5,9 +5,10 @@
       <div style="clear:both"></div>
     </div>
     <Row >
-      <Col :span="5">
+      <Col :span="8">
         请选择日期：<DatePicker ref='datePicker' v-model="currentDate" @on-change="dateChange" type="date"  format="yyyy-MM-dd" placeholder="选择日期" style="width: 200px"></DatePicker>
         <Button type="primary" style="margin-left: 10px" shape="circle" icon="ios-search" @click="dateChange"></Button>
+
       </Col>
     </Row>
     <div class="pnl_sizes">
@@ -52,6 +53,12 @@
         </div>
       </div>
     </div>
+    <Row style="margin-top:20px" type="flex" justify="start">
+      <Col :span="8">
+        <span style="padding: 10px;">当前redis队列大小 日志队列：{{runSize}} 追踪队列 {{traceSize}}</span>
+        <Button type="error" style="margin-left: 10px" icon="ios-trash" @click="clearRedisQueue">清空队列</Button>
+      </Col>
+    </Row>
      <div class="modal-backdrop fade show" v-if="showModal"></div>
   </div>
 </template>
@@ -74,6 +81,10 @@ export default {
   name: "Size",
   data(){
    return {
+     runSize:0,
+     traceSize:0,
+     timer:null,
+     clearQueue:false,
      currentDate:null,
      showModal:false,
      password:'',
@@ -167,6 +178,7 @@ export default {
     },
     closeModal(){
       this.showModal = false;
+      this.clearQueue = false;
       this.password = '';
     },
     changeTab(name){
@@ -177,7 +189,32 @@ export default {
     },
     confirmModal(){
       this.showModal = false;
-      this.removeSelect();
+      if(this.clearQueue) {
+        this.clearQueueHandler()
+      } else {
+        this.removeSelect();
+      }
+    },
+    clearRedisQueue() {
+      this.showModal = true;
+      this.clearQueue = true;
+    },
+    clearQueueHandler() {
+      this.clearQueue= false
+      axios.get(process.env.VUE_APP_API+'/deleteQueue?adminPassWord='+this.password).then(res=> {
+        if(res.data.acknowledged) {
+          alert('删除成功');
+          this.password = '';
+        }
+      })
+    },
+    getQueueSize() {
+      axios.get(process.env.VUE_APP_API+'/getQueueCounts').then(res=> {
+        if(res.data.runSize > -1) {
+            this.runSize = res.data.runSize
+            this.traceSize = res.data.traceSize
+        }
+      })
     },
     removeSelect(){
 
@@ -235,6 +272,13 @@ export default {
   },
   mounted(){
     this.getTraceInfo();
+    this.getQueueSize();
+    this.timer = setInterval(() => {
+      this.getQueueSize()
+    }, 1000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   }
 };
 </script>

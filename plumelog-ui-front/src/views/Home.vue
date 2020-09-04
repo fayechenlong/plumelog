@@ -457,11 +457,16 @@ export default {
             format:'MM-DD HH:mm',
             value: 1000*60*60*6
           }
-        }
-        else
-        {
+        } //小于1天按照小时统计
+        else if (_range < 1000*60*60*24){
           return {
             format:'HH:mm',
+            value: 1000*60*5
+          }
+        }else
+        {
+          return {
+            format:'MM-DD HH:mm',
             value: 1000*60*60
           }
         }
@@ -675,7 +680,7 @@ export default {
                 return '时间：'+p.name+'<br/>数量：'+p.value+'条'
               },
               position:function(p){   //其中p为当前鼠标的位置
-                return [p[0]-50, p[1]-25];
+                return [p[0]-50, p[1]-50];
               },
               extraCssText:'text-align:left'
             },
@@ -732,7 +737,7 @@ export default {
                 return '时间：'+p.name+'<br/>错误数：'+p.value
               },
               position:function(p){   //其中p为当前鼠标的位置
-                return [p[0]-50, p[1] - 10];
+                return [p[0]-50, p[1] - 50];
               },
               extraCssText:'text-align:left'
             },
@@ -849,8 +854,8 @@ export default {
        "traceId":""
      }
      this.searchKey = "";
-     this.dateTimeRange = [moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')];
-     this.$refs.datePicker.internalValue=[moment(new Date()).format('YYYY-MM-DD 00:00:00'),moment(new Date()).format('YYYY-MM-DD 23:59:59')];
+     this.dateTimeRange = [moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD HH:mm:ss')];
+     this.$refs.datePicker.internalValue=[moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD HH:mm:ss')];
      this.doSearch();
     },
     dateChange(){

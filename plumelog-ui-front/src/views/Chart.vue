@@ -62,11 +62,16 @@ export default {
               format:'MM-DD HH:mm',
               value: 1000*60*60*6
             }
-          }
-          else
-          {
+          } //小于1天按照小时统计
+          else if (_range < 1000*60*60*24){
             return {
               format:'HH:mm',
+              value: 1000*60
+            }
+          }else
+          {
+            return {
+              format:'MM-DD HH:mm',
               value: 1000*60*60
             }
           }
@@ -116,13 +121,13 @@ export default {
       if(_date){
         while(_date<=this.dateTimeRange[1]){
           //plume_log_run_
-          dateList.push('plume_log_run_'+moment(_date).format('YYYYMMDD'))
+          dateList.push('plume_log_run_'+moment(_date).format('YYYYMMDD')+"*")
           _date = new Date(_date.setDate(_date.getDate()+1));
         }
       }
     
       if(dateList.length==0){
-        dateList.push('plume_log_run_'+moment().format('YYYYMMDD'));
+        dateList.push('plume_log_run_'+moment().format('YYYYMMDD') + "*");
       }
 
       query = { 
@@ -173,13 +178,13 @@ export default {
       if(_date){
         while(_date<=this.dateTimeRange[1]){
           //plume_log_run_
-          dateList.push('plume_log_run_'+moment(_date).format('YYYYMMDD'))
+          dateList.push('plume_log_run_'+moment(_date).format('YYYYMMDD') + "*")
           _date = new Date(_date.setDate(_date.getDate()+1));
         }
       }
     
       if(dateList.length==0){
-        dateList.push('plume_log_run_'+moment().format('YYYYMMDD'));
+        dateList.push('plume_log_run_'+moment().format('YYYYMMDD') + "*");
       }
 
       let _promise =[];
