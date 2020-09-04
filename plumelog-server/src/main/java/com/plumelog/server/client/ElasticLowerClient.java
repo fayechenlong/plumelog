@@ -132,7 +132,36 @@ public class ElasticLowerClient {
             Request request = new Request(
                     "PUT",
                     "/" + indice + "");
-            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}}";
+            String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+                    "\"logLevel\":{\"type\":\"keyword\"}," +
+                    "\"serverName\":{\"type\":\"keyword\"}," +
+                    "\"traceId\":{\"type\":\"keyword\"}," +
+                    "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}" +
+                    "}";
+            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}" +
+                    "\"mapping\":{\"_doc\":{"+properties+"}}}";
+
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return false;
+    }
+    public boolean creatIndiceTrace(String indice) {
+        List<String> existIndexList = new ArrayList<String>();
+        try {
+            Request request = new Request(
+                    "PUT",
+                    "/" + indice + "");
+            String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+                    "\"traceId\":{\"type\":\"keyword\"}" +
+                    "}";
+            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}" +
+                    "\"mapping\":{\"_doc\":{"+properties+"}}}";
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
@@ -161,82 +190,82 @@ public class ElasticLowerClient {
         return false;
     }
 
-    private void creatFieldData(String baseIndex, String field, String type) {
-
-        String ent = "{\"properties\":{\"" + field + "\":{\"type\":\"keyword\"},}} ";
-        String endpoint = "";
-        if (StringUtils.isEmpty(type)) {
-            endpoint = "/" + baseIndex + "/_mapping";
-        } else {
-            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
-        }
-        try {
-            Request request = new Request(
-                    "PUT",
-                    endpoint);
-            request.setJsonEntity(ent);
-            Response res = client.performRequest(request);
-            if (res.getStatusLine().getStatusCode() != 200) {
-                String responseStr = EntityUtils.toString(res.getEntity());
-                logger.info(responseStr);
-            }
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-    }
-    private void creatFieldDataLog(String baseIndex,String type) {
-
-        String ent = "{\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
-                "\"logLevel\":{\"type\":\"keyword\"}," +
-                "\"serverName\":{\"type\":\"keyword\"}," +
-                "\"traceId\":{\"type\":\"keyword\"}," +
-                "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}" +
-                "}} ";
-        String endpoint = "";
-        if (StringUtils.isEmpty(type)) {
-            endpoint = "/" + baseIndex + "/_mapping";
-        } else {
-            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
-        }
-        try {
-            Request request = new Request(
-                    "PUT",
-                    endpoint);
-            request.setJsonEntity(ent);
-            Response res = client.performRequest(request);
-            if (res.getStatusLine().getStatusCode() != 200) {
-                String responseStr = EntityUtils.toString(res.getEntity());
-                logger.info(responseStr);
-            }
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-    }
-    private void creatFieldDataTrace(String baseIndex,String type) {
-
-        String ent = "{\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
-                "\"traceId\":{\"type\":\"keyword\"}" +
-                "}} ";
-        String endpoint = "";
-        if (StringUtils.isEmpty(type)) {
-            endpoint = "/" + baseIndex + "/_mapping";
-        } else {
-            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
-        }
-        try {
-            Request request = new Request(
-                    "PUT",
-                    endpoint);
-            request.setJsonEntity(ent);
-            Response res = client.performRequest(request);
-            if (res.getStatusLine().getStatusCode() != 200) {
-                String responseStr = EntityUtils.toString(res.getEntity());
-                logger.info(responseStr);
-            }
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-    }
+//    public void creatFieldData(String baseIndex, String field, String type) {
+//
+//        String ent = "{\"properties\":{\"" + field + "\":{\"type\":\"keyword\"},}} ";
+//        String endpoint = "";
+//        if (StringUtils.isEmpty(type)) {
+//            endpoint = "/" + baseIndex + "/_mapping";
+//        } else {
+//            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
+//        }
+//        try {
+//            Request request = new Request(
+//                    "PUT",
+//                    endpoint);
+//            request.setJsonEntity(ent);
+//            Response res = client.performRequest(request);
+//            if (res.getStatusLine().getStatusCode() != 200) {
+//                String responseStr = EntityUtils.toString(res.getEntity());
+//                logger.info(responseStr);
+//            }
+//        } catch (Exception e) {
+//            logger.error("", e);
+//        }
+//    }
+//    public void creatFieldDataLog(String baseIndex,String type) {
+//
+//        String ent = "{\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+//                "\"logLevel\":{\"type\":\"keyword\"}," +
+//                "\"serverName\":{\"type\":\"keyword\"}," +
+//                "\"traceId\":{\"type\":\"keyword\"}," +
+//                "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}" +
+//                "}} ";
+//        String endpoint = "";
+//        if (StringUtils.isEmpty(type)) {
+//            endpoint = "/" + baseIndex + "/_mapping";
+//        } else {
+//            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
+//        }
+//        try {
+//            Request request = new Request(
+//                    "PUT",
+//                    endpoint);
+//            request.setJsonEntity(ent);
+//            Response res = client.performRequest(request);
+//            if (res.getStatusLine().getStatusCode() != 200) {
+//                String responseStr = EntityUtils.toString(res.getEntity());
+//                logger.info(responseStr);
+//            }
+//        } catch (Exception e) {
+//            logger.error("", e);
+//        }
+//    }
+//    private void creatFieldDataTrace(String baseIndex,String type) {
+//
+//        String ent = "{\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+//                "\"traceId\":{\"type\":\"keyword\"}" +
+//                "}} ";
+//        String endpoint = "";
+//        if (StringUtils.isEmpty(type)) {
+//            endpoint = "/" + baseIndex + "/_mapping";
+//        } else {
+//            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
+//        }
+//        try {
+//            Request request = new Request(
+//                    "PUT",
+//                    endpoint);
+//            request.setJsonEntity(ent);
+//            Response res = client.performRequest(request);
+//            if (res.getStatusLine().getStatusCode() != 200) {
+//                String responseStr = EntityUtils.toString(res.getEntity());
+//                logger.info(responseStr);
+//            }
+//        } catch (Exception e) {
+//            logger.error("", e);
+//        }
+//    }
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
 
         if (!existIndice(baseIndex)) {
@@ -246,8 +275,6 @@ public class ElasticLowerClient {
                 creatIndiceNomal(baseIndex);
             }
             logger.info("creatIndex:{}", baseIndex);
-            creatFieldDataLog(baseIndex, type);
-            logger.info("creatFieldData {}",baseIndex);
         }
         insertList(list,baseIndex,type);
     }
@@ -260,8 +287,6 @@ public class ElasticLowerClient {
                 creatIndiceNomal(baseIndex);
             }
             logger.info("creatIndex:{}", baseIndex);
-            creatFieldDataTrace(baseIndex, type);
-            logger.info("creatFieldData {}",baseIndex);
         }
         insertList(list,baseIndex,type);
     }

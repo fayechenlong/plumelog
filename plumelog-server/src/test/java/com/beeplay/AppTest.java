@@ -16,7 +16,7 @@ public class AppTest
 
 
 
-        System.out.println("plumeds_log_20200921".startsWith("plume_log_"));
-
+        System.out.println(String.format("%02d",1));
+        System.out.println(String.format("%02d",10));
     }
 }

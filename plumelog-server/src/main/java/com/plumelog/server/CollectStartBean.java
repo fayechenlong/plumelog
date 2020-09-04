@@ -59,4 +59,16 @@ public class CollectStartBean implements InitializingBean {
             logger.error("plumelog server starting failed!", e);
         }
     }
+
+
+    private void creatIndiceLog(String index){
+        if(!elasticLowerClient.existIndice(index)){
+            elasticLowerClient.creatIndice(index);
+        };
+    }
+    private void creatIndiceTrace(String index){
+        if(!elasticLowerClient.existIndice(index)){
+            elasticLowerClient.creatIndiceTrace(index);
+        };
+    }
 }

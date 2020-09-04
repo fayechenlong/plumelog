@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog-log4j2</artifactId>
+            <artifactId>plumelog-logback</artifactId>
             <version>${version}</version>
         </dependency>
 
