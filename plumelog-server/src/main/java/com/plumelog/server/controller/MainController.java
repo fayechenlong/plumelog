@@ -150,12 +150,29 @@ public class MainController {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
             boolean re = elasticLowerClient.deleteIndex(index);
+            if(index.startsWith(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN)){
+                creatIndiceLog(index);
+            }
+            if(index.startsWith(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE)){
+                creatIndiceTrace(index);
+            }
             map.put("acknowledged", re);
         } else {
             map.put("acknowledged", false);
             map.put("message", "管理密码错误！");
         }
         return map;
+    }
+
+    private void creatIndiceLog(String index){
+        if(!elasticLowerClient.existIndice(index)){
+            elasticLowerClient.creatIndice(index,LogMessageConstant.ES_TYPE);
+        };
+    }
+    private void creatIndiceTrace(String index){
+        if(!elasticLowerClient.existIndice(index)){
+            elasticLowerClient.creatIndiceTrace(index,LogMessageConstant.ES_TYPE);
+        };
     }
     @RequestMapping({"/getWarningRuleList", "/plumelog/getWarningRuleList"})
     public Object getWarningRuleList() {

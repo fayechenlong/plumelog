@@ -126,7 +126,7 @@ public class ElasticLowerClient {
         return false;
     }
 
-    public boolean creatIndice(String indice) {
+    public boolean creatIndice(String indice,String type) {
         List<String> existIndexList = new ArrayList<String>();
         try {
             Request request = new Request(
@@ -138,12 +138,17 @@ public class ElasticLowerClient {
                     "\"traceId\":{\"type\":\"keyword\"}," +
                     "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}" +
                     "}";
-            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}" +
-                    "\"mapping\":{\"_doc\":{"+properties+"}}}";
+            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}";
+            if(StringUtils.isEmpty(type)){
+                ent=ent+",\"mappings\":{"+properties+"}}";
+            }else {
+                ent=ent+",\"mappings\":{\""+type+"\":{"+properties+"}}}";
+            }
 
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
+                logger.info("creat indice {}",indice);
                 return true;
             }
         } catch (Exception e) {
@@ -151,7 +156,7 @@ public class ElasticLowerClient {
         }
         return false;
     }
-    public boolean creatIndiceTrace(String indice) {
+    public boolean creatIndiceTrace(String indice, String type) {
         List<String> existIndexList = new ArrayList<String>();
         try {
             Request request = new Request(
@@ -160,11 +165,16 @@ public class ElasticLowerClient {
             String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
                     "\"traceId\":{\"type\":\"keyword\"}" +
                     "}";
-            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}" +
-                    "\"mapping\":{\"_doc\":{"+properties+"}}}";
+            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}";
+            if(StringUtils.isEmpty(type)){
+                ent=ent+",\"mappings\":{"+properties+"}}";
+            }else {
+                ent=ent+",\"mappings\":{\""+type+"\":{"+properties+"}}}";
+            }
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
+                logger.info("creat indice {}",indice);
                 return true;
             }
         } catch (Exception e) {
@@ -172,7 +182,7 @@ public class ElasticLowerClient {
         }
         return false;
     }
-    public boolean creatIndiceNomal(String indice) {
+    public boolean creatIndiceNomal(String indice, String type) {
         List<String> existIndexList = new ArrayList<String>();
         try {
             Request request = new Request(
@@ -270,9 +280,9 @@ public class ElasticLowerClient {
 
         if (!existIndice(baseIndex)) {
             if(baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
-                creatIndice(baseIndex);
+                creatIndice(baseIndex,type);
             }else {
-                creatIndiceNomal(baseIndex);
+                creatIndiceNomal(baseIndex,type);
             }
             logger.info("creatIndex:{}", baseIndex);
         }
@@ -280,22 +290,22 @@ public class ElasticLowerClient {
     }
     public void insertListTrace(List<String> list, String baseIndex, String type) throws IOException {
 
-        if (!existIndice(baseIndex)) {
-            if(baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
-                creatIndice(baseIndex);
-            }else {
-                creatIndiceNomal(baseIndex);
-            }
-            logger.info("creatIndex:{}", baseIndex);
-        }
+//        if (!existIndice(baseIndex)) {
+//            if(baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
+//                creatIndice(baseIndex);
+//            }else {
+//                creatIndiceNomal(baseIndex);
+//            }
+//            logger.info("creatIndex:{}", baseIndex);
+//        }
         insertList(list,baseIndex,type);
     }
     public void insertListComm(List<String> list, String baseIndex, String type) throws IOException {
 
-        if (!existIndice(baseIndex)) {
-            creatIndice(baseIndex);
-            logger.info("creatIndex:{}", baseIndex);
-        }
+//        if (!existIndice(baseIndex)) {
+//            creatIndice(baseIndex);
+//            logger.info("creatIndex:{}", baseIndex);
+//        }
         insertList(list,baseIndex,type);
     }
     private void insertList(List<String> list, String baseIndex, String type) throws IOException {

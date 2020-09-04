@@ -6,6 +6,7 @@ import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
+import com.plumelog.server.util.IndexUtil;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -54,55 +55,42 @@ public class CollectStartBean implements InitializingBean {
         }
     }
 
-    private String getRunLogIndex(Date date){
-        return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + com.plumelog.server.util.DateUtil.parseDateToStr(date, com.plumelog.server.util.DateUtil.DATE_FORMAT_YYYYMMDD);
-    }
-    private String getTraceLogIndex(Date date){
-        return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + com.plumelog.server.util.DateUtil.parseDateToStr(date, com.plumelog.server.util.DateUtil.DATE_FORMAT_YYYYMMDD);
-    }
-    private String getRunLogIndex(Date date,String hour){
-        return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + com.plumelog.server.util.DateUtil.parseDateToStr(date, com.plumelog.server.util.DateUtil.DATE_FORMAT_YYYYMMDD)+hour;
-    }
-    private String getTraceLogIndex(Date date,String hour){
-        return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + com.plumelog.server.util.DateUtil.parseDateToStr(date, com.plumelog.server.util.DateUtil.DATE_FORMAT_YYYYMMDD)+hour;
-    }
+
+
 
     @Override
     public void afterPropertiesSet() throws Exception {
 
         try {
+            autoCreatIndice();
             serverStart();
-
-
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, 1);
-            Date date = cal.getTime();
-            if(InitConfig.ES_INDEX_MODEL.equals("day")) {
-                creatIndiceLog(getRunLogIndex(date));
-                creatIndiceTrace(getRunLogIndex(date));
-            }else {
-                for (int a = 0; a < 24; a++) {
-                    String hour=String.format("%02d",a);
-                    creatIndiceLog(getRunLogIndex(date,hour));
-                    creatIndiceTrace(getRunLogIndex(date,hour));
-
-                }
-            }
-
         } catch (Exception e) {
             logger.error("plumelog server starting failed!", e);
         }
     }
 
+    private void autoCreatIndice(){
+        Date date = new Date();
+        if(InitConfig.ES_INDEX_MODEL.equals("day")) {
+            creatIndiceLog(IndexUtil.getRunLogIndex(date));
+            creatIndiceTrace(IndexUtil.getTraceLogIndex(date));
+        }else {
+            for (int a = 0; a < 24; a++) {
+                String hour=String.format("%02d",a);
+                creatIndiceLog(IndexUtil.getRunLogIndex(date,hour));
+                creatIndiceTrace(IndexUtil.getTraceLogIndex(date,hour));
 
+            }
+        }
+    }
     private void creatIndiceLog(String index){
         if(!elasticLowerClient.existIndice(index)){
-            elasticLowerClient.creatIndice(index);
+            elasticLowerClient.creatIndice(index,LogMessageConstant.ES_TYPE);
         };
     }
     private void creatIndiceTrace(String index){
         if(!elasticLowerClient.existIndice(index)){
-            elasticLowerClient.creatIndiceTrace(index);
+            elasticLowerClient.creatIndiceTrace(index,LogMessageConstant.ES_TYPE);
         };
     }
 }
