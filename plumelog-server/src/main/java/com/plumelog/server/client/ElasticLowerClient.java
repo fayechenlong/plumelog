@@ -1,5 +1,6 @@
 package com.plumelog.server.client;
 
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.server.InitConfig;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -131,7 +132,24 @@ public class ElasticLowerClient {
             Request request = new Request(
                     "PUT",
                     "/" + indice + "");
-            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":1}}";
+            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}}";
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return false;
+    }
+    public boolean creatIndiceNomal(String indice) {
+        List<String> existIndexList = new ArrayList<String>();
+        try {
+            Request request = new Request(
+                    "PUT",
+                    "/" + indice + "");
+            String ent = "{\"settings\":{\"number_of_shards\":5,\"number_of_replicas\":0,\"refresh_interval\":\"10s\"}}";
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
@@ -222,7 +240,11 @@ public class ElasticLowerClient {
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
 
         if (!existIndice(baseIndex)) {
-            creatIndice(baseIndex);
+            if(baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
+                creatIndice(baseIndex);
+            }else {
+                creatIndiceNomal(baseIndex);
+            }
             logger.info("creatIndex:{}", baseIndex);
             creatFieldDataLog(baseIndex, type);
             logger.info("creatFieldData {}",baseIndex);
@@ -232,7 +254,11 @@ public class ElasticLowerClient {
     public void insertListTrace(List<String> list, String baseIndex, String type) throws IOException {
 
         if (!existIndice(baseIndex)) {
-            creatIndice(baseIndex);
+            if(baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
+                creatIndice(baseIndex);
+            }else {
+                creatIndiceNomal(baseIndex);
+            }
             logger.info("creatIndex:{}", baseIndex);
             creatFieldDataTrace(baseIndex, type);
             logger.info("creatFieldData {}",baseIndex);
@@ -252,7 +278,7 @@ public class ElasticLowerClient {
         StringBuffer sendStr = new StringBuffer();
         for (int a = 0; a < list.size(); a++) {
             String map = list.get(a);
-            String ent = "{\"index\":{\"_id\":\"" + UUID.randomUUID().toString() + "\"}} ";
+            String ent = "{\"index\":{} ";
             sendStr.append(ent);
             sendStr.append("\r\n");
             sendStr.append(map);

@@ -1,5 +1,6 @@
 package com.plumelog.server.collect;
 
+import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.ThreadPoolUtil;
@@ -26,11 +27,20 @@ public class BaseLogCollect {
     protected ApplicationEventPublisher applicationEventPublisher;
 
     public String getRunLogIndex(){
-        return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
+        if(InitConfig.ES_INDEX_MODEL.equals("day")) {
+            return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
+        }else {
+            return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_TIME_FORMAT_YYYYMMDDHH);
+        }
     }
     public String getTraceLogIndex(){
-        return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
+        if(InitConfig.ES_INDEX_MODEL.equals("day")) {
+            return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
+        }else {
+            return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_TIME_FORMAT_YYYYMMDDHH);
+        }
     }
+
     public void sendLog(String index, List<String> sendList) {
         try {
             if(sendList.size()>0) {

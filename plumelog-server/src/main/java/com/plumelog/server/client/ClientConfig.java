@@ -38,6 +38,12 @@ public class ClientConfig implements InitializingBean {
     private String esPassWord;
     @Value("${plumelog.es.shards:5}")
     private int shards;
+    @Value("${plumelog.es.replicas:1}")
+    private int replicas;
+    @Value("${plumelog.es.refresh.interval:60s}")
+    private String refreshInterval;
+    @Value("${plumelog.es.indexType.model:day}")
+    private String indexTypeModel;
     @Value("${plumelog.redis.redisHost:127.0.0.1:6379}")
     private String redisHost;
     @Value("${plumelog.redis.redisPassWord:}")
@@ -109,12 +115,18 @@ public class ClientConfig implements InitializingBean {
         InitConfig.KAFKA_GROUP_NAME = this.kafkaGroupName;
         InitConfig.MAX_INTERVAL = this.interval;
         InitConfig.START_MODEL = this.model;
+
         InitConfig.ES_INDEX_SHARDS=this.shards;
-        LogMessageConstant.ES_TYPE = this.indexType;
+        InitConfig.ES_INDEX_REPLICAS=this.replicas;
+        InitConfig.ES_REFRESH_INTERVAL=this.refreshInterval;
+        InitConfig.ES_INDEX_MODEL=this.indexTypeModel;
 
         InitConfig.restUrl = this.restUrl;
         InitConfig.restUserName = this.restUserName;
         InitConfig.restPassWord = this.restPassWord;
+
+
+        LogMessageConstant.ES_TYPE = this.indexType;
 
         logger.info("server run model:" + this.model);
         logger.info("maxSendSize:" + this.maxSendSize);

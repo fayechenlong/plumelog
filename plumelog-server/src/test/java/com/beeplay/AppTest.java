@@ -16,5 +16,7 @@ public class AppTest
 
 
 
+        System.out.println("plumeds_log_20200921".startsWith("plume_log_"));
+
     }
 }
