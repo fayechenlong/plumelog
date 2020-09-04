@@ -144,6 +144,22 @@ public class MainController {
         }
         return "";
     }
+    @RequestMapping({"/getQueueCounts", "/plumelog/getQueueCounts"})
+    public Map<String, Object> getQueueCounts() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("runSize",redisClient.llen(LogMessageConstant.LOG_KEY));
+        map.put("traceSize",redisClient.llen(LogMessageConstant.LOG_KEY_TRACE));
+        return map;
+    }
+
+    @RequestMapping({"/deleteQueue", "/plumelog/deleteQueue"})
+    public Map<String, Object> deleteQueue() {
+        Map<String, Object> map = new HashMap<>();
+        redisClient.del(LogMessageConstant.LOG_KEY);
+        redisClient.del(LogMessageConstant.LOG_KEY_TRACE);
+        map.put("acknowledged", true);
+        return map;
+    }
 
     @RequestMapping({"/deleteIndex", "/plumelog/deleteIndex"})
     public Map<String, Object> deleteIndex(String index, String adminPassWord) {
