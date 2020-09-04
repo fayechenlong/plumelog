@@ -51,7 +51,6 @@ public class AutoDeleteLogs {
             logger.info("unwanted delete logs");
         }
     }
-
     /**
      * 每天夜里11点自动创建第二天的索引
      */

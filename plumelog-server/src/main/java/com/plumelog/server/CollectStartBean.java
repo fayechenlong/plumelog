@@ -30,7 +30,6 @@ import java.util.Date;
 @Order(100)
 public class CollectStartBean implements InitializingBean {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
-
     @Autowired
     private ElasticLowerClient elasticLowerClient;
     @Autowired
@@ -54,10 +53,6 @@ public class CollectStartBean implements InitializingBean {
             restLogCollect.restStart();
         }
     }
-
-
-
-
     @Override
     public void afterPropertiesSet() throws Exception {
 
@@ -68,7 +63,6 @@ public class CollectStartBean implements InitializingBean {
             logger.error("plumelog server starting failed!", e);
         }
     }
-
     private void autoCreatIndice(){
         Date date = new Date();
         if(InitConfig.ES_INDEX_MODEL.equals("day")) {
