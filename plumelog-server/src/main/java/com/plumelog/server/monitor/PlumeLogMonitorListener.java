@@ -127,7 +127,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             long endTime = startTime + (rule.getTime() * 1000);
             if (endTime > System.currentTimeMillis()) {
                 Long incr = redisClient.hincrby(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT, 1);
-                if (incr > rule.getErrorCount() && !redisClient.existsKey(key + WARNING_NOTICE)) {
+                if (incr >= rule.getErrorCount() && !redisClient.existsKey(key + WARNING_NOTICE)) {
                     earlyWarning(rule, incr, key);
                     redisClient.del(key);
                 }
