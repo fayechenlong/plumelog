@@ -55,7 +55,7 @@
     </div>
     <Row style="margin-top:20px" type="flex" justify="start">
       <Col :span="8">
-        <span style="padding: 10px;">当前redis队列大小 日志队列：{{runSize}} 追踪队列 {{traceSize}}</span>
+        <span style="padding: 10px;">当前redis队列大小 日志队列：{{runSize}} 追踪队列： {{traceSize}}</span>
         <Button type="error" style="margin-left: 10px" icon="ios-trash" @click="clearRedisQueue">清空队列</Button>
       </Col>
     </Row>

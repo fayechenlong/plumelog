@@ -225,7 +225,7 @@ import "@/assets/less/base.less";
 import dateOption from './dateOption';
 import $ from 'jquery'
 import expandRow from '@/components/table-expand.vue';
-
+let isHtml = /<\/?[a-z][\s\S]*>/i
 export default {
   name: "Home",
   data(){
@@ -451,17 +451,36 @@ export default {
             value: 1000*60*60*12
           }
         }
-        //大于1天按照6小时进行统计
+        //大于1天按照3小时进行统计
         else if (_range>1000*60*60*24){
           return {
             format:'MM-DD HH:mm',
-            value: 1000*60*60*6
+            value: 1000*60*60*3
           }
-        } //小于1天按照小时统计
-        else if (_range < 1000*60*60*24){
+        }else if (_range>=1000*60*60*12){
           return {
-            format:'HH:mm',
+            format:'MM-DD HH:mm',
+            value: 1000*60*60
+          }
+        }else if (_range >= 1000*60*60*6){
+          return {
+            format:'MM-DD HH:mm',
+            value: 1000*60*15
+          }
+        }else if (_range >= 1000*60*60){
+          return {
+            format:'MM-DD HH:mm',
             value: 1000*60*5
+          }
+        }else if (_range >= 1000*60*30){
+          return {
+            format:'MM-DD HH:mm',
+            value: 1000*60
+          }
+        }else if (_range >= 1000*60*15){
+          return {
+            format:'MM-DD HH:mm:ss',
+            value: 1000*30
           }
         }else
         {
@@ -491,7 +510,10 @@ export default {
   },
   methods:{
     replaceOf(content) {
+
       if(content.indexOf("xml") >0) {
+        return '<xmp>' + content + '</xmp>'
+      } else if(isHtml.test(content)) {
         return '<xmp>' + content + '</xmp>'
       }
       return content.replace(/\\n\\t/g,"\n").replace(/\\n\\tat/g,"\n").replace(/\\n/g, '\n')
@@ -667,14 +689,13 @@ export default {
             x: 70,
             y: 10
           },
-            title: {
-                text: '数量',
-                left: 'center',
-                top: 20,
-                textStyle: {
-                    color: '#333'
-                }
-            },
+            // title: {
+            //     text: '数量',
+            //     left: 'center',
+            //     textStyle: {
+            //         color: '#333'
+            //     }
+            // },
             tooltip: {
               formatter(p,ticket){
                 return '时间：'+p.name+'<br/>数量：'+p.value+'条'
@@ -724,14 +745,13 @@ export default {
             x: 70,
             y: 10
           },
-            title: {
-                text: '错误数',
-                left: 'center',
-                top: 20,
-                textStyle: {
-                    color: '#333'
-                }
-            },
+            // title: {
+            //     text: '错误数',
+            //     left: 'center',
+            //     textStyle: {
+            //         color: '#333'
+            //     }
+            // },
             tooltip: {
               formatter(p,ticket){
                 return '时间：'+p.name+'<br/>错误数：'+p.value
