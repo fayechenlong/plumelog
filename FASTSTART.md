@@ -55,11 +55,16 @@
    plumelog.es.esHosts=127.0.0.1:9200
    #ES7.*已经去除了索引type字段，所以如果是es7不用配置这个，7.*以下不配置这个会报错
    #plumelog.es.indexType=plumelog
-   #索引分片数量设定，建议值:单日日志大小/ES节点机器jvm内存大小 合理的分片大小保证ES写入效率和查询效率
-   plumelog.es.shards=20
    #ES设置密码,启用下面配置
    plumelog.es.userName=elastic
    plumelog.es.passWord=123456
+   #索引分片数量设定，建议值:单日日志大小/ES节点机器jvm内存大小 合理的分片大小保证ES写入效率和查询效率
+   plumelog.es.shards=5
+   plumelog.es.replicas=1
+   plumelog.es.refresh.interval=10s
+   #日志索引建立方式day表示按天、hour表示按照小时
+   plumelog.es.indexType.model=day
+
    
    #单次拉取日志条数
    plumelog.maxSendSize=5000
@@ -258,6 +263,7 @@ KafkaAppender
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
 | maxCount  | 批量提交日志数量，默认100 |
+| logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 
 * 普通日志使用
 
