@@ -18,11 +18,10 @@ public class LogBackTest {
     public static void main(String[] args) {
 
         for(int a=0;a<100;a++) {
-            TraceId.logTraceID.set(UUID.randomUUID().toString().replace("-", ""));
-            MDC.put("orderid", "1");
-            MDC.put("userid", "4");
-            MDC.put("sheis", "3");
-            logger.info("{}{}", "tongji",a);
+            try {
+                Thread.sleep(1000);
+            }catch (Exception e){}
+            logger.error("1111");
         }
     }
 }

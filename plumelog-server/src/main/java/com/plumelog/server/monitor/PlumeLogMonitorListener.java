@@ -121,23 +121,23 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     private void statisticAlnalysis(String key, WarningRule rule) {
         String time = redisClient.hget(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME);
         if (StringUtils.isEmpty(time)) {
-            redisClient.hset(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME, String.valueOf(System.currentTimeMillis()));
-        } else {
-            long startTime = Long.parseLong(time);
-            long endTime = startTime + (rule.getTime() * 1000);
-            if (endTime > System.currentTimeMillis()) {
-                Long incr = redisClient.hincrby(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT, 1);
-                if (incr >= rule.getErrorCount() && !redisClient.existsKey(key + WARNING_NOTICE)) {
-                    earlyWarning(rule, incr, key);
-                    redisClient.del(key);
-                }
-            } else {
-                redisClient.hdel(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME,
-                        LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT);
-                redisClient.hincrby(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT, 1);
-                redisClient.hset(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME,
-                        String.valueOf(System.currentTimeMillis()));
+            time=String.valueOf(System.currentTimeMillis());
+            redisClient.hset(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME, time);
+        }
+        long startTime = Long.parseLong(time);
+        long endTime = startTime + (rule.getTime() * 1000);
+        if (endTime > System.currentTimeMillis()) {
+            Long incr = redisClient.hincrby(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT, 1);
+            if (incr >= rule.getErrorCount() && !redisClient.existsKey(key + WARNING_NOTICE)) {
+                earlyWarning(rule, incr, key);
+                redisClient.del(key);
             }
+        } else {
+            redisClient.hdel(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME,
+                    LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT);
+            redisClient.hincrby(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT, 1);
+            redisClient.hset(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME,
+                    String.valueOf(System.currentTimeMillis()));
         }
 
     }
@@ -184,7 +184,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             plumeLogMonitorTextMessage.setAtMobiles(receivers);
         }
         String warningKey = key + WARNING_NOTICE;
-        if (redisClient.setNx(warningKey + KEY_NX, 5)) {
+        if (redisClient.setNx(warningKey + KEY_NX, rule.getTime())) {
             logger.info(plumeLogMonitorTextMessage.getText());
             //default send to dingtalk
             if (rule.getHookServe() == 1) {
