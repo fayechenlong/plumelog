@@ -6,10 +6,16 @@ import Size from "../views/Size.vue";
 import Chart from "../views/Chart.vue";
 import Warn from "../views/Warn.vue";
 import Expand from "../views/Expand.vue";
+import Login from "../views/Login.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/login",
+    name: "Login",
+    component: Login
+  },
   {
     path: "/trace",
     name: "Trace",
