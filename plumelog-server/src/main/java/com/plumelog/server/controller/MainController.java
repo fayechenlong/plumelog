@@ -63,6 +63,11 @@ public class MainController {
         }
     }
 
+    @RequestMapping({"/logout", "/plumelogServer/logout"})
+    public void login(HttpServletRequest request) {
+        request.getSession().removeAttribute("token");
+    }
+
     @RequestMapping({"/getlog", "/plumelogServer/getlog"})
     public Result getlog(Integer maxSendSize, String logKey) {
         if (maxSendSize == null) {

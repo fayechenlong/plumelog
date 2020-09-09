@@ -21,7 +21,8 @@
                 <a class="nav-link" href="./#/size">管理</a>
             </li>
         </ul>
-        <div class="version">Version 3.2.0</div>
+        <span class="quit"><a href="./#/login">退出</a></span>
+        <span class="version">Version 3.2.0</span>
     </nav>
 </template>
 <script>
@@ -65,6 +66,17 @@ export default {
             top:16px;
             right:20px;
             color:#ddd;
+        }
+        .quit {
+          position: absolute;
+          top:16px;
+          right:120px;
+          color:#ddd;
+          z-index: 2;
+          cursor: pointer;
+          a {
+            cursor:pointer
+          }
         }
     }
 </style>

@@ -51,6 +51,9 @@ import router from "@/router";
       },
       mounted() {
         particlesJS('login', config)
+        axios.post(process.env.VUE_APP_API+ '/logout').then(res=> {
+          console.log(res.data)
+        })
       },
       methods: {
           submit() {

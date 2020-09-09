@@ -286,7 +286,7 @@ export default {
     },
     getData(){
       this.$Loading.start();
-      axios.get(process.env.VUE_APP_API+'/getWarningRuleList').then(data=>{
+      axios.post(process.env.VUE_APP_API+'/getWarningRuleList').then(data=>{
          this.$Loading.finish();
          this.warnData = _.get(data,'data',[]).map(item=>{
            return {
@@ -347,7 +347,7 @@ export default {
       this.showConfirm = true;
     },
     confirmPassword(pwd){
-      axios.get(process.env.VUE_APP_API+'/deleteIndex?index=plumelog_monitor_message_key&adminPassWord='+pwd).then(result=>{
+      axios.post(process.env.VUE_APP_API+'/deleteIndex?index=plumelog_monitor_message_key&adminPassWord='+pwd).then(result=>{
         console.log(result)
         if(result.data.acknowledged){
            alert('删除成功');

@@ -201,7 +201,7 @@ export default {
     },
     clearQueueHandler() {
       this.clearQueue= false
-      axios.get(process.env.VUE_APP_API+'/deleteQueue?adminPassWord='+this.password).then(res=> {
+      axios.post(process.env.VUE_APP_API+'/deleteQueue?adminPassWord='+this.password).then(res=> {
         if(res.data.acknowledged) {
           alert('删除成功');
           this.password = '';
@@ -209,7 +209,7 @@ export default {
       })
     },
     getQueueSize() {
-      axios.get(process.env.VUE_APP_API+'/getQueueCounts').then(res=> {
+      axios.post(process.env.VUE_APP_API+'/getQueueCounts').then(res=> {
         if(res.data.runSize > -1) {
             this.runSize = res.data.runSize
             this.traceSize = res.data.traceSize
@@ -223,7 +223,7 @@ export default {
       let deletePromise=[];
       for(var item of selected)
       {
-        deletePromise.push(axios.get(process.env.VUE_APP_API+'/deleteIndex?index='+item.index+'&adminPassWord='+this.password))
+        deletePromise.push(axios.post(process.env.VUE_APP_API+'/deleteIndex?index='+item.index+'&adminPassWord='+this.password))
       }
       Promise.all(deletePromise).then(results=>{
         let successResults=[];
