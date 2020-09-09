@@ -1,7 +1,10 @@
 import axios from 'axios'
-
+import router from "@/router";
+import ViewUI from 'view-design';
 /** axios 请求连接等待时间 **/
 axios.defaults.timeout = 300000
+axios.defaults.withCredentials=true
+axios.defaults.crossDomain=true
 /** axios Request 配置 **/
 axios.interceptors.request.use(
   config => {
@@ -15,6 +18,13 @@ axios.interceptors.request.use(
 /** axios Response 配置 **/
 axios.interceptors.response.use(
   response => {
+      if(response.data.code == 401) {
+          router.replace({
+              path: 'login'
+          })
+          ViewUI.LoadingBar.finish();
+          return Promise.reject('未登陆')
+      }
     return response
   },
   error => {

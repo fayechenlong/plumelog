@@ -177,7 +177,12 @@
               <Icon type="ios-search" v-if="row.traceId" @click="doSearch('traceId',row)" />
             </template>
             <template slot-scope="{ row }" slot="content">
-              <div style="white-space: pre-wrap; max-height: 100px;" v-html="replaceOf(row.highlightCnt || row.content)"></div>
+              <div style="white-space: pre-wrap; max-height: 100px;">
+                <span v-for="item in hightLightCode(row.highlightCnt || row.content, !!row.highlightCnt)">
+                                <span v-if="item.isH" v-html="item.content"></span>
+                                <span v-else>{{ item.content }}</span>
+                            </span>
+              </div>
             </template>
           </Table>
     </div>
@@ -274,7 +279,7 @@ export default {
      api: process.env.api,
      dateOption,
 
-     dateTimeRange:[moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD HH:mm:ss')],
+     dateTimeRange:[moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD 23:59:59')],
      content:{
        _source:{}
      },
@@ -509,14 +514,43 @@ export default {
     }
   },
   methods:{
-    replaceOf(content) {
+    hightLightCode(code, isHighlight) {
+      code = code.replace(/\\n\\t/g, "\n").replace(/\\n\\tat/g, "\n").replace(/\\n/g, '\n');
+      let rows = [];
+      if (code.indexOf('java.') > -1) {
+        let content = '<pre style="word-break:break-all;white-space: normal;">' + Prism.highlight(code.replace(/\n/g, '<br/>'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>"
+        rows.push({isH: true, content})
+        return rows;
+      } else if (isHtml.test(code)) {
+        let content = code;
+        if (isHighlight) {
+          let h = [];
+          let hContent = code.match(/<em>([\s\S]*?)<\/em>/g);
+          code = code.replace(/<em>([\s\S]*?)<\/em>/g, "@Highlight@")
 
-      if(content.indexOf("xml") >0) {
-        return '<xmp>' + content + '</xmp>'
-      } else if(isHtml.test(content)) {
-        return '<xmp>' + content + '</xmp>'
+          var strings = code.split('@');
+          strings = strings.filter(x => !!x)
+          // console.log(code)
+          // console.log(hContent)
+          // console.log(strings)
+          let hi = 0
+          for (let i = 0; i < strings.length; i++) {
+            let isH = strings[i] === 'Highlight';
+            let content = isH ? hContent[hi] : strings[i];
+            h.push({isH, content})
+            isH && hi++
+          }
+          rows.push(...h)
+          // console.log(rows)
+          return rows;
+        }
+        rows.push({isH: false, content})
+        return rows;
+      } else {
+        let content = '<div style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\tat/g, '') + "</div>";
+        rows.push({isH: true, content})
+        return rows;
       }
-      return content.replace(/\\n\\t/g,"\n").replace(/\\n\\tat/g,"\n").replace(/\\n/g, '\n')
     },
     appNameChange(){
       this.getExtendList();
@@ -874,8 +908,8 @@ export default {
        "traceId":""
      }
      this.searchKey = "";
-     this.dateTimeRange = [moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD HH:mm:ss')];
-     this.$refs.datePicker.internalValue=[moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD HH:mm:ss')];
+     this.dateTimeRange = [moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD 23:59:59')];
+     this.$refs.datePicker.internalValue=[moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'),moment(new Date()).format('YYYY-MM-DD 23:59:59')];
      this.doSearch();
     },
     dateChange(){
@@ -1166,13 +1200,19 @@ export default {
         this.from = 0;
       },
       deep:true
+    },
+    '$route.path':function(newVal,oldVal){
+      console.log(newVal, oldVal)
+       if(newVal === '/' && oldVal === '/login')
+        this.init()
     }
   },
   activated(){
-   this.init();
+    // console.log("activated")
+   // this.init();
   },
   mounted(){
-    //this.init();
+    this.init()
   }
 };
 </script>

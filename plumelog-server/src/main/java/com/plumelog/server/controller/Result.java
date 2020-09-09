@@ -16,6 +16,16 @@ public class Result {
     private String message;
     private List<String> logs = new ArrayList<>();
 
+    public static Result UN_LOGIN = new Result(401);
+    public static Result INVALID_LOGIN = new Result(402);
+
+    public Result() {
+    }
+
+    public Result(Integer code) {
+        this.code = code;
+    }
+
     public Integer getCode() {
         return code;
     }

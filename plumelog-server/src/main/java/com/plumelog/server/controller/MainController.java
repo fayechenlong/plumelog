@@ -8,6 +8,7 @@ import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
+import com.plumelog.server.controller.vo.LoginVO;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -44,6 +46,22 @@ public class MainController {
 
     @Value("${admin.password}")
     private String adminPassWord;
+
+
+    @RequestMapping({"/login", "/plumelogServer/login"})
+    public Result login(@RequestBody LoginVO login, HttpServletRequest request) {
+        if(StringUtils.isEmpty(InitConfig.loginUsername)) {
+            request.getSession().setAttribute("token", new Object());
+            return new Result();
+        }
+        if(InitConfig.loginUsername.equals(login.getUsername()) && InitConfig.loginUsername.equals(login.getPassword())) {
+            request.getSession().setAttribute("token", new Object());
+            return new Result();
+        } else {
+            request.getSession().removeAttribute("token");
+            return Result.INVALID_LOGIN;
+        }
+    }
 
     @RequestMapping({"/getlog", "/plumelogServer/getlog"})
     public Result getlog(Integer maxSendSize, String logKey) {

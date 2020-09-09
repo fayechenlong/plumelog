@@ -24,4 +24,8 @@ public class InitConfig {
     public static String restUserName = "";
     public static String restPassWord = "";
     public static String restUrl = "";
+
+
+    public static String loginUsername = "";
+    public static String loginPassword = "";
 }

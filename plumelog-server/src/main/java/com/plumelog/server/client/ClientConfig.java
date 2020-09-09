@@ -62,6 +62,10 @@ public class ClientConfig implements InitializingBean {
     private String restUserName;
     @Value("${plumelog.rest.restPassWord:}")
     private String restPassWord;
+    @Value("${login.username:}")
+    private String loginUsername;
+    @Value("${login.password:}")
+    private String loginPassword;
 
 
 
@@ -125,8 +129,10 @@ public class ClientConfig implements InitializingBean {
         InitConfig.restUserName = this.restUserName;
         InitConfig.restPassWord = this.restPassWord;
 
-
         LogMessageConstant.ES_TYPE = this.indexType;
+
+        InitConfig.loginUsername = this.loginUsername;
+        InitConfig.loginPassword = this.loginPassword;
 
         logger.info("server run model:" + this.model);
         logger.info("maxSendSize:" + this.maxSendSize);
