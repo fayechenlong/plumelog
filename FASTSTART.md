@@ -136,7 +136,7 @@
     #<!-- appName:应用名称 -->
     #<!-- kafkaHosts：kafka集群地址 -->
     #<!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1-->
-    log4j.appender.L=com.plumelog.core.appender.KafkaAppender
+    log4j.appender.L=com.plumelog.log4j.appender.KafkaAppender
     #appName系统的名称(自己定义就好)
     log4j.appender.L.appName=plumelog
     log4j.appender.L.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
