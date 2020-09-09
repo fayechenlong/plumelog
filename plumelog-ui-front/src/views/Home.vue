@@ -496,7 +496,7 @@ export default {
         else if (_range > 1000 * 60 * 60 * 24) {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60 * 60 * 3
+            value: 1000 * 60 * 60
           }
         } else if (_range >= 1000 * 60 * 60 * 12) {
           return {
@@ -511,7 +511,7 @@ export default {
         } else if (_range >= 1000 * 60 * 60) {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60 * 5
+            value: 1000 * 60
           }
         } else if (_range >= 1000 * 60 * 30) {
           return {
@@ -922,8 +922,13 @@ export default {
 
       //判断日期
       if (this.dateTimeRange.length > 0 && this.dateTimeRange[0] != '') {
+        let now = new Date()
         let startDate = new Date(this.dateTimeRange[0]);
         let endDate = new Date(this.dateTimeRange[1]);
+        if(endDate > now) {
+          endDate = now
+        }
+        console.log(startDate, endDate)
         filters.push({
           "range": {
             "dtTime": {
@@ -1070,7 +1075,6 @@ export default {
           }
         }
       }
-
       axios.post(process.env.VUE_APP_API + '/query?index=' + dateList.join(',') + '&from=0&size=0&chartData', chartFilter).then(data => {
         this.chartData = _.get(data, 'data.aggregations.2.buckets', []);
         this.drawLine();
@@ -1081,8 +1085,12 @@ export default {
       });
     },
     getErrorRate(dateList) {
+      let now = new Date()
       let startDate = new Date(this.dateTimeRange[0]);
       let endDate = new Date(this.dateTimeRange[1]);
+      if(endDate > now) {
+         endDate = now
+      }
       let _promise = [];
       //按时间查询日志数量
       let query = {};
