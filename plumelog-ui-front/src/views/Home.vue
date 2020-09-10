@@ -477,7 +477,14 @@ export default {
     },
     chartInterval() {
       if (this.dateTimeRange.length > 0) {
-        let _range = (new Date(this.dateTimeRange[1])).getTime() - (new Date(this.dateTimeRange[0])).getTime();
+        let start = new Date(this.dateTimeRange[0]);
+        let end = new Date(this.dateTimeRange[1]);
+        let now = new Date()
+        if(end > now) {
+          end = now
+        }
+
+        let _range = (end.getTime() - start.getTime());
         //大于7天按照每天数据统计
         if (_range > 1000 * 60 * 60 * 24 * 7) {
           return {
