@@ -560,7 +560,7 @@ export default {
       code = code.replace(/\\n\\t/g, "\n").replace(/\\n\\tat/g, "\n").replace(/\\n/g, '\n');
       let rows = [];
       if (code.indexOf('java.') > -1) {
-        let content = '<pre style="word-break:break-all;white-space: normal;">' + Prism.highlight(code.replace(/\n/g, '<br/>'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>"
+        let content = '<pre style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>"
         rows.push({isH: true, content})
         return rows;
       } else if (isHtml.test(code)) {
@@ -935,7 +935,7 @@ export default {
         if(endDate > now) {
           endDate = now
         }
-        console.log(startDate, endDate)
+        // console.log(startDate, endDate)
         filters.push({
           "range": {
             "dtTime": {
@@ -1243,8 +1243,10 @@ export default {
       deep: true
     },
     '$route.path': function (newVal, oldVal) {
-      console.log(newVal, oldVal)
+      // console.log(newVal, oldVal)
       if (newVal === '/' && oldVal === '/login')
+        this.init()
+      else if (newVal === '/' && oldVal === '/warn')
         this.init()
     }
   },
