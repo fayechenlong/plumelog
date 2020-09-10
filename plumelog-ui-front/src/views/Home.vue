@@ -263,6 +263,7 @@ let isHtml = /<\/?[a-z][\s\S]*>/i
 export default {
   name: "Home",
   data() {
+    this.slotColumns = ['logLevel','serverName', 'appName', 'traceId', 'className'];
     return {
       sizeList: [{label: "30", value: 30}, {label: "50", value: 50}, {label: "100", value: 100}, {
         label: "200",
@@ -288,23 +289,28 @@ export default {
       allColumns: [
         {
           label: '日志等级',
-          value: 'logLevel'
+          value: 'logLevel',
+          width:90
         },
         {
           label: '服务器名称',
-          value: 'serverName'
+          value: 'serverName',
+          width: 150
         },
         {
           label: '应用名称',
-          value: 'appName'
+          value: 'appName',
+          width: 150
         },
         {
           label: '追踪码',
-          value: 'traceId'
+          value: 'traceId',
+          width: 170,
         },
         {
           label: '类名',
-          value: 'className'
+          value: 'className',
+          width: 270
         }
       ],
       showFilter: true,
@@ -360,7 +366,7 @@ export default {
           className: 'icon',
           resizable: true,
           sortable: true,
-          width: 120
+          width: 90
         },
         {
           title: '服务器名称',
@@ -454,14 +460,18 @@ export default {
             return o.value == title
           });
           if (item) {
+
             let col = {
               title: item.label,
               align: 'center',
               resizable: true,
               key: item.value,
               className: 'icon',
-              slot: item.value
+
             };
+            if(this.slotColumns.includes(item.value)) {
+              col.slot = item.value
+            }
             if (item.width) {
               col.width = item.width
             } else {
@@ -599,26 +609,7 @@ export default {
     },
     getExtendList() {
       this.allColumns = [
-        {
-          label: '日志等级',
-          value: 'logLevel'
-        },
-        {
-          label: '服务器名称',
-          value: 'serverName'
-        },
-        {
-          label: '应用名称',
-          value: 'appName'
-        },
-        {
-          label: '追踪码',
-          value: 'traceId'
-        },
-        {
-          label: '类名',
-          value: 'className'
-        }
+        ...this.allColumns
       ];
       if (this.filter.appName) {
         axios.post(process.env.VUE_APP_API + '/getExtendfieldList?appName=' + this.filter.appName).then(data => {
