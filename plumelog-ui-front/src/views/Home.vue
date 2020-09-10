@@ -96,8 +96,8 @@
           <tr v-if="extendList.length>0">
             <td class="key">扩展字段</td>
             <td>
-              <Select v-model="select_extend" placeholder="选择扩展字段" style="width:150px;margin-right:10px">
-                <Option v-for="extend in extendList" :value="extend.fieldName" :key="extend.field">{{
+              <Select v-model="select_extend" @on-change="selectExtendHandler" label-in-value placeholder="选择扩展字段" style="width:150px;margin-right:10px">
+                <Option v-for="extend in extendList" :value="extend.field" :key="extend.field">{{
                     extend.fieldName
                   }}
                 </Option>
@@ -113,7 +113,7 @@
               <Tag closable v-for="(tag,index) in extendOptions" size="medium" @on-close="closeExtendTag(index)"
                    :key="index">
                 <template v-if="index>0">{{ tag.type }}&nbsp;</template>
-                {{ tag.field }}:{{ tag.tag }}
+                {{ tag.label }}:{{ tag.tag }}
               </Tag>
             </td>
           </tr>
@@ -275,6 +275,7 @@ export default {
       extendList: [],
       extendOptions: [],
       select_extend: "",
+      select_extend_label: "",
       completeFilterLoading: false,
       appNameComplete: [],
       useSearchQuery: false,
@@ -671,15 +672,19 @@ export default {
     closeTag(index) {
       this.searchOptions.splice(index, 1);
     },
+    selectExtendHandler(extend) {
+      this.select_extend = extend.value
+      this.select_extend_label = extend.label
+    },
     addExtendTag() {
       if (this.extendTag) {
-
         //同样的field只能出现一次，有的话覆盖
         let isExistField = false;
         for (let i = 0; i < this.extendOptions.length; i++) {
           if (this.extendOptions[i].field == this.select_extend) {
             this.extendOptions[i] = {
               field: this.select_extend,
+              label: this.select_extend_label,
               tag: this.extendTag
             }
             isExistField = true;
@@ -690,6 +695,7 @@ export default {
         if (!isExistField) {
           this.extendOptions.push({
             field: this.select_extend,
+            label: this.select_extend_label,
             tag: this.extendTag
           })
         }
