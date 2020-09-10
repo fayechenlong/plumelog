@@ -97,7 +97,7 @@
             <td class="key">扩展字段</td>
             <td>
               <Select v-model="select_extend" placeholder="选择扩展字段" style="width:150px;margin-right:10px">
-                <Option v-for="extend in extendList" :value="extend.field" :key="extend.field">{{
+                <Option v-for="extend in extendList" :value="extend.fieldName" :key="extend.field">{{
                     extend.fieldName
                   }}
                 </Option>
