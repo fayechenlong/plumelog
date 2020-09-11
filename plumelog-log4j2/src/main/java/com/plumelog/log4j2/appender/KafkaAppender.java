@@ -99,14 +99,14 @@ public class KafkaAppender extends AbstractAppender {
         final int queueSize=logQueueSize;
         final int count=maxCount;
         final int poolSize=threadPoolSize;
+        MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(queueSize);
+        MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(queueSize);
         for(int a=0;a<threadPoolSize;a++){
 
             threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(queueSize);
                 MessageAppenderFactory.startRunLog(kafkaClient,count);
             });
             threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(queueSize);
                 MessageAppenderFactory.startTraceLog(kafkaClient,count);
             });
         }

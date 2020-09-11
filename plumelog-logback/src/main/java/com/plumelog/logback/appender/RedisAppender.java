@@ -97,26 +97,26 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         if (this.runModel != null) {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
-        if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
-            LogMessageConstant.EXPAND = expand;
+        if (this.expand != null && LogMessageConstant.EXPANDS.contains(this.expand)) {
+            LogMessageConstant.EXPAND = this.expand;
         }
-        if (redisClient == null) {
-            redisClient = RedisClient.getInstance(this.redisHost,
+        if (this.redisClient == null) {
+            this.redisClient = RedisClient.getInstance(this.redisHost,
                     this.redisPort == null ?
                             LogMessageConstant.REDIS_DEFAULT_PORT
                             : Integer.parseInt(this.redisPort),
                     this.redisAuth,this.redisDb);
         }
 
+        MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
+        MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
         for(int a=0;a<this.threadPoolSize;a++){
 
             threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
-                MessageAppenderFactory.startRunLog(redisClient,maxCount);
+                MessageAppenderFactory.startRunLog(this.redisClient,this.maxCount);
             });
             threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
-                MessageAppenderFactory.startTraceLog(redisClient,maxCount);
+                MessageAppenderFactory.startTraceLog(this.redisClient,this.maxCount);
             });
         }
     }

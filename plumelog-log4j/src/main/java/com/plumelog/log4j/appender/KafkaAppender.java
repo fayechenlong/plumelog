@@ -66,21 +66,21 @@ public class KafkaAppender extends AppenderSkeleton {
         if(this.runModel!=null){
             LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
         }
-        if (kafkaClient == null) {
-            kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
+        if (this.kafkaClient == null) {
+            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
+            MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
+            MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
             for(int a=0;a<this.threadPoolSize;a++){
 
                 threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
-                    MessageAppenderFactory.startRunLog(kafkaClient,maxCount);
+                    MessageAppenderFactory.startRunLog(this.kafkaClient,maxCount);
                 });
                 threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
-                    MessageAppenderFactory.startTraceLog(kafkaClient,maxCount);
+                    MessageAppenderFactory.startTraceLog(this.kafkaClient,maxCount);
                 });
             }
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, loggingEvent);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, loggingEvent);
             MessageAppenderFactory.pushRundataQueue(message);
