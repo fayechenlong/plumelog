@@ -37,7 +37,7 @@ public class KafkaAppender extends AbstractAppender {
     private String expand;
     private int maxCount=500;
     private int logQueueSize=10000;
-    private int threadPoolSize=5;
+    private int threadPoolSize=1;
 
     protected KafkaAppender(String name, String appName, String kafkaHosts, String runModel, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions, String expand,int maxCount,int logQueueSize,int threadPoolSize) {
@@ -94,13 +94,11 @@ public class KafkaAppender extends AbstractAppender {
             logQueueSize=10000;
         }
         if(threadPoolSize==0){
-            threadPoolSize=5;
+            threadPoolSize=1;
         }
-        final int queueSize=logQueueSize;
         final int count=maxCount;
-        final int poolSize=threadPoolSize;
-        MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(queueSize);
-        MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(queueSize);
+        MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
+        MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
         for(int a=0;a<threadPoolSize;a++){
 
             threadPoolExecutor.execute(()->{

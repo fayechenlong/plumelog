@@ -31,7 +31,7 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private String expand;
     private int maxCount=100;
     private int logQueueSize=10000;
-    private int threadPoolSize=5;
+    private int threadPoolSize=1;
 
     public String getExpand() {
         return expand;
