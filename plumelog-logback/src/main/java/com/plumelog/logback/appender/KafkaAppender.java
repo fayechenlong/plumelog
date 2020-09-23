@@ -90,16 +90,21 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             LogMessageConstant.EXPAND = expand;
         }
 
-        MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
-        MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
-        for(int a=0;a<this.threadPoolSize;a++){
-
-            threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.startRunLog(this.kafkaClient,this.maxCount);
-            });
-            threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.startTraceLog(this.kafkaClient,this.maxCount);
-            });
+        if(MessageAppenderFactory.rundataQueue==null) {
+            MessageAppenderFactory.rundataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
+            for (int a = 0; a < this.threadPoolSize; a++) {
+                threadPoolExecutor.execute(() -> {
+                    MessageAppenderFactory.startRunLog(this.kafkaClient, this.maxCount);
+                });
+            }
+        }
+        if(MessageAppenderFactory.tracedataQueue==null) {
+            MessageAppenderFactory.tracedataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
+            for (int a = 0; a < this.threadPoolSize; a++) {
+                threadPoolExecutor.execute(() -> {
+                    MessageAppenderFactory.startTraceLog(this.kafkaClient, this.maxCount);
+                });
+            }
         }
     }
 }
