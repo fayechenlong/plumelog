@@ -54,7 +54,7 @@ public class MainController {
             request.getSession().setAttribute("token", new Object());
             return new Result();
         }
-        if(InitConfig.loginUsername.equals(login.getUsername()) && InitConfig.loginUsername.equals(login.getPassword())) {
+        if(InitConfig.loginUsername.equals(login.getUsername()) && InitConfig.loginPassword.equals(login.getPassword())) {
             request.getSession().setAttribute("token", new Object());
             return new Result();
         } else {
