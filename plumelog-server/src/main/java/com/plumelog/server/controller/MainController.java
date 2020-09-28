@@ -1,5 +1,6 @@
 package com.plumelog.server.controller;
 
+import com.plumelog.core.LogMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.dto.WarningRuleDto;
@@ -94,11 +95,15 @@ public class MainController {
     }
 
     @RequestMapping({"/sendLog", "/plumelogServer/sendLog"})
-    public Result sendLog(List<String> logs, String logKey) {
+    public Result sendLog(@RequestBody List<LogMessage> logs, String logKey) {
         Result result = new Result();
         if ("redis".equals(InitConfig.START_MODEL)) {
             try {
-                redisClient.putMessageList(logKey, logs);
+                List<String> logStr=new ArrayList<>();
+                logs.forEach(log->{
+                    logStr.add(GfJsonUtil.toJSONString(log));
+                });
+                redisClient.putMessageList(logKey, logStr);
             } catch (Exception e) {
                 result.setCode(500);
                 result.setMessage("send logs error! :" + e.getMessage());
