@@ -38,10 +38,16 @@ public class AutoDeleteLogs {
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -keepDays);
                 Date date = cal.getTime();
-                String runLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD)+"*";
+                String runLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
                 elasticLowerClient.deleteIndex(runLogIndex);
-                String traceLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD)+"*";
+                String traceLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
                 elasticLowerClient.deleteIndex(traceLogIndex);
+                for (int a = 0; a < 24; a++) {
+                    String hour=String.format("%02d",a);
+                    elasticLowerClient.deleteIndex(runLogIndex+hour);
+                    elasticLowerClient.deleteIndex(traceLogIndex+hour);
+
+                }
                 logger.info("delete success! index:" + runLogIndex);
                 logger.info("delete success! index:" + traceLogIndex);
             } catch (Exception e) {
