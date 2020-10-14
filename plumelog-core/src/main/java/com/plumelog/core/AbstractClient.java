@@ -1,7 +1,6 @@
 package com.plumelog.core;
 
 import com.plumelog.core.exception.LogQueueConnectException;
-import javafx.fxml.LoadException;
 
 import java.util.List;
 
