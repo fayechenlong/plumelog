@@ -1,0 +1,17 @@
+{{- if .Values.docker.domain }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: {{.Values.docker.domain}}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ .Release.Name }}
+              servicePort: 8891
+{{- end}}
