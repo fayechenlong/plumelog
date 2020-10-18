@@ -1,0 +1,60 @@
+docker:
+  image:
+    tag:  "3.2" 
+  domain: ""
+config:
+  plumelog:
+    #值为4种 redis,kafka,rest,restServer
+    #redis 表示用redis当队列
+    #kafka 表示用kafka当队列
+    #rest 表示从rest接口取日志
+    #restServer 表示作为rest接口服务器启动
+    #ui 表示单独作为ui启动
+    model: rest
+    #redis配置,3.0版本必须配置redis地址，因为需要监控报警
+    redis:
+      redisHost: 10.101.160.19:6379
+      #如果使用redis有密码,启用下面配置
+      redisPassWord: '!jkl1234'
+      redisDb: 0
+    #如果使用kafka,启用下面配置
+    kafka:
+      kafkaGroupName: logConsumer
+      kafkaHosts: 172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
+    #如果使用rest,启用下面配置
+    rest:
+      restUrl: http://127.0.0.1:8891/getlog
+      restUserName: plumelog
+      restPassWord: 123456
+    #elasticsearch相关配置
+    es:
+      esHosts: 10.101.160.19:9400
+      refresh:
+        interval: 10s
+      replicas: 1
+      shards: 5
+      indexType: 
+        name: plumelog
+        #日志索引建立方式day表示按天、hour表示按照小时
+        model: day
+      #ES设置密码,启用下面配置
+      userName: elastic
+      passWord: changeme
+    #拉取时间间隔，kafka不生效
+    interval: 1000
+    #单次拉取日志条数
+    maxSendSize: 5000
+    ui:
+      #plumelog-ui的地址 如果不配置，报警信息里不可以点连接
+      url: http://10.33.102.70:8080
+  #管理配置
+  admin:
+    #日志保留天数,配置0或者不配置默认永久保留
+    log:
+      keepDays: 30
+    #管理密码，手动删除日志的时候需要输入的密码
+    password: 123456
+  #登录配置
+  login:
+    password: admin
+    username: admin

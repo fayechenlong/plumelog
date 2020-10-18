@@ -1,0 +1,28 @@
+apiVersion: apps/v1  
+kind: Deployment  
+metadata:  
+  labels:  
+    app: {{ .Release.Name }}  
+  name: {{ .Release.Name }}
+spec:  
+  selector:  
+    matchLabels:  
+      app: {{ .Release.Name }}
+  replicas: 1  
+  template:  
+    metadata:  
+      labels:  
+        app: {{ .Release.Name }} 
+      name: {{ .Release.Name }}
+    spec:  
+      containers:  
+        - name: {{ .Release.Name }}
+          image: xiaobai021sdo/plumelog:{{.Values.docker.image.tag}}
+          imagePullPolicy: Always  
+          volumeMounts:  
+            - name: config-files  
+              mountPath: /plumelog-server/config
+      volumes:  
+        - name: config-files  
+          configMap:  
+            name: {{ .Release.Name }}-cm

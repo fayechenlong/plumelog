@@ -21,8 +21,8 @@ server.port=8891
 plumelog.model=redis
 
 #如果使用kafka,启用下面配置
-#plumelog.server.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
-#plumelog.server.kafka.kafkaGroupName=logConsumer
+#plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
+#plumelog.kafka.kafkaGroupName=logConsumer
 
 #redis配置,3.0版本必须配置redis地址，因为需要监控报警
 plumelog.redis.redisHost=172.16.247.69:6380
@@ -30,22 +30,22 @@ plumelog.redis.redisHost=172.16.247.69:6380
 #plumelog.redis.redisPassWord=123456
 
 #如果使用rest,启用下面配置
-#plumelog.server.rest.restUrl=http://127.0.0.1:8891/getlog
-#plumelog.server.rest.restUserName=plumelog
-#plumelog.server.rest.restPassWord=123456
+#plumelog.rest.restUrl=http://127.0.0.1:8891/getlog
+#plumelog.rest.restUserName=plumelog
+#plumelog.rest.restPassWord=123456
 
 #elasticsearch相关配置
 plumelog.es.esHosts=10.33.85.101:9200,10.33.85.102:9200,10.33.85.103:9200
 #ES7.*已经去除了索引type字段，所以如果是es7不用配置这个，7.*以下不配置这个会报错
-#plumelog.server.es.indexType=plumelog
+#plumelog.es.indexType=plumelog
 #ES设置密码,启用下面配置
 plumelog.es.userName=elastic
 plumelog.es.passWord=easylog123456
 
 #单次拉取日志条数
-plumelog.server.maxSendSize=5000
+plumelog.maxSendSize=5000
 #拉取时间间隔，kafka不生效
-plumelog.server.interval=1000
+plumelog.interval=1000
 
 #plumelog-ui的地址 如果不配置，报警信息里不可以点连接
 plumelog.ui.url=http://localhost:8891
