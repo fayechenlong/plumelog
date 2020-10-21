@@ -28,9 +28,6 @@ public class TraceLogMessageFactory<T> {
     }
 
     public static RunLogMessage getLogMessage(String appName, String srvName, String message, long time) {
-        if(StringUtil.isBlank(TraceId.logTraceID.get())){
-            TraceId.setSofa();
-        }
         RunLogMessage logMessage = new RunLogMessage();
         logMessage.setServerName(srvName);
         logMessage.setAppName(appName);
