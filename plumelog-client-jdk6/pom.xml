@@ -16,7 +16,6 @@
         <module>plumelog-client-log4j</module>
         <module>plumelog-client-log4j-redis</module>
         <module>plumelog-client-log4j-kafka</module>
-        <module>plumelog-client-trace-jbss4</module>
     </modules>
     <distributionManagement>
         <repository>
