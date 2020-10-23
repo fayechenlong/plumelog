@@ -28,4 +28,8 @@ public class TraceId {
     public static void reset() {
         logTraceID.set(null);
     }
+
+    public static void setId(String traceid) {
+        logTraceID.set(traceid);
+    }
 }
