@@ -88,7 +88,7 @@ public abstract class PlumelogAppender extends AppenderSkeleton {
             return this.srvName;
         }
         this.srvName = TraceIdGenerator.getInetAddress();
-        if (StringUtil.isNotBlank(this.srvName)) {
+        if (StringUtil.isBlank(this.srvName)) {
             this.srvName = "";
         }
         return this.srvName;

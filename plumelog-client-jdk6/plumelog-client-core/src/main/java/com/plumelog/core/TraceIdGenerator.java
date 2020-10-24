@@ -86,8 +86,8 @@ public class TraceIdGenerator {
 
     private static String getTraceId(String ip, long timestamp, int nextId) {
         StringBuilder appender = new StringBuilder(30);
-        appender.append(ip).append(timestamp).append(nextId).append(getPID());
-        return appender.toString();
+        appender.append(ip).append("P").append(getPID()).append("T").append(timestamp).append("N").append(nextId);
+        return appender.toString().toUpperCase();
     }
 
     public static String generate() {

@@ -25,4 +25,11 @@ public class TraceId {
         String traceid = TraceIdGenerator.generate();
         logTraceID.set(traceid);
     }
+    public static void reset() {
+        logTraceID.set(null);
+    }
+
+    public static void setId(String traceid) {
+        logTraceID.set(traceid);
+    }
 }
