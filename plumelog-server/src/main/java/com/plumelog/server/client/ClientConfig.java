@@ -72,7 +72,7 @@ public class ClientConfig implements InitializingBean {
     @Bean
     public RedisClient initRedisClient() {
         if (StringUtils.isEmpty(redisHost)) {
-            logger.error("can not find redisHost config! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
+            logger.error("can not find redisHost config! please check the application.properties(plumelog.redis.redisHost) ");
             return null;
         }
         String[] hs = redisHost.split(":");
@@ -82,7 +82,7 @@ public class ClientConfig implements InitializingBean {
             ip = hs[0];
             port = Integer.valueOf(hs[1]);
         } else {
-            logger.error("redis config error! please check the plumelog.properties(plumelog.server.redis.redisHost) ");
+            logger.error("redis config error! please check the application.properties(plumelog.redis.redisHost) ");
             return null;
         }
         logger.info("redis host:{},port:{}",ip,port);
@@ -92,7 +92,7 @@ public class ClientConfig implements InitializingBean {
     @Bean
     public ElasticLowerClient initElasticLowerClient() {
         if (StringUtils.isEmpty(esHosts)) {
-            logger.error("can not find esHosts config ! please check the plumelog.properties(plumelog.server.es.esHosts) ");
+            logger.error("can not find esHosts config ! please check the application.properties(plumelog.es.esHosts) ");
             return null;
         }
         return ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord);
@@ -102,7 +102,7 @@ public class ClientConfig implements InitializingBean {
     public KafkaConsumer initKafkaConsumer() {
         if (InitConfig.KAFKA_MODE_NAME.equals(model)) {
             if (StringUtils.isEmpty(kafkaHosts)) {
-                logger.error("can not find kafkaHosts config! please check the plumelog.properties(plumelog.server.kafka.kafkaHosts) ");
+                logger.error("can not find kafkaHosts config! please check the application.properties(plumelog.kafka.kafkaHosts) ");
                 return null;
             }
             return KafkaConsumerClient.getInstance(kafkaHosts, InitConfig.KAFKA_GROUP_NAME, InitConfig.MAX_SEND_SIZE).getKafkaConsumer();

@@ -1,0 +1,11 @@
+apiVersion: v1
+appVersion: "3.2"
+description: A Helm Charts for Plumelog Server
+name: plumelog
+version: 0.0.1
+icon: "https://gitee.com/wolcengit/plumelog/raw/master/pic/icon.png"
+sources:
+- https://gitee.com/wolcengit/plumelog
+maintainers:
+- email: wolcen@msn.com
+  name: Wolcen

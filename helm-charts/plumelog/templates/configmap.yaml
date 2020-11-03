@@ -1,0 +1,38 @@
+apiVersion: v1  
+kind: ConfigMap  
+metadata:  
+  name: {{ .Release.Name }}-cm
+  labels:  
+    app: {{ .Release.Name }}  
+data:  
+  application.properties: |
+    spring.application.name=plumelog_server
+    server.port=8891
+    spring.thymeleaf.mode=LEGACYHTML5
+    spring.mvc.view.prefix=classpath:/templates/
+    spring.mvc.view.suffix=.html
+    spring.mvc.static-path-pattern=/plumelog/**
+    plumelog.model={{.Values.config.plumelog.model}}
+    plumelog.kafka.kafkaHosts={{.Values.config.plumelog.kafka.kafkaHosts}}
+    plumelog.kafka.kafkaGroupName={{.Values.config.plumelog.kafka.kafkaGroupName}}
+    plumelog.redis.redisHost={{.Values.config.plumelog.redis.redisHost}}
+    plumelog.redis.redisPassWord={{.Values.config.plumelog.redis.redisPassWord}}
+    plumelog.redis.redisDb={{.Values.config.plumelog.redis.redisDb}}
+    plumelog.rest.restUrl={{.Values.config.plumelog.rest.restUrl}}
+    plumelog.rest.restUserName={{.Values.config.plumelog.rest.restUserName}}
+    plumelog.rest.restPassWord={{.Values.config.plumelog.rest.restPassWord}}
+    plumelog.es.esHosts={{.Values.config.plumelog.es.esHosts}}
+    plumelog.es.shards={{.Values.config.plumelog.es.shards}}
+    plumelog.es.replicas={{.Values.config.plumelog.es.replicas}}
+    plumelog.es.refresh.interval={{.Values.config.plumelog.es.refresh.interval}}
+    plumelog.es.indexType={{.Values.config.plumelog.es.indexType.name}}
+    plumelog.es.indexType.model={{.Values.config.plumelog.es.indexType.model}}
+    plumelog.es.userName={{.Values.config.plumelog.es.userName}}
+    plumelog.es.passWord={{.Values.config.plumelog.es.passWord}}
+    plumelog.maxSendSize={{.Values.config.plumelog.maxSendSize}}
+    plumelog.interval={{.Values.config.plumelog.interval}}
+    plumelog.ui.url={{.Values.config.plumelog.ui.url}}
+    admin.password={{.Values.config.admin.password}}
+    admin.log.keepDays={{.Values.config.admin.log.keepDays}}
+    login.username={{.Values.config.login.username}}
+    login.password={{.Values.config.login.password}}
