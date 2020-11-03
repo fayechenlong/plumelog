@@ -50,7 +50,10 @@ public class RedisLogCollect extends BaseLogCollect {
                 logger.error("", e);
             }
             try {
+                long startTime=System.currentTimeMillis();
                 logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
+                long endTime=System.currentTimeMillis();
+                logger.info("RuningLog日志获取耗时：{}",endTime-startTime);
                 if(logger.isDebugEnabled()){
                 logs.forEach(log->{
                     logger.debug(log);
@@ -74,7 +77,10 @@ public class RedisLogCollect extends BaseLogCollect {
                 logger.error("", e);
             }
             try {
+                long startTime=System.currentTimeMillis();
                 logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
+                long endTime=System.currentTimeMillis();
+                logger.info("RuningLog日志获取耗时：{}",endTime-startTime);
                 if(logger.isDebugEnabled()){
                     logs.forEach(log->{
                         logger.debug(log);
