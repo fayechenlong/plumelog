@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.redis.RedisClient;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class PlumeLogMonitorRuleConfig {
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
-
+    private static Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
 
     @Autowired
     private RedisClient redisClient;

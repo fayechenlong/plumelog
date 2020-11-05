@@ -67,9 +67,16 @@ public class ClientConfig implements InitializingBean {
     @Value("${login.password:}")
     private String loginPassword;
 
+    @Value("${plumelog.queue.redis.redisHost:127.0.0.1:6379}")
+    private String queueRedisHost;
+    @Value("${plumelog.queue.redis.redisPassWord:}")
+    private String queueRedisPassWord;
+    @Value("${plumelog.queue.redis.redisDb:0}")
+    private int queueRedisDb=0;
 
 
-    @Bean
+
+    @Bean(name="redisClient")
     public RedisClient initRedisClient() {
         if (StringUtils.isEmpty(redisHost)) {
             logger.error("can not find redisHost config! please check the application.properties(plumelog.redis.redisHost) ");
@@ -86,7 +93,27 @@ public class ClientConfig implements InitializingBean {
             return null;
         }
         logger.info("redis host:{},port:{}",ip,port);
-        return RedisClient.getInstance(ip, port, redisPassWord,redisDb);
+        return new RedisClient(ip, port, redisPassWord,redisDb);
+    }
+
+    @Bean(name="redisQueueClient")
+    public RedisClient initRedisQueueClient() {
+        if (StringUtils.isEmpty(queueRedisHost)) {
+            logger.error("can not find redisHost config! please check the application.properties(plumelog.queue.redis.redisHost) ");
+            return null;
+        }
+        String[] hs = queueRedisHost.split(":");
+        int port = 6379;
+        String ip = "127.0.0.1";
+        if (hs.length == 2) {
+            ip = hs[0];
+            port = Integer.valueOf(hs[1]);
+        } else {
+            logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
+            return null;
+        }
+        logger.info("queue redis host:{},port:{}",ip,port);
+        return new RedisClient(ip, port, queueRedisPassWord,queueRedisDb);
     }
 
     @Bean

@@ -8,9 +8,11 @@ import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
 import com.plumelog.server.util.IndexUtil;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -29,11 +31,11 @@ import java.util.Date;
 @Component
 @Order(100)
 public class CollectStartBean implements InitializingBean {
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
+    private static Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
     @Autowired
     private ElasticLowerClient elasticLowerClient;
     @Autowired
-    private RedisClient redisClient;
+    private RedisClient redisQueueClient;
     @Autowired(required = false)
     private KafkaConsumer kafkaConsumer;
     @Autowired
@@ -45,7 +47,7 @@ public class CollectStartBean implements InitializingBean {
             kafkaLogCollect.kafkaStart();
         }
         if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisClient, applicationEventPublisher);
+            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisQueueClient, applicationEventPublisher);
             redisLogCollect.redisStart();
         }
         if (InitConfig.REST_MODE_NAME.equals(InitConfig.START_MODEL)) {

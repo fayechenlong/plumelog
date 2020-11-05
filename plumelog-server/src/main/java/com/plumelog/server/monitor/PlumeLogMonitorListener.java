@@ -8,8 +8,10 @@ import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
@@ -34,11 +36,10 @@ import static com.plumelog.server.monitor.DingTalkClient.sendToDingTalk;
 @Component
 public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMonitorEvent> {
 
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
+    private static Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
 
     @Autowired
     private PlumeLogMonitorRuleConfig plumeLogMonitorRuleConfig;
-
     @Autowired
     private RedisClient redisClient;
 

@@ -10,8 +10,10 @@ import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.controller.vo.LoginVO;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -38,9 +40,11 @@ import java.util.*;
 @CrossOrigin
 public class MainController {
 
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(MainController.class);
+    private Logger logger = LoggerFactory.getLogger(MainController.class);
     @Autowired
     private RedisClient redisClient;
+    @Autowired
+    private RedisClient redisQueueClient;
 
     @Autowired
     private ElasticLowerClient elasticLowerClient;
@@ -175,8 +179,8 @@ public class MainController {
     @RequestMapping({"/getQueueCounts", "/plumelog/getQueueCounts"})
     public Map<String, Object> getQueueCounts() {
         Map<String, Object> map = new HashMap<>();
-        map.put("runSize",redisClient.llen(LogMessageConstant.LOG_KEY));
-        map.put("traceSize",redisClient.llen(LogMessageConstant.LOG_KEY_TRACE));
+        map.put("runSize",redisQueueClient.llen(LogMessageConstant.LOG_KEY));
+        map.put("traceSize",redisQueueClient.llen(LogMessageConstant.LOG_KEY_TRACE));
         return map;
     }
 
@@ -184,8 +188,8 @@ public class MainController {
     public Map<String, Object> deleteQueue(String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
-        redisClient.del(LogMessageConstant.LOG_KEY);
-        redisClient.del(LogMessageConstant.LOG_KEY_TRACE);
+            redisQueueClient.del(LogMessageConstant.LOG_KEY);
+            redisQueueClient.del(LogMessageConstant.LOG_KEY_TRACE);
         map.put("acknowledged", true);
         } else {
             map.put("acknowledged", false);

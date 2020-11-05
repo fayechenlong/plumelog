@@ -54,7 +54,7 @@ public class RedisClient extends AbstractClient {
             jedisPool = new JedisPool(config, host, port, TIMEOUT);
         }
     }
-    private RedisClient(String host, int port, String pass,int db) {
+    public RedisClient(String host, int port, String pass, int db) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(MAX_ACTIVE);
         config.setMaxIdle(MAX_IDLE);
