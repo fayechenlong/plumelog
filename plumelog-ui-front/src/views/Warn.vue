@@ -73,6 +73,7 @@
                   <div class="cnt"><span class="key">类名: </span>{{log.className}}</div>
                   <div class="cnt"><span class="key">时间区间: </span>{{log.time}}秒</div>
                   <div class="cnt"><span class="key">实际错误: </span>{{log.errorCount}}条</div>
+                  <div class="cnt"><span class="key">错误信息: </span>{{log.errorContent}}</div>
                   <div class="btn_showDetail">
                     <a href="javascript:void(0)" @click="doSearch(log)">查看详情>></a>
                   </div>
@@ -267,6 +268,7 @@ export default {
         receiver:'',
         webhookUrl:'',
         errorCount: 10,
+        errorContent: '',
         status:true,
         time: 60
       };
