@@ -103,8 +103,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             WarningRule warningRule = rules.get(i);
             String className = warningRule.getClassName();
             String appName = warningRule.getAppName();
-            if (!StringUtils.isEmpty(className)
-                    && !className.equals(runLogMessage.getClassName())) {
+            if (containsClassName(className, runLogMessage.getClassName())) {
                 continue;
             }
             String errorContent = getErrorContent(runLogMessage.getContent());
@@ -113,6 +112,33 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         }
     }
 
+    /**
+     * 判断告警路径是否匹配
+     *
+     * @param cn    告警路径条件
+     * @param mcn   日志告警类路径
+     * @return
+     */
+    private boolean containsClassName(String cn, String mcn){
+        if (StringUtils.isEmpty(cn)) {
+            return false;
+        }
+
+        int a = cn.length();
+        int b = StringUtils.isEmpty(mcn) ? 0 : mcn.length();
+
+        if (a > b) {
+            return true;
+        }
+
+        for (int i = 0; i < a; i++) {
+            if (cn.charAt(i) != mcn.charAt(i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * 统计分析
