@@ -22,6 +22,9 @@
 
 * plumelog-demo 基于springboot的使用案例
 
+* 下面是全功能图，红色部分是4.0内容，目前开发中
+
+ ![avatar](/pic/guihua.png)
    
 ### 三.使用方法
 
