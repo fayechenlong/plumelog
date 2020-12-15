@@ -57,6 +57,7 @@ public class PlumeLogMonitorTextMessage {
 
         private String monitorUrl;
 
+        private String errorContent;
 
         public Builder(String appName) {
             this.appName = appName;
@@ -88,17 +89,23 @@ public class PlumeLogMonitorTextMessage {
             return this;
         }
 
+        public Builder errorContent(String errorContent) {
+            this.errorContent = errorContent;
+            return this;
+        }
+
         @Override
         public String toString() {
 
             StringBuilder builder = new StringBuilder();
             builder.append("#### 报警通知：").append(" \n> ").append("应用名 【").append(appName).append("】\n\n>");
             if (!StringUtils.isEmpty(className)) {
-                builder.append("类名【").append(className).append("】 \n\n> ");
+                builder.append("类路径【").append(className).append("】 \n\n> ");
             }
             builder.append("时间区间【").append(time).append("】秒 \n\n> ");
             builder.append("错误阀值【").append(errorCount).append("】条数 \n\n> ");
             builder.append("实际错误【").append(count).append("】条数 \n\n> ");
+            builder.append("错误信息【").append(errorContent).append("】 \n\n> ");
             builder.append("[点击查看](").append(monitorUrl).append(") \n\n");
             return builder.toString();
         }

@@ -103,15 +103,44 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             WarningRule warningRule = rules.get(i);
             String className = warningRule.getClassName();
             String appName = warningRule.getAppName();
-            if (!StringUtils.isEmpty(className)
-                    && !className.equals(runLogMessage.getClassName())) {
+            if (containsClassName(className, runLogMessage.getClassName())) {
                 continue;
             }
+            String errorContent = getErrorContent(runLogMessage.getContent());
+            String cn = StringUtils.isEmpty(className) ? "" : runLogMessage.getClassName();
+
             //统计分析
-            statisticAlnalysis(getKey(appName, className), warningRule);
+            statisticAlnalysis(getKey(appName, className), warningRule, errorContent, cn);
         }
     }
 
+    /**
+     * 判断告警路径是否匹配
+     *
+     * @param cn    告警路径条件
+     * @param mcn   日志告警类路径
+     * @return
+     */
+    private boolean containsClassName(String cn, String mcn){
+        if (StringUtils.isEmpty(cn)) {
+            return false;
+        }
+
+        int a = cn.length();
+        int b = StringUtils.isEmpty(mcn) ? 0 : mcn.length();
+
+        if (a > b) {
+            return true;
+        }
+
+        for (int i = 0; i < a; i++) {
+            if (cn.charAt(i) != mcn.charAt(i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * 统计分析
@@ -119,7 +148,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      * @param key  缓存key
      * @param rule 规则
      */
-    private void statisticAlnalysis(String key, WarningRule rule) {
+    private void statisticAlnalysis(String key, WarningRule rule, String errorContent, String className) {
         String time = redisClient.hget(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME);
         if (StringUtils.isEmpty(time)) {
             time=String.valueOf(System.currentTimeMillis());
@@ -130,7 +159,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         if (endTime > System.currentTimeMillis()) {
             Long incr = redisClient.hincrby(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT, 1);
             if (incr >= rule.getErrorCount() && !redisClient.existsKey(key + WARNING_NOTICE)) {
-                earlyWarning(rule, incr, key);
+                earlyWarning(rule, incr, key, errorContent, className);
                 redisClient.del(key);
             }
         } else {
@@ -165,14 +194,15 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      * @param count
      * @param key
      */
-    private void earlyWarning(WarningRule rule, long count, String key) {
+    private void earlyWarning(WarningRule rule, long count, String key, String errorContent, String className) {
         PlumeLogMonitorTextMessage plumeLogMonitorTextMessage =
                 new PlumeLogMonitorTextMessage.Builder(rule.getAppName())
                         .className(rule.getClassName())
                         .errorCount(rule.getErrorCount())
                         .time(rule.getTime())
                         .count(count)
-                        .monitorUrl(getMonitorMessageURL(rule))
+                        .monitorUrl(getMonitorMessageURL(rule, className))
+                        .errorContent(errorContent)
                         .build();
         if (!StringUtils.isEmpty(rule.getReceiver())) {
             String[] split = rule.getReceiver().split(",");
@@ -193,7 +223,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             } else {
                 WechatClient.sendToWeChat(plumeLogMonitorTextMessage, rule.getWebhookUrl());
             }
-            sendMesageES(rule, count);
+            sendMesageES(rule, count, errorContent);
         }
         redisClient.set(warningKey, warningKey);
         redisClient.expireAt(warningKey, Long.parseLong(String.valueOf(rule.getTime())));
@@ -203,11 +233,12 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     /**
      * 报警记录加入至ES
      */
-    private void sendMesageES(WarningRule rule, long count) {
+    private void sendMesageES(WarningRule rule, long count, String errorContent) {
         try {
             JSONObject object = (JSONObject) JSONObject.toJSON(rule);
             object.put("count", count);
             object.put("dataTime", System.currentTimeMillis());
+            object.put("errorContent", errorContent);
             elasticLowerClient.insertListComm(Arrays.asList(object.toJSONString()),
                     LogMessageConstant.PLUMELOG_MONITOR_MESSAGE_KEY,
                     LogMessageConstant.ES_TYPE);
@@ -218,7 +249,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         }
     }
 
-    private String getMonitorMessageURL(WarningRule rule) {
+    private String getMonitorMessageURL(WarningRule rule, String className) {
         //换算毫秒数
         int time = rule.getTime() * 1000;
         long currentTime = System.currentTimeMillis();
@@ -226,9 +257,24 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         long startTime = currentTime - time;
         StringBuilder builder = new StringBuilder(64);
         builder.append(url).append("/#/?appName=").append(rule.getAppName())
-                .append("&className=").append(rule.getClassName())
+                .append("&className=").append(className)
                 .append("&logLevel=ERROR")
                 .append("&time=").append(startTime).append(",").append(currentTime);
         return builder.toString();
+    }
+
+    private String getErrorContent(String content){
+
+        if (content == null) {
+            return "";
+        }
+
+        int length = 200;
+
+        if (content.length() <= length) {
+            return content;
+        }
+
+        return content.substring(0, length);
     }
 }
