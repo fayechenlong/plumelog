@@ -107,8 +107,10 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
                 continue;
             }
             String errorContent = getErrorContent(runLogMessage.getContent());
+            String cn = StringUtils.isEmpty(className) ? "" : runLogMessage.getClassName();
+
             //统计分析
-            statisticAlnalysis(getKey(appName, className), warningRule, errorContent, runLogMessage.getClassName());
+            statisticAlnalysis(getKey(appName, className), warningRule, errorContent, cn);
         }
     }
 
