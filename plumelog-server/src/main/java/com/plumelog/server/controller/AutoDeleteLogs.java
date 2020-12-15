@@ -29,7 +29,8 @@ public class AutoDeleteLogs {
     private ElasticLowerClient elasticLowerClient;
     @Value("${admin.log.keepDays:0}")
     private int keepDays;
-
+    @Value("${admin.log.trace.keepDays:0}")
+    private int traceKeepDays;
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteLogs() {
         if (keepDays > 0) {
@@ -40,15 +41,31 @@ public class AutoDeleteLogs {
                 Date date = cal.getTime();
                 String runLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
                 elasticLowerClient.deleteIndex(runLogIndex);
+                for (int a = 0; a < 24; a++) {
+                    String hour=String.format("%02d",a);
+                    elasticLowerClient.deleteIndex(runLogIndex+hour);
+
+                }
+                logger.info("delete success! index:" + runLogIndex);
+            } catch (Exception e) {
+                logger.error("delete logs error!", e);
+            }
+        } else {
+            logger.info("unwanted delete logs");
+        }
+        if (traceKeepDays > 0) {
+            try {
+                logger.info("begin delete {} days ago logs!", traceKeepDays);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -traceKeepDays);
+                Date date = cal.getTime();
                 String traceLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
                 elasticLowerClient.deleteIndex(traceLogIndex);
                 for (int a = 0; a < 24; a++) {
                     String hour=String.format("%02d",a);
-                    elasticLowerClient.deleteIndex(runLogIndex+hour);
                     elasticLowerClient.deleteIndex(traceLogIndex+hour);
 
                 }
-                logger.info("delete success! index:" + runLogIndex);
                 logger.info("delete success! index:" + traceLogIndex);
             } catch (Exception e) {
                 logger.error("delete logs error!", e);
