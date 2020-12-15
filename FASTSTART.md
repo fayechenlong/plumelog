@@ -22,62 +22,73 @@
    配置文件 plumelog-server/application.properties 详解：
 
 ```properties
-   spring.application.name=plumelog_server
-   server.port=8891
-   spring.thymeleaf.mode=LEGACYHTML5
-   spring.mvc.view.prefix=classpath:/templates/
-   spring.mvc.view.suffix=.html
-   spring.mvc.static-path-pattern=/plumelog/**
-   
-   #值为4种 redis,kafka,rest,restServer
-   #redis 表示用redis当队列
-   #kafka 表示用kafka当队列
-   #rest 表示从rest接口取日志
-   #restServer 表示作为rest接口服务器启动
-   #ui 表示单独作为ui启动
-   plumelog.model=redis
-   
-   #如果使用kafka,启用下面配置
-   #plumelog.kafka.kafkaHosts=127.0.0.1:9092,127.0.0.1:9092,127.0.0.1:9092
-   #plumelog.kafka.kafkaGroupName=logConsumer
-   
-   #redis配置,3.0版本必须配置redis地址，因为需要监控报警
-   plumelog.redis.redisHost=127.0.0.1:6379
-   #如果使用redis有密码,启用下面配置
-   plumelog.redis.redisPassWord=!jkl1234
-   
-   #如果使用rest,启用下面配置
-   #plumelog.rest.restUrl=http://127.0.0.1:8891/getlog
-   #plumelog.rest.restUserName=plumelog
-   #plumelog.rest.restPassWord=123456
-   
-   #elasticsearch相关配置
-   plumelog.es.esHosts=127.0.0.1:9200
-   #ES7.*已经去除了索引type字段，所以如果是es7不用配置这个，7.*以下不配置这个会报错
-   #plumelog.es.indexType=plumelog
-   #ES设置密码,启用下面配置
-   plumelog.es.userName=elastic
-   plumelog.es.passWord=123456
-   #索引分片数量设定，建议值:单日日志大小/ES节点机器jvm内存大小 合理的分片大小保证ES写入效率和查询效率
-   plumelog.es.shards=5
-   plumelog.es.replicas=1
-   plumelog.es.refresh.interval=10s
-   #日志索引建立方式day表示按天、hour表示按照小时
-   plumelog.es.indexType.model=day
-
-   
-   #单次拉取日志条数
-   plumelog.maxSendSize=5000
-   #拉取时间间隔，kafka不生效
-   plumelog.interval=1000
-   
-   #plumelog-ui的地址 如果不配置，报警信息里不可以点连接
-   plumelog.ui.url=http://127.0.0.1:8080
-   
-   #管理密码，手动删除日志的时候需要输入的密码
-   admin.password=123456
-   #日志保留天数,配置0或者不配置默认永久保留
-   admin.log.keepDays=15
+        spring.application.name=plumelog_server
+        server.port=8891
+        spring.thymeleaf.mode=LEGACYHTML5
+        spring.mvc.view.prefix=classpath:/templates/
+        spring.mvc.view.suffix=.html
+        spring.mvc.static-path-pattern=/plumelog/**
+        
+        #值为4种 redis,kafka,rest,restServer
+        #redis 表示用redis当队列
+        #kafka 表示用kafka当队列
+        #rest 表示从rest接口取日志
+        #restServer 表示作为rest接口服务器启动
+        #ui 表示单独作为ui启动
+        plumelog.model=redis
+        
+        #如果使用kafka,启用下面配置
+        #plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
+        #plumelog.kafka.kafkaGroupName=logConsumer
+        
+        
+        plumelog.queue.redis.redisHost=127.0.0.1:6379
+        #如果使用redis有密码,启用下面配置
+        #plumelog.queue.redis.redisPassWord=plumelog
+        #plumelog.queue.redis.redisDb=0
+        
+        #redis配置,3.0版本必须配置redis地址，因为需要监控报警
+        plumelog.redis.redisHost=127.0.0.1:6379
+        #如果使用redis有密码,启用下面配置
+        #plumelog.redis.redisPassWord=plumelog
+        
+        #如果使用rest,启用下面配置
+        #plumelog.rest.restUrl=http://127.0.0.1:8891/getlog
+        #plumelog.rest.restUserName=plumelog
+        #plumelog.rest.restPassWord=123456
+        
+        #elasticsearch相关配置
+        plumelog.es.esHosts=172.19.11.43:9200,172.19.11.44:9200,172.19.11.45:9200,172.19.11.46:9200,172.19.11.47:9200
+        #ES7.*已经去除了索引type字段，所以如果是es7不用配置这个，7.*以下不配置这个会报错
+        #plumelog.es.indexType=plumelog
+        plumelog.es.shards=5
+        plumelog.es.replicas=1
+        plumelog.es.refresh.interval=30s
+        #日志索引建立方式day表示按天、hour表示按照小时，如果每天日志量超过了500G建议启动小时模式
+        plumelog.es.indexType.model=day
+        #ES设置密码,启用下面配置
+        #plumelog.es.userName=elastic
+        #plumelog.es.passWord=123456
+        
+        #单次拉取日志条数
+        plumelog.maxSendSize=100
+        #拉取时间间隔，kafka不生效
+        plumelog.interval=200
+        
+        #plumelog-ui的地址 如果不配置，报警信息里不可以点连接
+        plumelog.ui.url=https://127.0.0.1:8891
+        
+        #管理密码，手动删除日志的时候需要输入的密码
+        admin.password=123456
+        #日志保留天数,配置0或者不配置默认永久保留
+        admin.log.keepDays=30
+       
+        #链路保留天数,配置0或者不配置默认永久保留
+        admin.log.trace.keepDays=30
+        
+        #登录用户名密码，为空没有登录界面
+        login.username=admin
+        login.password=admin
 ```       
 
 #### （2）项目使用
