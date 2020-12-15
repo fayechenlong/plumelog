@@ -79,48 +79,17 @@
    #日志保留天数,配置0或者不配置默认永久保留
    admin.log.keepDays=15
 ```       
-   5.配置plume-ui（3.1后合并到server）,并启动，默认端口8989
-   
-   备注：3.1版本以后UI和server合并，这个项目可以不用部署
-   
-   配置文件 plumelog-ui/application.properties 详解：
-   
- ```properties
-    spring.application.name=plumelog-ui
-    server.port=8989
-    spring.thymeleaf.mode=LEGACYHTML5
-    spring.mvc.view.prefix=classpath:/templates/
-    spring.mvc.view.suffix=.html
-    spring.mvc.static-path-pattern=/plumelog/**
-    
-    
-    #elasticsearch地址
-    plumelog.es.esHosts=127.0.0.1:9200
-    #ES如果有密码,启用下面配置
-    #plumelog.es.userName=elastic
-    #plumelog.es.passWord=easylog123456
-
-    #redis配置,3.0版本必须配置redis地址，因为需要监控报警
-    plumelog.redis.redisHost=127.0.0.1:6379
-    #如果使用redis有密码,启用下面配置
-    #plumelog.redis.redisPassWord=123456
-
-    #管理密码，手动删除日志的时候需要输入的密码
-    admin.password=123456
-    #日志保留天数,配置0或者不配置默认永久保留
-    admin.log.keepDays=15
-```
 
 #### （2）项目使用
 
-#### 性能排名，log4j2>logback>log4j 如果您的项目没有特殊需求，建议用log4j2
+#### 推荐使用logback,特别是springboot，springcloud项目
 
    （1）如果项目使用的log4j，引入
 ```xml
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j</artifactId>
-       <version>3.1.3</version>
+       <version>3.2</version>
    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -162,7 +131,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-logback</artifactId>
-       <version>3.1.3</version>
+       <version>3.2</version>
    </dependency>
 ```  
 * 配置
@@ -205,7 +174,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j2</artifactId>
-       <version>3.1.3</version>
+       <version>3.2</version>
    </dependency>       
 ```   
 * 配置
@@ -249,6 +218,7 @@ RedisAppender
 | appName  | 自定义应用名称 |
 | redisHost  | redis地址 |
 | redisPort  | redis端口号 |
+| redisDb  | redis db |
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
 | maxCount  | （3.1）批量提交日志数量，默认100 |
@@ -309,7 +279,7 @@ KafkaAppender
      
      3.接收人  填手机号码，所有人填写ALL
      
-     4.钉钉钩子地址  钉钉群机器人webhook地址
+     4.钩子地址  群机器人webhook地址
      
      5.错误数量 错误累计超过多少条报警
      
@@ -355,7 +325,7 @@ KafkaAppender
 
    * QQ群：1072991065
    
-### 四、测试地址
+### 四、测试地址（暂时停用）
 
    * 查询界面地址：http://demo.plumelog.com
       
