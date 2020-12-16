@@ -66,6 +66,6 @@
 
 ### 六.测试地址
 
-   * 查询界面地址：http://log.plumelog.com  用户名：admin 密码：admin   （测试服务器配置比较低大家简单体验即可）
+   * 查询界面地址：http://demo.plumelog.com  用户名：admin 密码：admin   （测试服务器配置比较低大家简单体验即可）
       
-   * 访问这个地址产生测试log数据：http://demo.plumelog.com/index?data=1234  data参数自己随便传，传什么打印什么
+   * 访问这个地址产生测试log数据：http://log.plumelog.com/index?data=1234  data参数自己随便传，传什么打印什么
