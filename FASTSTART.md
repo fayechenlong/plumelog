@@ -41,7 +41,7 @@
         #plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
         #plumelog.kafka.kafkaGroupName=logConsumer
         
-        
+        #队列redis，3.3版本把队列redis独立出来，方便不用的应用用不通的队列
         plumelog.queue.redis.redisHost=127.0.0.1:6379
         #如果使用redis有密码,启用下面配置
         #plumelog.queue.redis.redisPassWord=plumelog
