@@ -96,40 +96,40 @@
  #### 单日日志体量在50G以内，并使用的SSD硬盘
    
    plumelog.es.shards=5
-   plumelog.es.replicas=0
-   plumelog.es.refresh.interval=30s
    
- #### 日志索引建立方式day表示按天、hour表示按照小时
+   plumelog.es.replicas=0
+   
+   plumelog.es.refresh.interval=30s
    
    plumelog.es.indexType.model=day
    
  #### 单日日志体量在50G以上，并使用的机械硬盘
    
    plumelog.es.shards=5
-   plumelog.es.replicas=0
-   plumelog.es.refresh.interval=30s
    
- #### 日志索引建立方式day表示按天、hour表示按照小时
+   plumelog.es.replicas=0
+   
+   plumelog.es.refresh.interval=30s
    
    plumelog.es.indexType.model=hour
    
  #### 单日日志体量在100G以上，并使用的机械硬盘
    
    plumelog.es.shards=10
-   plumelog.es.replicas=0
-   plumelog.es.refresh.interval=30s
    
- #### 日志索引建立方式day表示按天、hour表示按照小时
+   plumelog.es.replicas=0
+   
+   plumelog.es.refresh.interval=30s
    
    plumelog.es.indexType.model=hour
    
  #### 单日日志体量在1000G以上，并使用的SSD硬盘，这个配置可以跑到10T一天以上都没问题
    
    plumelog.es.shards=10
-   plumelog.es.replicas=1
-   plumelog.es.refresh.interval=30s
    
- #### 日志索引建立方式day表示按天、hour表示按照小时
+   plumelog.es.replicas=1
+   
+   plumelog.es.refresh.interval=30s
    
    plumelog.es.indexType.model=hour
    
