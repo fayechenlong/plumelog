@@ -139,7 +139,7 @@
     {
       "persistent": {
         "cluster": {
-          "max_shards_per_node":900000
+          "max_shards_per_node":100000
         }
       }
     }
