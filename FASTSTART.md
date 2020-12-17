@@ -385,6 +385,40 @@ KafkaAppender
 ```       
 * [docker版本安装点我](/docker-file/DOCKER.md)
 
+
+* 非java项目可以api方式接入，3.2后版本server支持，暂时只支持redis模式
+  
+  接口地址：http://plumelog-server地址/sendLog?logKey=plume_log_list
+  
+  参数：body json数组，可以传多条可以单条
+ ```  
+  [
+  {
+  	"appName":"应用名称",
+  	"serverName":"服务器IP地址",
+  	"dtTime":"时间戳的时间格式",
+  	"traceId":"自己生成的traceid",
+  	"content":"日志内容",
+  	"logLevel":"日志等级 INFO ERROR WARN ERROR大写",
+  	"className":"产生日志的类名",
+  	"method":"产生日志的方法",
+  	"logType":"1",
+  	"dateTime":"2020-12-25 10:10:10"
+  },{
+  	"appName":"应用名称",
+  	"serverName":"服务器IP地址",
+  	"dtTime":"时间戳的时间格式",
+  	"traceId":"自己生成的traceid",
+  	"content":"日志内容",
+  	"logLevel":"日志等级 INFO ERROR WARN ERROR大写",
+  	"className":"产生日志的类名",
+  	"method":"产生日志的方法",
+  	"logType":"1",
+  	"dateTime":"2020-12-25 10:10:10"
+  }....
+  ]
+``` 
+
 ### 三、联系交流
 
    * QQ群：1072991065
