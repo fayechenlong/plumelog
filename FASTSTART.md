@@ -301,7 +301,7 @@ KafkaAppender
 
 * 普通日志使用
 
-   要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里，如果是定时任务放在定时任务的最前端)
+   非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里，如果是定时任务放在定时任务的最前端)
 ```java
         @Component
         public class Interceptor extends HandlerInterceptorAdapter{
@@ -314,18 +314,23 @@ KafkaAppender
             }
         }
 ```   
-  spring cloud 项目引入sleuth
+  spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceid
 ```xml
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-sleuth</artifactId>
             </dependency>
 ``` 
+* [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
+
    skywalking traceid获取方式
+   
 ```java
      String traceId = TraceContext.traceId();  
 ``` 
-* 扩展字段MDC用法，例如
+* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
+
+* 扩展字段功能，MDC用法，例如，详细用法参照plumelog使用指南.pdf
 ```java
             MDC.put("orderid", "1");
             MDC.put("userid", "4");
@@ -353,7 +358,6 @@ KafkaAppender
    1.在系统扩展字段里添加扩展字段，字段值为 orderid 显示值为 订单编号
    2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
 
-* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
 * TraceId跨线程传递
 
@@ -379,10 +383,6 @@ KafkaAppender
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
 ```       
-* [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
-
-* springcloud(fegin)的分布式系统traceId传递,参考plumelog-rest项目
-
 * [docker版本安装点我](/docker-file/DOCKER.md)
 
 ### 三、联系交流
