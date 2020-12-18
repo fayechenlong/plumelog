@@ -343,6 +343,7 @@ public class ElasticLowerClient {
 
             @Override
             public void onFailure(Exception e) {
+                //todo es 写失败
                 logger.error("ElasticSearch commit Failure!", e);
             }
         });

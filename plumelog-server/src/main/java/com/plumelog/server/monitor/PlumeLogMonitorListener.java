@@ -225,8 +225,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             }
             sendMesageES(rule, count, errorContent);
         }
-        redisClient.set(warningKey, warningKey);
-        redisClient.expireAt(warningKey, Long.parseLong(String.valueOf(rule.getTime())));
+        redisClient.set(warningKey, warningKey, Integer.parseInt(String.valueOf(rule.getTime())));
     }
 
 

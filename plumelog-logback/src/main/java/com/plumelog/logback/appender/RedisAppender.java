@@ -24,6 +24,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private RedisClient redisClient;
+    private String pattern;
     private String appName;
     private String redisHost;
     private String redisPort;
@@ -41,6 +42,10 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     public void setExpand(String expand) {
         this.expand = expand;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
     }
 
     public void setAppName(String appName) {
@@ -100,11 +105,10 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         if (this.expand != null && LogMessageConstant.EXPANDS.contains(this.expand)) {
             LogMessageConstant.EXPAND = this.expand;
         }
+        //todo 支持单机，哨兵，集群模式
         if (this.redisClient == null) {
             this.redisClient = RedisClient.getInstance(this.redisHost,
-                    this.redisPort == null ?
-                            LogMessageConstant.REDIS_DEFAULT_PORT
-                            : Integer.parseInt(this.redisPort),
+                    this.redisPort == null ? LogMessageConstant.REDIS_DEFAULT_PORT : Integer.parseInt(this.redisPort),
                     this.redisAuth,this.redisDb);
         }
         if(MessageAppenderFactory.rundataQueue==null) {

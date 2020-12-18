@@ -50,6 +50,7 @@ public class BaseLogCollect {
                 logger.info("logList insert es success! count:{} RuningLog日志写入耗时：{}", sendList.size(),endTime-startTime);
             }
         } catch (Exception e) {
+            //todo es写失败
             logger.error("logList insert es failed!", e);
         }
     }

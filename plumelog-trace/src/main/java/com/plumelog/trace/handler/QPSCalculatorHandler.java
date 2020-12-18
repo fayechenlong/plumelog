@@ -1,10 +1,14 @@
 package com.plumelog.trace.handler;
 
+import com.plumelog.trace.dto.QPSLogMessage;
+
 import java.io.Serializable;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class QPSCalculatorHandler {
+
+    private QPSLogMessage qpsLogMessage;
 
     /**
      * 槽位的数量
@@ -32,6 +36,7 @@ public class QPSCalculatorHandler {
      */
     public QPSCalculatorHandler() {
         //todo 配置采样率问题，
+
         this(10, 1000);
     }
 
@@ -102,6 +107,11 @@ public class QPSCalculatorHandler {
         bucket.reset(passTime);
     }
 
+    public void shutdown(){
+
+    }
+
+
     /**
      * 时间桶
      */
@@ -141,4 +151,6 @@ public class QPSCalculatorHandler {
             this.latestPassedTime = latestPassedTime;
         }
     }
+
+
 }
