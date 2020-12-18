@@ -41,7 +41,7 @@
         #plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
         #plumelog.kafka.kafkaGroupName=logConsumer
         
-        
+        #队列redis，3.3版本把队列redis独立出来，方便不用的应用用不通的队列
         plumelog.queue.redis.redisHost=127.0.0.1:6379
         #如果使用redis有密码,启用下面配置
         #plumelog.queue.redis.redisPassWord=plumelog
@@ -90,6 +90,59 @@
         login.username=admin
         login.password=admin
 ```       
+
+ #### 提升性能推荐参考配置方法
+   
+ #### 单日日志体量在50G以内，并使用的SSD硬盘
+   
+   plumelog.es.shards=5
+   
+   plumelog.es.replicas=0
+   
+   plumelog.es.refresh.interval=30s
+   
+   plumelog.es.indexType.model=day
+   
+ #### 单日日志体量在50G以上，并使用的机械硬盘
+   
+   plumelog.es.shards=5
+   
+   plumelog.es.replicas=0
+   
+   plumelog.es.refresh.interval=30s
+   
+   plumelog.es.indexType.model=hour
+   
+ #### 单日日志体量在100G以上，并使用的机械硬盘
+   
+   plumelog.es.shards=10
+   
+   plumelog.es.replicas=0
+   
+   plumelog.es.refresh.interval=30s
+   
+   plumelog.es.indexType.model=hour
+   
+ #### 单日日志体量在1000G以上，并使用的SSD硬盘，这个配置可以跑到10T一天以上都没问题
+   
+   plumelog.es.shards=10
+   
+   plumelog.es.replicas=1
+   
+   plumelog.es.refresh.interval=30s
+   
+   plumelog.es.indexType.model=hour
+   
+ #### plumelog.es.shards的增加和hour模式下需要调整ES集群的最大分片数
+   
+    PUT /_cluster/settings
+    {
+      "persistent": {
+        "cluster": {
+          "max_shards_per_node":100000
+        }
+      }
+    }
 
 #### （2）项目使用
 
@@ -248,7 +301,7 @@ KafkaAppender
 
 * 普通日志使用
 
-   要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里，如果是定时任务放在定时任务的最前端)
+   非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里，如果是定时任务放在定时任务的最前端)
 ```java
         @Component
         public class Interceptor extends HandlerInterceptorAdapter{
@@ -261,18 +314,23 @@ KafkaAppender
             }
         }
 ```   
-  spring cloud 项目引入sleuth
+  spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceid
 ```xml
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-sleuth</artifactId>
             </dependency>
 ``` 
+* [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
+
    skywalking traceid获取方式
+   
 ```java
      String traceId = TraceContext.traceId();  
 ``` 
-* 扩展字段MDC用法，例如
+* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
+
+* 扩展字段功能，MDC用法，例如，详细用法参照plumelog使用指南.pdf
 ```java
             MDC.put("orderid", "1");
             MDC.put("userid", "4");
@@ -300,7 +358,6 @@ KafkaAppender
    1.在系统扩展字段里添加扩展字段，字段值为 orderid 显示值为 订单编号
    2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
 
-* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
 * TraceId跨线程传递
 
@@ -326,17 +383,47 @@ KafkaAppender
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
 ```       
-* [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
-
-* springcloud(fegin)的分布式系统traceId传递,参考plumelog-rest项目
-
 * [docker版本安装点我](/docker-file/DOCKER.md)
+
+
+* 非java项目可以api方式接入，3.2后版本server支持，暂时只支持redis模式
+  
+  接口地址：http://plumelog-server地址/sendLog?logKey=plume_log_list
+  
+  参数：body json数组，可以传多条可以单条
+ ```  
+  [
+  {
+  	"appName":"应用名称",
+  	"serverName":"服务器IP地址",
+  	"dtTime":"时间戳的时间格式",
+  	"traceId":"自己生成的traceid",
+  	"content":"日志内容",
+  	"logLevel":"日志等级 INFO ERROR WARN ERROR大写",
+  	"className":"产生日志的类名",
+  	"method":"产生日志的方法",
+  	"logType":"1",
+  	"dateTime":"2020-12-25 10:10:10"
+  },{
+  	"appName":"应用名称",
+  	"serverName":"服务器IP地址",
+  	"dtTime":"时间戳的时间格式",
+  	"traceId":"自己生成的traceid",
+  	"content":"日志内容",
+  	"logLevel":"日志等级 INFO ERROR WARN ERROR大写",
+  	"className":"产生日志的类名",
+  	"method":"产生日志的方法",
+  	"logType":"1",
+  	"dateTime":"2020-12-25 10:10:10"
+  }....
+  ]
+``` 
 
 ### 三、联系交流
 
    * QQ群：1072991065
    
-### 四、测试地址（暂时停用）
+### 四、测试地址（服务器配置比较差，访问比较慢）
 
    * 查询界面地址：http://demo.plumelog.com
       
