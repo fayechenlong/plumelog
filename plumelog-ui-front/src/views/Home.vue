@@ -1222,6 +1222,8 @@ export default {
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
         }
       }
+      this.isSearching = false;
+
       setTimeout(() => {
         this.doSearch();
         this.searchAppName();

@@ -45,7 +45,14 @@
           <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
         </properties>
 ```   
+* 非maven项目，到发行版中（https://gitee.com/frankchenlong/plumelog/releases）下载lib.zip，解压放到自己的lib目录，目前只上传了log4j的版本
+  可能会涉及log4j jar冲突，需要自行排除
+  
+* jdk1.6的项目下载源码，编译打包plumelog-client-jdk6，引入到自己的项目
+  
 ### [使用文档](/FASTSTART.md)
+
+### [版本升级注意事项](/update.md)
 
 ### 四.重要版本
  
@@ -66,6 +73,6 @@
 
 ### 六.测试地址
 
-   * 查询界面地址：http://log.plumelog.com  用户名：admin 密码：admin   （测试服务器配置比较低大家简单体验即可）
+   * 查询界面地址：http://demo.plumelog.com  用户名：admin 密码：admin   （测试服务器配置比较低大家简单体验即可）
       
-   * 访问这个地址产生测试log数据：http://demo.plumelog.com/index?data=1234  data参数自己随便传，传什么打印什么
+   * 访问这个地址产生测试log数据：http://log.plumelog.com/index?data=1234  data参数自己随便传，传什么打印什么
