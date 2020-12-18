@@ -1039,7 +1039,6 @@ export default {
 
       let searchUrl = url + '&size=' + this.size + "&from=" + this.from;
       this.isSearching = true;
-
       axios.post(searchUrl, esFilter).then(data => {
         this.isSearching = false;
         this.$Loading.finish();
@@ -1222,7 +1221,6 @@ export default {
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
         }
       }
-
       this.isSearching = false;
 
       setTimeout(() => {
