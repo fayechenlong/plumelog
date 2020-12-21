@@ -119,5 +119,14 @@ public class LogMessageConstant {
      */
     public static final String PLUMELOG_MONITOR_MESSAGE_KEY = "plumelog_monitor_message_key";
 
+    /**
+     * Groovy正则判断脚本
+     */
+    public static final String PLUMELOG_REGEX_GROOVY_SCRIPT = "def match(content,regex){\n" +
+            "    def matcher  = (content =~ regex)\n" +
+            "    return matcher.find()\n" +
+            "}\n" +
+            "match(content,regex)";
+
 
 }
