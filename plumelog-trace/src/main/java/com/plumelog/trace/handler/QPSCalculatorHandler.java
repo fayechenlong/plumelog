@@ -143,7 +143,7 @@ public class QPSCalculatorHandler {
         } catch (LogQueueConnectException e) {
             // 发送失败后 进行暂存数据
             if (queue.size() < 5000) {
-                queue.add(msg);
+                queue.addAll(list);
             }
             e.printStackTrace();
         }
