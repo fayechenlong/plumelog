@@ -36,6 +36,7 @@ public class RedisClient extends AbstractClient {
             synchronized (RedisClient.class) {
                 if (instance == null) {
                     instance = new RedisClient(host, port, pass,db);
+                    setClient(instance);
                 }
             }
         }

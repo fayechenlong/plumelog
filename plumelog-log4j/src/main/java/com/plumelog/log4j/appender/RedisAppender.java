@@ -1,8 +1,10 @@
 package com.plumelog.log4j.appender;
 
+import com.plumelog.core.ClientConfig;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.IpGetter;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
@@ -23,6 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class RedisAppender extends AppenderSkeleton {
     private RedisClient redisClient;
+    private String namespance = "plumelog";
     private String appName;
     private String redisHost;
     private String redisPort;
@@ -33,6 +36,10 @@ public class RedisAppender extends AppenderSkeleton {
     private int maxCount=100;
     private int logQueueSize=10000;
     private int threadPoolSize=1;
+
+    public void setNamespance(String namespance) {
+        this.namespance = namespance;
+    }
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -81,6 +88,11 @@ public class RedisAppender extends AppenderSkeleton {
         if (this.runModel != null) {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
+
+        ClientConfig.setNameSpance(namespance);
+        ClientConfig.setAppName(appName);
+        ClientConfig.setServerName(IpGetter.CURRENT_IP);
+
         if (this.redisClient == null) {
             this.redisClient = RedisClient.getInstance(this.redisHost, this.redisPort == null ?
                     LogMessageConstant.REDIS_DEFAULT_PORT

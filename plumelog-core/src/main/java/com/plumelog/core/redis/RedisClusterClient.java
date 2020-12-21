@@ -27,6 +27,7 @@ public class RedisClusterClient extends AbstractClient {
             synchronized (RedisClusterClient.class) {
                 if (instance == null) {
                     instance = new RedisClusterClient(hosts);
+                    setClient(instance);
                 }
             }
         }

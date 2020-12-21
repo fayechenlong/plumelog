@@ -22,6 +22,7 @@ public class KafkaProducerClient extends AbstractClient {
             synchronized (KafkaProducerClient.class) {
                 if (instance == null) {
                     instance = new KafkaProducerClient(hosts);
+                    setClient(instance);
                 }
             }
         }

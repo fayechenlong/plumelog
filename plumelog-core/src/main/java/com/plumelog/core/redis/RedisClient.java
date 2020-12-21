@@ -16,7 +16,7 @@ import java.util.*;
  * @version 1.0.0
  */
 public class RedisClient extends AbstractClient {
-    private static RedisClient instance;
+    private volatile static RedisClient instance;
     private int MAX_ACTIVE = 30;
     private int MAX_IDLE = 8;
     private int MAX_WAIT = 1000;
@@ -40,6 +40,7 @@ public class RedisClient extends AbstractClient {
             synchronized (RedisClient.class) {
                 if (instance == null) {
                     instance = new RedisClient(host, port, pass,db);
+                    setClient(instance);
                 }
             }
         }

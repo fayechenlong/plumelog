@@ -1,11 +1,13 @@
 package com.plumelog.log4j2.appender;
 
+import com.plumelog.core.ClientConfig;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.IpGetter;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j2.util.LogMessageUtil;
 import org.apache.logging.log4j.core.Filter;
@@ -31,6 +33,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Plugin(name = "KafkaAppender", category = "Core", elementType = "appender", printObject = true)
 public class KafkaAppender extends AbstractAppender {
     private static KafkaProducerClient kafkaClient;
+    private String namespance = "plumelog";
     private String appName;
     private String kafkaHosts;
     private String runModel;
@@ -39,9 +42,10 @@ public class KafkaAppender extends AbstractAppender {
     private int logQueueSize=10000;
     private int threadPoolSize=1;
 
-    protected KafkaAppender(String name, String appName, String kafkaHosts, String runModel, Filter filter, Layout<? extends Serializable> layout,
+    protected KafkaAppender(String name, String namespance, String appName, String kafkaHosts, String runModel, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions, String expand,int maxCount,int logQueueSize,int threadPoolSize) {
         super(name, filter, layout, ignoreExceptions);
+        this.namespance = namespance;
         this.appName = appName;
         this.kafkaHosts = kafkaHosts;
         this.runModel = runModel;
@@ -68,6 +72,7 @@ public class KafkaAppender extends AbstractAppender {
     @PluginFactory
     public static KafkaAppender createAppender(
             @PluginAttribute("name") String name,
+            @PluginAttribute("namespance") String namespance,
             @PluginAttribute("appName") String appName,
             @PluginAttribute("kafkaHosts") String kafkaHosts,
             @PluginAttribute("topic") String topic,
@@ -81,6 +86,11 @@ public class KafkaAppender extends AbstractAppender {
         if (runModel != null) {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(runModel);
         }
+
+        ClientConfig.setNameSpance(namespance);
+        ClientConfig.setAppName(appName);
+        ClientConfig.setServerName(IpGetter.CURRENT_IP);
+
         if (kafkaClient == null) {
             kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
         }
@@ -108,6 +118,6 @@ public class KafkaAppender extends AbstractAppender {
                 MessageAppenderFactory.startTraceLog(kafkaClient,count);
             });
         }
-        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand,maxCount,logQueueSize,threadPoolSize);
+        return new KafkaAppender(name, namespance, appName, kafkaHosts, runModel, filter, layout, true, expand,maxCount,logQueueSize,threadPoolSize);
     }
 }

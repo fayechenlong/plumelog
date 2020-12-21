@@ -1,4 +1,4 @@
-package com.plumelog.trace.dto;
+package com.plumelog.core.dto;
 
 /**
  * QPS统计日志
@@ -9,6 +9,15 @@ package com.plumelog.trace.dto;
 public class QPSLogMessage {
 
     /**
+     * 消息id
+     * 解决消息被重复发送问题
+     */
+    private String messageId;
+    /**
+     * 命名空间
+     */
+    private String namespace;
+    /**
      * 应用名
      */
     private String appName;
@@ -16,7 +25,7 @@ public class QPSLogMessage {
     /**
      * 接口名
      */
-    private String requestURL;
+    private String requestURI;
 
     /**
      * 本机ip
@@ -33,6 +42,23 @@ public class QPSLogMessage {
      */
     private long incr;
 
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
     public String getAppName() {
         return appName;
     }
@@ -41,12 +67,12 @@ public class QPSLogMessage {
         this.appName = appName;
     }
 
-    public String getRequestURL() {
-        return requestURL;
+    public String getRequestURI() {
+        return requestURI;
     }
 
-    public void setRequestURL(String requestURL) {
-        this.requestURL = requestURL;
+    public void setRequestURI(String requestURI) {
+        this.requestURI = requestURI;
     }
 
     public String getServerName() {
