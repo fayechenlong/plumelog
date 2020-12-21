@@ -50,6 +50,8 @@ public class LogMessageConstant {
 
     public final static String LOG_TYPE_TRACE = "trace";
 
+    public final static String LOG_TYPE_QPS = "qps";
+
     public final static String DELIM_STR = "{}";
 
     public final static String TRACE_ID = "traceId";

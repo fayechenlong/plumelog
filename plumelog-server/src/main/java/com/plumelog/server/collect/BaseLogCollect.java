@@ -40,7 +40,13 @@ public class BaseLogCollect {
             return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_TIME_FORMAT_YYYYMMDDHH);
         }
     }
-
+    public String getQPSIndex(){
+        if(InitConfig.ES_INDEX_MODEL.equals("day")) {
+            return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_QPS + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
+        }else {
+            return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_QPS + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
+        }
+    }
     public void sendLog(String index, List<String> sendList) {
         try {
             if(sendList.size()>0) {
@@ -63,6 +69,17 @@ public class BaseLogCollect {
             }
         } catch (Exception e) {
             logger.error("traceLogList insert es failed!", e);
+        }
+    }
+
+    public void sendQPSLogList(String index, List<String> sendQPSLogList) {
+        try {
+            if(sendQPSLogList.size()>0) {
+                elasticLowerClient.insertListTrace(sendQPSLogList, index, LogMessageConstant.ES_TYPE);
+                logger.info("QPSLogList insert es success! count:{}", sendQPSLogList.size());
+            }
+        } catch (Exception e) {
+            logger.error("QPSLogList insert es failed!", e);
         }
     }
 

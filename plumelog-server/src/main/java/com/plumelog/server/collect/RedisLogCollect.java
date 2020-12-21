@@ -32,10 +32,12 @@ public class RedisLogCollect extends BaseLogCollect {
     }
 
     public void redisStart() {
-        //todo 线程出现问题后， 会导致消费停止
+
         threadPoolExecutor.execute(() -> collectRuningLog());
 
         threadPoolExecutor.execute(() -> collectTraceLog());
+
+        threadPoolExecutor.execute(() -> collectQPSLog());
 
         logger.info("RedisLogCollect is starting!");
     }
@@ -98,6 +100,33 @@ public class RedisLogCollect extends BaseLogCollect {
                 logger.error("从redis队列拉取日志失败！", e);
             }
             super.sendTraceLogList(super.getTraceLogIndex(), logs);
+        }
+    }
+
+    private void collectQPSLog() {
+        while (true) {
+            List<String> logs = new ArrayList<>();
+
+            try {
+                Thread.sleep(InitConfig.MAX_INTERVAL);
+            } catch (InterruptedException e) {
+                logger.error("", e);
+            }
+            try {
+                RedisClient redisClient = redisClientFactory.getRedisClient();
+                long startTime=System.currentTimeMillis();
+                logs = redisClient.getMessage(LogMessageConstant.QPS_KEY, InitConfig.MAX_SEND_SIZE);
+                long endTime=System.currentTimeMillis();
+                logger.info("RuningLog日志获取耗时：{}",endTime-startTime);
+                if(logger.isDebugEnabled()){
+                    logs.forEach(log->{
+                        logger.debug(log);
+                    });
+                }
+            } catch (LogQueueConnectException e) {
+                logger.error("从redis队列拉取QPS日志失败！", e);
+            }
+            super.sendQPSLogList(super.getQPSIndex(), logs);
         }
     }
 }

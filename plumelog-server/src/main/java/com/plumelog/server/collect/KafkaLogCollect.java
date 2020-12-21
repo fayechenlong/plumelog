@@ -32,9 +32,8 @@ public class KafkaLogCollect extends BaseLogCollect {
     }
 
     public void kafkaStart() {
-        threadPoolExecutor.execute(() -> {
-            collectRuningLog();
-        });
+        threadPoolExecutor.execute(() -> collectRuningLog());
+
         logger.info("KafkaLogCollect is starting!");
     }
 
@@ -42,6 +41,7 @@ public class KafkaLogCollect extends BaseLogCollect {
         while (true) {
             List<String> logList = new ArrayList();
             List<String> sendlogList = new ArrayList();
+            List<String> qpslogList = new ArrayList();
             try {
                 ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
                 records.forEach(record -> {
@@ -54,6 +54,9 @@ public class KafkaLogCollect extends BaseLogCollect {
                     if (record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)) {
                         sendlogList.add(record.value());
                     }
+                    if (record.topic().equals(LogMessageConstant.QPS_KEY)) {
+                        qpslogList.add(record.value());
+                    }
                 });
             } catch (Exception e) {
                 logger.error("get logs from kafka failed! ", e);
@@ -64,6 +67,9 @@ public class KafkaLogCollect extends BaseLogCollect {
             }
             if (sendlogList.size() > 0) {
                 super.sendTraceLogList(super.getTraceLogIndex(), sendlogList);
+            }
+            if (qpslogList.size() > 0) {
+                super.sendQPSLogList(super.getQPSIndex(), qpslogList);
             }
         }
     }
