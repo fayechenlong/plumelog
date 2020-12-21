@@ -12,6 +12,7 @@ public class WarningRule {
 
     private String appName;
     private String className;
+    private String regex;
     private String receiver;
     private String webhookUrl;
     private int errorCount;
@@ -81,5 +82,13 @@ public class WarningRule {
 
     public void setHookServe(int hookServe) {
         this.hookServe = hookServe;
+    }
+
+    public String getRegex() {
+        return regex;
+    }
+
+    public void setRegex(String regex) {
+        this.regex = regex;
     }
 }

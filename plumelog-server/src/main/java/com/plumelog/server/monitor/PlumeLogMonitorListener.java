@@ -2,16 +2,18 @@ package com.plumelog.server.monitor;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.plumelog.core.LogMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
@@ -54,6 +56,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     private static final String KEY_NX = ":NX";
 
 
+    private Binding binding = new Binding();
 
     @Autowired
     private ElasticLowerClient elasticLowerClient;
@@ -103,14 +106,18 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             WarningRule warningRule = rules.get(i);
             String className = warningRule.getClassName();
             String appName = warningRule.getAppName();
+            String regex = warningRule.getRegex();
             if (containsClassName(className, runLogMessage.getClassName())) {
+                continue;
+            }
+            if (containsRegex(runLogMessage.getContent(),regex)){
                 continue;
             }
             String errorContent = getErrorContent(runLogMessage.getContent());
             String cn = StringUtils.isEmpty(className) ? "" : runLogMessage.getClassName();
 
             //统计分析
-            statisticAlnalysis(getKey(appName, className), warningRule, errorContent, cn);
+            statisticAnalysis(getKey(appName, className), warningRule, errorContent, cn);
         }
     }
 
@@ -143,12 +150,27 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     }
 
     /**
+     * 判断正则是否匹配
+     * @param content 错误日志信息
+     * @param regex 配置的正则表达式
+     * @return
+     */
+    private boolean containsRegex(String content, String regex) {
+        if (StringUtils.isEmpty(regex)) {
+            return false;
+        }
+        binding.setProperty("content",content);
+        binding.setProperty("regex",regex);
+        GroovyShell shell = new GroovyShell(binding);
+        return !(boolean)shell.evaluate(LogMessageConstant.PLUMELOG_REGEX_GROOVY_SCRIPT);
+    }
+    /**
      * 统计分析
      *
      * @param key  缓存key
      * @param rule 规则
      */
-    private void statisticAlnalysis(String key, WarningRule rule, String errorContent, String className) {
+    private void statisticAnalysis(String key, WarningRule rule, String errorContent, String className) {
         String time = redisClient.hget(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME);
         if (StringUtils.isEmpty(time)) {
             time=String.valueOf(System.currentTimeMillis());
@@ -223,7 +245,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             } else {
                 WechatClient.sendToWeChat(plumeLogMonitorTextMessage, rule.getWebhookUrl());
             }
-            sendMesageES(rule, count, errorContent);
+            sendMessageES(rule, count, errorContent);
         }
         redisClient.set(warningKey, warningKey, Integer.parseInt(String.valueOf(rule.getTime())));
     }
@@ -232,7 +254,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     /**
      * 报警记录加入至ES
      */
-    private void sendMesageES(WarningRule rule, long count, String errorContent) {
+    private void sendMessageES(WarningRule rule, long count, String errorContent) {
         try {
             JSONObject object = (JSONObject) JSONObject.toJSON(rule);
             object.put("count", count);
