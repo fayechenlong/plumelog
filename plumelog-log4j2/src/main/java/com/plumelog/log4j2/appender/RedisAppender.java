@@ -1,8 +1,10 @@
 package com.plumelog.log4j2.appender;
 
+import com.plumelog.core.ClientConfig;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.IpGetter;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j2.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
@@ -31,6 +33,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Plugin(name = "RedisAppender", category = "Core", elementType = "appender", printObject = true)
 public class RedisAppender extends AbstractAppender {
     private static RedisClient redisClient;
+    private String namespance = "plumelog";
     private String appName;
     private String redisHost;
     private String redisPort;
@@ -42,9 +45,10 @@ public class RedisAppender extends AbstractAppender {
     private int logQueueSize=10000;
     private int threadPoolSize=5;
 
-    protected RedisAppender(String name, String appName, String redisHost, String redisPort,String redisAuth,String runModel, Filter filter, Layout<? extends Serializable> layout,
+    protected RedisAppender(String name, String namespance, String appName, String redisHost, String redisPort,String redisAuth,String runModel, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions,String expand,int maxCount,int logQueueSize,int redisDb,int threadPoolSize) {
         super(name, filter, layout, ignoreExceptions);
+        this.namespance = namespance;
         this.appName = appName;
         this.redisHost = redisHost;
         this.redisPort = redisPort;
@@ -72,6 +76,7 @@ public class RedisAppender extends AbstractAppender {
     @PluginFactory
     public static RedisAppender createAppender(
             @PluginAttribute("name") String name,
+            @PluginAttribute("namespance") String namespance,
             @PluginAttribute("appName") String appName,
             @PluginAttribute("redisHost") String redisHost,
             @PluginAttribute("redisPort") String redisPort,
@@ -87,6 +92,11 @@ public class RedisAppender extends AbstractAppender {
         if(runModel!=null){
             LogMessageConstant.RUN_MODEL=Integer.parseInt(runModel);
         }
+
+        ClientConfig.setNameSpance(namespance);
+        ClientConfig.setAppName(appName);
+        ClientConfig.setServerName(IpGetter.CURRENT_IP);
+
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
@@ -113,6 +123,6 @@ public class RedisAppender extends AbstractAppender {
                 MessageAppenderFactory.startTraceLog(redisClient,count);
             });
         }
-        return new RedisAppender(name, appName, redisHost, redisPort,redisAuth,runModel, filter, layout, true,expand,maxCount,logQueueSize,redisDb,threadPoolSize);
+        return new RedisAppender(name, namespance, appName, redisHost, redisPort,redisAuth,runModel, filter, layout, true,expand,maxCount,logQueueSize,redisDb,threadPoolSize);
     }
 }

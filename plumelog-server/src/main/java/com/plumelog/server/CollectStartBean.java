@@ -6,6 +6,7 @@ import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
+import com.plumelog.server.config.RedisClientFactory;
 import com.plumelog.server.util.IndexUtil;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class CollectStartBean implements InitializingBean {
     @Autowired
     private ElasticLowerClient elasticLowerClient;
     @Autowired
-    private RedisClient redisQueueClient;
+    private RedisClientFactory redisClientFactory;
     @Autowired(required = false)
     private KafkaConsumer kafkaConsumer;
     @Autowired
@@ -47,7 +48,7 @@ public class CollectStartBean implements InitializingBean {
             kafkaLogCollect.kafkaStart();
         }
         if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisQueueClient, applicationEventPublisher);
+            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisClientFactory, applicationEventPublisher);
             redisLogCollect.redisStart();
         }
         if (InitConfig.REST_MODE_NAME.equals(InitConfig.START_MODEL)) {

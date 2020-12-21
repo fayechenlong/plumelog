@@ -1,10 +1,32 @@
 package com.plumelog.trace.handler;
 
+import com.plumelog.core.AbstractClient;
+import com.plumelog.core.ClientConfig;
+import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.exception.LogQueueConnectException;
+import com.plumelog.core.util.DateUtil;
+import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.dto.QPSLogMessage;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class QPSCalculatorHandler {
+
+    /**
+     * 当下游异常的时候，暂存数据，最大5000条
+     */
+    private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue();
+
+    /**
+     * 接口URI
+     */
+    private String requestURI;
 
     /**
      * 槽位的数量
@@ -30,9 +52,9 @@ public class QPSCalculatorHandler {
     /**
      * 默认10个槽位，槽位的时间片为 1 秒
      */
-    public QPSCalculatorHandler() {
-        //todo 配置采样率问题，
+    public QPSCalculatorHandler(String requestURI) {
         this(10, 1000);
+        this.requestURI = requestURI;
     }
 
     /**
@@ -79,7 +101,7 @@ public class QPSCalculatorHandler {
                 for (int i = 0; i < sizeOfBuckets; i++) {
                     // 大于 时限的 进行push
                     if (passTime - buckets[i].getLatestPassedTime() >= maxTime) {
-                        push(buckets[i], passTime);
+                        push(buckets[i]);
                     }
                 }
             } finally {
@@ -92,14 +114,45 @@ public class QPSCalculatorHandler {
      * push 记录
      *
      * @param bucket
-     * @param passTime
      */
-    private void push(Bucket bucket, Long passTime) {
-        //todo push到日志系统
+    private void push(Bucket bucket) {
 
-        bucket.countTotalPassed();
+        List<String> list = new ArrayList<>();
 
-        bucket.reset(passTime);
+        QPSLogMessage qpsLogMessage = new QPSLogMessage();
+        qpsLogMessage.setMessageId(String.valueOf(bucket.getLatestPassedTime()));
+        qpsLogMessage.setNamespace(ClientConfig.getNameSpance());
+        qpsLogMessage.setAppName(ClientConfig.getAppName());
+        qpsLogMessage.setServerName(ClientConfig.getServerName());
+        qpsLogMessage.setRequestURI(requestURI);
+        qpsLogMessage.setIncr(bucket.countTotalPassed());
+        String dtTime = DateUtil.parseDateToStr(new Date(bucket.getLatestPassedTime()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS);
+        qpsLogMessage.setDtTime(dtTime);
+        String msg = GfJsonUtil.toJSONString(qpsLogMessage);
+        list.add(msg);
+
+        for (int i = 0; i < 100; i++) {
+            if (queue.isEmpty()) {
+                break;
+            }
+            list.add(queue.poll());
+        }
+
+        try {
+            AbstractClient.getClient().putMessageList(LogMessageConstant.QPS_KEY, list);
+        } catch (LogQueueConnectException e) {
+            // 发送失败后 进行暂存数据
+            if (queue.size() < 5000) {
+                queue.add(msg);
+            }
+            e.printStackTrace();
+        }
+        // 重置
+        bucket.reset();
+    }
+
+    public void shutdown() {
+
     }
 
     /**
@@ -124,7 +177,7 @@ public class QPSCalculatorHandler {
         }
 
         public void pass(Long passTime) {
-            longAdder.add(1);
+            longAdder.increment();
             this.latestPassedTime = passTime;
         }
 
@@ -136,9 +189,11 @@ public class QPSCalculatorHandler {
             return latestPassedTime;
         }
 
-        public void reset(long latestPassedTime) {
+        public void reset() {
             this.longAdder = new LongAdder();
-            this.latestPassedTime = latestPassedTime;
+            this.latestPassedTime = System.currentTimeMillis();
         }
     }
+
+
 }

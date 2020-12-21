@@ -6,6 +6,7 @@ import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.redis.RedisClient;
+import com.plumelog.server.config.RedisClientFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -21,22 +22,21 @@ import java.util.List;
  */
 public class RedisLogCollect extends BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(RedisLogCollect.class);
-    private RedisClient redisClient;
 
-    public RedisLogCollect(ElasticLowerClient elasticLowerClient, RedisClient redisClient, ApplicationEventPublisher applicationEventPublisher) {
+    private RedisClientFactory redisClientFactory;
+
+    public RedisLogCollect(ElasticLowerClient elasticLowerClient, RedisClientFactory redisClientFactory, ApplicationEventPublisher applicationEventPublisher) {
         super.elasticLowerClient = elasticLowerClient;
-        this.redisClient = redisClient;
+        this.redisClientFactory = redisClientFactory;
         super.applicationEventPublisher = applicationEventPublisher;
     }
 
     public void redisStart() {
+        //todo 线程出现问题后， 会导致消费停止
+        threadPoolExecutor.execute(() -> collectRuningLog());
 
-        threadPoolExecutor.execute(() -> {
-            collectRuningLog();
-        });
-        threadPoolExecutor.execute(() -> {
-            collectTraceLog();
-        });
+        threadPoolExecutor.execute(() -> collectTraceLog());
+
         logger.info("RedisLogCollect is starting!");
     }
 
@@ -50,10 +50,14 @@ public class RedisLogCollect extends BaseLogCollect {
                 logger.error("", e);
             }
             try {
+                RedisClient redisClient = redisClientFactory.getRedisClient();
                 long startTime=System.currentTimeMillis();
                 logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
                 logger.info("RuningLog日志获取耗时：{}",endTime-startTime);
+                // 设置权重
+                redisClient.setWeight(logs.size());
+                redisClient.setLatestPullTime(endTime);
                 if(logger.isDebugEnabled()){
                 logs.forEach(log->{
                     logger.debug(log);
@@ -77,10 +81,14 @@ public class RedisLogCollect extends BaseLogCollect {
                 logger.error("", e);
             }
             try {
+                RedisClient redisClient = redisClientFactory.getRedisClient();
                 long startTime=System.currentTimeMillis();
-                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
+                logs = redisClientFactory.getRedisClient().getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
                 logger.info("TraceLog日志获取耗时：{}",endTime-startTime);
+                // 设置权重
+                redisClient.setWeight(logs.size());
+                redisClient.setLatestPullTime(endTime);
                 if(logger.isDebugEnabled()){
                     logs.forEach(log->{
                         logger.debug(log);

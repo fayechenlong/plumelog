@@ -16,13 +16,17 @@ import java.util.*;
  * @version 1.0.0
  */
 public class RedisClient extends AbstractClient {
-    private static RedisClient instance;
+    private volatile static RedisClient instance;
     private int MAX_ACTIVE = 30;
     private int MAX_IDLE = 8;
     private int MAX_WAIT = 1000;
     private int TIMEOUT = 1000;
     private boolean TEST_ON_BORROW = true;
     private JedisPool jedisPool = null;
+
+    // 权重
+    private int weight;
+    private long latestPullTime;
 
     private static final String script = "local rs=redis.call(" +
             "'setnx',KEYS[1],ARGV[1]);" +
@@ -36,6 +40,7 @@ public class RedisClient extends AbstractClient {
             synchronized (RedisClient.class) {
                 if (instance == null) {
                     instance = new RedisClient(host, port, pass,db);
+                    setClient(instance);
                 }
             }
         }
@@ -126,9 +131,7 @@ public class RedisClient extends AbstractClient {
         try {
             sj = jedisPool.getResource();
             Pipeline pl = sj.pipelined();
-            list.forEach(str -> {
-                pl.rpush(key, str);
-            });
+            list.forEach(str -> pl.rpush(key, str));
             pl.sync();
         } catch (Exception e) {
             throw new LogQueueConnectException("redis 写入失败！", e);
@@ -152,10 +155,7 @@ public class RedisClient extends AbstractClient {
     public void set(String key, String value, int seconds) {
         Jedis sj = jedisPool.getResource();
         try {
-            Pipeline pl = sj.pipelined();
-            pl.set(key, value);
-            pl.expire(key, seconds);
-            pl.sync();
+            sj.setex(key, seconds, value);
         } finally {
             sj.close();
         }
@@ -342,5 +342,21 @@ public class RedisClient extends AbstractClient {
             }
         }
         return list;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public long getLatestPullTime() {
+        return latestPullTime;
+    }
+
+    public void setLatestPullTime(long latestPullTime) {
+        this.latestPullTime = latestPullTime;
     }
 }

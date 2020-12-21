@@ -3,13 +3,14 @@ package com.plumelog.logback.appender;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
+import com.plumelog.core.ClientConfig;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
-import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.IpGetter;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.logback.util.LogMessageUtil;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private KafkaProducerClient kafkaClient;
+    private String namespance = "plumelog";
     private String appName;
     private String kafkaHosts;
     private String runModel;
@@ -39,6 +41,10 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
 
     public void setExpand(String expand) {
         this.expand = expand;
+    }
+
+    public void setNamespance(String namespance) {
+        this.namespance = namespance;
     }
 
     public void setAppName(String appName) {
@@ -80,6 +86,11 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     @Override
     public void start() {
         super.start();
+
+        ClientConfig.setNameSpance(namespance);
+        ClientConfig.setAppName(appName);
+        ClientConfig.setServerName(IpGetter.CURRENT_IP);
+
         if(this.runModel!=null){
             LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
         }
