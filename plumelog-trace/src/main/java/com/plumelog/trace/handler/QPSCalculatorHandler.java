@@ -23,7 +23,7 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
     /**
      * 当下游异常的时候，暂存数据，最大5000条
      */
-    private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>(5000);
+    private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
 
     /**
      * 接口URI
@@ -152,7 +152,9 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
             AbstractClient.getClient().putMessageList(LogMessageConstant.QPS_KEY, list);
         } catch (LogQueueConnectException e) {
             // 发送失败后 进行暂存数据
-            queue.addAll(list);
+            if (queue.size() < 5000) {
+                queue.addAll(list);
+            }
             e.printStackTrace();
         }
         // 重置
