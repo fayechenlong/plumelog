@@ -24,7 +24,7 @@ public class RestApiService {
     FeignClientTest feignClientTest;
 
     private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool(4, 8, 5000);
+            = ThreadPoolUtil.getPool(4, 8, 5000, "plumelog-rest");
 
     public String getIndex(){
         log.info("pppp");

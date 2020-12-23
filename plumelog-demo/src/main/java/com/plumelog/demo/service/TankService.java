@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Service
 public class TankService {
     private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool(4, 8, 5000);
+            = ThreadPoolUtil.getPool(4, 8, 5000, null);
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(TankService.class);
     @Autowired
     TankServiceTwo tankServiceTwo;

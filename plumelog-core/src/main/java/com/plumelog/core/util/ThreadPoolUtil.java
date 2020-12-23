@@ -13,13 +13,15 @@ public class ThreadPoolUtil {
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
                 10,10,10,TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(1),
+                new NameThreadFactory(),
                 new ThreadPoolExecutor.DiscardOldestPolicy());
         return threadPool;
     }
-    public static ThreadPoolExecutor getPool(int corePoolSize,int maxPoolSize,int capacity) {
+    public static ThreadPoolExecutor getPool(int corePoolSize,int maxPoolSize,int capacity, String threadName) {
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
                 corePoolSize,maxPoolSize,10,TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(capacity),
+                new NameThreadFactory(threadName),
                 new ThreadPoolExecutor.DiscardOldestPolicy());
         return threadPool;
     }

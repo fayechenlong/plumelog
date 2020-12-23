@@ -7,6 +7,7 @@ import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.util.DateUtil;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.dto.QPSLogMessage;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +17,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class QPSCalculatorHandler {
+@Slf4j
+public class QPSCalculatorHandler extends AbstractQPSHandler {
 
     /**
      * 当下游异常的时候，暂存数据，最大5000条
@@ -33,19 +35,27 @@ public class QPSCalculatorHandler {
      */
     private int sizeOfBuckets;
     /**
-     * 时间片，单位毫秒
+     * 时间片（毫秒）
      */
     private int unitOfTimeSlice;
     /**
-     * 最近一次push时间
+     * 最近一次push日志时间（毫秒）
      */
-    private volatile Long latestPassedTimeClose;
+    private volatile Long latestPushTime;
+    /**
+     * push频率（毫秒）
+     */
+    private int pushTime;
+    /**
+     * push窗口大小（毫秒）
+     */
+    private int pushWindowTime;
     /**
      * 槽位
      */
     private Bucket[] buckets;
     /**
-     * 进入下一个槽位时使用的锁
+     * push日志的锁
      */
     private ReentrantLock enterNextBucketLock;
 
@@ -53,7 +63,7 @@ public class QPSCalculatorHandler {
      * 默认10个槽位，槽位的时间片为 1 秒
      */
     public QPSCalculatorHandler(String requestURI) {
-        this(10, 1000);
+        this(4, 1000);
         this.requestURI = requestURI;
     }
 
@@ -64,9 +74,11 @@ public class QPSCalculatorHandler {
      * @param unitOfTimeSlice 桶时间长度
      */
     public QPSCalculatorHandler(int sizeOfBuckets, int unitOfTimeSlice) {
-        this.latestPassedTimeClose = System.currentTimeMillis();
+        this.latestPushTime = System.currentTimeMillis();
         this.sizeOfBuckets = sizeOfBuckets;
         this.unitOfTimeSlice = unitOfTimeSlice;
+        this.pushTime = unitOfTimeSlice;
+        this.pushWindowTime = unitOfTimeSlice * 2;
         this.enterNextBucketLock = new ReentrantLock();
         this.buckets = new Bucket[sizeOfBuckets];
         // 初始化桶
@@ -81,33 +93,31 @@ public class QPSCalculatorHandler {
      * 进行累计
      */
     public void record() {
-        long passTime = System.currentTimeMillis();
-        // 计算桶位置
-        int targetBucketPosition = (int) (passTime / unitOfTimeSlice) % sizeOfBuckets;
-        Bucket currentBucket = buckets[targetBucketPosition];
-        // 计数 +1
-        currentBucket.pass(passTime);
+        threadPoolExecutor.execute(() -> {
+            long passTime = System.currentTimeMillis();
+            // 计算桶位置
+            int targetBucketPosition = (int) (passTime / unitOfTimeSlice) % sizeOfBuckets;
+            Bucket currentBucket = buckets[targetBucketPosition];
+            // 计数 +1
+            currentBucket.pass(passTime);
 
-        if (passTime - this.latestPassedTimeClose >= unitOfTimeSlice) {
-            enterNextBucketLock.lock();
-            try {
-                // 大于 桶数 * 桶时间 的 桶 全部进行push 日志，然后init 桶
-                //todo 会丢失maxTime时长的统计日志
-                long maxTime = sizeOfBuckets / 2 * unitOfTimeSlice;
+            if (passTime - this.latestPushTime >= pushTime) {
+                enterNextBucketLock.lock();
+                try {
+                    // 设置个 同步时间的变量
+                    this.latestPushTime = passTime;
 
-                // 设置个 同步时间的变量
-                this.latestPassedTimeClose = passTime;
-
-                for (int i = 0; i < sizeOfBuckets; i++) {
-                    // 大于 时限的 进行push
-                    if (passTime - buckets[i].getLatestPassedTime() >= maxTime) {
-                        push(buckets[i]);
+                    for (int i = 0; i < sizeOfBuckets; i++) {
+                        // 大于 时限的 进行push
+                        if (passTime - buckets[i].getLatestPassedTime() >= pushWindowTime) {
+                            push(buckets[i]);
+                        }
                     }
+                } finally {
+                    enterNextBucketLock.unlock();
                 }
-            } finally {
-                enterNextBucketLock.unlock();
             }
-        }
+        });
     }
 
     /**
@@ -142,6 +152,7 @@ public class QPSCalculatorHandler {
             AbstractClient.getClient().putMessageList(LogMessageConstant.QPS_KEY, list);
         } catch (LogQueueConnectException e) {
             // 发送失败后 进行暂存数据
+            // size 性能影响高
             if (queue.size() < 5000) {
                 queue.addAll(list);
             }
@@ -190,6 +201,7 @@ public class QPSCalculatorHandler {
         }
 
         public void reset() {
+            // LongAdder的reset()性能很差，所以直接new新的对象
             this.longAdder = new LongAdder();
             this.latestPassedTime = System.currentTimeMillis();
         }

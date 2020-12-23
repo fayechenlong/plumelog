@@ -14,14 +14,14 @@ public class QPSInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-        //todo 如何不影响业务 异步统计qps
-
         // 调用url
-        String requestURI = request.getRequestURI();
-        QPSCalculatorHandler qpsCalculatorHandler = QPSCalculatorHandlerFactory.getHandler(requestURI);
-        qpsCalculatorHandler.record();
-
+        try {
+            String requestURI = request.getRequestURI();
+            QPSCalculatorHandler qpsCalculatorHandler = QPSCalculatorHandlerFactory.getHandler(requestURI);
+            qpsCalculatorHandler.record();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return true;
     }
 }
