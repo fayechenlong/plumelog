@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,7 +23,7 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
     /**
      * 当下游异常的时候，暂存数据，最大5000条
      */
-    private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue();
+    private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>(5000);
 
     /**
      * 接口URI
@@ -141,7 +141,7 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         String msg = GfJsonUtil.toJSONString(qpsLogMessage);
         list.add(msg);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             if (queue.isEmpty()) {
                 break;
             }
@@ -152,10 +152,7 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
             AbstractClient.getClient().putMessageList(LogMessageConstant.QPS_KEY, list);
         } catch (LogQueueConnectException e) {
             // 发送失败后 进行暂存数据
-            // size 性能影响高
-            if (queue.size() < 5000) {
-                queue.addAll(list);
-            }
+            queue.addAll(list);
             e.printStackTrace();
         }
         // 重置
