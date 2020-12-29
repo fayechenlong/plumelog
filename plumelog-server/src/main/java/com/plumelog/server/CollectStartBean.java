@@ -1,24 +1,21 @@
 package com.plumelog.server;
 
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.redis.RedisClient;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
-import com.plumelog.server.config.RedisClientFactory;
+import com.plumelog.core.redis.RedisClientFactory;
 import com.plumelog.server.util.IndexUtil;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**

@@ -2,7 +2,9 @@ package com.plumelog.server.client;
 
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.kafka.KafkaConsumerClient;
+import com.plumelog.core.redis.JedisPoolRedisClient;
 import com.plumelog.core.redis.RedisClient;
+import com.plumelog.core.redis.RedisClientService;
 import com.plumelog.server.CollectStartBean;
 import com.plumelog.server.InitConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -75,9 +77,9 @@ public class ClientConfig implements InitializingBean {
     private int queueRedisDb=0;
 
 
-
+    //todo server端config redis
     @Bean(name="redisClient")
-    public RedisClient initRedisClient() {
+    public RedisClientService initRedisClient() {
         if (StringUtils.isEmpty(redisHost)) {
             logger.error("can not find redisHost config! please check the application.properties(plumelog.redis.redisHost) ");
             return null;
@@ -93,7 +95,7 @@ public class ClientConfig implements InitializingBean {
             return null;
         }
         logger.info("redis host:{},port:{}",ip,port);
-        return new RedisClient(ip, port, redisPassWord,redisDb);
+        return new JedisPoolRedisClient(ip, port, redisPassWord,redisDb);
     }
 
     @Bean(name="redisQueueClient")

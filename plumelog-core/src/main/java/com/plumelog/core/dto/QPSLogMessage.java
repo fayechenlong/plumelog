@@ -11,6 +11,7 @@ public class QPSLogMessage {
     /**
      * 消息id
      * 解决消息被重复发送问题
+     * 最后一次请求的时间戳
      */
     private String messageId;
     /**

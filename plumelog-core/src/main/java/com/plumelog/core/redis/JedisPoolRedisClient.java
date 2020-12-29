@@ -1,7 +1,5 @@
 package com.plumelog.core.redis;
 
-
-import com.plumelog.core.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
 import redis.clients.jedis.*;
 
@@ -15,8 +13,7 @@ import java.util.*;
  * @author Frank.chen
  * @version 1.0.0
  */
-public class RedisClient extends AbstractClient implements RedisClientService {
-    private volatile static RedisClient instance;
+public class JedisPoolRedisClient implements RedisClientService {
     private int MAX_ACTIVE = 30;
     private int MAX_IDLE = 8;
     private int MAX_WAIT = 1000;
@@ -34,33 +31,7 @@ public class RedisClient extends AbstractClient implements RedisClientService {
             "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
             "return 1;";
 
-
-    public static RedisClient getInstance(String host, int port, String pass, int db) {
-        if (instance == null) {
-            synchronized (RedisClient.class) {
-                if (instance == null) {
-                    instance = new RedisClient(host, port, pass, db);
-                    setClient(instance);
-                }
-            }
-        }
-        return instance;
-    }
-
-    private RedisClient(String host, int port, String pass) {
-        JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(MAX_ACTIVE);
-        config.setMaxIdle(MAX_IDLE);
-        config.setMaxWaitMillis(MAX_WAIT);
-        config.setTestOnBorrow(TEST_ON_BORROW);
-        if (pass != null && !"".equals(pass)) {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass, 0);
-        } else {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT);
-        }
-    }
-
-    public RedisClient(String host, int port, String pass, int db) {
+    public JedisPoolRedisClient(String host, int port, String pass, int db) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(MAX_ACTIVE);
         config.setMaxIdle(MAX_IDLE);
@@ -86,7 +57,6 @@ public class RedisClient extends AbstractClient implements RedisClientService {
                 sj.close();
             }
         }
-
     }
 
     @Override
@@ -115,7 +85,6 @@ public class RedisClient extends AbstractClient implements RedisClientService {
         } finally {
             sj.close();
         }
-
     }
 
     @Override
@@ -145,7 +114,6 @@ public class RedisClient extends AbstractClient implements RedisClientService {
                 sj.close();
             }
         }
-
     }
 
     @Override
@@ -371,18 +339,22 @@ public class RedisClient extends AbstractClient implements RedisClientService {
         return list;
     }
 
+    @Override
     public int getWeight() {
         return weight;
     }
 
+    @Override
     public void setWeight(int weight) {
         this.weight = weight;
     }
 
+    @Override
     public long getLatestPullTime() {
         return latestPullTime;
     }
 
+    @Override
     public void setLatestPullTime(long latestPullTime) {
         this.latestPullTime = latestPullTime;
     }

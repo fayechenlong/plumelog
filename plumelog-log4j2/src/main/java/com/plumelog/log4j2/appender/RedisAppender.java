@@ -3,13 +3,13 @@ package com.plumelog.log4j2.appender;
 import com.plumelog.core.ClientConfig;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.redis.RedisClientFactory;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.IpGetter;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j2.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.dto.BaseLogMessage;
-import com.plumelog.core.redis.RedisClient;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Plugin(name = "RedisAppender", category = "Core", elementType = "appender", printObject = true)
 public class RedisAppender extends AbstractAppender {
-    private static RedisClient redisClient;
+    private static RedisClientFactory redisClient;
     private String namespance = "plumelog";
     private String appName;
     private String redisHost;
@@ -100,7 +100,7 @@ public class RedisAppender extends AbstractAppender {
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
-        redisClient = RedisClient.getInstance(redisHost, redisPort == null ?
+        redisClient = RedisClientFactory.getInstance(redisHost, redisPort == null ?
                 LogMessageConstant.REDIS_DEFAULT_PORT
                 : Integer.parseInt(redisPort), redisAuth,redisDb);
         if(maxCount==0){

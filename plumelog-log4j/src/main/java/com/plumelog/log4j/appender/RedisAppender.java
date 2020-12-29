@@ -3,13 +3,13 @@ package com.plumelog.log4j.appender;
 import com.plumelog.core.ClientConfig;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.redis.RedisClientFactory;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.IpGetter;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j.util.LogMessageUtil;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.dto.BaseLogMessage;
-import com.plumelog.core.redis.RedisClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -24,7 +24,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @version 1.0.0
  */
 public class RedisAppender extends AppenderSkeleton {
-    private RedisClient redisClient;
+    private RedisClientFactory redisClient;
     private String namespance = "plumelog";
     private String appName;
     private String redisHost;
@@ -93,21 +93,20 @@ public class RedisAppender extends AppenderSkeleton {
         ClientConfig.setAppName(appName);
         ClientConfig.setServerName(IpGetter.CURRENT_IP);
 
+        //todo 通过配置中心，拉取redis相关配置
+
+
         if (this.redisClient == null) {
-            this.redisClient = RedisClient.getInstance(this.redisHost, this.redisPort == null ?
+            this.redisClient = RedisClientFactory.getInstance(this.redisHost, this.redisPort == null ?
                     LogMessageConstant.REDIS_DEFAULT_PORT
                     : Integer.parseInt(this.redisPort), this.redisAuth,this.redisDb);
 
             MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
             MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
             for(int a=0;a<this.threadPoolSize;a++){
+                threadPoolExecutor.execute(()-> MessageAppenderFactory.startRunLog(this.redisClient,maxCount));
 
-                threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.startRunLog(this.redisClient,maxCount);
-                });
-                threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.startTraceLog(this.redisClient,maxCount);
-                });
+                threadPoolExecutor.execute(()-> MessageAppenderFactory.startTraceLog(this.redisClient,maxCount));
             }
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);

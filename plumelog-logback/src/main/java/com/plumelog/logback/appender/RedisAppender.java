@@ -7,7 +7,7 @@ import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
-import com.plumelog.core.redis.RedisClient;
+import com.plumelog.core.redis.RedisClientFactory;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.IpGetter;
 import com.plumelog.core.util.ThreadPoolUtil;
@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @version 1.0.0
  */
 public class RedisAppender extends AppenderBase<ILoggingEvent> {
-    private RedisClient redisClient;
+    private RedisClientFactory redisClient;
     private String namespance = "plumelog";
     private String appName;
     private String redisHost;
@@ -112,10 +112,14 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         if (this.expand != null && LogMessageConstant.EXPANDS.contains(this.expand)) {
             LogMessageConstant.EXPAND = this.expand;
         }
+        //todo client启动入口
+        //todo 启动后台定时任务拉取redis配置
         if (this.redisClient == null) {
-            this.redisClient = RedisClient.getInstance(this.redisHost,
-                    this.redisPort == null ? LogMessageConstant.REDIS_DEFAULT_PORT : Integer.parseInt(this.redisPort),
-                    this.redisAuth,this.redisDb);
+//            this.redisClient = RedisClientFactory.getInstance(this.redisHost,
+//                    this.redisPort == null ? LogMessageConstant.REDIS_DEFAULT_PORT : Integer.parseInt(this.redisPort),
+//                    this.redisAuth,this.redisDb);
+
+            this.redisClient = RedisClientFactory.getInstance();
         }
         if(MessageAppenderFactory.rundataQueue==null) {
             MessageAppenderFactory.rundataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
