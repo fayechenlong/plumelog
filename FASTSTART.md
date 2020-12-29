@@ -331,10 +331,13 @@ KafkaAppender
 * [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
 * 扩展字段功能，MDC用法，例如，详细用法参照plumelog使用指南.pdf
+
+tip: https://logback.qos.ch/manual/mdc.html
+
 ```java
-            MDC.put("orderid", "1");
-            MDC.put("userid", "4");
-            logger.info("扩展字段");
+    MDC.put("orderid", "1");
+    MDC.put("userid", "4");
+    logger.info("扩展字段");
 ``` 
 * 错误报警说明
 
