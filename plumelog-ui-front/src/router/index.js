@@ -7,6 +7,7 @@ import Chart from "../views/Chart.vue";
 import Warn from "../views/Warn.vue";
 import Expand from "../views/Expand.vue";
 import Login from "../views/Login.vue";
+import Qps from "../views/Qps.vue";
 
 Vue.use(VueRouter);
 
@@ -35,6 +36,10 @@ const routes = [
     path: "/size",
     name: "Size",
     component: Size
+  },{
+    path: "/qps",
+    name: "Qps",
+    component: Qps
   },
   {
     path: "/expand",
