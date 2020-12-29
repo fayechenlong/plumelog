@@ -13,12 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 @Slf4j
 public class Interceptor implements HandlerInterceptor {
+    private IdWorker worker = new IdWorker(1,1,1);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String traceId = request.getHeader("TraceId");
         if (StringUtils.isEmpty(traceId)){
-            IdWorker worker = new IdWorker(1,1,1);
             TraceId.logTraceID.set(String.valueOf(worker.nextId()));
         }else{
             TraceId.logTraceID.set(traceId);

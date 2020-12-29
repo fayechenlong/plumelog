@@ -23,7 +23,6 @@ public class Interceptor extends HandlerInterceptorAdapter{
         /*logger.info("进：preHandle ++++++++++++++++++++"+TraceId.logTraceID.get());
         String traceId = request.getHeader("TraceId");
         if (StringUtils.isEmpty(traceId)){
-            IdWorker worker = new IdWorker(1,1,1);
             TraceId.logTraceID.set(String.valueOf(worker.nextId()));
         }else{
             TraceId.logTraceID.set(traceId);
