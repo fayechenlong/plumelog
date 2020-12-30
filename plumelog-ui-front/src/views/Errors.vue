@@ -18,7 +18,7 @@
           </div>
           <div style="display: inline-block;float:left;margin-left: 10px;">
             <RadioGroup v-model="logLevel" @on-change="handleLogLevelChange" type="button">
-              <Radio label="INFO">INFO</Radio>
+              <Radio :disabled="currentAppName" label="INFO">INFO</Radio>
               <Radio label="ERROR">ERROR</Radio>
             </RadioGroup>
           </div>
@@ -62,6 +62,9 @@ export default {
   },
   methods:{
     handleSelectAppName() {
+      if(this.currentAppName) {
+         this.logLevel = "ERROR"
+      }
       this.getErrorRate().then(data => {
         this.drawErrorLine(data)
       });
@@ -88,6 +91,16 @@ export default {
           this.handleSelectAppName()
         }
       });
+      let itemStyle = {
+        borderColor: 'rgb(110, 173, 193)',
+        color: 'rgba(110, 173, 193,0.6)'
+      }
+      if(this.logLevel === 'ERROR') {
+        itemStyle = {
+          borderColor: 'rgb(255,0,0)',
+              color: 'rgba(255, 0, 0,0.6)'
+        }
+      }
       window.addEventListener('resize', () => {
         errorChart.resize();
       });
@@ -129,10 +142,7 @@ export default {
           data: _.map(data, (d) => {
             return d.doc_count
           }),
-          itemStyle: {
-            borderColor: 'rgb(255, 0, 0)',
-            color: 'rgba(255, 0, 0,0.6)'
-          }
+          itemStyle: itemStyle
         }]
       })
     },
