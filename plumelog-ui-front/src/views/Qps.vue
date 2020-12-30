@@ -1,9 +1,16 @@
 <template>
   <div>
     <log-header></log-header>
+    <div style="clear:both"></div>
+    <div style="margin-top:10px" class="pnl_selectAppName">
+      选择应用名称：
+      <Select style="width:200px" filterable v-model="search.appName" @on-change="getExtendList"  placeholder="选择应用名称">
+        <Option v-for="appName in appNameStore" :value="appName" :key="appName">{{ appName }}</Option>
+      </Select>
+    </div>
     <Row style="margin-top:10px">
       <Col span="4">
-        <Table :columns="appColumns" :data="appNameStore"></Table>
+        <Table :columns="columns" :data="appNameStore"></Table>
       </Col>
       <Col span="20">qps</Col>
 
@@ -22,7 +29,7 @@ export default {
     logHeader,
   },
   data() {
-    this.appColumns = [
+    this.columns = [
       {
         title: '应用',
         key: 'name'
@@ -50,13 +57,9 @@ export default {
     loadAppName() {
       if (this.appNameStore.length === 0) {
         if (sessionStorage['cache_appNames']) {
-          this.appNameStore = JSON.parse(sessionStorage['cache_appNames']).map(k => {
-            return {
-              "name": k
-            }
-          })
+          this.appNameStore = JSON.parse(sessionStorage['cache_appNames'])
         } else {
-          let q = "plume_log_run_" + moment().format("YYYYMMDD") + '*'
+          let q = "plume_log_qps_" + moment().format("YYYYMMDD") + '*'
           axios.post(process.env.VUE_APP_API + '/query?index=' + q + '&from=0&size=0&appName', {
             "size": 0,
             "aggregations": {
@@ -72,11 +75,7 @@ export default {
               return item.key
             });
             sessionStorage['cache_appNames'] = JSON.stringify(buckets);
-            this.appNameStore = buckets.map(k => {
-              return {
-                "name": k
-              }
-            });
+            this.appNameStore = buckets
           })
 
         }
@@ -91,3 +90,9 @@ export default {
   }
 }
 </script>
+<style lang="less">
+.pnl_selectAppName{
+  text-align: left;
+  padding-left:30px;
+}
+</style>
