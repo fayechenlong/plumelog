@@ -11,6 +11,7 @@
         </div>
         <log-header></log-header>
 
+        <!--查询条件-->
         <table class='tbl_filters'>
           <tbody>
           <tr>
@@ -25,14 +26,6 @@
                   :filter-method="completeFilter"
                   @on-change="appNameChange">
               </AutoComplete>
-              <!-- <Select v-model="filter.appNames"
-                      class="txt txtAppName"
-                      filterable
-                      allow-create
-                      :loading="completeFilterLoading"
-              >
-                  <Option v-for="item in appNameComplete" :value="item.value" :key="item.value">{{ item.label }}</Option>
-              </Select> -->
               <Checkbox v-model="isExclude">排除</Checkbox>
             </td>
           </tr>
@@ -57,7 +50,6 @@
           </tr>
           </tbody>
         </table>
-
         <table class='tbl_filters'>
           <tr>
             <td class="key">类名</td>
@@ -81,7 +73,7 @@
             </td>
           </tr>
         </table>
-
+        <!-- 统计图表 -->
         <Carousel v-model="slideIndex" arrow="never">
           <CarouselItem>
             <div id="myChart" class="chart"></div>
@@ -169,6 +161,7 @@
         <Icon size="14" type="md-star-outline"/>
         表格字段宽度可拖拽调节，双击或点击箭头可查看详情
       </div>
+      <!--日志列表-->
       <Table size="small" border highlight-row :columns="showColumns" :content="self" @on-row-dblclick="dblclick"
              :row-class-name="getRowName" :data="list.hits">
         <template slot-scope="{ row }" slot="className">
@@ -203,6 +196,7 @@
       </Table>
     </div>
 
+    <!-- 功能区 -->
     <nav class="page_nav" aria-label="Page navigation example">
       <div class="pnl_select">
         <span class="name">显示字段：</span>
