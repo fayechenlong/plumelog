@@ -350,7 +350,7 @@ export default {
           width: 180,
           resizable: true,
           render: (h, params) => {
-            return h('div', moment(params.row.dtTime).format('YYYY-MM-DD HH:mm:ss.SSS'))
+            return h('div', moment(parseInt(params.row.dtTime)).format('YYYY-MM-DD HH:mm:ss.SSS'))
           }
         },
         {
@@ -706,8 +706,12 @@ export default {
       }
     },
     columnsChange() {
+
       this.list.hists = _.clone(this.list.hists);
-      localStorage['cache_showColumnTitles'] = JSON.stringify(this.showColumnTitles);
+      this.$nextTick(()=> {
+        sessionStorage['cache_showColumnTitles'] = JSON.stringify(this.showColumnTitles)
+        console.log(this.showColumnTitles)
+      })
     },
     substr(str, limit) {
       limit = limit || 30;
@@ -1195,9 +1199,11 @@ export default {
       }
     },
     init() {
-      let titles = localStorage['cache_showColumnTitles'];
+      let titles = sessionStorage['cache_showColumnTitles'];
       if (titles) {
-        this.showColumnTitles = JSON.parse(titles)
+        this.$nextTick(() => {
+          this.showColumnTitles = JSON.parse(titles)
+        })
       }
 
       if (this.$route.query.appName) {

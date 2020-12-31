@@ -25,7 +25,7 @@
             </li>
         </ul>
         <span class="quit"><a href="./#/login">退出</a></span>
-        <span class="version">Version 3.2.0</span>
+        <span class="version">Version 3.3.1</span>
     </nav>
 </template>
 <script>
