@@ -24,7 +24,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(BaseLogCollect.class);
     public ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
-    public ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(2);
     public ElasticLowerClient elasticLowerClient;
     protected ApplicationEventPublisher applicationEventPublisher;
 

@@ -15,6 +15,8 @@ public interface RedisClientService {
 
     void setLatestPullTime(long latestPullTime);
 
+    void shutdown();
+
     void pushMessage(String key, String strings) throws LogQueueConnectException;
 
     void putMessageList(String key, List<String> list) throws LogQueueConnectException;
@@ -24,6 +26,8 @@ public interface RedisClientService {
     boolean existsKey(String key);
 
     String getMessage(String key);
+
+    String get(String key);
 
     void set(String key, String value);
 

@@ -3,7 +3,7 @@ package com.plumelog.server.client;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.kafka.KafkaConsumerClient;
 import com.plumelog.core.redis.JedisPoolRedisClient;
-import com.plumelog.core.redis.RedisClient;
+import com.plumelog.core.redis.RedisClientHandler;
 import com.plumelog.core.redis.RedisClientService;
 import com.plumelog.server.CollectStartBean;
 import com.plumelog.server.InitConfig;
@@ -78,6 +78,7 @@ public class ClientConfig implements InitializingBean {
 
 
     //todo server端config redis
+    //todo 初始化不同类型的redis客户端
     @Bean(name="redisClient")
     public RedisClientService initRedisClient() {
         if (StringUtils.isEmpty(redisHost)) {
@@ -98,24 +99,12 @@ public class ClientConfig implements InitializingBean {
         return new JedisPoolRedisClient(ip, port, redisPassWord,redisDb);
     }
 
-    @Bean(name="redisQueueClient")
-    public RedisClient initRedisQueueClient() {
-        if (StringUtils.isEmpty(queueRedisHost)) {
-            logger.error("can not find redisHost config! please check the application.properties(plumelog.queue.redis.redisHost) ");
-            return null;
-        }
-        String[] hs = queueRedisHost.split(":");
-        int port = 6379;
-        String ip = "127.0.0.1";
-        if (hs.length == 2) {
-            ip = hs[0];
-            port = Integer.valueOf(hs[1]);
-        } else {
-            logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
-            return null;
-        }
-        logger.info("queue redis host:{},port:{}",ip,port);
-        return new RedisClient(ip, port, queueRedisPassWord,queueRedisDb);
+    @Bean
+    public RedisClientHandler redisClientHandler(){
+        RedisClientHandler redisClientHandler = new RedisClientHandler();
+        redisClientHandler.init(initRedisClient());
+        redisClientHandler.pullConfig();
+        return redisClientHandler;
     }
 
     @Bean

@@ -38,6 +38,12 @@ public class LogMessageConstant {
     public final static String QPS_KEY = "plume_qps_list";
 
     /**
+     * plumelog 4.0
+     * redis 配置
+     */
+    public final static String CONFIG_REDIS_SET = "plumelog:config:redis";
+
+    /**
      * 链路日志存入ES的索引后缀
      */
     public final static String LOG_KEY_TRACE = "plume_trace_list";

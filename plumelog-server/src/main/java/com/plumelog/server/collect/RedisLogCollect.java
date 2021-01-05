@@ -6,7 +6,6 @@ import com.plumelog.core.redis.RedisClientService;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisClientFactory;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,8 +33,6 @@ public class RedisLogCollect extends BaseLogCollect {
     }
 
     public void redisStart() {
-        //todo server端启动入口
-        // 拉取redis 配置信息
 
         //todo 线程oom被kill情况
         threadPoolExecutor.execute(() -> collectRuningLog());
@@ -58,12 +55,15 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 RedisClientService redisClient = redisClientFactory.getRedisClient();
+                if (redisClient == null) {
+                    return;
+                }
                 long startTime = System.currentTimeMillis();
                 logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
                 long endTime = System.currentTimeMillis();
                 logger.info("RuningLog日志获取耗时：{}", endTime - startTime);
                 // 设置权重
-                redisClient.setWeight(logs.size());
+//                redisClient.setWeight(logs.size());
                 redisClient.setLatestPullTime(endTime);
                 if (logger.isDebugEnabled()) {
                     logs.forEach(log -> {
@@ -95,7 +95,7 @@ public class RedisLogCollect extends BaseLogCollect {
                 long endTime = System.currentTimeMillis();
                 logger.info("TraceLog日志获取耗时：{}", endTime - startTime);
                 // 设置权重
-                redisClient.setWeight(logs.size());
+//                redisClient.setWeight(logs.size());
                 redisClient.setLatestPullTime(endTime);
                 if (logger.isDebugEnabled()) {
                     logs.forEach(log -> {
@@ -123,7 +123,7 @@ public class RedisLogCollect extends BaseLogCollect {
                 long startTime = System.currentTimeMillis();
                 logs = redisClient.getMessage(LogMessageConstant.QPS_KEY, InitConfig.MAX_SEND_SIZE);
                 long endTime = System.currentTimeMillis();
-                logger.info("RuningLog日志获取耗时：{}", endTime - startTime);
+                logger.info("RuningQPS日志获取耗时：{}", endTime - startTime);
                 if (logger.isDebugEnabled()) {
                     logs.forEach(log -> {
                         logger.debug(log);

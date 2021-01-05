@@ -6,7 +6,7 @@ import com.plumelog.core.LogMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
-import com.plumelog.core.redis.RedisClient;
+import com.plumelog.core.redis.RedisClientService;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import groovy.lang.Binding;
@@ -43,7 +43,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     @Autowired
     private PlumeLogMonitorRuleConfig plumeLogMonitorRuleConfig;
     @Autowired
-    private RedisClient redisClient;
+    private RedisClientService redisClient;
 
     private static final String WARNING_NOTICE = ":WARNING:NOTICE";
 

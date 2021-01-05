@@ -3,7 +3,9 @@ package com.plumelog.log4j2.appender;
 import com.plumelog.core.ClientConfig;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.redis.JedisPoolRedisClient;
 import com.plumelog.core.redis.RedisClientFactory;
+import com.plumelog.core.redis.RedisClientHandler;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.IpGetter;
 import com.plumelog.core.util.ThreadPoolUtil;
@@ -100,9 +102,19 @@ public class RedisAppender extends AbstractAppender {
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
-        redisClient = RedisClientFactory.getInstance(redisHost, redisPort == null ?
-                LogMessageConstant.REDIS_DEFAULT_PORT
-                : Integer.parseInt(redisPort), redisAuth,redisDb);
+
+        // 启动 handler
+        RedisClientHandler redisClientHandler = new RedisClientHandler();
+        redisClientHandler.init(
+                new JedisPoolRedisClient(
+                        redisHost,
+                        redisPort == null ? LogMessageConstant.REDIS_DEFAULT_PORT : Integer.parseInt(redisPort),
+                        redisAuth,
+                        redisDb)
+        );
+        redisClientHandler.pullConfig();
+        redisClient = RedisClientFactory.getInstance();
+
         if(maxCount==0){
             maxCount=100;
         }

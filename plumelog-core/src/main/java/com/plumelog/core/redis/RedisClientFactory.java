@@ -1,12 +1,12 @@
 package com.plumelog.core.redis;
 
 import com.plumelog.core.AbstractClient;
+import com.plumelog.core.dto.RedisConfigDTO;
+import com.plumelog.core.enums.RedisClientEnum;
 import com.plumelog.core.exception.LogQueueConnectException;
+import redis.clients.jedis.HostAndPort;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * RedisClientFactory
@@ -24,6 +24,18 @@ public class RedisClientFactory extends AbstractClient {
      */
     private int total = 0;
 
+    public static Object llen(String logKey) {
+        Long index = 0L;
+        for (Map.Entry<String, RedisClientService> entry : map.entrySet()) {
+            index += entry.getValue().llen(logKey);
+        }
+        return index;
+    }
+
+    public static void del(String logKey) {
+        map.forEach((k, v) -> v.del(logKey));
+    }
+
     private void RedisClientFactory() {
     }
 
@@ -39,51 +51,73 @@ public class RedisClientFactory extends AbstractClient {
         return instance;
     }
 
-    public static RedisClientFactory getInstance(String host, int port, String pass, int db) {
-        if (instance == null) {
-            synchronized (RedisClientFactory.class) {
-                if (instance == null) {
-                    registJedisPoolClient(host, port, pass, db);
-                    instance = new RedisClientFactory();
-                    setClient(instance);
-                }
-            }
-        }
-        return instance;
-    }
-
     @Override
     public void pushMessage(String key, String strings) throws LogQueueConnectException {
         // 负载选择
         RedisClientService redisClient = getRedisClient();
+        if (redisClient == null) {
+            throw new LogQueueConnectException("redisClient not init.");
+        }
         redisClient.pushMessage(key, strings);
     }
 
     @Override
     public void putMessageList(String key, List<String> list) throws LogQueueConnectException {
         RedisClientService redisClient = getRedisClient();
+        if (redisClient == null) {
+            throw new LogQueueConnectException("redisClient not init.");
+        }
         redisClient.putMessageList(key, list);
     }
 
     /**
      * 注册
-     *
-     * @param host
-     * @param port
-     * @param pass
-     * @param db
      */
-    public synchronized static RedisClientService registJedisPoolClient(String host, int port, String pass, int db) {
+    public synchronized void registClient(RedisConfigDTO redisConfig) {
         // 1。校验是否存在
-        String key = host + port + db;
-        if (map.containsKey(key)) {
-            return map.get(key);
+        if (map.containsKey(redisConfig.getConfigId())) {
+            return;
         }
-        //todo 创建客户端
-        // 2。创建redis客户端
-        JedisPoolRedisClient redisClient = new JedisPoolRedisClient(host, port, pass, db);
-        map.put(key, redisClient);
-        return redisClient;
+
+        List<RedisConfigDTO.RedisConfigHostAndPort> hostAndPorts = redisConfig.getHostAndPorts();
+        if (hostAndPorts == null || hostAndPorts.size() == 0) {
+            return;
+        }
+
+        RedisClientService redisClientService = null;
+
+        // 创建客户端
+        switch (RedisClientEnum.getByValue(redisConfig.getType())) {
+            case single:
+                redisClientService = new JedisPoolRedisClient(
+                        hostAndPorts.get(0).getHost(),
+                        hostAndPorts.get(0).getPort(),
+                        redisConfig.getPassword(),
+                        redisConfig.getIndex());
+                break;
+            case sentinel:
+                Set<String> sentinels = new HashSet<>();
+
+                hostAndPorts.forEach(r -> sentinels.add(r.getHost() + ":" + r.getPort()));
+
+                redisClientService = new JedisSentinelPoolRedisClient(
+                        sentinels,
+                        redisConfig.getMasterName(),
+                        redisConfig.getPassword(),
+                        redisConfig.getIndex());
+                break;
+            case cluster:
+                // 添加集群的服务节点Set集合
+                Set<HostAndPort> hostAndPortsSet = new HashSet<>();
+                // 添加节点
+                hostAndPorts.forEach(r -> hostAndPortsSet.add(new HostAndPort(r.getHost(), r.getPort())));
+
+                redisClientService = new JedisClusterPoolRedisClient(hostAndPortsSet, redisConfig.getPassword());
+                break;
+        }
+
+        map.put(redisConfig.getConfigId(), redisClientService);
+        total += redisClientService.getWeight();
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.plumelog.server;
 
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.redis.RedisClientHandler;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
@@ -32,10 +33,10 @@ public class CollectStartBean implements InitializingBean {
     private static Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
     @Autowired
     private ElasticLowerClient elasticLowerClient;
-    @Autowired
-    private RedisClientFactory redisClientFactory;
     @Autowired(required = false)
     private KafkaConsumer kafkaConsumer;
+    @Autowired
+    private RedisClientHandler redisClientHandler;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -45,7 +46,7 @@ public class CollectStartBean implements InitializingBean {
             kafkaLogCollect.kafkaStart();
         }
         if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisClientFactory, applicationEventPublisher);
+            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, RedisClientFactory.getInstance(), applicationEventPublisher);
             redisLogCollect.redisStart();
         }
         if (InitConfig.REST_MODE_NAME.equals(InitConfig.START_MODEL)) {
@@ -63,6 +64,7 @@ public class CollectStartBean implements InitializingBean {
             logger.error("plumelog server starting failed!", e);
         }
     }
+
     private void autoCreatIndice(){
         Date date = new Date();
         if(InitConfig.ES_INDEX_MODEL.equals("day")) {

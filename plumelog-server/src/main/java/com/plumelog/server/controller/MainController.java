@@ -4,7 +4,8 @@ import com.plumelog.core.LogMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.dto.WarningRuleDto;
-import com.plumelog.core.redis.RedisClient;
+import com.plumelog.core.redis.RedisClientFactory;
+import com.plumelog.core.redis.RedisClientService;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
@@ -13,7 +14,6 @@ import com.plumelog.server.controller.vo.LoginVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -42,10 +42,7 @@ public class MainController {
 
     private Logger logger = LoggerFactory.getLogger(MainController.class);
     @Autowired
-    private RedisClient redisClient;
-    @Autowired
-    private RedisClient redisQueueClient;
-
+    private RedisClientService redisClient;
     @Autowired
     private ElasticLowerClient elasticLowerClient;
 
@@ -179,8 +176,8 @@ public class MainController {
     @RequestMapping({"/getQueueCounts", "/plumelog/getQueueCounts"})
     public Map<String, Object> getQueueCounts() {
         Map<String, Object> map = new HashMap<>();
-        map.put("runSize",redisQueueClient.llen(LogMessageConstant.LOG_KEY));
-        map.put("traceSize",redisQueueClient.llen(LogMessageConstant.LOG_KEY_TRACE));
+        map.put("runSize", RedisClientFactory.llen(LogMessageConstant.LOG_KEY));
+        map.put("traceSize",RedisClientFactory.llen(LogMessageConstant.LOG_KEY_TRACE));
         return map;
     }
 
@@ -188,8 +185,8 @@ public class MainController {
     public Map<String, Object> deleteQueue(String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
-            redisQueueClient.del(LogMessageConstant.LOG_KEY);
-            redisQueueClient.del(LogMessageConstant.LOG_KEY_TRACE);
+            RedisClientFactory.del(LogMessageConstant.LOG_KEY);
+            RedisClientFactory.del(LogMessageConstant.LOG_KEY_TRACE);
         map.put("acknowledged", true);
         } else {
             map.put("acknowledged", false);

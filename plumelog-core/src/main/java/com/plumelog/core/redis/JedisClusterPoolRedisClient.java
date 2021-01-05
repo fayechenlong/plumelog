@@ -2,27 +2,20 @@ package com.plumelog.core.redis;
 
 import com.plumelog.core.exception.LogQueueConnectException;
 import redis.clients.jedis.*;
+import redis.clients.jedis.util.JedisClusterCRC16;
 
 import java.util.*;
 
-/**
- * className：RedisClient
- * description：RedisClient instance
- * time：2020-05-11.16:17
- *
- * @author Frank.chen
- * @version 1.0.0
- */
-public class JedisPoolRedisClient implements RedisClientService {
+public class JedisClusterPoolRedisClient implements RedisClientService {
+
     private int MAX_ACTIVE = 30;
     private int MAX_IDLE = 8;
     private int MAX_WAIT = 1000;
-    private int TIMEOUT = 1000;
     private boolean TEST_ON_BORROW = true;
-    private JedisPool jedisPool = null;
+    private JedisCluster jedisCluster = null;
 
     // 权重
-    private int weight = 100;
+    private int weight;
     private long latestPullTime;
 
     private static final String script = "local rs=redis.call(" +
@@ -31,36 +24,32 @@ public class JedisPoolRedisClient implements RedisClientService {
             "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
             "return 1;";
 
-    public JedisPoolRedisClient(String host, int port, String pass, int db) {
+    public JedisClusterPoolRedisClient(Set<HostAndPort> hostAndPortsSet, String password) {
+
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(MAX_ACTIVE);
         config.setMaxIdle(MAX_IDLE);
         config.setMaxWaitMillis(MAX_WAIT);
         config.setTestOnBorrow(TEST_ON_BORROW);
-        if (pass != null && !"".equals(pass)) {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass, db);
+
+        if (password != null && !"".equals(password)) {
+            jedisCluster = new JedisCluster(hostAndPortsSet, 2000, 2000, 5, password, config);
         } else {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT);
+            jedisCluster = new JedisCluster(hostAndPortsSet, config);
         }
     }
 
     @Override
     public void shutdown() {
-        jedisPool.close();
+        jedisCluster.close();
     }
 
     @Override
     public void pushMessage(String key, String strings) throws LogQueueConnectException {
-        Jedis sj = null;
         try {
-            sj = jedisPool.getResource();
-            sj.rpush(key, strings);
+            jedisCluster.rpush(key, strings);
         } catch (Exception e) {
             throw new LogQueueConnectException("redis 写入失败！", e);
-        } finally {
-            if (sj != null) {
-                sj.close();
-            }
         }
     }
 
@@ -70,9 +59,7 @@ public class JedisPoolRedisClient implements RedisClientService {
             return false;
         }
         try {
-            Jedis jedis = jedisPool.getResource();
-            Long result = (Long) jedis.evalsha(jedis.scriptLoad(script), Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
-            jedis.close();
+            Long result = (Long) jedisCluster.evalsha(jedisCluster.scriptLoad(script, key), Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
             if (result == 1) {
                 return true;
             }
@@ -84,34 +71,25 @@ public class JedisPoolRedisClient implements RedisClientService {
 
     @Override
     public boolean existsKey(String key) {
-        Jedis sj = jedisPool.getResource();
-        try {
-            return sj.exists(key);
-        } finally {
-            sj.close();
-        }
+        return jedisCluster.exists(key);
     }
 
     @Override
     public String getMessage(String key) {
-        Jedis sj = jedisPool.getResource();
-        String obj;
+        String obj = null;
         try {
-            obj = sj.lpop(key);
-        } finally {
-            sj.close();
+            obj = jedisCluster.lpop(key);
+        } catch (Exception e) {
         }
         return obj;
     }
 
     @Override
     public String get(String key) {
-        Jedis sj = jedisPool.getResource();
-        String obj;
+        String obj = null;
         try {
-            obj = sj.get(key);
-        } finally {
-            sj.close();
+            obj = jedisCluster.get(key);
+        } catch (Exception e) {
         }
         return obj;
     }
@@ -120,7 +98,9 @@ public class JedisPoolRedisClient implements RedisClientService {
     public void putMessageList(String key, List<String> list) throws LogQueueConnectException {
         Jedis sj = null;
         try {
-            sj = jedisPool.getResource();
+            int slot = JedisClusterCRC16.getSlot(key);
+            sj = jedisCluster.getConnectionFromSlot(slot);
+
             Pipeline pl = sj.pipelined();
             list.forEach(str -> pl.rpush(key, str));
             pl.sync();
@@ -135,52 +115,42 @@ public class JedisPoolRedisClient implements RedisClientService {
 
     @Override
     public void set(String key, String value) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.set(key, value);
-        } finally {
-            sj.close();
+            jedisCluster.set(key, value);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public void set(String key, String value, int seconds) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.setex(key, seconds, value);
-        } finally {
-            sj.close();
+            jedisCluster.setex(key, seconds, value);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public void expireAt(String key, Long time) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.expireAt(key, time);
-        } finally {
-            sj.close();
+            jedisCluster.expireAt(key, time);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public void expire(String key, int seconds) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.expire(key, seconds);
-        } finally {
-            sj.close();
+            jedisCluster.expire(key, seconds);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public Long incr(String key) {
         Long re = 0L;
-        Jedis sj = jedisPool.getResource();
         try {
-            re = sj.incr(key);
-        } finally {
-            sj.close();
+            re = jedisCluster.incr(key);
+        } catch (Exception e) {
         }
         return re;
     }
@@ -188,83 +158,68 @@ public class JedisPoolRedisClient implements RedisClientService {
     @Override
     public Long incrBy(String key, int value) {
         Long re = 0L;
-        Jedis sj = jedisPool.getResource();
         try {
-            re = sj.incrBy(key, value);
-        } finally {
-            sj.close();
+            re = jedisCluster.incrBy(key, value);
+        } catch (Exception e) {
         }
         return re;
     }
 
     @Override
     public void hset(String key, Map<String, String> value) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.hset(key, value);
-        } finally {
-            sj.close();
+            jedisCluster.hset(key, value);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public void sadd(String key, String value) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.sadd(key, value);
-        } finally {
-            sj.close();
+            jedisCluster.sadd(key, value);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public Set<String> smembers(String key) {
-        Jedis sj = jedisPool.getResource();
         try {
-            return sj.smembers(key);
-        } finally {
-            sj.close();
+            return jedisCluster.smembers(key);
+        } catch (Exception e) {
         }
+        return null;
     }
 
     @Override
     public void del(String key) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.del(key);
-        } finally {
-            sj.close();
+            jedisCluster.del(key);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public void hset(String key, String field, String value) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.hset(key, field, value);
-        } finally {
-            sj.close();
+            jedisCluster.hset(key, field, value);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public void hdel(String key, String... field) {
-        Jedis sj = jedisPool.getResource();
         try {
-            sj.hdel(key, field);
-        } finally {
-            sj.close();
+            jedisCluster.hdel(key, field);
+        } catch (Exception e) {
         }
     }
 
     @Override
     public String hget(String key, String field) {
         String value = "";
-        Jedis sj = jedisPool.getResource();
         try {
-            value = sj.hget(key, field);
-        } finally {
-            sj.close();
+            value = jedisCluster.hget(key, field);
+        } catch (Exception e) {
         }
         return value;
     }
@@ -272,11 +227,9 @@ public class JedisPoolRedisClient implements RedisClientService {
     @Override
     public Long llen(String key) {
         Long value = 0L;
-        Jedis sj = jedisPool.getResource();
         try {
-            value = sj.llen(key);
-        } finally {
-            sj.close();
+            value = jedisCluster.llen(key);
+        } catch (Exception e) {
         }
         return value;
     }
@@ -284,11 +237,9 @@ public class JedisPoolRedisClient implements RedisClientService {
     @Override
     public Map<String, String> hgetAll(String key) {
         Map<String, String> value = new HashMap<>();
-        Jedis sj = jedisPool.getResource();
         try {
-            value = sj.hgetAll(key);
-        } finally {
-            sj.close();
+            value = jedisCluster.hgetAll(key);
+        } catch (Exception e) {
         }
         return value;
     }
@@ -296,11 +247,9 @@ public class JedisPoolRedisClient implements RedisClientService {
     @Override
     public List<String> hmget(String key, String... field) {
         List<String> value = new ArrayList<>();
-        Jedis sj = jedisPool.getResource();
         try {
-            value = sj.hmget(key, field);
-        } finally {
-            sj.close();
+            value = jedisCluster.hmget(key, field);
+        } catch (Exception e) {
         }
         return value;
     }
@@ -308,11 +257,9 @@ public class JedisPoolRedisClient implements RedisClientService {
     @Override
     public Long hincrby(String key, String field, int num) {
         Long re = 0L;
-        Jedis sj = jedisPool.getResource();
         try {
-            re = sj.hincrBy(key, field, num);
-        } finally {
-            sj.close();
+            re = jedisCluster.hincrBy(key, field, num);
+        } catch (Exception e) {
         }
         return re;
     }
@@ -322,7 +269,9 @@ public class JedisPoolRedisClient implements RedisClientService {
         Jedis sj = null;
         List<String> list = new ArrayList<>();
         try {
-            sj = jedisPool.getResource();
+            int slot = JedisClusterCRC16.getSlot(key);
+            sj = jedisCluster.getConnectionFromSlot(slot);
+
             Long count = sj.llen(key);
             if (count < size) {
                 size = count.intValue();
