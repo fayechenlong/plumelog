@@ -45,7 +45,7 @@
           <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
         </properties>
 ```   
-* 非maven项目，到发行版中（https://gitee.com/frankchenlong/plumelog/releases）下载lib.zip，解压放到自己的lib目录，目前只上传了log4j的版本
+* 非maven项目，到发行版中（https://gitee.com/frankchenlong/plumelog/releases ）下载lib.zip，解压放到自己的lib目录，目前只上传了log4j的版本
   可能会涉及log4j jar冲突，需要自行排除
   
 * jdk1.6的项目下载源码，编译打包plumelog-client-jdk6，引入到自己的项目
