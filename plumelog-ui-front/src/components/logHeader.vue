@@ -14,6 +14,9 @@
             <li class="nav-item" :class="{'active':pageName=='Expand'}">
                 <a class="nav-link" href="./#/expand">扩展字段</a>
             </li>
+          <li class="nav-item" :class="{'active':pageName=='Errors'}">
+            <a class="nav-link" href="./#/errors">错误统计</a>
+          </li>
             <li class="nav-item" :class="{'active':pageName=='Warn'}">
                 <a class="nav-link" href="./#/warn">报警管理</a>
             </li>
@@ -22,7 +25,7 @@
             </li>
         </ul>
         <span class="quit"><a href="./#/login">退出</a></span>
-        <span class="version">Version 3.2.0</span>
+        <span class="version">Version 3.3.1</span>
     </nav>
 </template>
 <script>
@@ -39,7 +42,7 @@ export default {
         }
     },
     mounted(){
-        
+
     }
 }
 </script>
