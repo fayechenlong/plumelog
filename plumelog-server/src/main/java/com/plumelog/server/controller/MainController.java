@@ -235,7 +235,9 @@ public class MainController {
             WarningRuleDto warningRuleDto=new WarningRuleDto();
             warningRuleDto.setId(mapKey);
             warningRuleDto.setAppName(warningRule.getAppName());
+            warningRuleDto.setAppCategory(warningRule.getAppCategory());
             warningRuleDto.setClassName(warningRule.getClassName());
+            warningRuleDto.setRegex(warningRule.getRegex());
             warningRuleDto.setReceiver(warningRule.getReceiver());
             warningRuleDto.setWebhookUrl(warningRule.getWebhookUrl());
             warningRuleDto.setTime(warningRule.getTime());

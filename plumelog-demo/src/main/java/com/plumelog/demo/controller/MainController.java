@@ -32,7 +32,7 @@ public class MainController {
     @Trace
     public String dmc(String data) {
         logger.info("I am MainController" + System.getProperty("user.home"));
-        //这里的key Context在plumelog的ui的【扩展字段】；然后在【日志查询】下方的【显示字段】选择你配置的拓展字段
+        //这里的key Context在plumelog的ui的【扩展字段】进行配置；然后在【日志查询】下方的【显示字段】选择你配置的拓展字段
         MDC.put("Context", TraceIdGenerator.generate());
         if(data==null||"".equals(data)){
             data="你啥都没有输入！";

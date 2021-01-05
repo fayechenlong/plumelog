@@ -11,6 +11,7 @@ package com.plumelog.core.dto;
 public class WarningRule {
 
     private String appName;
+    private String appCategory;
     private String className;
     private String regex;
     private String receiver;
@@ -26,6 +27,14 @@ public class WarningRule {
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    public String getAppCategory() {
+        return appCategory;
+    }
+
+    public void setAppCategory(String appCategory) {
+        this.appCategory = appCategory;
     }
 
     public String getClassName() {

@@ -1,21 +1,21 @@
-# wf_logplat
+- Lodash  
+https://www.lodashjs.com/
 
-## node版本
-```
-建议使用 10.15.3
-```
+- moment  
+http://momentjs.cn/docs/
 
-## 项目安装
-```
-npm install
-```
+- particles.js  
+首页粒子背景
 
-### 编译
-```
-npm run build
-```
 
-### 启动服务
-```
-node app
-```
+## app.js 设想用node作为与es交互的后台接口
+- superagent  
+一个ajax框架
+
+- express
+
+- body-parser  
+一个body解析工具
+
+- core-js  
+JavaScript的模块化标准库
