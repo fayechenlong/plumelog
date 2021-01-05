@@ -13,7 +13,7 @@
     </div>
     <Row style="margin-top:10px">
       <Col span="4">
-        <Table highlight-row @on-row-click="rowClickHander" :columns="columns" :data="uriStore"></Table>
+        <Table height="600" highlight-row @on-row-click="rowClickHander" :columns="columns" :data="uriStore"></Table>
       </Col>
       <Col span="20">
         <div id="qps" class="chart"></div>
@@ -219,8 +219,8 @@ export default {
     },
     loadAppName() {
       if (this.appNameStore.length === 0) {
-        if (sessionStorage['cache_appNames']) {
-          this.appNameStore = JSON.parse(sessionStorage['cache_appNames'])
+        if (sessionStorage['cache_qps_appNames']) {
+          this.appNameStore = JSON.parse(sessionStorage['cache_qps_appNames'])
         } else {
           let q = "plume_log_qps_"  + '*' //+ moment().format("YYYYMMDD")
           axios.post(process.env.VUE_APP_API + '/query?index=' + q + '&from=0&size=0&appName', {
@@ -236,7 +236,7 @@ export default {
             let buckets = _.get(data, 'data.aggregations.dataCount.buckets', []).map(item => {
               return item.key
             });
-            sessionStorage['cache_appNames'] = JSON.stringify(buckets);
+            sessionStorage['cache_qps_appNames'] = JSON.stringify(buckets);
             this.appNameStore = buckets
           })
 
