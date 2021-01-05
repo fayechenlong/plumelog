@@ -137,7 +137,7 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         qpsLogMessage.setRequestURI(requestURI);
         qpsLogMessage.setIncr(bucket.countTotalPassed());
         String dtTime = DateUtil.parseDateToStr(new Date(bucket.getLatestPassedTime()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS);
-        qpsLogMessage.setDtTime(dtTime);
+        qpsLogMessage.setDtTime(Long.valueOf(dtTime));
         String msg = GfJsonUtil.toJSONString(qpsLogMessage);
         list.add(msg);
 

@@ -36,7 +36,7 @@ public class QPSLogMessage {
     /**
      * 时间节点 yyyyMMddHHmmss
      */
-    private String dtTime;
+    private Long dtTime;
 
     /**
      * 请求次数
@@ -84,11 +84,11 @@ public class QPSLogMessage {
         this.serverName = serverName;
     }
 
-    public String getDtTime() {
+    public Long getDtTime() {
         return dtTime;
     }
 
-    public void setDtTime(String dtTime) {
+    public void setDtTime(Long dtTime) {
         this.dtTime = dtTime;
     }
 
