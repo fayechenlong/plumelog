@@ -27,8 +27,11 @@
                     <FormItem label="应用名称" required>
                         <Input v-model="dataInfo.appName" placeholder="输入应用名称"  />
                     </FormItem>
-                    <FormItem label="模块名称">
-                        <Input v-model="dataInfo.className" placeholder="输入模块名称" />
+                    <FormItem label="应用分类">
+                      <Input v-model="dataInfo.appCategory" placeholder="输入应用分类"  />
+                    </FormItem>
+                    <FormItem label="模块名称(类路径)">
+                        <Input v-model="dataInfo.className" placeholder="输入模块名称(类路径)" />
                     </FormItem>
                     <FormItem label="接收者" required>
                         <Input type="textarea" :rows="4" v-model="dataInfo.receiver" placeholder="输入接收者（逗号分隔）; 如果包含all表示@所有人"  />
@@ -39,7 +42,7 @@
                           </Select>
                       </FormItem>
                     <FormItem label="钩子" required>
-                        <Input v-model="dataInfo.webhookUrl" placeholder="输入钉钉钩子地址"  />
+                        <Input v-model="dataInfo.webhookUrl" placeholder="输入钩子地址"  />
                     </FormItem>
                     <FormItem label="错误数量" required>
                         <Input v-model="dataInfo.errorCount" type="number" placeholder="输入错误数量"  />
@@ -110,6 +113,7 @@ export default {
     hookServeMap: {"1":'钉钉', "2":'企业微信'},
     dataInfo: {
         appName: '',
+        appCategory: '',
         className: '',
         receiver:'',
         webhookUrl:'',
@@ -136,6 +140,9 @@ export default {
       {
         title: '应用名称',
         key:'appName'
+      },{
+        title: '应用分类',
+        key:'appCategory'
       },
       {
         title: '模块名称',
@@ -247,7 +254,7 @@ export default {
         return false;
       }
       else if(this.dataInfo.webhookUrl==''){
-        this.$Message.error('请填写钉钉钩子地址');
+        this.$Message.error('请填写钩子地址');
         return false;
       }
       else if(this.dataInfo.errorCount==''){
@@ -264,6 +271,7 @@ export default {
     initDataInfo() {
       this.dataInfo = {
         appName: '',
+        appCategory: '',
         className: '',
         receiver:'',
         webhookUrl:'',
@@ -276,7 +284,7 @@ export default {
     setData(info){
        let _info = _.clone(info)
        let id = _info.id || Date.now();
-      
+
        _info.status = _info.status ? 1 : 0;
        axios.post(process.env.VUE_APP_API+'/saveWarningRuleList?id='+id,_info).then(data=>{
          if(data.data.success){
@@ -305,7 +313,7 @@ export default {
       return ''
     },
     getLog(){
-      //  
+      //
       axios.post(process.env.VUE_APP_API+'/query?index=plumelog_monitor_message_key'+'&from='+this.from+'&size='+this.pageSize,{
         "query": {
             "match_all": {}
