@@ -40,7 +40,7 @@ export default {
         ellipsis:true
       },
       {
-        title: 'qps',
+        title: 'QPS',
         key: 'key',
         ellipsis:true,
         width: 80,
@@ -252,7 +252,7 @@ export default {
   }
 }
 </script>
-<style lang="less">
+<style lang="less" scoped>
 .pnl_selectAppName{
   text-align: left;
   padding-left:30px;
