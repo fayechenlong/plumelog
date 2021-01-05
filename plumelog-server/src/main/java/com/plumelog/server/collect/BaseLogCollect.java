@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -27,6 +28,7 @@ public class BaseLogCollect {
     protected ApplicationEventPublisher applicationEventPublisher;
 
     public String getRunLogIndex(){
+        //todo 根据命名空间设置索引文件
         if(InitConfig.ES_INDEX_MODEL.equals("day")) {
             return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
         }else {
@@ -34,6 +36,7 @@ public class BaseLogCollect {
         }
     }
     public String getTraceLogIndex(){
+        //todo 根据命名空间设置索引文件
         if(InitConfig.ES_INDEX_MODEL.equals("day")) {
             return LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(new Date(), DateUtil.DATE_FORMAT_YYYYMMDD);
         }else {

@@ -1,7 +1,5 @@
 package com.plumelog.core.redis;
 
-
-import com.plumelog.core.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
 import redis.clients.jedis.*;
 
@@ -15,8 +13,7 @@ import java.util.*;
  * @author Frank.chen
  * @version 1.0.0
  */
-public class RedisClient extends AbstractClient {
-    private volatile static RedisClient instance;
+public class JedisPoolRedisClient implements RedisClientService {
     private int MAX_ACTIVE = 30;
     private int MAX_IDLE = 8;
     private int MAX_WAIT = 1000;
@@ -25,7 +22,7 @@ public class RedisClient extends AbstractClient {
     private JedisPool jedisPool = null;
 
     // 权重
-    private int weight;
+    private int weight = 100;
     private long latestPullTime;
 
     private static final String script = "local rs=redis.call(" +
@@ -34,43 +31,24 @@ public class RedisClient extends AbstractClient {
             "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
             "return 1;";
 
-
-    public static RedisClient getInstance(String host, int port, String pass,int db) {
-        if (instance == null) {
-            synchronized (RedisClient.class) {
-                if (instance == null) {
-                    instance = new RedisClient(host, port, pass,db);
-                    setClient(instance);
-                }
-            }
-        }
-        return instance;
-    }
-
-    private RedisClient(String host, int port, String pass) {
+    public JedisPoolRedisClient(String host, int port, String pass, int db) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(MAX_ACTIVE);
         config.setMaxIdle(MAX_IDLE);
         config.setMaxWaitMillis(MAX_WAIT);
         config.setTestOnBorrow(TEST_ON_BORROW);
         if (pass != null && !"".equals(pass)) {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass,0);
+            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass, db);
         } else {
             jedisPool = new JedisPool(config, host, port, TIMEOUT);
         }
     }
-    public RedisClient(String host, int port, String pass, int db) {
-        JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(MAX_ACTIVE);
-        config.setMaxIdle(MAX_IDLE);
-        config.setMaxWaitMillis(MAX_WAIT);
-        config.setTestOnBorrow(TEST_ON_BORROW);
-        if (pass != null && !"".equals(pass)) {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass,db);
-        } else {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT);
-        }
+
+    @Override
+    public void shutdown() {
+        jedisPool.close();
     }
+
     @Override
     public void pushMessage(String key, String strings) throws LogQueueConnectException {
         Jedis sj = null;
@@ -84,9 +62,9 @@ public class RedisClient extends AbstractClient {
                 sj.close();
             }
         }
-
     }
 
+    @Override
     public boolean setNx(String key, Integer expire) {
         if (null == key) {
             return false;
@@ -104,6 +82,7 @@ public class RedisClient extends AbstractClient {
         return false;
     }
 
+    @Override
     public boolean existsKey(String key) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -111,9 +90,9 @@ public class RedisClient extends AbstractClient {
         } finally {
             sj.close();
         }
-
     }
 
+    @Override
     public String getMessage(String key) {
         Jedis sj = jedisPool.getResource();
         String obj;
@@ -126,8 +105,20 @@ public class RedisClient extends AbstractClient {
     }
 
     @Override
-    public void putMessageList(String key, List<String> list) throws LogQueueConnectException{
-        Jedis sj=null;
+    public String get(String key) {
+        Jedis sj = jedisPool.getResource();
+        String obj;
+        try {
+            obj = sj.get(key);
+        } finally {
+            sj.close();
+        }
+        return obj;
+    }
+
+    @Override
+    public void putMessageList(String key, List<String> list) throws LogQueueConnectException {
+        Jedis sj = null;
         try {
             sj = jedisPool.getResource();
             Pipeline pl = sj.pipelined();
@@ -136,13 +127,13 @@ public class RedisClient extends AbstractClient {
         } catch (Exception e) {
             throw new LogQueueConnectException("redis 写入失败！", e);
         } finally {
-            if(sj!=null) {
+            if (sj != null) {
                 sj.close();
             }
         }
-
     }
 
+    @Override
     public void set(String key, String value) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -152,6 +143,7 @@ public class RedisClient extends AbstractClient {
         }
     }
 
+    @Override
     public void set(String key, String value, int seconds) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -161,6 +153,7 @@ public class RedisClient extends AbstractClient {
         }
     }
 
+    @Override
     public void expireAt(String key, Long time) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -170,6 +163,7 @@ public class RedisClient extends AbstractClient {
         }
     }
 
+    @Override
     public void expire(String key, int seconds) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -179,6 +173,7 @@ public class RedisClient extends AbstractClient {
         }
     }
 
+    @Override
     public Long incr(String key) {
         Long re = 0L;
         Jedis sj = jedisPool.getResource();
@@ -190,6 +185,7 @@ public class RedisClient extends AbstractClient {
         return re;
     }
 
+    @Override
     public Long incrBy(String key, int value) {
         Long re = 0L;
         Jedis sj = jedisPool.getResource();
@@ -201,6 +197,7 @@ public class RedisClient extends AbstractClient {
         return re;
     }
 
+    @Override
     public void hset(String key, Map<String, String> value) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -209,14 +206,18 @@ public class RedisClient extends AbstractClient {
             sj.close();
         }
     }
+
+    @Override
     public void sadd(String key, String value) {
         Jedis sj = jedisPool.getResource();
         try {
-            sj.sadd(key,value);
+            sj.sadd(key, value);
         } finally {
             sj.close();
         }
     }
+
+    @Override
     public Set<String> smembers(String key) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -226,6 +227,7 @@ public class RedisClient extends AbstractClient {
         }
     }
 
+    @Override
     public void del(String key) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -235,6 +237,7 @@ public class RedisClient extends AbstractClient {
         }
     }
 
+    @Override
     public void hset(String key, String field, String value) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -244,6 +247,7 @@ public class RedisClient extends AbstractClient {
         }
     }
 
+    @Override
     public void hdel(String key, String... field) {
         Jedis sj = jedisPool.getResource();
         try {
@@ -253,6 +257,7 @@ public class RedisClient extends AbstractClient {
         }
     }
 
+    @Override
     public String hget(String key, String field) {
         String value = "";
         Jedis sj = jedisPool.getResource();
@@ -263,16 +268,20 @@ public class RedisClient extends AbstractClient {
         }
         return value;
     }
+
+    @Override
     public Long llen(String key) {
         Long value = 0L;
         Jedis sj = jedisPool.getResource();
         try {
-            value= sj.llen(key);
+            value = sj.llen(key);
         } finally {
             sj.close();
         }
         return value;
     }
+
+    @Override
     public Map<String, String> hgetAll(String key) {
         Map<String, String> value = new HashMap<>();
         Jedis sj = jedisPool.getResource();
@@ -284,6 +293,7 @@ public class RedisClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public List<String> hmget(String key, String... field) {
         List<String> value = new ArrayList<>();
         Jedis sj = jedisPool.getResource();
@@ -295,6 +305,7 @@ public class RedisClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public Long hincrby(String key, String field, int num) {
         Long re = 0L;
         Jedis sj = jedisPool.getResource();
@@ -306,6 +317,7 @@ public class RedisClient extends AbstractClient {
         return re;
     }
 
+    @Override
     public List<String> getMessage(String key, int size) throws LogQueueConnectException {
         Jedis sj = null;
         List<String> list = new ArrayList<>();
@@ -344,18 +356,22 @@ public class RedisClient extends AbstractClient {
         return list;
     }
 
+    @Override
     public int getWeight() {
         return weight;
     }
 
+    @Override
     public void setWeight(int weight) {
         this.weight = weight;
     }
 
+    @Override
     public long getLatestPullTime() {
         return latestPullTime;
     }
 
+    @Override
     public void setLatestPullTime(long latestPullTime) {
         this.latestPullTime = latestPullTime;
     }

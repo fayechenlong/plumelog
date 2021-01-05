@@ -1,0 +1,371 @@
+package com.plumelog.core.redis;
+
+import com.plumelog.core.exception.LogQueueConnectException;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import redis.clients.jedis.*;
+
+import java.util.*;
+
+public class JedisSentinelPoolRedisClient implements RedisClientService {
+    private int MAX_ACTIVE = 30;
+    private int MAX_IDLE = 8;
+    private int MAX_WAIT = 1000;
+    private boolean TEST_ON_BORROW = true;
+    private JedisSentinelPool jedisPool = null;
+
+    // 权重
+    private int weight;
+    private long latestPullTime;
+
+    private static final String script = "local rs=redis.call(" +
+            "'setnx',KEYS[1],ARGV[1]);" +
+            "if(rs<1) then return 0;end;" +
+            "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
+            "return 1;";
+
+    public JedisSentinelPoolRedisClient(Set<String> sentinels, String masterName, String password, int database) {
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxTotal(MAX_ACTIVE);
+        config.setMaxIdle(MAX_IDLE);
+        config.setMaxWaitMillis(MAX_WAIT);
+        config.setTestOnBorrow(TEST_ON_BORROW);
+
+        if (password != null && !"".equals(password)) {
+            jedisPool = new JedisSentinelPool(masterName, sentinels, config, 2000, password, database);
+        } else {
+            jedisPool = new JedisSentinelPool(masterName, sentinels, config, 2000, null, database);
+        }
+    }
+
+    @Override
+    public void shutdown() {
+        jedisPool.close();
+    }
+
+    @Override
+    public void pushMessage(String key, String strings) throws LogQueueConnectException {
+        Jedis sj = null;
+        try {
+            sj = jedisPool.getResource();
+            sj.rpush(key, strings);
+        } catch (Exception e) {
+            throw new LogQueueConnectException("redis 写入失败！", e);
+        } finally {
+            if (sj != null) {
+                sj.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean setNx(String key, Integer expire) {
+        if (null == key) {
+            return false;
+        }
+        try {
+            Jedis jedis = jedisPool.getResource();
+            Long result = (Long) jedis.evalsha(jedis.scriptLoad(script), Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
+            jedis.close();
+            if (result == 1) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existsKey(String key) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            return sj.exists(key);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public String getMessage(String key) {
+        Jedis sj = jedisPool.getResource();
+        String obj;
+        try {
+            obj = sj.lpop(key);
+        } finally {
+            sj.close();
+        }
+        return obj;
+    }
+
+    @Override
+    public String get(String key) {
+        Jedis sj = jedisPool.getResource();
+        String obj;
+        try {
+            obj = sj.get(key);
+        } finally {
+            sj.close();
+        }
+        return obj;
+    }
+
+    @Override
+    public void putMessageList(String key, List<String> list) throws LogQueueConnectException {
+        Jedis sj = null;
+        try {
+            sj = jedisPool.getResource();
+            Pipeline pl = sj.pipelined();
+            list.forEach(str -> pl.rpush(key, str));
+            pl.sync();
+        } catch (Exception e) {
+            throw new LogQueueConnectException("redis 写入失败！", e);
+        } finally {
+            if (sj != null) {
+                sj.close();
+            }
+        }
+    }
+
+    @Override
+    public void set(String key, String value) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.set(key, value);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public void set(String key, String value, int seconds) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.setex(key, seconds, value);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public void expireAt(String key, Long time) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.expireAt(key, time);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public void expire(String key, int seconds) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.expire(key, seconds);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public Long incr(String key) {
+        Long re = 0L;
+        Jedis sj = jedisPool.getResource();
+        try {
+            re = sj.incr(key);
+        } finally {
+            sj.close();
+        }
+        return re;
+    }
+
+    @Override
+    public Long incrBy(String key, int value) {
+        Long re = 0L;
+        Jedis sj = jedisPool.getResource();
+        try {
+            re = sj.incrBy(key, value);
+        } finally {
+            sj.close();
+        }
+        return re;
+    }
+
+    @Override
+    public void hset(String key, Map<String, String> value) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.hset(key, value);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public void sadd(String key, String value) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.sadd(key, value);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public Set<String> smembers(String key) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            return sj.smembers(key);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public void del(String key) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.del(key);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public void hset(String key, String field, String value) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.hset(key, field, value);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public void hdel(String key, String... field) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.hdel(key, field);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public String hget(String key, String field) {
+        String value = "";
+        Jedis sj = jedisPool.getResource();
+        try {
+            value = sj.hget(key, field);
+        } finally {
+            sj.close();
+        }
+        return value;
+    }
+
+    @Override
+    public Long llen(String key) {
+        Long value = 0L;
+        Jedis sj = jedisPool.getResource();
+        try {
+            value = sj.llen(key);
+        } finally {
+            sj.close();
+        }
+        return value;
+    }
+
+    @Override
+    public Map<String, String> hgetAll(String key) {
+        Map<String, String> value = new HashMap<>();
+        Jedis sj = jedisPool.getResource();
+        try {
+            value = sj.hgetAll(key);
+        } finally {
+            sj.close();
+        }
+        return value;
+    }
+
+    @Override
+    public List<String> hmget(String key, String... field) {
+        List<String> value = new ArrayList<>();
+        Jedis sj = jedisPool.getResource();
+        try {
+            value = sj.hmget(key, field);
+        } finally {
+            sj.close();
+        }
+        return value;
+    }
+
+    @Override
+    public Long hincrby(String key, String field, int num) {
+        Long re = 0L;
+        Jedis sj = jedisPool.getResource();
+        try {
+            re = sj.hincrBy(key, field, num);
+        } finally {
+            sj.close();
+        }
+        return re;
+    }
+
+    @Override
+    public List<String> getMessage(String key, int size) throws LogQueueConnectException {
+        Jedis sj = null;
+        List<String> list = new ArrayList<>();
+        try {
+            sj = jedisPool.getResource();
+            Long count = sj.llen(key);
+            if (count < size) {
+                size = count.intValue();
+            }
+            if (size == 0) {
+                return list;
+            }
+            List<Response<String>> listRes = new ArrayList<>();
+            Pipeline pl = sj.pipelined();
+            for (int i = 0; i < size; i++) {
+                Response<String> res = pl.lpop(key);
+                if (res == null) {
+                    break;
+                }
+                listRes.add(res);
+            }
+            pl.sync();
+            listRes.forEach(res -> {
+                String log = res.get();
+                if (log != null) {
+                    list.add(log);
+                }
+            });
+        } catch (Exception e) {
+            throw new LogQueueConnectException("redis 连接失败！", e);
+        } finally {
+            if (sj != null) {
+                sj.close();
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public int getWeight() {
+        return weight;
+    }
+
+    @Override
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    @Override
+    public long getLatestPullTime() {
+        return latestPullTime;
+    }
+
+    @Override
+    public void setLatestPullTime(long latestPullTime) {
+        this.latestPullTime = latestPullTime;
+    }
+}

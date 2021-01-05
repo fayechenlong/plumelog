@@ -27,6 +27,9 @@
                     <FormItem label="应用名称" required>
                         <Input v-model="dataInfo.appName" placeholder="输入应用名称"  />
                     </FormItem>
+                    <FormItem label="应用分类">
+                      <Input v-model="dataInfo.appCategory" placeholder="输入应用分类" />
+                    </FormItem>
                     <FormItem label="模块名称">
                         <Input v-model="dataInfo.className" placeholder="输入模块名称" />
                     </FormItem>
@@ -73,7 +76,7 @@
                 <li v-for="(log,index) in logs" :key="index">
                   <div class="time">{{formatTime(log.dataTime)}}</div>
                   <div class="cnt"><span class="key">应用名称: </span>{{log.appName}}</div>
-                  <div class="cnt"><span class="key">类名: </span>{{log.className}}</div>
+                  <div class="cnt"><span class="key">模块名称: </span>{{log.className}}</div>
                   <div class="cnt"><span class="key">时间区间: </span>{{log.time}}秒</div>
                   <div class="cnt"><span class="key">实际错误: </span>{{log.errorCount}}条</div>
                   <div class="cnt"><span class="key">错误信息: </span>{{log.errorContent}}</div>
@@ -92,12 +95,9 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
 import axios from '@/services/http'
 import _ from 'lodash'
 import moment from 'moment'
-import dateOption from './dateOption';
 import 'view-design/dist/styles/iview.css';
 import logHeader from '@/components/logHeader.vue'
 import confirmDelete from '@/components/confirmDelete.vue'
@@ -113,6 +113,7 @@ export default {
     hookServeMap: {"1":'钉钉', "2":'企业微信'},
     dataInfo: {
         appName: '',
+        appCategory: '',
         className: '',
         receiver:'',
         webhookUrl:'',
@@ -140,10 +141,16 @@ export default {
       {
         title: '应用名称',
         key:'appName'
+      },{
+        title: '应用名称',
+        key:'appCategory'
       },
       {
         title: '模块名称',
         key:'className'
+      },{
+        title: '正则匹配',
+        key:'regex'
       },
       {
         title: '接收者',
@@ -280,7 +287,7 @@ export default {
     setData(info){
        let _info = _.clone(info)
        let id = _info.id || Date.now();
-      
+
        _info.status = _info.status ? 1 : 0;
        axios.post(process.env.VUE_APP_API+'/saveWarningRuleList?id='+id,_info).then(data=>{
          if(data.data.success){
@@ -309,7 +316,7 @@ export default {
       return ''
     },
     getLog(){
-      //  
+      //
       axios.post(process.env.VUE_APP_API+'/query?index=plumelog_monitor_message_key'+'&from='+this.from+'&size='+this.pageSize,{
         "query": {
             "match_all": {}

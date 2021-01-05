@@ -8,6 +8,9 @@
             <li class="nav-item" :class="{'active':pageName=='Trace'}">
                 <a class="nav-link" href="./#/trace">链路追踪</a>
             </li>
+          <li class="nav-item" :class="{'active':pageName=='Qps'}">
+            <a class="nav-link" href="./#/qps">Qps</a>
+          </li>
             <!-- <li class="nav-item" :class="{'active':pageName=='Chart'}">
                 <a class="nav-link" href="./#/chart">数据统计</a>
             </li> -->
@@ -23,12 +26,10 @@
             <li class="nav-item" :class="{'active':pageName=='Size'}">
                 <a class="nav-link" href="./#/size">管理</a>
             </li>
-          <li class="nav-item" :class="{'active':pageName=='Qps'}">
-            <a class="nav-link" href="./#/qps">Qps</a>
-          </li>
+
         </ul>
         <span class="quit"><a href="./#/login">退出</a></span>
-        <span class="version">Version 3.3.1</span>
+        <span class="version">Version 4.0.0</span>
     </nav>
 </template>
 <script>

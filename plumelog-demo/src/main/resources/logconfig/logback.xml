@@ -40,12 +40,13 @@
     <springProperty scope="context" name="plumelog.appName" source="plumelog.appName"/>
     <springProperty scope="context" name="plumelog.redisHost" source="plumelog.redisHost"/>
     <springProperty scope="context" name="plumelog.redisPort" source="plumelog.redisPort"/>
+    <springProperty scope="context" name="plumelog.redisAuth" source="plumelog.redisAuth"/>
     <!-- 如果使用redis作为队列，启用下面配置 -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>${plumelog.appName}</appName>
         <redisHost>${plumelog.redisHost}</redisHost>
         <!-- 如果使用redis有密码，启用下面配置 -->
-        <!--<redisAuth>123456</redisAuth>-->
+        <redisAuth>${plumelog.redisAuth}</redisAuth>
         <!-- redis端口号，不配置默认6379-->
         <redisPort>${plumelog.redisPort}</redisPort>
         <!-- runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1-->

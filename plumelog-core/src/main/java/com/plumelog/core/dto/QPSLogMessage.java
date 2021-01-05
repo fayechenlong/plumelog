@@ -11,6 +11,7 @@ public class QPSLogMessage {
     /**
      * 消息id
      * 解决消息被重复发送问题
+     * 最后一次请求的时间戳
      */
     private String messageId;
     /**
@@ -35,7 +36,7 @@ public class QPSLogMessage {
     /**
      * 时间节点 yyyyMMddHHmmss
      */
-    private String dtTime;
+    private Long dtTime;
 
     /**
      * 请求次数
@@ -83,11 +84,11 @@ public class QPSLogMessage {
         this.serverName = serverName;
     }
 
-    public String getDtTime() {
+    public Long getDtTime() {
         return dtTime;
     }
 
-    public void setDtTime(String dtTime) {
+    public void setDtTime(Long dtTime) {
         this.dtTime = dtTime;
     }
 
