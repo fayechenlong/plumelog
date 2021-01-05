@@ -4,7 +4,7 @@ import router from "./router";
 import store from "./store";
 import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
-
+import VCharts from 'v-charts'
 // 引入基本模板
 let echarts = require('echarts/lib/echarts')
 // 引入柱状图组件
@@ -18,7 +18,7 @@ require('echarts/lib/component/title')
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false;
 Vue.use(ViewUI);
-
+Vue.use(VCharts)
 
 ViewUI.LoadingBar.config({
   color: '#5cb85c',

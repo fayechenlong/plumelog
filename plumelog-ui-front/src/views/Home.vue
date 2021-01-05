@@ -1214,6 +1214,9 @@ export default {
       if (this.$route.query.logLevel) {
         this.filter['logLevel'] = [this.$route.query.logLevel];
       }
+      if (this.$route.query.serverName) {
+        this.filter['serverName'] = [this.$route.query.serverName];
+      }
       if (this.$route.query.time) {
         let times = this.$route.query.time.split(',');
         if (times.length > 1) {

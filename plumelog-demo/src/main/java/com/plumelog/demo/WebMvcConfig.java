@@ -7,7 +7,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 
-@Configuration
+// 因为引入plumelog-trace功能，WebMvcConfig命名冲突
+@Configuration("mvcConfig")
 public class WebMvcConfig extends WebMvcConfigurerAdapter{
 
 

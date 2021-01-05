@@ -20,6 +20,9 @@
             <li class="nav-item" :class="{'active':pageName=='Size'}">
                 <a class="nav-link" href="./#/size">管理</a>
             </li>
+          <li class="nav-item" :class="{'active':pageName=='Qps'}">
+            <a class="nav-link" href="./#/qps">Qps</a>
+          </li>
         </ul>
         <span class="quit"><a href="./#/login">退出</a></span>
         <span class="version">Version 3.2.0</span>
@@ -39,7 +42,7 @@ export default {
         }
     },
     mounted(){
-        
+
     }
 }
 </script>
