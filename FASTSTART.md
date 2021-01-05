@@ -332,7 +332,7 @@ KafkaAppender
 
 * 扩展字段功能，MDC用法，例如，详细用法参照plumelog使用指南.pdf
 
-tip: https://logback.qos.ch/manual/mdc.html
+参考: https://logback.qos.ch/manual/mdc.html
 
 ```java
     MDC.put("orderid", "1");
