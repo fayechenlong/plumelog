@@ -3,11 +3,10 @@ package com.plumelog.server.monitor;
 import com.alibaba.fastjson.JSON;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
-import com.plumelog.core.redis.RedisClient;
+import com.plumelog.core.redis.RedisClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,7 @@ public class PlumeLogMonitorRuleConfig {
     private static Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
 
     @Autowired
-    private RedisClient redisClient;
+    private RedisClientService redisClient;
 
     private static ConcurrentHashMap<String, List<WarningRule>> configMap = new ConcurrentHashMap<>();
 
