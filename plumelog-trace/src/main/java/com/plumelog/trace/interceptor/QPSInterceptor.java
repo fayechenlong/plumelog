@@ -14,20 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class QPSInterceptor extends HandlerInterceptorAdapter {
 
-    private NamedThreadLocal<StopWatch> stopWatchThreadLocal = new NamedThreadLocal<StopWatch>("ConsumeTime-StopWatch");
+    private static final ThreadLocal<StopWatch> stopWatchThreadLocal = new NamedThreadLocal<>("ConsumeTime-StopWatch");
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 调用url
         try {
-            String requestURI = request.getRequestURI();
-            QPSCalculatorHandler qpsCalculatorHandler = QPSCalculatorHandlerFactory.getHandler(requestURI);
-            qpsCalculatorHandler.record();
-
-            StopWatch stopWatch = new StopWatch(requestURI);
+            StopWatch stopWatch = new StopWatch("plumelog");
             stopWatchThreadLocal.set(stopWatch);
-            stopWatch.start(requestURI);
-
+            stopWatch.start("qps");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,12 +30,19 @@ public class QPSInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        String requestURI = request.getRequestURI();
-        final StopWatch stopWatch = stopWatchThreadLocal.get();
-        stopWatch.stop();
-        long totalTimeMillis =  stopWatch.getTotalTimeMillis();
+        try {
+            String requestURI = request.getRequestURI();
 
-        stopWatchThreadLocal.remove();
+            StopWatch stopWatch = stopWatchThreadLocal.get();
+            stopWatch.stop();
+            long totalTimeMillis = stopWatch.getTotalTimeMillis();
+            stopWatchThreadLocal.remove();
+
+            QPSCalculatorHandler qpsCalculatorHandler = QPSCalculatorHandlerFactory.getHandler(requestURI);
+            qpsCalculatorHandler.record(totalTimeMillis);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

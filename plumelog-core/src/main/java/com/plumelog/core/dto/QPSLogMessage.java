@@ -43,6 +43,21 @@ public class QPSLogMessage {
      */
     private long incr;
 
+    /**
+     * 最大处理时间
+     */
+    private long maxTime;
+
+    /**
+     * 最小处理时间
+     */
+    private long minTime;
+
+    /**
+     * 平均处理时间
+     */
+    private long avgTime;
+
 
     public String getMessageId() {
         return messageId;
@@ -98,5 +113,29 @@ public class QPSLogMessage {
 
     public void setIncr(long incr) {
         this.incr = incr;
+    }
+
+    public long getMaxTime() {
+        return maxTime;
+    }
+
+    public void setMaxTime(long maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    public long getMinTime() {
+        return minTime;
+    }
+
+    public void setMinTime(long minTime) {
+        this.minTime = minTime;
+    }
+
+    public long getAvgTime() {
+        return avgTime;
+    }
+
+    public void setAvgTime(long avgTime) {
+        this.avgTime = avgTime;
     }
 }

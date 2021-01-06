@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class QPSCalculatorHandler extends AbstractQPSHandler {
 
     /**
-     * 当下游异常的时候，暂存数据，最大5000条
+     * 当下游异常的时候，暂存数据
      */
     private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
 
@@ -60,7 +60,7 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
     private ReentrantLock enterNextBucketLock;
 
     /**
-     * 默认10个槽位，槽位的时间片为 1 秒
+     * 默认4个槽位，槽位的时间片为 1 秒
      */
     public QPSCalculatorHandler(String requestURI) {
         this(4, 1000);
@@ -92,14 +92,14 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
      * 取模 不同的桶
      * 进行累计
      */
-    public void record() {
+    public void record(Long totalTimeMillis) {
         threadPoolExecutor.execute(() -> {
             long passTime = System.currentTimeMillis();
             // 计算桶位置
             int targetBucketPosition = (int) (passTime / unitOfTimeSlice) % sizeOfBuckets;
             Bucket currentBucket = buckets[targetBucketPosition];
             // 计数 +1
-            currentBucket.pass(passTime);
+            currentBucket.pass(passTime, totalTimeMillis);
 
             if (passTime - this.latestPushTime >= pushTime) {
                 enterNextBucketLock.lock();
@@ -135,7 +135,14 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         qpsLogMessage.setAppName(ClientConfig.getAppName());
         qpsLogMessage.setServerName(ClientConfig.getServerName());
         qpsLogMessage.setRequestURI(requestURI);
-        qpsLogMessage.setIncr(bucket.countTotalPassed());
+        long incr = bucket.countTotalPassed();
+        qpsLogMessage.setIncr(incr);
+
+        qpsLogMessage.setMaxTime(bucket.getMaxTime());
+        qpsLogMessage.setMinTime(bucket.getMinTime());
+        long sumTime = bucket.countSumTime();
+        qpsLogMessage.setAvgTime(sumTime / incr);
+
         String dtTime = DateUtil.parseDateToStr(new Date(bucket.getLatestPassedTime()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS);
         qpsLogMessage.setDtTime(Long.valueOf(dtTime));
         String msg = GfJsonUtil.toJSONString(qpsLogMessage);
@@ -181,14 +188,38 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
          */
         private LongAdder longAdder;
 
+        /**
+         * 最大处理时间
+         */
+        private Long maxTime = 0L;
+
+        /**
+         * 最小处理时间
+         */
+        private Long minTime = 0L;
+
+        /**
+         * 请求处理时间合计
+         */
+        private LongAdder sumTime;
+
+
         public Bucket() {
             this.latestPassedTime = System.currentTimeMillis();
             this.longAdder = new LongAdder();
         }
 
-        public void pass(Long passTime) {
+        public void pass(Long passTime, Long totalTimeMillis) {
             longAdder.increment();
             this.latestPassedTime = passTime;
+            // 计算耗时
+            if (totalTimeMillis > maxTime) {
+                maxTime = totalTimeMillis;
+            }
+            if (totalTimeMillis < minTime) {
+                minTime = totalTimeMillis;
+            }
+            sumTime.add(totalTimeMillis);
         }
 
         public long countTotalPassed() {
@@ -203,6 +234,18 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
             // LongAdder的reset()性能很差，所以直接new新的对象
             this.longAdder = new LongAdder();
             this.latestPassedTime = System.currentTimeMillis();
+        }
+
+        public Long getMaxTime() {
+            return maxTime;
+        }
+
+        public Long getMinTime() {
+            return minTime;
+        }
+
+        public long countSumTime() {
+            return sumTime.sum();
         }
     }
 
