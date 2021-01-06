@@ -135,16 +135,17 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         qpsLogMessage.setAppName(ClientConfig.getAppName());
         qpsLogMessage.setServerName(ClientConfig.getServerName());
         qpsLogMessage.setRequestURI(requestURI);
-        long incr = bucket.countTotalPassed();
+        Long incr = bucket.countTotalPassed();
         qpsLogMessage.setIncr(incr);
 
         qpsLogMessage.setMaxTime(bucket.getMaxTime());
         qpsLogMessage.setMinTime(bucket.getMinTime());
-        long sumTime = bucket.countSumTime();
-        qpsLogMessage.setAvgTime(sumTime / incr);
+        Long sumTime = bucket.countSumTime();
+        if (incr > 0L) {
+            qpsLogMessage.setAvgTime(sumTime / incr);
+        }
 
-        String dtTime = DateUtil.parseDateToStr(new Date(bucket.getLatestPassedTime()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI_SS);
-        qpsLogMessage.setDtTime(Long.valueOf(dtTime));
+        qpsLogMessage.setDtTime(bucket.getLatestPassedTime());
         String msg = GfJsonUtil.toJSONString(qpsLogMessage);
         list.add(msg);
 
@@ -207,6 +208,7 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         public Bucket() {
             this.latestPassedTime = System.currentTimeMillis();
             this.longAdder = new LongAdder();
+            this.sumTime = new LongAdder();
         }
 
         public void pass(Long passTime, Long totalTimeMillis) {

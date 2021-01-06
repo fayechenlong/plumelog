@@ -31,6 +31,8 @@ public class AutoDeleteLogs {
     private int keepDays;
     @Value("${admin.log.trace.keepDays:0}")
     private int traceKeepDays;
+    @Value("${admin.log.qps.keepDays:0}")
+    private int qpsKeepDays;
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteLogs() {
         if (keepDays > 0) {
@@ -73,6 +75,21 @@ public class AutoDeleteLogs {
         } else {
             logger.info("unwanted delete logs");
         }
+        if (qpsKeepDays > 0) {
+            try {
+                logger.info("begin delete {} days ago logs!", qpsKeepDays);
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, -qpsKeepDays);
+                Date date = cal.getTime();
+                String traceLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_QPS + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
+                elasticLowerClient.deleteIndex(traceLogIndex);
+                logger.info("delete success! index:" + traceLogIndex);
+            } catch (Exception e) {
+                logger.error("delete logs error!", e);
+            }
+        } else {
+            logger.info("unwanted delete logs");
+        }
     }
     /**
      * 每天夜里11点自动创建第二天的索引
@@ -85,12 +102,13 @@ public class AutoDeleteLogs {
         if(InitConfig.ES_INDEX_MODEL.equals("day")){
             creatIndiceLog(IndexUtil.getRunLogIndex(date));
             creatIndiceTrace(IndexUtil.getTraceLogIndex(date));
+            creatIndiceQPS(IndexUtil.getQPSLogIndex(date));
         }else {
             for (int a = 0; a < 24; a++) {
                 String hour=String.format("%02d",a);
                 creatIndiceLog(IndexUtil.getRunLogIndex(date,hour));
                 creatIndiceTrace(IndexUtil.getTraceLogIndex(date,hour));
-
+                creatIndiceQPS(IndexUtil.getQPSLogIndex(date));
             }
         }
     }
@@ -100,6 +118,12 @@ public class AutoDeleteLogs {
         };
     }
     private void creatIndiceTrace(String index){
+        if(!elasticLowerClient.existIndice(index)){
+            elasticLowerClient.creatIndiceTrace(index,LogMessageConstant.ES_TYPE);
+        };
+    }
+
+    private void creatIndiceQPS(String index){
         if(!elasticLowerClient.existIndice(index)){
             elasticLowerClient.creatIndiceTrace(index,LogMessageConstant.ES_TYPE);
         };
