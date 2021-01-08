@@ -74,6 +74,11 @@
             <artifactId>groovy-all</artifactId>
             <version>2.4.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.11</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class RedisConfigDTO implements Serializable {
 
+    /** 配置id */
     private String configId;
     /**
      * redis 连接类型
@@ -82,9 +83,12 @@ public class RedisConfigDTO implements Serializable {
         this.masterName = masterName;
     }
 
-    public class RedisConfigHostAndPort{
+    public static class RedisConfigHostAndPort{
         private String host;
         private Integer port;
+
+        public RedisConfigHostAndPort() {
+        }
 
         public String getHost() {
             return host;

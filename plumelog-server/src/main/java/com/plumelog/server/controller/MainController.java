@@ -1,9 +1,13 @@
 package com.plumelog.server.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.plumelog.core.LogMessage;
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.RedisConfigDTO;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.dto.WarningRuleDto;
+import com.plumelog.core.enums.RedisClientEnum;
 import com.plumelog.core.redis.RedisClientFactory;
 import com.plumelog.core.redis.RedisClientService;
 import com.plumelog.core.util.GfJsonUtil;
@@ -11,11 +15,12 @@ import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.controller.vo.LoginVO;
+import com.plumelog.server.util.DateUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +33,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * className：MainController
@@ -289,4 +296,119 @@ public class MainController {
         //return redisClient.smembers(AppNameCache.APP_NAME_SET);
         return AppNameCache.appName;
     }
+
+    // redis config list
+    @RequestMapping({"/getRedisConfigs", "/plumelog/getRedisConfigs"})
+    public List<RedisConfigDTO> getRedisConfigs() {
+
+        String value = redisClient.get(LogMessageConstant.CONFIG_REDIS_SET);
+
+        if (value == null || "".equals(value)) {
+            return Lists.newArrayList();
+        }
+
+        List<RedisConfigDTO> redisConfigs = JSON.parseArray(value, RedisConfigDTO.class);
+
+        if (redisConfigs == null || redisConfigs.size() == 0) {
+            return Lists.newArrayList();
+        }
+
+        return redisConfigs;
+    }
+
+
+    /**
+     * configid 用时间戳
+     * 新增直接新增
+     * 修改-》根据configid删除原来的配置，然后新增新的配置
+     *
+     * 客户端更新：对比配置，她添加没有的配置，删除已经存在的配置
+     *
+     * @param dto
+     * @return
+     */
+    // save redis config
+    @RequestMapping({"/saveRedisConfig", "/plumelog/saveRedisConfig"})
+    public Result saveRedisConfig(@RequestBody RedisConfigDTO dto) {
+
+        Result verify = verify(dto);
+
+        if (!verify.getCode().equals(200)) {
+            return verify;
+        }
+
+        Result result = new Result();
+
+        List<RedisConfigDTO> redisConfigs = new ArrayList<>();
+
+        String value = redisClient.get(LogMessageConstant.CONFIG_REDIS_SET);
+
+        if (StringUtils.isNotEmpty(value)) {
+            List<RedisConfigDTO> configs = JSON.parseArray(value, RedisConfigDTO.class);
+
+            // 校验配置ID是否存在重复
+            if (configs != null && configs.size() > 0) {
+                redisConfigs = configs.stream().filter(r -> !r.getConfigId().equals(dto.getConfigId())).collect(Collectors.toList());
+            }
+        }
+        dto.setConfigId(DateUtil.parseDateToStr(new Date(), DateUtil.DATE_TIME_FORMAT_YYYYMMDDHHMISSSSS));
+
+        redisConfigs.add(dto);
+
+        redisClient.set(LogMessageConstant.CONFIG_REDIS_SET, JSON.toJSONString(redisConfigs));
+
+        result.setCode(200);
+        return result;
+    }
+
+    @RequestMapping({"/deleteRedisConfig", "/plumelog/deleteRedisConfig"})
+    public Result deleteRedisConfig(String configId) {
+
+        Result result = new Result();
+
+        List<RedisConfigDTO> redisConfigs = new ArrayList<>();
+
+        String value = redisClient.get(LogMessageConstant.CONFIG_REDIS_SET);
+
+        if (StringUtils.isNotEmpty(value)) {
+            List<RedisConfigDTO> configs = JSON.parseArray(value, RedisConfigDTO.class);
+
+            // 校验配置ID是否存在重复
+            if (configs != null && configs.size() > 0) {
+                redisConfigs = configs.stream().filter(r -> !r.getConfigId().equals(configId)).collect(Collectors.toList());
+            }
+        }
+
+        redisClient.set(LogMessageConstant.CONFIG_REDIS_SET, JSON.toJSONString(redisConfigs));
+
+        result.setCode(200);
+        return result;
+    }
+
+    private Result verify(RedisConfigDTO dto){
+        Result result = new Result();
+        result.setCode(5001);
+        if (dto == null) {
+            result.setMessage("参数不能为null");
+            return result;
+        }
+
+        if (!RedisClientEnum.single.getCode().equals(dto.getType())
+                && !RedisClientEnum.sentinel.getCode().equals(dto.getType())
+                && !RedisClientEnum.cluster.getCode().equals(dto.getType())) {
+            result.setMessage("类型不能为空");
+            return result;
+        }
+
+        if (dto.getHostAndPorts() == null
+                || dto.getHostAndPorts().size() == 0) {
+            result.setMessage("节点信息不能为空");
+            return result;
+        }
+
+        result.setCode(200);
+        return result;
+    }
+
+
 }

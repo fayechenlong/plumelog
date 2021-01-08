@@ -120,6 +120,10 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         });
     }
 
+    public void reset() {
+
+    }
+
     /**
      * push 记录
      *
@@ -235,6 +239,7 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         public void reset() {
             // LongAdder的reset()性能很差，所以直接new新的对象
             this.longAdder = new LongAdder();
+            this.sumTime = new LongAdder();
             this.latestPassedTime = System.currentTimeMillis();
         }
 
