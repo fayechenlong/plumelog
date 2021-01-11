@@ -7,6 +7,7 @@ import com.plumelog.core.exception.LogQueueConnectException;
 import redis.clients.jedis.HostAndPort;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * RedisClientFactory
@@ -17,24 +18,13 @@ import java.util.*;
 public class RedisClientFactory extends AbstractClient {
 
     private volatile static RedisClientFactory instance;
+    private RedisLogCollectService redisLogCollectService;
     private static HashMap<String, RedisClientService> map = new HashMap<>();
     public int maxNoPullTime = 30000;
     /**
      * 权重合计值
      */
     private int total = 0;
-
-    public static Object llen(String logKey) {
-        Long index = 0L;
-        for (Map.Entry<String, RedisClientService> entry : map.entrySet()) {
-            index += entry.getValue().llen(logKey);
-        }
-        return index;
-    }
-
-    public static void del(String logKey) {
-        map.forEach((k, v) -> v.del(logKey));
-    }
 
     private void RedisClientFactory() {
     }
@@ -49,6 +39,26 @@ public class RedisClientFactory extends AbstractClient {
             }
         }
         return instance;
+    }
+
+    public static Object llen(String logKey) {
+        Long index = 0L;
+        for (Map.Entry<String, RedisClientService> entry : map.entrySet()) {
+            index += entry.getValue().llen(logKey);
+        }
+        return index;
+    }
+
+    public static void del(String logKey) {
+        map.forEach((k, v) -> v.del(logKey));
+    }
+
+    public RedisClientService getRedisClientService(String configId) {
+        return map.get(configId);
+    }
+
+    public void setRedisLogCollectService(RedisLogCollectService redisLogCollectService) {
+        this.redisLogCollectService = redisLogCollectService;
     }
 
     @Override
@@ -70,10 +80,27 @@ public class RedisClientFactory extends AbstractClient {
         redisClient.putMessageList(key, list);
     }
 
+    public synchronized void regist(List<RedisConfigDTO> redisConfig) {
+        // 区分哪些需要下线，哪些需要注册
+        List<String> unRegists = new ArrayList<>();
+
+        // 注册
+        redisConfig.forEach(r -> registClient(r));
+
+        // 取消注册
+        List<String> keys = redisConfig.stream().map(r -> r.getConfigId()).collect(Collectors.toList());
+        map.forEach((k, v) -> {
+            if (!keys.contains(k)) {
+                unRegists.add(k);
+            }
+        });
+        unRegists.forEach(r -> unRegistClient(r));
+    }
+
     /**
      * 注册
      */
-    public synchronized void registClient(RedisConfigDTO redisConfig) {
+    public void registClient(RedisConfigDTO redisConfig) {
         // 1。校验是否存在
         if (map.containsKey(redisConfig.getConfigId())) {
             return;
@@ -121,26 +148,50 @@ public class RedisClientFactory extends AbstractClient {
     }
 
     /**
+     * 移除redis client
+     *
+     * @param configId
+     */
+    public void unRegistClient(String configId) {
+
+        // total权重减少
+        RedisClientService redisClientService = map.get(configId);
+        total -= redisClientService.getWeight();
+
+        // map中移除
+        map.remove(configId);
+
+        // 消费队列中数据
+        if (redisLogCollectService != null) {
+            new Thread(() -> redisLogCollectService.finallyCollect(redisClientService)).start();
+        }
+    }
+
+
+    /**
      * 获取客户端
      * 走负载策略
      *
      * @return
      */
     public RedisClientService getRedisClient() {
+        if (total == 0) {
+            return null;
+        }
         return randomWeight(total);
     }
 
     /**
      * 轮询
      */
-    public RedisClientService polling() {
+    private RedisClientService polling() {
         return null;
     }
 
     /**
      * 权重随机
      */
-    public RedisClientService randomWeight(int newTotal) {
+    private RedisClientService randomWeight(int newTotal) {
         // 权重随机
         Random random = new Random();
 
@@ -160,7 +211,7 @@ public class RedisClientFactory extends AbstractClient {
     /**
      * 动态权重路由
      */
-    public RedisClientService pollingSmoothWeight() {
+    private RedisClientService pollingSmoothWeight() {
 
         // 循环判断读取时间超过的时长,防止有些节点一只没有机会
 //        for (RedisClientService r : array) {

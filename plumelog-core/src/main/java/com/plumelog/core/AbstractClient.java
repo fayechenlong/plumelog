@@ -27,4 +27,7 @@ public abstract class AbstractClient {
     public static void setClient(AbstractClient abstractClient) {
         client = abstractClient;
     }
+
+
+
 }

@@ -44,10 +44,9 @@ public class RedisClientHandler {
             }
 
             // 注册redis client
-            redisConfigs.forEach(r -> {
-                RedisClientFactory instance = RedisClientFactory.getInstance();
-                instance.registClient(r);
-            });
+            RedisClientFactory instance = RedisClientFactory.getInstance();
+            instance.regist(redisConfigs);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
