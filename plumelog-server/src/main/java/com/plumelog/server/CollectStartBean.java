@@ -6,6 +6,7 @@ import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
 import com.plumelog.core.redis.RedisClientFactory;
+import com.plumelog.core.lang.PlumeShutdownHook;
 import com.plumelog.server.util.IndexUtil;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import java.util.Date;
  * @author frank.chen
  * @version 1.0.0
  */
-@Component
+@Component("collectStartBean")
 @Order(100)
 public class CollectStartBean implements InitializingBean {
     private static Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
@@ -51,6 +52,9 @@ public class CollectStartBean implements InitializingBean {
             RestLogCollect restLogCollect = new RestLogCollect(elasticLowerClient, applicationEventPublisher);
             restLogCollect.restStart();
         }
+
+        // 注册停机逻辑
+        PlumeShutdownHook.getPlumeShutdownHook().register();
     }
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -77,6 +81,7 @@ public class CollectStartBean implements InitializingBean {
             }
         }
     }
+
     private void creatIndiceLog(String index){
         if(!elasticLowerClient.existIndice(index)){
             elasticLowerClient.creatIndice(index,LogMessageConstant.ES_TYPE);
@@ -87,4 +92,5 @@ public class CollectStartBean implements InitializingBean {
             elasticLowerClient.creatIndiceTrace(index,LogMessageConstant.ES_TYPE);
         };
     }
+
 }

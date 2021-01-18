@@ -1,5 +1,6 @@
 package com.plumelog.server.collect;
 
+import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -9,6 +10,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * className：KafkaLogCollect
@@ -23,6 +25,7 @@ public class KafkaLogCollect extends BaseLogCollect {
     private KafkaConsumer<String, String> kafkaConsumer;
 
     public KafkaLogCollect(ElasticLowerClient elasticLowerClient, KafkaConsumer kafkaConsumer, ApplicationEventPublisher applicationEventPublisher) {
+        super();
         super.elasticLowerClient = elasticLowerClient;
         this.kafkaConsumer = kafkaConsumer;
         this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY, LogMessageConstant.LOG_KEY_TRACE));
@@ -32,45 +35,42 @@ public class KafkaLogCollect extends BaseLogCollect {
     }
 
     public void kafkaStart() {
-        threadPoolExecutor.execute(() -> collectRuningLog());
-
+        scheduled.scheduleWithFixedDelay(() -> collectRuningLog(), 3000, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
         logger.info("KafkaLogCollect is starting!");
     }
 
     public void collectRuningLog() {
-        while (true) {
-            List<String> logList = new ArrayList();
-            List<String> sendlogList = new ArrayList();
-            List<String> qpslogList = new ArrayList();
-            try {
-                ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
-                records.forEach(record -> {
-                    if(logger.isDebugEnabled()) {
-                        logger.debug("get log:" + record.value() + "  logType:" + record.topic());
-                    }
-                    if (record.topic().equals(LogMessageConstant.LOG_KEY)) {
-                        logList.add(record.value());
-                    }
-                    if (record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)) {
-                        sendlogList.add(record.value());
-                    }
-                    if (record.topic().equals(LogMessageConstant.QPS_KEY)) {
-                        qpslogList.add(record.value());
-                    }
-                });
-            } catch (Exception e) {
-                logger.error("get logs from kafka failed! ", e);
-            }
-            if (logList.size() > 0) {
-                super.sendLog(super.getRunLogIndex(), logList);
-                publisherMonitorEvent(logList);
-            }
-            if (sendlogList.size() > 0) {
-                super.sendTraceLogList(super.getTraceLogIndex(), sendlogList);
-            }
-            if (qpslogList.size() > 0) {
-                super.sendQPSLogList(super.getQPSIndex(), qpslogList);
-            }
+        List<String> logList = new ArrayList();
+        List<String> sendlogList = new ArrayList();
+        List<String> qpslogList = new ArrayList();
+        try {
+            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
+            records.forEach(record -> {
+                if(logger.isDebugEnabled()) {
+                    logger.debug("get log:" + record.value() + "  logType:" + record.topic());
+                }
+                if (record.topic().equals(LogMessageConstant.LOG_KEY)) {
+                    logList.add(record.value());
+                }
+                if (record.topic().equals(LogMessageConstant.LOG_KEY_TRACE)) {
+                    sendlogList.add(record.value());
+                }
+                if (record.topic().equals(LogMessageConstant.QPS_KEY)) {
+                    qpslogList.add(record.value());
+                }
+            });
+        } catch (Exception e) {
+            logger.error("get logs from kafka failed! ", e);
+        }
+        if (logList.size() > 0) {
+            super.sendLog(super.getRunLogIndex(), logList);
+            publisherMonitorEvent(logList);
+        }
+        if (sendlogList.size() > 0) {
+            super.sendTraceLogList(super.getTraceLogIndex(), sendlogList);
+        }
+        if (qpslogList.size() > 0) {
+            super.sendQPSLogList(super.getQPSIndex(), qpslogList);
         }
     }
 }

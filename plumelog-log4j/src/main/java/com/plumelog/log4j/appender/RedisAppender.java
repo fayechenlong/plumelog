@@ -3,6 +3,8 @@ package com.plumelog.log4j.appender;
 import com.plumelog.core.ClientConfig;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.lang.ShutdownHookCallback;
+import com.plumelog.core.lang.ShutdownHookCallbacks;
 import com.plumelog.core.redis.JedisPoolRedisClient;
 import com.plumelog.core.redis.RedisClientFactory;
 import com.plumelog.core.redis.RedisClientHandler;
@@ -83,8 +85,7 @@ public class RedisAppender extends AppenderSkeleton {
         this.threadPoolSize = threadPoolSize;
     }
 
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool();
+    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     @Override
     protected void append(LoggingEvent loggingEvent) {
         if (this.runModel != null) {
@@ -95,7 +96,13 @@ public class RedisAppender extends AppenderSkeleton {
         ClientConfig.setAppName(appName);
         ClientConfig.setServerName(IpGetter.CURRENT_IP);
 
-        //todo 通过配置中心，拉取redis相关配置
+        ShutdownHookCallbacks.INSTANCE.addCallback(new ShutdownHookCallback() {
+            @Override
+            public void execute() {
+                close();
+            }
+        });
+
         if (this.redisClient == null) {
             // 启动 handler
             RedisClientHandler redisClientHandler = new RedisClientHandler();
@@ -128,7 +135,7 @@ public class RedisAppender extends AppenderSkeleton {
 
     @Override
     public void close() {
-
+        threadPoolExecutor.shutdown();
     }
 
     @Override

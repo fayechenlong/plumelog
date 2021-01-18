@@ -3,6 +3,8 @@ package com.plumelog.core.redis;
 import com.alibaba.fastjson.JSON;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RedisConfigDTO;
+import com.plumelog.core.lang.ShutdownHookCallback;
+import com.plumelog.core.lang.ShutdownHookCallbacks;
 
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -23,6 +25,18 @@ public class RedisClientHandler {
     public void init(RedisClientService redisClientService) {
         this.redisClientService = redisClientService;
         scheduled.scheduleWithFixedDelay(() -> pullConfig(), 1, 30, TimeUnit.SECONDS);
+
+        // 添加回调
+        ShutdownHookCallbacks.INSTANCE.addCallback(new ShutdownHookCallback() {
+            @Override
+            public void execute() {
+                destroy();
+            }
+        });
+    }
+
+    private void destroy() {
+        scheduled.shutdownNow();
     }
 
     /**

@@ -3,6 +3,8 @@ package com.plumelog.log4j2.appender;
 import com.plumelog.core.ClientConfig;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.lang.ShutdownHookCallback;
+import com.plumelog.core.lang.ShutdownHookCallbacks;
 import com.plumelog.core.redis.JedisPoolRedisClient;
 import com.plumelog.core.redis.RedisClientFactory;
 import com.plumelog.core.redis.RedisClientHandler;
@@ -73,8 +75,12 @@ public class RedisAppender extends AbstractAppender {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool();
+    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
+
+    private static void destroy() {
+        threadPoolExecutor.shutdown();
+    }
+
     @PluginFactory
     public static RedisAppender createAppender(
             @PluginAttribute("name") String name,
@@ -98,6 +104,13 @@ public class RedisAppender extends AbstractAppender {
         ClientConfig.setNameSpance(namespance);
         ClientConfig.setAppName(appName);
         ClientConfig.setServerName(IpGetter.CURRENT_IP);
+
+        ShutdownHookCallbacks.INSTANCE.addCallback(new ShutdownHookCallback() {
+            @Override
+            public void execute() {
+                destroy();
+            }
+        });
 
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
