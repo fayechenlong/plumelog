@@ -16,11 +16,11 @@ public class NameThreadFactory implements ThreadFactory {
     private final AtomicInteger threadNumber = new AtomicInteger(1);
     private final String namePrefix;
 
-    NameThreadFactory() {
+    public NameThreadFactory() {
         this(ThreadName);
     }
 
-    NameThreadFactory(String threadName) {
+    public NameThreadFactory(String threadName) {
         threadName = threadName == "" ? ThreadName : threadName;
         SecurityManager s = System.getSecurityManager();
         group = (s != null) ? s.getThreadGroup() :

@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * className：RedisLogCollect
@@ -25,7 +26,7 @@ public class RestLogCollect extends BaseLogCollect {
     private String restUrl = "";
 
     public RestLogCollect(ElasticLowerClient elasticLowerClient, ApplicationEventPublisher applicationEventPublisher) {
-
+        super();
         this.restUserName = InitConfig.restUserName;
         this.restPassWord = InitConfig.restPassWord;
         this.restUrl = InitConfig.restUrl;
@@ -36,60 +37,52 @@ public class RestLogCollect extends BaseLogCollect {
 
     public void restStart() {
 
-        threadPoolExecutor.execute(() -> {
-            collectRuningLog();
-        });
-        threadPoolExecutor.execute(() -> {
-            collectTraceLog();
-        });
+        scheduled.scheduleWithFixedDelay(() -> collectRuningLog(), 3000, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
+        scheduled.scheduleWithFixedDelay(() -> collectTraceLog(), 3000, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
         logger.info("RestLogCollect is starting!");
     }
 
     private void collectRuningLog() {
-        while (true) {
-            List<String> logs = new ArrayList<>();
+        List<String> logs = new ArrayList<>();
 
-            try {
-                Thread.sleep(InitConfig.MAX_INTERVAL);
-            } catch (InterruptedException e) {
-                logger.error("", e);
-            }
-            try {
-                logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
-                if(logger.isDebugEnabled()){
-                    logs.forEach(log->{
-                        logger.debug(log);
-                    });
-                }
-            } catch (Exception e) {
-                logger.error("从plumelog-server拉取日志失败！", e);
-            }
-            //发布一个事件
-            super.sendLog(super.getRunLogIndex(),logs);
-            publisherMonitorEvent(logs);
+        try {
+            Thread.sleep(InitConfig.MAX_INTERVAL);
+        } catch (InterruptedException e) {
+            logger.error("", e);
         }
+        try {
+            logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
+            if(logger.isDebugEnabled()){
+                logs.forEach(log->{
+                    logger.debug(log);
+                });
+            }
+        } catch (Exception e) {
+            logger.error("从plumelog-server拉取日志失败！", e);
+        }
+        //发布一个事件
+        super.sendLog(super.getRunLogIndex(),logs);
+        publisherMonitorEvent(logs);
     }
 
     private void collectTraceLog() {
-        while (true) {
-            List<String> logs = new ArrayList<>();
-            try {
-                Thread.sleep(InitConfig.MAX_INTERVAL);
-            } catch (InterruptedException e) {
-                logger.error("", e);
-            }
-            try {
-                logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
-                if(logger.isDebugEnabled()){
-                    logs.forEach(log->{
-                        logger.debug(log);
-                    });
-                }
-            } catch (Exception e) {
-                logger.error("从plumelog-server队列拉取日志失败！", e);
-            }
-            super.sendLog(super.getTraceLogIndex(),logs);
+        List<String> logs = new ArrayList<>();
+        try {
+            Thread.sleep(InitConfig.MAX_INTERVAL);
+        } catch (InterruptedException e) {
+            logger.error("", e);
         }
+        try {
+            logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
+            if(logger.isDebugEnabled()){
+                logs.forEach(log->{
+                    logger.debug(log);
+                });
+            }
+        } catch (Exception e) {
+            logger.error("从plumelog-server队列拉取日志失败！", e);
+        }
+        super.sendLog(super.getTraceLogIndex(),logs);
     }
 
 }

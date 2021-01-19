@@ -3,7 +3,8 @@ package com.plumelog.server.collect;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.util.ThreadPoolUtil;
+import com.plumelog.core.lang.ShutdownHookCallback;
+import com.plumelog.core.lang.ShutdownHookCallbacks;
 import com.plumelog.server.monitor.PlumelogMonitorEvent;
 import com.plumelog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * className：BaseLogCollect
@@ -23,10 +24,33 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(BaseLogCollect.class);
-    public ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     public ScheduledThreadPoolExecutor scheduled = new ScheduledThreadPoolExecutor(4);
     public ElasticLowerClient elasticLowerClient;
     protected ApplicationEventPublisher applicationEventPublisher;
+    /**
+     * 响应停机标志
+     */
+    private static final AtomicBoolean destroyed = new AtomicBoolean(false);
+
+    public BaseLogCollect() {
+        // 添加回调
+        ShutdownHookCallbacks.INSTANCE.addCallback(new ShutdownHookCallback() {
+            @Override
+            public void execute() {
+                destroy();
+            }
+        });
+    }
+
+    /**
+     * 服务停止流程
+     */
+    public void destroy() {
+        if (destroyed.compareAndSet(false, true)) {
+            // 停止线程池
+            scheduled.shutdown();
+        }
+    }
 
     public String getRunLogIndex(){
         //todo 根据命名空间设置索引文件

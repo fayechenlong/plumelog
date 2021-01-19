@@ -78,48 +78,43 @@ public class MessageAppenderFactory {
     }
 
     public static void startRunLog(AbstractClient client,int maxCount) {
-        while (true) {
+        try {
+            List<String> logs = new ArrayList<>();
+            int count=rundataQueue.drainTo(logs, maxCount);
+            if(count>0) {
+                push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
+            }else{
+                String log=rundataQueue.take();
+                logs.add(log);
+                push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             try {
-                List<String> logs = new ArrayList<>();
-                int count=rundataQueue.drainTo(logs, maxCount);
-                if(count>0) {
-                    push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
-                }else{
-                    String log=rundataQueue.take();
-                    logs.add(log);
-                    push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                try {
-                    Thread.sleep(100);
-                }catch (InterruptedException interruptedException ){
+                Thread.sleep(100);
+            }catch (InterruptedException interruptedException ){
 
-                }
             }
         }
-
     }
 
     public static void startTraceLog(AbstractClient client,int maxCount) {
-        while (true) {
+        try {
+            List<String> logs = new ArrayList<>();
+            int count=tracedataQueue.drainTo(logs, maxCount);
+            if(count>0) {
+                push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
+            }else{
+                String log=tracedataQueue.take();
+                logs.add(log);
+                push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             try {
-                List<String> logs = new ArrayList<>();
-                int count=tracedataQueue.drainTo(logs, maxCount);
-                if(count>0) {
-                    push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
-                }else{
-                    String log=tracedataQueue.take();
-                    logs.add(log);
-                    push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                try {
-                    Thread.sleep(100);
-                }catch (InterruptedException interruptedException ){
+                Thread.sleep(100);
+            }catch (InterruptedException interruptedException ){
 
-                }
             }
         }
     }

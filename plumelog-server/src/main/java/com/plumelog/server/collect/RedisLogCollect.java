@@ -28,15 +28,16 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
     private RedisClientFactory redisClientFactory;
 
     public RedisLogCollect(ElasticLowerClient elasticLowerClient, RedisClientFactory redisClientFactory, ApplicationEventPublisher applicationEventPublisher) {
+        super();
         super.elasticLowerClient = elasticLowerClient;
         this.redisClientFactory = redisClientFactory;
         super.applicationEventPublisher = applicationEventPublisher;
     }
 
     public void redisStart() {
-        scheduled.scheduleWithFixedDelay(() -> collectRuningLog(), 1, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
-        scheduled.scheduleWithFixedDelay(() -> collectTraceLog(), 1, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
-        scheduled.scheduleWithFixedDelay(() -> collectQPSLog(), 1, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
+        scheduled.scheduleWithFixedDelay(() -> collectRuningLog(), 3000, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
+        scheduled.scheduleWithFixedDelay(() -> collectTraceLog(), 3000, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
+        scheduled.scheduleWithFixedDelay(() -> collectQPSLog(), 3000, InitConfig.MAX_INTERVAL, TimeUnit.MILLISECONDS);
         logger.info("RedisLogCollect is starting!");
     }
 

@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * className：ElasticLowerClient
@@ -36,7 +35,7 @@ import java.util.UUID;
  */
 public class ElasticLowerClient {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
-    private static ElasticLowerClient instance;
+    private volatile static ElasticLowerClient instance;
     private RestClient client;
 
     public static ElasticLowerClient getInstance(String hosts, String userName, String passWord) {
