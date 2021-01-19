@@ -30,10 +30,6 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.taobao.top</groupId>
             <artifactId>lippi-oapi-encrpt</artifactId>
             <version>dingtalk-SNAPSHOT</version>
@@ -144,6 +140,7 @@
                                         <exclude>**/*.xml</exclude>
                                         <exclude>**/*.conf</exclude>
                                         <exclude>**/*.properties</exclude>
+                                        <exclude>**/*.txt</exclude>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>
