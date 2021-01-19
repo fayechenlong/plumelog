@@ -329,15 +329,13 @@ public class MainController {
      */
     // save redis config
     @RequestMapping({"/saveRedisConfig", "/plumelog/saveRedisConfig"})
-    public Result saveRedisConfig(@RequestBody RedisConfigDTO dto) {
+    public Object saveRedisConfig(@RequestBody RedisConfigDTO dto) {
 
         Result verify = verify(dto);
 
         if (!verify.getCode().equals(200)) {
             return verify;
         }
-
-        Result result = new Result();
 
         List<RedisConfigDTO> redisConfigs = new ArrayList<>();
 
@@ -357,14 +355,13 @@ public class MainController {
 
         redisClient.set(LogMessageConstant.CONFIG_REDIS_SET, JSON.toJSONString(redisConfigs));
 
-        result.setCode(200);
-        return result;
+        Map<String, Object> object = new HashMap<>();
+        object.put("success",true);
+        return object;
     }
 
     @RequestMapping({"/deleteRedisConfig", "/plumelog/deleteRedisConfig"})
-    public Result deleteRedisConfig(String configId) {
-
-        Result result = new Result();
+    public Object deleteRedisConfig(String configId) {
 
         List<RedisConfigDTO> redisConfigs = new ArrayList<>();
 
@@ -381,8 +378,9 @@ public class MainController {
 
         redisClient.set(LogMessageConstant.CONFIG_REDIS_SET, JSON.toJSONString(redisConfigs));
 
-        result.setCode(200);
-        return result;
+        Map<String, Object> object = new HashMap<>();
+        object.put("success",true);
+        return object;
     }
 
     private Result verify(RedisConfigDTO dto){

@@ -9,6 +9,7 @@ import Expand from "../views/Expand.vue";
 import Errors from "../views/Errors.vue";
 import Login from "../views/Login.vue";
 import Qps from "../views/Qps.vue";
+import Redis from "../views/Redis.vue";
 
 Vue.use(VueRouter);
 
@@ -41,6 +42,10 @@ const routes = [
     path: "/qps",
     name: "Qps",
     component: Qps
+  },{
+    path: "/redis",
+    name: "Redis",
+    component: Redis
   },
   {
     path: "/expand",
