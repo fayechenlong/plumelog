@@ -61,6 +61,11 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
         } catch (LogQueueConnectException e) {
             logger.error("从redis队列拉取日志失败！", e);
         }
+
+        if (logs == null || logs.size() == 0) {
+            return;
+        }
+
         super.sendLog(super.getRunLogIndex(), logs);
         //发布一个事件
         publisherMonitorEvent(logs);
@@ -71,8 +76,11 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
 
         try {
             RedisClientService redisClient = redisClientFactory.getRedisClient();
+            if (redisClient == null) {
+                return;
+            }
             long startTime = System.currentTimeMillis();
-            logs = redisClientFactory.getRedisClient().getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
+            logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
             long endTime = System.currentTimeMillis();
             logger.info("TraceLog日志获取耗时：{}", endTime - startTime);
             if (logger.isDebugEnabled()) {
@@ -83,6 +91,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
         } catch (LogQueueConnectException e) {
             logger.error("从redis队列拉取日志失败！", e);
         }
+        if (logs == null || logs.size() == 0) {
+            return;
+        }
         super.sendTraceLogList(super.getTraceLogIndex(), logs);
     }
 
@@ -91,6 +102,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
 
         try {
             RedisClientService redisClient = redisClientFactory.getRedisClient();
+            if (redisClient == null) {
+                return;
+            }
             long startTime = System.currentTimeMillis();
             logs = redisClient.getMessage(LogMessageConstant.QPS_KEY, InitConfig.MAX_SEND_SIZE);
             long endTime = System.currentTimeMillis();
@@ -102,6 +116,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
             }
         } catch (LogQueueConnectException e) {
             logger.error("从redis队列拉取QPS日志失败！", e);
+        }
+        if (logs == null || logs.size() == 0) {
+            return;
         }
         super.sendQPSLogList(super.getQPSIndex(), logs);
     }

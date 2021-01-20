@@ -374,6 +374,12 @@ public class MainController {
             if (configs != null && configs.size() > 0) {
                 redisConfigs = configs.stream().filter(r -> !r.getConfigId().equals(configId)).collect(Collectors.toList());
             }
+
+            if (redisConfigs.size() == 0) {
+                Map<String, Object> object = new HashMap<>();
+                object.put("message","配置信息不为空");
+                return object;
+            }
         }
 
         redisClient.set(LogMessageConstant.CONFIG_REDIS_SET, JSON.toJSONString(redisConfigs));
