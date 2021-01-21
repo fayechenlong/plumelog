@@ -130,6 +130,12 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
     @Override
     public void finallyCollect(RedisClientService redisClient) {
 
+        try {
+            Thread.sleep(30000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         boolean logFlag = true;
         boolean traceFlag = true;
         boolean qpsFlag = true;
@@ -170,7 +176,7 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
 
             try {
                 long startTime = System.currentTimeMillis();
-                List<String> logs = redisClientFactory.getRedisClient().getMessage(LogMessageConstant.LOG_KEY_TRACE, 1000);
+                List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, 1000);
                 long endTime = System.currentTimeMillis();
                 logger.info("下线消费-TraceLog日志获取耗时：{}", endTime - startTime);
 

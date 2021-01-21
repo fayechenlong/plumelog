@@ -377,7 +377,7 @@ public class MainController {
 
             if (redisConfigs.size() == 0) {
                 Map<String, Object> object = new HashMap<>();
-                object.put("message","配置信息不为空");
+                object.put("message","最后一条配置信息不能删除");
                 return object;
             }
         }

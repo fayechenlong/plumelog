@@ -53,7 +53,7 @@
                     </Row>
                   </FormItem>
                   <FormItem label="密码">
-                    <Input v-model="dataInfo.password" placeholder="输入正则表达式"/>
+                    <Input v-model="dataInfo.password" placeholder="输入密码"/>
                   </FormItem>
                   <FormItem label="masterName">
                     <Input v-model="dataInfo.masterName" placeholder="输入哨兵masterName"/>
@@ -187,7 +187,7 @@ export default {
           if (data.data.success) {
             res();
           } else {
-            rej();
+            this.$Message.error('删除失败，' + data.data.message);
           }
         })
       })

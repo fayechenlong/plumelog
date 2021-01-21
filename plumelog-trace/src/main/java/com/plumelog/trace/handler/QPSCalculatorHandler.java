@@ -120,10 +120,6 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         });
     }
 
-    public void reset() {
-
-    }
-
     /**
      * push 记录
      *
@@ -171,10 +167,6 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         }
         // 重置
         bucket.reset();
-    }
-
-    public void shutdown() {
-
     }
 
     /**
