@@ -7,6 +7,9 @@
 
 [![star](https://gitee.com/frankchenlong/plumelog/badge/star.svg?theme=dark)](https://gitee.com/frankchenlong/plumelog/stargazers)
 [![fork](https://gitee.com/frankchenlong/plumelog/badge/fork.svg?theme=dark)](https://gitee.com/frankchenlong/plumelog/members)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
+
 ### 一.系统介绍
 
  1. 无入侵的分布式日志系统，基于log4j、log4j2、logback搜集日志，设置链路ID，方便查询关联日志
