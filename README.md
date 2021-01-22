@@ -1,5 +1,6 @@
 <p align="center" >
     <img src="https://gitee.com/frankchenlong/plumelog/raw/master/pic/icon.png" width="150">
+[![Fork me on Gitee](https://gitee.com/frankchenlong/plumelog/widgets/widget_1.svg)](https://gitee.com/frankchenlong/plumelog)
     <h3 align="center">Plumelog</h3>
     <p align="center">
         Plumelog一个简单易用的java分布式日志组件
@@ -9,7 +10,6 @@
 [![fork](https://gitee.com/frankchenlong/plumelog/badge/fork.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/members)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
-[![Fork me on Gitee](https://gitee.com/frankchenlong/plumelog/widgets/widget_1.svg)](https://gitee.com/frankchenlong/plumelog)
 ### 一.系统介绍
 
  1. 无入侵的分布式日志系统，基于log4j、log4j2、logback搜集日志，设置链路ID，方便查询关联日志
