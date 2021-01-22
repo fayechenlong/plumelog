@@ -228,17 +228,17 @@ export default {
         } else if (_range >= 1000 * 60 * 10) {
           return {
             format: 'MM-DD HH:mm:ss',
-            value: 1000 * 5
+            value: 1000 * 10
           }
         } else if (_range >= 1000 * 60 * 2) {
           return {
             format: 'MM-DD HH:mm:ss',
-            value: 1000
+            value: 1000 * 5
           }
         } else {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60 * 60
+            value: 1000
           }
         }
       }
@@ -258,13 +258,17 @@ export default {
         chart.resize();
       });
       chart.setOption({
-
+        title: {
+          text: this.selectedUri
+        },
         legend: {
           data: ['Qps', 'Max', 'Min', 'Avg']
         },
         grid: {
-          x: 70,
-          y: 10
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
         },
         tooltip: {
           formatter(p, ticket) {
@@ -286,7 +290,7 @@ export default {
                 avg = p[i].value ? p[i].value : 0
               }
             }
-            return '时间：' + date + '<br/>Qps：' + qps + '<br/>Max：' + max + '<br/>Min：' + min + '<br/>Avg：' + avg.toFixed(1)
+            return '时间：' + date + '<br/>Qps：' + qps + '<br/>Max：' + max + '<br/>Min：' + min + '<br/>Avg：' + avg
           },
           position: function (p) {   //其中p为当前鼠标的位置
             return [p[0] - 50, p[1] - 50];
@@ -323,19 +327,19 @@ export default {
           name: 'Max',
           type: 'line',
           data: _.map(data, (d) => {
-            return d.max_time.value
+            return d.max_time.value ? d.max_time.value : 0
           })
         },{
           name: 'Min',
           type: 'line',
           data: _.map(data, (d) => {
-            return d.min_time.value
+            return d.min_time.value ? d.min_time.value : 0
           })
         },{
           name: 'Avg',
           type: 'line',
           data: _.map(data, (d) => {
-            return d.avg_time.value
+            return d.avg_time.value ? d.avg_time.value.toFixed(1) : 0
           })
         }]
       })
