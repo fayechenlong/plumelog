@@ -1,5 +1,12 @@
- ![avatar](/pic/icon.png)
- # Plumelog一个简单易用的java分布式日志组件
+<p align="center" >
+    <img src="https://gitee.com/frankchenlong/plumelog/raw/master/pic/icon.png" width="150">
+    <h3 align="center">Plumelog</h3>
+    <p align="center">
+        Plumelog一个简单易用的java分布式日志组件
+</p>
+
+[![star](https://gitee.com/frankchenlong/plumelog/badge/star.svg?theme=dark)](https://gitee.com/frankchenlong/plumelog/stargazers)
+[![fork](https://gitee.com/frankchenlong/plumelog/badge/fork.svg?theme=dark)](https://gitee.com/frankchenlong/plumelog/members)
 ### 一.系统介绍
 
  1. 无入侵的分布式日志系统，基于log4j、log4j2、logback搜集日志，设置链路ID，方便查询关联日志
