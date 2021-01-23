@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Premain-Class: com.plumelog.agent.PlumelogAgent
+Can-Redefine-Classes: true
