@@ -4,7 +4,7 @@
     <div style="clear:both"></div>
     <div style="margin-top:10px" class="pnl_selectAppName">
       选择应用名称：
-      <Select style="width:200px" filterable v-model="search.appName" @on-change="getExtendList"  placeholder="选择应用名称">
+      <Select style="width:350px" filterable v-model="search.appName" @on-change="appNameChange"  placeholder="选择应用名称">
         <Option v-for="appName in appNameStore" :value="appName" :key="appName">{{ appName }}</Option>
       </Select>
       <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChangeHander" type="datetimerange"
@@ -37,15 +37,16 @@ export default {
       {
         title: 'URI',
         key: 'key',
-        ellipsis:true
+        width: 150,
+        tooltip: true
       },
       {
-        title: 'QPS',
+        title: 'QPS/MAX/MIN/AVG',
         key: 'key',
         ellipsis:true,
-        width: 80,
+        width: 200,
         render:  (h, r) => {
-          return h('span', r.row.avg_incr.value.toFixed(2))
+          return h('span', r.row.avg_incr.value.toFixed(1) + "/" + r.row.max_time.value + "/" + r.row.min_time.value + "/" + r.row.avg_time.value.toFixed(1))
         }
       },
     ]
@@ -88,6 +89,7 @@ export default {
       let now = new Date()
       let startDate = new Date(this.dateTimeRange[0]);
       let endDate = new Date(this.dateTimeRange[1]);
+
       if(endDate > now) {
         endDate = now
       }
@@ -105,32 +107,146 @@ export default {
                 "match": {
                   "requestURI": uri
                 }
+              },
+              {
+                "range": {
+                  "dtTime": {
+                    "gte": Date.parse(startDate),
+                    "lt": Date.parse(endDate),
+                  }
+                }
               }
-              // ,
-              // {
-              //   "match": {
-              //     "serverName": "10.102.126.17"
-              //   }
-              // }
             ]
           }
-          //,
-          // "range" : {
-          //     "dtTime" : {
-          //        "gte": Date.parse(startDate),
-          //         "lt": Date.parse(endDate),
-          //     }
-          // }
-        }
+        },
+        "aggs": {
+          "counts": {
+            "date_histogram": {
+              "field": "dtTime",
+              "interval": this.chartInterval().value,
+              "min_doc_count": 0
+            },
+            "aggs": {
+              "sum_incr": {
+                "sum": {
+                  "field": "incr"
+                }
+              },
+              "max_time": {
+                "max": {
+                  "field": "maxTime"
+                }
+              },
+              "min_time": {
+                "min": {
+                  "field": "minTime"
+                }
+              },
+              "avg_time": {
+                "avg": {
+                  "field": "avgTime"
+                }
+              }
+            }
+          }
+        },
+      "sort": [{
+          "dtTime":"asc"
+        }]
       }
 
       let q = "plume_log_qps_"  + '*' //+ moment().format("YYYYMMDD")
       axios.post(process.env.VUE_APP_API + '/query?index=' + q + '&from=0&size=100', query).then(data=> {
-        let hits = _.get(data, 'data.hits.hits', []).map(x => x._source);
+        let hits = _.get(data, 'data.aggregations.counts.buckets', []).map(x => x);
         this.drawQpsLine(hits)
       })
     },
+    chartInterval() {
+      if (this.dateTimeRange.length > 0) {
+        let start = new Date(this.dateTimeRange[0]);
+        let end = new Date(this.dateTimeRange[1]);
+        let now = new Date()
+        if(end > now) {
+          end = now
+        }
 
+        let _range = (end.getTime() - start.getTime());
+
+        //大于90天按照10天数据统计
+        if (_range > 1000 * 60 * 60 * 24 * 90) {
+          return {
+            format: 'MM-DD',
+            value: 1000 * 60 * 60 * 24 * 10
+          }
+        }
+        //大于30天按照每天数据统计
+        else if (_range >= 1000 * 60 * 60 * 24 * 30) {
+          return {
+            format: 'MM-DD',
+            value: 1000 * 60 * 60 * 24
+          }
+        }
+        //大于7天按照每小时数据统计
+        else if (_range >= 1000 * 60 * 60 * 24 * 7) {
+          return {
+            format: 'MM-DD',
+            value: 1000 * 60 * 60
+          }
+        }
+        //大于3天按照12小时进行统计
+        else if (_range >= 1000 * 60 * 60 * 24 * 3) {
+          return {
+            format: 'MM-DD HH:mm',
+            value: 1000 * 60 * 30
+          }
+        }
+        else if (_range >= 1000 * 60 * 60 * 24) {
+          return {
+            format: 'MM-DD HH:mm',
+            value: 1000 * 60 * 10
+          }
+        } else if (_range >= 1000 * 60 * 60 * 12) {
+          return {
+            format: 'MM-DD HH:mm',
+            value: 1000 * 60 * 5
+          }
+        } else if (_range >= 1000 * 60 * 60 * 6) {
+          return {
+            format: 'MM-DD HH:mm',
+            value: 1000 * 60 * 3
+          }
+        } else if (_range >= 1000 * 60 * 60) {
+          return {
+            format: 'MM-DD HH:mm',
+            value: 1000 * 30
+          }
+        } else if (_range >= 1000 * 60 * 30) {
+          return {
+            format: 'MM-DD HH:mm:ss',
+            value: 1000 * 15
+          }
+        } else if (_range >= 1000 * 60 * 10) {
+          return {
+            format: 'MM-DD HH:mm:ss',
+            value: 1000 * 10
+          }
+        } else if (_range >= 1000 * 60 * 2) {
+          return {
+            format: 'MM-DD HH:mm:ss',
+            value: 1000 * 5
+          }
+        } else {
+          return {
+            format: 'MM-DD HH:mm',
+            value: 1000
+          }
+        }
+      }
+      return {
+        format: 'MM-DD',
+        value: 1000 * 60 * 60 * 24 * 10
+      }
+    },
     drawQpsLine(data) {
       let chart = this.$echarts.init(document.getElementById('qps'))
       if (data.length == 0) {
@@ -142,22 +258,49 @@ export default {
         chart.resize();
       });
       chart.setOption({
+        title: {
+          text: this.selectedUri
+        },
+        legend: {
+          data: ['Qps', 'Max', 'Min', 'Avg']
+        },
         grid: {
-          x: 70,
-          y: 10
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
         },
         tooltip: {
           formatter(p, ticket) {
-            return '时间：' + p.name + '<br/>Qps：' + p.value
+            let date = "";
+            let qps = "";
+            let max = "";
+            let min = "";
+            let avg = "";
+
+            for (let i = 0; i < p.length; i++) {
+              if (p[i].seriesName == 'Qps') {
+                date = p[i].name
+                qps = p[i].value ? p[i].value : 0
+              } else if (p[i].seriesName == 'Max') {
+                max = p[i].value ? p[i].value : 0
+              } else if (p[i].seriesName == 'Min') {
+                min = p[i].value ? p[i].value : 0
+              } else if (p[i].seriesName == 'Avg') {
+                avg = p[i].value ? p[i].value : 0
+              }
+            }
+            return '时间：' + date + '<br/>Qps：' + qps + '<br/>Max：' + max + '<br/>Min：' + min + '<br/>Avg：' + avg
           },
           position: function (p) {   //其中p为当前鼠标的位置
             return [p[0] - 50, p[1] - 50];
           },
-          extraCssText: 'text-align:left'
+          extraCssText: 'text-align:left',
+          trigger: 'axis'
         },
         xAxis: {
           data: _.map(data, (d) => {
-            return d.dtTime
+            return moment(d.key).format('MM-DD HH:mm:ss')
           }),
           axisLabel: {
             fontSize: 12,
@@ -178,12 +321,26 @@ export default {
           name: 'Qps',
           type: 'line',
           data: _.map(data, (d) => {
-            return d.incr
-          }),
-          itemStyle: {
-            borderColor: 'rgb(110, 173, 193)',
-            color: 'rgba(110, 173, 193,0.6)'
-          }
+            return d.sum_incr.value
+          })
+        },{
+          name: 'Max',
+          type: 'line',
+          data: _.map(data, (d) => {
+            return d.max_time.value ? d.max_time.value : 0
+          })
+        },{
+          name: 'Min',
+          type: 'line',
+          data: _.map(data, (d) => {
+            return d.min_time.value ? d.min_time.value : 0
+          })
+        },{
+          name: 'Avg',
+          type: 'line',
+          data: _.map(data, (d) => {
+            return d.avg_time.value ? d.avg_time.value.toFixed(1) : 0
+          })
         }]
       })
     },
@@ -205,6 +362,15 @@ export default {
                 "aggs": {
                   "avg_incr": {
                     "avg": { "field": "incr" }
+                  },
+                  "max_time": {
+                    "max": { "field": "maxTime" }
+                  },
+                  "min_time": {
+                    "min": { "field": "minTime" }
+                  },
+                  "avg_time": {
+                    "avg": { "field": "avgTime" }
                   }
                 }
               }

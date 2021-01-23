@@ -23,7 +23,6 @@ public class QPSInterceptor extends HandlerInterceptorAdapter {
             stopWatchThreadLocal.set(stopWatch);
             stopWatch.start("qps");
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return true;
     }
@@ -41,7 +40,6 @@ public class QPSInterceptor extends HandlerInterceptorAdapter {
             QPSCalculatorHandler qpsCalculatorHandler = QPSCalculatorHandlerFactory.getHandler(requestURI);
             qpsCalculatorHandler.record(totalTimeMillis);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

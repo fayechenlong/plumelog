@@ -1,6 +1,7 @@
 package com.plumelog.demo;
 
 import com.plumelog.core.TraceId;
+import com.plumelog.core.lang.PlumeShutdownHook;
 import com.plumelog.core.util.IdWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,5 +46,6 @@ public class CustomFilter implements Filter {
     @Override
     public void destroy() {
         logger.info("destroy ============");
+        PlumeShutdownHook.destroyAll();
     }
 }

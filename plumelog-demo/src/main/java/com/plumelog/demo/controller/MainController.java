@@ -1,6 +1,5 @@
 package com.plumelog.demo.controller;
 
-import com.plumelog.core.TraceId;
 import com.plumelog.core.TraceIdGenerator;
 import com.plumelog.demo.service.MainService;
 import com.plumelog.trace.annotation.Trace;
@@ -10,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Random;
+
 @RestController
 public class MainController {
     private static org.slf4j.Logger logger= LoggerFactory.getLogger(MainController.class);
@@ -18,11 +19,21 @@ public class MainController {
 
     @RequestMapping("/index")
     @Trace
-    public String index(String data) {
+    public String index(String data) throws Exception {
         logger.info("I am MainController" + System.getProperty("user.home"));
         if(data==null||"".equals(data)){
             data="你啥都没有输入！";
         }
+
+        Random random = new Random();
+        int i = random.nextInt(500);
+
+        try {
+            Thread.sleep(i);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         logger.info("你输入的是{}",data);
         mainService.testLog(data);
         return data;
