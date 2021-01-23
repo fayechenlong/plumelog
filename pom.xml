@@ -27,6 +27,7 @@
         <module>plumelog-trace</module>
         <module>plumelog-demo-dubbo</module>
         <module>plumelog-rest</module>
+        <module>plumelog-agent</module>
     </modules>
     <name>plumelog</name>
     <distributionManagement>
