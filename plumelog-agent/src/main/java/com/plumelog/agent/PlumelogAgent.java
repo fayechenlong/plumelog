@@ -8,11 +8,41 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 
+import java.io.*;
 import java.lang.instrument.Instrumentation;
+import java.util.Enumeration;
+import java.util.Properties;
 
+/**
+ * className：PlumelogAgent
+ * description：PlumelogAgent 基类
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class PlumelogAgent {
 
     public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println(System.getProperty("user.dir"));
+        Properties pps = new Properties();
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(new FileReader("agent.properties"));
+            pps.load(bufferedReader);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        RedisConfig.appName = pps.getProperty("appName");
+        RedisConfig.redisHost = pps.getProperty("redisHost");
+        RedisConfig.redisAuth = pps.getProperty("redisAuth");
+        RedisConfig.redisDb = Integer.parseInt(pps.getProperty("redisDb"));
+        RedisConfig.expand = pps.getProperty("expand");
+        RedisConfig.runModel = pps.getProperty("runModel");
+        RedisConfig.maxCount = Integer.parseInt(pps.getProperty("maxCount"));
+        RedisConfig.logQueueSize = Integer.parseInt(pps.getProperty("logQueueSize"));
+        RedisConfig.threadPoolSize = Integer.parseInt(pps.getProperty("threadPoolSize"));
+
         AgentBuilder.Transformer transformer = new AgentBuilder.Transformer() {
             @Override
             public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder,
@@ -46,6 +76,6 @@ public class PlumelogAgent {
                 .transform(transformer)
                 .with(listener)
                 .installOn(inst);
-        System.out.println("logagent start!");
+        System.out.println("logAgent start!");
     }
 }

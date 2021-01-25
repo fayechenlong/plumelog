@@ -10,7 +10,13 @@ import org.slf4j.impl.StaticLoggerBinder;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
-
+/**
+ * className：LogInterceptor
+ * description：日志配置探针拦截
+ *
+ * @author Frank.chen
+ * @version 1.0.0
+ */
 public class LogInterceptor {
     @RuntimeType
     public static Object intercept(@Origin Method method, @SuperCall Callable<?> callable) throws Exception {
@@ -19,15 +25,21 @@ public class LogInterceptor {
         } finally {
             LoggerContext lc = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
             RedisAppender redisAppender = new RedisAppender();
-            redisAppender.setAppName("agent");
-            redisAppender.setRedisHost("10.100.2.54");
-            redisAppender.setRedisPort("6379");
-            redisAppender.setRedisAuth("plumelogredis");
+            redisAppender.setAppName(RedisConfig.appName);
+            redisAppender.setRedisHost(RedisConfig.redisHost);
+            redisAppender.setRedisPort(RedisConfig.redisPort);
+            redisAppender.setRedisAuth(RedisConfig.redisAuth);
+            redisAppender.setRedisDb(RedisConfig.redisDb);
+            redisAppender.setRunModel(RedisConfig.runModel);
+            redisAppender.setExpand(RedisConfig.expand);
+            redisAppender.setLogQueueSize(RedisConfig.logQueueSize);
+            redisAppender.setMaxCount(RedisConfig.maxCount);
+            redisAppender.setThreadPoolSize(RedisConfig.threadPoolSize);
             redisAppender.setContext(lc);
             redisAppender.setName("redisAppender");
             redisAppender.start();
             lc.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(redisAppender);
-            System.out.println("初始化日志");
+            System.out.println("redisAppender load success!");
         }
     }
 }
