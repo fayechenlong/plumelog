@@ -141,12 +141,8 @@ public class RedisAppender extends AbstractAppender {
         MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
         MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
         for(int a=0;a<threadPoolSize;a++){
-            threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.startRunLog(redisClient,count);
-            });
-            threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.startTraceLog(redisClient,count);
-            });
+            threadPoolExecutor.execute(()-> MessageAppenderFactory.startRunLog(redisClient, count));
+            threadPoolExecutor.execute(()-> MessageAppenderFactory.startTraceLog(redisClient, count));
         }
         return new RedisAppender(name, namespance, appName, redisHost, redisPort,redisAuth,runModel, filter, layout, true,expand,maxCount,logQueueSize,redisDb,threadPoolSize);
     }

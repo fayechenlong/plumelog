@@ -14,12 +14,11 @@ import com.plumelog.core.redis.RedisClientFactory;
 import com.plumelog.core.redis.RedisClientHandler;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.IpGetter;
-import com.plumelog.core.util.NameThreadFactory;
+import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.logback.util.LogMessageUtil;
 
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * className：RedisAppender
@@ -102,7 +101,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         }
     }
 
-    private static ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(4, new NameThreadFactory("RedisAppender"));
+    ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
 
     public void destroy() {
         threadPoolExecutor.shutdownNow();
@@ -129,7 +128,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         if (this.expand != null && LogMessageConstant.EXPANDS.contains(this.expand)) {
             LogMessageConstant.EXPAND = this.expand;
         }
-        //todo client启动入口
+
         if (this.redisClient == null) {
             // 启动 handler
             RedisClientHandler redisClientHandler = new RedisClientHandler();
@@ -146,17 +145,13 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         if (MessageAppenderFactory.rundataQueue == null) {
             MessageAppenderFactory.rundataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
             for (int a = 0; a < this.threadPoolSize; a++) {
-                threadPoolExecutor.scheduleWithFixedDelay(() -> {
-                    MessageAppenderFactory.startRunLog(this.redisClient, this.maxCount);
-                },1, 100, TimeUnit.MILLISECONDS);
+                threadPoolExecutor.execute(() -> MessageAppenderFactory.startRunLog(this.redisClient, this.maxCount));
             }
         }
         if (MessageAppenderFactory.tracedataQueue == null) {
             MessageAppenderFactory.tracedataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
             for (int a = 0; a < this.threadPoolSize; a++) {
-                threadPoolExecutor.scheduleWithFixedDelay(() -> {
-                    MessageAppenderFactory.startTraceLog(this.redisClient, this.maxCount);
-                },1, 100, TimeUnit.MILLISECONDS);
+                threadPoolExecutor.execute(() -> MessageAppenderFactory.startTraceLog(this.redisClient, this.maxCount));
             }
         }
     }
