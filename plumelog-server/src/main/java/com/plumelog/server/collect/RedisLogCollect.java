@@ -52,7 +52,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
             long startTime = System.currentTimeMillis();
             logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
             long endTime = System.currentTimeMillis();
-            logger.info("RuningLog日志获取耗时：{}", endTime - startTime);
+            if(logs.size()>0) {
+                logger.info("RuningLog日志获取耗时：{} 条数：{}", endTime - startTime,logs.size());
+            }
             if (logger.isDebugEnabled()) {
                 logs.forEach(log -> {
                     logger.debug(log);
@@ -82,7 +84,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
             long startTime = System.currentTimeMillis();
             logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
             long endTime = System.currentTimeMillis();
-            logger.info("TraceLog日志获取耗时：{}", endTime - startTime);
+            if(logs.size()>0) {
+                logger.info("TraceLog日志获取耗时：{} 条数：", endTime - startTime,logs.size());
+            }
             if (logger.isDebugEnabled()) {
                 logs.forEach(log -> {
                     logger.debug(log);
@@ -108,7 +112,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
             long startTime = System.currentTimeMillis();
             logs = redisClient.getMessage(LogMessageConstant.QPS_KEY, InitConfig.MAX_SEND_SIZE);
             long endTime = System.currentTimeMillis();
-            logger.info("RuningQPS日志获取耗时：{}", endTime - startTime);
+            if(logs.size()>0) {
+                logger.info("RuningQPS日志获取耗时：{} 条数：", endTime - startTime,logs.size());
+            }
             if (logger.isDebugEnabled()) {
                 logs.forEach(log -> {
                     logger.debug(log);
@@ -151,7 +157,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
                 long startTime = System.currentTimeMillis();
                 List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, 1000);
                 long endTime = System.currentTimeMillis();
-                logger.info("下线消费-RuningLog日志获取耗时：{}", endTime - startTime);
+                if(logs.size()>0) {
+                    logger.info("下线消费-RuningLog日志获取耗时：{} 条数：", endTime - startTime,logs.size());
+                }
                 redisClient.setLatestPullTime(endTime);
 
                 super.sendLog(super.getRunLogIndex(), logs);
@@ -178,8 +186,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
                 long startTime = System.currentTimeMillis();
                 List<String> logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, 1000);
                 long endTime = System.currentTimeMillis();
-                logger.info("下线消费-TraceLog日志获取耗时：{}", endTime - startTime);
-
+                if(logs.size()>0) {
+                    logger.info("下线消费-TraceLog日志获取耗时：{} 条数：", endTime - startTime,logs.size());
+                }
                 super.sendTraceLogList(super.getTraceLogIndex(), logs);
 
                 if (logs.size() == 0) {
@@ -201,8 +210,9 @@ public class RedisLogCollect extends BaseLogCollect implements RedisLogCollectSe
                 long startTime = System.currentTimeMillis();
                 List<String> logs = redisClient.getMessage(LogMessageConstant.QPS_KEY, 1000);
                 long endTime = System.currentTimeMillis();
-                logger.info("下线消费-RuningQPS日志获取耗时：{}", endTime - startTime);
-
+                if(logs.size()>0) {
+                    logger.info("下线消费-RuningQPS日志获取耗时：{} 条数：", endTime - startTime,logs.size());
+                }
                 super.sendQPSLogList(super.getQPSIndex(), logs);
 
                 if (logs.size() == 0) {
