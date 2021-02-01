@@ -68,8 +68,7 @@ public class KafkaAppender extends AppenderSkeleton {
         }
         if (this.kafkaClient == null) {
             this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
-            MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
-            MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
+            MessageAppenderFactory.initQueue(this.logQueueSize);
             for(int a=0;a<this.threadPoolSize;a++){
 
                 threadPoolExecutor.execute(()->{

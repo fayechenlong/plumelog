@@ -709,7 +709,7 @@ export default {
 
       this.list.hists = _.clone(this.list.hists);
       this.$nextTick(()=> {
-        sessionStorage['cache_showColumnTitles'] = JSON.stringify(this.showColumnTitles)
+        localStorage['cache_showColumnTitles'] = JSON.stringify(this.showColumnTitles)
         console.log(this.showColumnTitles)
       })
     },
@@ -1199,7 +1199,7 @@ export default {
       }
     },
     init() {
-      let titles = sessionStorage['cache_showColumnTitles'];
+      let titles = localStorage['cache_showColumnTitles'];
       if (titles) {
         this.$nextTick(() => {
           this.showColumnTitles = JSON.parse(titles)

@@ -18,11 +18,11 @@
     <!-- easylog日志 -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plumelog-test</appName>
-        <redisHost>r-bp1kezjza7dl3lveqf.redis.rds.aliyuncs.com</redisHost>
+        <redisHost>127.0.0.1</redisHost>
         <redisPort>6379</redisPort>
         <redisAuth>Plumelog666</redisAuth>
         <maxCount>100</maxCount>
-        <logQueueSize>100000</logQueueSize>
+        <logQueueSize>10</logQueueSize>
         <runModel>2</runModel>
     </appender>
 
