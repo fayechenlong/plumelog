@@ -146,14 +146,14 @@
 
 #### （2）项目使用
 
-#### 推荐使用logback,特别是springboot，springcloud项目
+#### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本
 
    （1）如果项目使用的log4j，引入
 ```xml
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j</artifactId>
-       <version>3.2</version>
+       <version>3.2.1</version>
    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -195,7 +195,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-logback</artifactId>
-       <version>3.2</version>
+       <version>3.2.1</version>
    </dependency>
 ```  
 * 配置
@@ -238,7 +238,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j2</artifactId>
-       <version>3.2</version>
+       <version>3.2.1</version>
    </dependency>       
 ```   
 * 配置
