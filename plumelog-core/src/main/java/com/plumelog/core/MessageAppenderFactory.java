@@ -34,7 +34,7 @@ public class MessageAppenderFactory {
     public static BlockingQueue<String> rundataQueue;
     public static BlockingQueue<String> tracedataQueue;
 
-    public static int queueSize=10000;
+    public static int queueSize = 10000;
 
     /**
      * 当下游异常的时候，状态缓存时间
@@ -43,42 +43,45 @@ public class MessageAppenderFactory {
             .expireAfterWrite(10, TimeUnit.SECONDS).build();
 
 
-    public static void initQueue(int logQueueSize){
-        queueSize=logQueueSize;
-        rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
-        tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
+    public static void initQueue(int logQueueSize) {
+        queueSize = logQueueSize;
+        rundataQueue = new LinkedBlockingQueue<>(logQueueSize);
+        tracedataQueue = new LinkedBlockingQueue<>(logQueueSize);
     }
 
     public static void push(BaseLogMessage baseLogMessage) {
         LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
         producer.send(baseLogMessage);
     }
+
     public static void pushRundataQueue(String message) {
-        if(message!=null) {
-            if(rundataQueue.size()<queueSize) {
+        if (message != null) {
+            if (rundataQueue.size() < queueSize) {
                 rundataQueue.add(message);
             }
         }
     }
 
     public static void pushTracedataQueue(String message) {
-        if(message!=null) {
-            if(tracedataQueue.size()<queueSize) {
+        if (message != null) {
+            if (tracedataQueue.size() < queueSize) {
                 tracedataQueue.add(message);
             }
         }
     }
-    public static void pushRundataQueue(String message,int size) {
-        if(message!=null) {
+
+    public static void pushRundataQueue(String message, int size) {
+        if (message != null) {
             rundataQueue.add(message);
         }
     }
 
-    public static void pushTracedataQueue(String message,int size) {
-        if(message!=null) {
+    public static void pushTracedataQueue(String message, int size) {
+        if (message != null) {
             tracedataQueue.add(message);
         }
     }
+
     public static void push(String redisKey, List<String> baseLogMessage, AbstractClient client, String logOutPutKey) {
         logOutPut = cache.getIfPresent(logOutPutKey);
         if (logOutPut == null || logOutPut) {
@@ -89,26 +92,19 @@ public class MessageAppenderFactory {
                 cache.put(logOutPutKey, false);
                 e.printStackTrace();
             }
-        }else {
-            if(redisKey.equals(LogMessageConstant.LOG_KEY)){
-                rundataQueue.addAll(baseLogMessage);
-            }
-            if(redisKey.equals(LogMessageConstant.LOG_KEY_TRACE)){
-                tracedataQueue.addAll(baseLogMessage);
-            }
         }
 
     }
 
-    public static void startRunLog(AbstractClient client,int maxCount) {
+    public static void startRunLog(AbstractClient client, int maxCount) {
         while (true) {
             try {
                 List<String> logs = new ArrayList<>();
-                int count=rundataQueue.drainTo(logs, maxCount);
-                if(count>0) {
+                int count = rundataQueue.drainTo(logs, maxCount);
+                if (count > 0) {
                     push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
-                }else{
-                    String log=rundataQueue.take();
+                } else {
+                    String log = rundataQueue.take();
                     logs.add(log);
                     push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
                 }
@@ -116,7 +112,7 @@ public class MessageAppenderFactory {
                 e.printStackTrace();
                 try {
                     Thread.sleep(1000);
-                }catch (InterruptedException interruptedException ){
+                } catch (InterruptedException interruptedException) {
 
                 }
             }
@@ -124,15 +120,15 @@ public class MessageAppenderFactory {
 
     }
 
-    public static void startTraceLog(AbstractClient client,int maxCount) {
+    public static void startTraceLog(AbstractClient client, int maxCount) {
         while (true) {
             try {
                 List<String> logs = new ArrayList<>();
-                int count=tracedataQueue.drainTo(logs, maxCount);
-                if(count>0) {
+                int count = tracedataQueue.drainTo(logs, maxCount);
+                if (count > 0) {
                     push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
-                }else{
-                    String log=tracedataQueue.take();
+                } else {
+                    String log = tracedataQueue.take();
                     logs.add(log);
                     push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
                 }
@@ -140,7 +136,7 @@ public class MessageAppenderFactory {
                 e.printStackTrace();
                 try {
                     Thread.sleep(1000);
-                }catch (InterruptedException interruptedException ){
+                } catch (InterruptedException interruptedException) {
 
                 }
             }
