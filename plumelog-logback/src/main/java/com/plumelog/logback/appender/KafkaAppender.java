@@ -29,9 +29,9 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private String kafkaHosts;
     private String runModel;
     private String expand;
-    private int maxCount=100;
-    private int logQueueSize=10000;
-    private int threadPoolSize=1;
+    private int maxCount = 100;
+    private int logQueueSize = 10000;
+    private int threadPoolSize = 1;
 
     public String getExpand() {
         return expand;
@@ -75,13 +75,15 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
+
     @Override
     public void start() {
         super.start();
-        if(this.runModel!=null){
-            LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        if (this.runModel != null) {
+            LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (this.kafkaClient == null) {
             this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
@@ -91,19 +93,15 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
         }
 
         MessageAppenderFactory.initQueue(this.logQueueSize);
-        if(MessageAppenderFactory.rundataQueue==null) {
-            for (int a = 0; a < this.threadPoolSize; a++) {
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startRunLog(this.kafkaClient, this.maxCount);
-                });
-            }
+        for (int a = 0; a < this.threadPoolSize; a++) {
+            threadPoolExecutor.execute(() -> {
+                MessageAppenderFactory.startRunLog(this.kafkaClient, this.maxCount);
+            });
         }
-        if(MessageAppenderFactory.tracedataQueue==null) {
-            for (int a = 0; a < this.threadPoolSize; a++) {
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startTraceLog(this.kafkaClient, this.maxCount);
-                });
-            }
+        for (int a = 0; a < this.threadPoolSize; a++) {
+            threadPoolExecutor.execute(() -> {
+                MessageAppenderFactory.startTraceLog(this.kafkaClient, this.maxCount);
+            });
         }
     }
 }
