@@ -107,8 +107,8 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
                             : Integer.parseInt(this.redisPort),
                     this.redisAuth,this.redisDb);
         }
+        MessageAppenderFactory.initQueue(this.logQueueSize);
         if(MessageAppenderFactory.rundataQueue==null) {
-            MessageAppenderFactory.rundataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
             for (int a = 0; a < this.threadPoolSize; a++) {
                 threadPoolExecutor.execute(() -> {
                     MessageAppenderFactory.startRunLog(this.redisClient, this.maxCount);
@@ -116,7 +116,6 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
             }
         }
         if(MessageAppenderFactory.tracedataQueue==null) {
-            MessageAppenderFactory.tracedataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
             for (int a = 0; a < this.threadPoolSize; a++) {
                 threadPoolExecutor.execute(() -> {
                     MessageAppenderFactory.startTraceLog(this.redisClient, this.maxCount);

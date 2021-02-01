@@ -34,11 +34,20 @@ public class MessageAppenderFactory {
     public static BlockingQueue<String> rundataQueue;
     public static BlockingQueue<String> tracedataQueue;
 
+    public static int queueSize=10000;
+
     /**
      * 当下游异常的时候，状态缓存时间
      */
     private final static Cache<String, Boolean> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(10, TimeUnit.SECONDS).build();
+
+
+    public static void initQueue(int logQueueSize){
+        queueSize=logQueueSize;
+        rundataQueue=new LinkedBlockingQueue<>(logQueueSize);
+        tracedataQueue=new LinkedBlockingQueue<>(logQueueSize);
+    }
 
     public static void push(BaseLogMessage baseLogMessage) {
         LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
@@ -46,16 +55,30 @@ public class MessageAppenderFactory {
     }
     public static void pushRundataQueue(String message) {
         if(message!=null) {
-            rundataQueue.add(message);
+            if(rundataQueue.size()<queueSize) {
+                rundataQueue.add(message);
+            }
         }
     }
 
     public static void pushTracedataQueue(String message) {
         if(message!=null) {
-            tracedataQueue.add(message);
+            if(tracedataQueue.size()<queueSize) {
+                tracedataQueue.add(message);
+            }
+        }
+    }
+    public static void pushRundataQueue(String message,int size) {
+        if(message!=null) {
+            rundataQueue.add(message);
         }
     }
 
+    public static void pushTracedataQueue(String message,int size) {
+        if(message!=null) {
+            tracedataQueue.add(message);
+        }
+    }
     public static void push(String redisKey, List<String> baseLogMessage, AbstractClient client, String logOutPutKey) {
         logOutPut = cache.getIfPresent(logOutPutKey);
         if (logOutPut == null || logOutPut) {
@@ -92,7 +115,7 @@ public class MessageAppenderFactory {
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 }catch (InterruptedException interruptedException ){
 
                 }
@@ -116,7 +139,7 @@ public class MessageAppenderFactory {
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 }catch (InterruptedException interruptedException ){
 
                 }
