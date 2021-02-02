@@ -55,19 +55,22 @@ public class RedisLogCollect extends BaseLogCollect {
                 long startTime=System.currentTimeMillis();
                 logs = redisClient.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
-                logger.info("RuningLog日志获取耗时：{}",endTime-startTime);
-                if(logger.isDebugEnabled()){
-                    logs.forEach(log-> logger.debug(log));
+                if(logs.size() > 0) {
+                    logger.info("RuningLog日志获取耗时：{}",endTime-startTime);
+                    if(logger.isDebugEnabled()){
+                        logs.forEach(log-> logger.debug(log));
+                    }
+                    // 解压缩
+                    logs = decompressor(logs);
+
+                    super.sendLog(super.getRunLogIndex(), logs);
+                    //发布一个事件
+                    publisherMonitorEvent(logs);
                 }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
-            // 解压缩
-            logs = decompressor(logs);
 
-            super.sendLog(super.getRunLogIndex(), logs);
-            //发布一个事件
-            publisherMonitorEvent(logs);
         }
     }
     private void collectTraceLog(String logKey) {
@@ -83,18 +86,20 @@ public class RedisLogCollect extends BaseLogCollect {
                 long startTime=System.currentTimeMillis();
                 logs = redisClient.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
-                logger.info("TraceLog日志获取耗时：{}",endTime-startTime);
-                if(logger.isDebugEnabled()){
-                    logs.forEach(log-> logger.debug(log));
+                if(logs.size()>0) {
+                    logger.info("TraceLog日志获取耗时：{}",endTime-startTime);
+                    if(logger.isDebugEnabled()){
+                        logs.forEach(log-> logger.debug(log));
+                    }
+
+                    // 解压缩
+                    logs = decompressor(logs);
+
+                    super.sendTraceLogList(super.getTraceLogIndex(), logs);
                 }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
-
-            // 解压缩
-            logs = decompressor(logs);
-
-            super.sendTraceLogList(super.getTraceLogIndex(), logs);
         }
     }
 

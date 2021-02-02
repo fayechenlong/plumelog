@@ -11,7 +11,6 @@ import com.plumelog.core.kafka.KafkaProducerClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -73,8 +72,7 @@ public class KafkaAppender extends AppenderSkeleton {
         }
         if (this.kafkaClient == null) {
             this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressionType);
-            MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
-            MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
+            MessageAppenderFactory.initQueue(this.logQueueSize);
             for(int a=0;a<this.threadPoolSize;a++){
 
                 threadPoolExecutor.execute(()->{

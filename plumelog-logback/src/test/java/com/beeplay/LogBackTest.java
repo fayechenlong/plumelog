@@ -17,11 +17,20 @@ public class LogBackTest {
      */
     public static void main(String[] args) {
 
-        for(int a=0;a<100;a++) {
-            try {
-                Thread.sleep(1000);
-            }catch (Exception e){}
+        for(int a=0;a<100000;a++) {
+//            try {
+//                Thread.sleep(1000);
+//            }catch (Exception e){}
             logger.error("1111");
         }
+
+        for(int a=0;a<100000;a++) {
+//            try {
+//                Thread.sleep(1000);
+//            }catch (Exception e){}
+            logger.error("2222");
+        }
+
+        System.out.println("执行成功！");
     }
 }

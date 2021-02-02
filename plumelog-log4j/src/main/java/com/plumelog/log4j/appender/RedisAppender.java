@@ -91,8 +91,7 @@ public class RedisAppender extends AppenderSkeleton {
                     LogMessageConstant.REDIS_DEFAULT_PORT
                     : Integer.parseInt(this.redisPort), this.redisAuth,this.redisDb);
 
-            MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
-            MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
+            MessageAppenderFactory.initQueue(this.logQueueSize);
             for(int a=0;a<this.threadPoolSize;a++){
 
                 threadPoolExecutor.execute(()->{

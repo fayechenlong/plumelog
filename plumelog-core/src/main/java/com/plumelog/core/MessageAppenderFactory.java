@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -37,24 +38,54 @@ public class MessageAppenderFactory {
     private static AtomicLong lastRunPushTime = new AtomicLong(0);
     private static AtomicLong lastTracePushTime = new AtomicLong(0);
 
+    public static int queueSize = 10000;
+
     /**
      * 当下游异常的时候，状态缓存时间
      */
     private final static Cache<String, Boolean> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(10, TimeUnit.SECONDS).build();
 
+
+    public static void initQueue(int logQueueSize) {
+        queueSize = logQueueSize;
+        if(rundataQueue==null) {
+            rundataQueue = new LinkedBlockingQueue<>(logQueueSize);
+        }
+        if(tracedataQueue==null) {
+            tracedataQueue = new LinkedBlockingQueue<>(logQueueSize);
+        }
+    }
+
     public static void push(BaseLogMessage baseLogMessage) {
         LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
         producer.send(baseLogMessage);
     }
+
     public static void pushRundataQueue(String message) {
-        if(message!=null) {
-            rundataQueue.add(message);
+        if (message != null) {
+            if (rundataQueue.size() < queueSize) {
+                rundataQueue.add(message);
+            }
         }
     }
 
     public static void pushTracedataQueue(String message) {
-        if(message!=null) {
+        if (message != null) {
+            if (tracedataQueue.size() < queueSize) {
+                tracedataQueue.add(message);
+            }
+        }
+    }
+
+    public static void pushRundataQueue(String message, int size) {
+        if (message != null) {
+            rundataQueue.add(message);
+        }
+    }
+
+    public static void pushTracedataQueue(String message, int size) {
+        if (message != null) {
             tracedataQueue.add(message);
         }
     }
@@ -101,7 +132,7 @@ public class MessageAppenderFactory {
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 } catch (InterruptedException interruptedException ){
                 }
             }
@@ -123,7 +154,7 @@ public class MessageAppenderFactory {
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 }catch (InterruptedException interruptedException ) {
 
                 }

@@ -10,7 +10,7 @@
             <!--<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />-->
         <!--</KafkaAppender>-->
 
-        <RedisAppender name="redisAppender" appName="plumelog_log4j2" redisHost="10.101.162.145" redisPort="6379">
+        <RedisAppender name="redisAppender" appName="plumelog_log4j2" redisHost="10.101.162.145" redisPort="6379" logQueueSize="10">
         </RedisAppender>
 
     </appenders>

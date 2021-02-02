@@ -8,12 +8,10 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
-import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.logback.util.LogMessageUtil;
 
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -29,9 +27,9 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private String kafkaHosts;
     private String runModel;
     private String expand;
-    private int maxCount=100;
-    private int logQueueSize=10000;
-    private int threadPoolSize=1;
+    private int maxCount = 100;
+    private int logQueueSize = 10000;
+    private int threadPoolSize = 1;
     private String compressionType = "none";
 
     public String getExpand() {
@@ -80,13 +78,15 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
+
     @Override
     public void start() {
         super.start();
-        if(this.runModel!=null){
-            LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        if (this.runModel != null) {
+            LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (this.kafkaClient == null) {
             this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressionType);
@@ -95,21 +95,16 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             LogMessageConstant.EXPAND = expand;
         }
 
-        if(MessageAppenderFactory.rundataQueue==null) {
-            MessageAppenderFactory.rundataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
-            for (int a = 0; a < this.threadPoolSize; a++) {
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startRunLog(this.kafkaClient, this.maxCount);
-                });
-            }
+        MessageAppenderFactory.initQueue(this.logQueueSize);
+        for (int a = 0; a < this.threadPoolSize; a++) {
+            threadPoolExecutor.execute(() -> {
+                MessageAppenderFactory.startRunLog(this.kafkaClient, this.maxCount);
+            });
         }
-        if(MessageAppenderFactory.tracedataQueue==null) {
-            MessageAppenderFactory.tracedataQueue = new LinkedBlockingQueue<>(this.logQueueSize);
-            for (int a = 0; a < this.threadPoolSize; a++) {
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startTraceLog(this.kafkaClient, this.maxCount);
-                });
-            }
+        for (int a = 0; a < this.threadPoolSize; a++) {
+            threadPoolExecutor.execute(() -> {
+                MessageAppenderFactory.startTraceLog(this.kafkaClient, this.maxCount);
+            });
         }
     }
 }
