@@ -30,6 +30,7 @@ public class KafkaAppender extends AppenderSkeleton {
     private int maxCount=100;
     private int logQueueSize=10000;
     private int threadPoolSize=1;
+    private String compressionType = "none";
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -59,6 +60,10 @@ public class KafkaAppender extends AppenderSkeleton {
         this.kafkaClient = kafkaClient;
     }
 
+    public void setCompressionType(String compressionType) {
+        this.compressionType = compressionType;
+    }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
     @Override
@@ -67,7 +72,7 @@ public class KafkaAppender extends AppenderSkeleton {
             LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
         }
         if (this.kafkaClient == null) {
-            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
+            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressionType);
             MessageAppenderFactory.rundataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
             MessageAppenderFactory.tracedataQueue=new LinkedBlockingQueue<>(this.logQueueSize);
             for(int a=0;a<this.threadPoolSize;a++){

@@ -33,6 +33,7 @@ public class RedisAppender extends AppenderSkeleton {
     private int maxCount=100;
     private int logQueueSize=10000;
     private int threadPoolSize=1;
+    private boolean compressor = false;
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -74,6 +75,10 @@ public class RedisAppender extends AppenderSkeleton {
         this.threadPoolSize = threadPoolSize;
     }
 
+    public void setCompressor(boolean compressor) {
+        this.compressor = compressor;
+    }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
     @Override
@@ -91,10 +96,12 @@ public class RedisAppender extends AppenderSkeleton {
             for(int a=0;a<this.threadPoolSize;a++){
 
                 threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.startRunLog(this.redisClient,maxCount);
+                    MessageAppenderFactory.startRunLog(this.redisClient,maxCount,
+                            this.compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY, this.compressor);
                 });
                 threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.startTraceLog(this.redisClient,maxCount);
+                    MessageAppenderFactory.startTraceLog(this.redisClient,maxCount,
+                            this.compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, this.compressor);
                 });
             }
         }

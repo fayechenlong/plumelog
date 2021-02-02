@@ -32,10 +32,14 @@ public class LogMessageConstant {
 
     public final static String LOG_KEY = "plume_log_list";
 
+    public final static String LOG_KEY_COMPRESS = "plume_log_list_compress";
+
     /**
      * 链路日志存入ES的索引后缀
      */
     public final static String LOG_KEY_TRACE = "plume_trace_list";
+
+    public final static String LOG_KEY_TRACE_COMPRESS = "plume_trace_list_compress";
 
     public final static String ES_INDEX = "plume_log_";
 

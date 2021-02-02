@@ -17,18 +17,18 @@ import java.util.List;
 public class KafkaProducerClient extends AbstractClient {
     private static KafkaProducerClient instance;
     private KafkaProducerPool kafkaProducerPool;
-    public static KafkaProducerClient getInstance(String hosts) {
+    public static KafkaProducerClient getInstance(String hosts, String compressionType) {
         if (instance == null) {
             synchronized (KafkaProducerClient.class) {
                 if (instance == null) {
-                    instance = new KafkaProducerClient(hosts);
+                    instance = new KafkaProducerClient(hosts, compressionType);
                 }
             }
         }
         return instance;
     }
-    private KafkaProducerClient(String hosts){
-        this.kafkaProducerPool=new KafkaProducerPool(hosts);
+    private KafkaProducerClient(String hosts, String compressionType){
+        this.kafkaProducerPool = new KafkaProducerPool(hosts, compressionType);
     }
     @Override
     public void pushMessage(String topic, String message) throws LogQueueConnectException {

@@ -19,12 +19,13 @@ import java.util.Properties;
  */
 public class KafkaProducerFactory implements PooledObjectFactory<KafkaProducer> {
     private Properties props=new Properties();
-    KafkaProducerFactory(String hosts){
+    KafkaProducerFactory(String hosts, String compressionType){
         this.props.put(ProducerConfig.ACKS_CONFIG, "0");
         this.props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
         this.props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         this.props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         this.props.put(ProducerConfig.LINGER_MS_CONFIG,10);
+        this.props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, compressionType);
     }
     @Override
     public void activateObject(PooledObject<KafkaProducer> kafkaProducer) throws Exception {

@@ -1,7 +1,11 @@
 package com.plumelog.server.collect;
 
 
+import com.alibaba.fastjson.JSON;
+import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.exception.LogQueueConnectException;
+import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.LZ4Util;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
@@ -22,25 +26,23 @@ import java.util.List;
 public class RedisLogCollect extends BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(RedisLogCollect.class);
     private RedisClient redisClient;
+    private boolean compressor;
 
-    public RedisLogCollect(ElasticLowerClient elasticLowerClient, RedisClient redisClient, ApplicationEventPublisher applicationEventPublisher) {
+    public RedisLogCollect(ElasticLowerClient elasticLowerClient, RedisClient redisClient, ApplicationEventPublisher applicationEventPublisher, boolean compressor) {
         super.elasticLowerClient = elasticLowerClient;
         this.redisClient = redisClient;
         super.applicationEventPublisher = applicationEventPublisher;
+        this.compressor = compressor;
     }
 
     public void redisStart() {
 
-        threadPoolExecutor.execute(() -> {
-            collectRuningLog();
-        });
-        threadPoolExecutor.execute(() -> {
-            collectTraceLog();
-        });
+        threadPoolExecutor.execute(() -> collectRuningLog(compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY));
+        threadPoolExecutor.execute(() -> collectTraceLog(compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE));
         logger.info("RedisLogCollect is starting!");
     }
 
-    private void collectRuningLog() {
+    private void collectRuningLog(String logKey) {
         while (true) {
             List<String> logs = new ArrayList<>();
 
@@ -51,23 +53,24 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 long startTime=System.currentTimeMillis();
-                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
+                logs = redisClient.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
                 logger.info("RuningLog日志获取耗时：{}",endTime-startTime);
                 if(logger.isDebugEnabled()){
-                logs.forEach(log->{
-                    logger.debug(log);
-                });
+                    logs.forEach(log-> logger.debug(log));
                 }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
+            // 解压缩
+            logs = decompressor(logs);
+
             super.sendLog(super.getRunLogIndex(), logs);
             //发布一个事件
             publisherMonitorEvent(logs);
         }
     }
-    private void collectTraceLog() {
+    private void collectTraceLog(String logKey) {
         while (true) {
             List<String> logs = new ArrayList<>();
 
@@ -78,18 +81,44 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 long startTime=System.currentTimeMillis();
-                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
+                logs = redisClient.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
                 logger.info("TraceLog日志获取耗时：{}",endTime-startTime);
                 if(logger.isDebugEnabled()){
-                    logs.forEach(log->{
-                        logger.debug(log);
-                    });
+                    logs.forEach(log-> logger.debug(log));
                 }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
             }
+
+            // 解压缩
+            logs = decompressor(logs);
+
             super.sendTraceLogList(super.getTraceLogIndex(), logs);
         }
     }
+
+    private List<String> decompressor(List<String> logs) {
+
+        if (!compressor) {
+            return logs;
+        }
+
+        List<String> list = new ArrayList<>();
+        if (logs != null && logs.size() > 0) {
+            logs.forEach(r -> {
+                try {
+                    RunLogCompressMessage message = JSON.parseObject(r, RunLogCompressMessage.class);
+                    byte[] bytes = LZ4Util.decompressorByte(message.getBody(), message.getLength());
+                    String json = new String(bytes);
+                    list.addAll(GfJsonUtil.parseArray(json, String.class));
+                } catch (Exception e) {
+                    logger.error("解析日志失败！", e);
+                }
+            });
+        }
+        return list;
+    }
+
+
 }

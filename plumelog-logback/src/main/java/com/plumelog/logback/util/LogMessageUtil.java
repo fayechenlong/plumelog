@@ -9,18 +9,10 @@ import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
-import com.plumelog.core.util.DateUtil;
-import com.plumelog.core.util.GfJsonUtil;
-import com.plumelog.core.util.LogExceptionStackTrace;
-import com.plumelog.core.util.TraceLogMessageFactory;
+import com.plumelog.core.util.*;
 import org.slf4j.helpers.MessageFormatter;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -51,9 +43,9 @@ public class LogMessageUtil {
      * @return
      */
     public static String getLogMessage(BaseLogMessage baseLogMessage,final ILoggingEvent iLoggingEvent){
-        Map<String, String> mdc= iLoggingEvent.getMDCPropertyMap();
-        Map<String, Object> map=GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage),Map.class);
-        if(mdc!=null) {
+        Map<String, String> mdc = iLoggingEvent.getMDCPropertyMap();
+        Map<String, Object> map = GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage),Map.class);
+        if(mdc != null) {
             map.putAll(mdc);
         }
         return GfJsonUtil.toJSONString(map);

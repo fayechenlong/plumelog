@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -40,6 +40,8 @@ public class CollectStartBean implements InitializingBean {
     private KafkaConsumer kafkaConsumer;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Value("${plumelog.redis.compressor:false}")
+    private Boolean compressor;
 
     private void serverStart() {
         if (InitConfig.KAFKA_MODE_NAME.equals(InitConfig.START_MODEL)) {
@@ -47,7 +49,7 @@ public class CollectStartBean implements InitializingBean {
             kafkaLogCollect.kafkaStart();
         }
         if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisQueueClient, applicationEventPublisher);
+            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisQueueClient, applicationEventPublisher, compressor);
             redisLogCollect.redisStart();
         }
         if (InitConfig.REST_MODE_NAME.equals(InitConfig.START_MODEL)) {
