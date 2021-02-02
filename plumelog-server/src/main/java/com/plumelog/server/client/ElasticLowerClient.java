@@ -200,82 +200,6 @@ public class ElasticLowerClient {
         return false;
     }
 
-//    public void creatFieldData(String baseIndex, String field, String type) {
-//
-//        String ent = "{\"properties\":{\"" + field + "\":{\"type\":\"keyword\"},}} ";
-//        String endpoint = "";
-//        if (StringUtils.isEmpty(type)) {
-//            endpoint = "/" + baseIndex + "/_mapping";
-//        } else {
-//            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
-//        }
-//        try {
-//            Request request = new Request(
-//                    "PUT",
-//                    endpoint);
-//            request.setJsonEntity(ent);
-//            Response res = client.performRequest(request);
-//            if (res.getStatusLine().getStatusCode() != 200) {
-//                String responseStr = EntityUtils.toString(res.getEntity());
-//                logger.info(responseStr);
-//            }
-//        } catch (Exception e) {
-//            logger.error("", e);
-//        }
-//    }
-//    public void creatFieldDataLog(String baseIndex,String type) {
-//
-//        String ent = "{\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
-//                "\"logLevel\":{\"type\":\"keyword\"}," +
-//                "\"serverName\":{\"type\":\"keyword\"}," +
-//                "\"traceId\":{\"type\":\"keyword\"}," +
-//                "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}" +
-//                "}} ";
-//        String endpoint = "";
-//        if (StringUtils.isEmpty(type)) {
-//            endpoint = "/" + baseIndex + "/_mapping";
-//        } else {
-//            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
-//        }
-//        try {
-//            Request request = new Request(
-//                    "PUT",
-//                    endpoint);
-//            request.setJsonEntity(ent);
-//            Response res = client.performRequest(request);
-//            if (res.getStatusLine().getStatusCode() != 200) {
-//                String responseStr = EntityUtils.toString(res.getEntity());
-//                logger.info(responseStr);
-//            }
-//        } catch (Exception e) {
-//            logger.error("", e);
-//        }
-//    }
-//    private void creatFieldDataTrace(String baseIndex,String type) {
-//
-//        String ent = "{\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
-//                "\"traceId\":{\"type\":\"keyword\"}" +
-//                "}} ";
-//        String endpoint = "";
-//        if (StringUtils.isEmpty(type)) {
-//            endpoint = "/" + baseIndex + "/_mapping";
-//        } else {
-//            endpoint = "/" + baseIndex + "/_mapping" + "/" + type;
-//        }
-//        try {
-//            Request request = new Request(
-//                    "PUT",
-//                    endpoint);
-//            request.setJsonEntity(ent);
-//            Response res = client.performRequest(request);
-//            if (res.getStatusLine().getStatusCode() != 200) {
-//                String responseStr = EntityUtils.toString(res.getEntity());
-//                logger.info(responseStr);
-//            }
-//        } catch (Exception e) {
-//            logger.error("", e);
-//        }
-//    }
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
 
         if (!existIndice(baseIndex)) {
@@ -289,23 +213,9 @@ public class ElasticLowerClient {
         insertList(list,baseIndex,type);
     }
     public void insertListTrace(List<String> list, String baseIndex, String type) throws IOException {
-
-//        if (!existIndice(baseIndex)) {
-//            if(baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
-//                creatIndice(baseIndex);
-//            }else {
-//                creatIndiceNomal(baseIndex);
-//            }
-//            logger.info("creatIndex:{}", baseIndex);
-//        }
         insertList(list,baseIndex,type);
     }
     public void insertListComm(List<String> list, String baseIndex, String type) throws IOException {
-
-//        if (!existIndice(baseIndex)) {
-//            creatIndice(baseIndex);
-//            logger.info("creatIndex:{}", baseIndex);
-//        }
         insertList(list,baseIndex,type);
     }
     private void insertList(List<String> list, String baseIndex, String type) throws IOException {
@@ -333,11 +243,15 @@ public class ElasticLowerClient {
             @Override
             public void onSuccess(Response response) {
                 try {
-                    String responseStr = EntityUtils.toString(response.getEntity());
-                    logger.info("ElasticSearch commit! success");
-                    logger.debug("responseStr:{}", responseStr);
+
+                    if(response.getStatusLine().getStatusCode()==200){
+                        logger.info("ElasticSearch commit! success");
+                    }else {
+                        String responseStr = EntityUtils.toString(response.getEntity());
+                        logger.error("ElasticSearch commit Failure! {}", responseStr);
+                    }
                 } catch (IOException e) {
-                    logger.info("ElasticSearch commit!", e);
+                    logger.error("ElasticSearch commit Failure!", e);
                 }
             }
 
