@@ -45,8 +45,12 @@ public class MessageAppenderFactory {
 
     public static void initQueue(int logQueueSize) {
         queueSize = logQueueSize;
-        rundataQueue = new LinkedBlockingQueue<>(logQueueSize);
-        tracedataQueue = new LinkedBlockingQueue<>(logQueueSize);
+        if(rundataQueue==null) {
+            rundataQueue = new LinkedBlockingQueue<>(logQueueSize);
+        }
+        if(tracedataQueue==null) {
+            tracedataQueue = new LinkedBlockingQueue<>(logQueueSize);
+        }
     }
 
     public static void push(BaseLogMessage baseLogMessage) {
