@@ -62,7 +62,7 @@
 
 * 报警记录
 
-![avatar](/pic/6.png)
+![avatar](/pic/5.png)
 
 #### 五、管理
 
