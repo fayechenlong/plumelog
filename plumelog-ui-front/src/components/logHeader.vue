@@ -23,9 +23,12 @@
             <li class="nav-item" :class="{'active':pageName=='Size'}">
                 <a class="nav-link" href="./#/size">管理</a>
             </li>
+          <li class="nav-item">
+            <a class="nav-link" target="_blank" href="https://gitee.com/frankchenlong/plumelog/blob/master/HELP.md"><Icon style="font-size: 20px" type="md-help-circle" /></a>
+          </li>
         </ul>
-        <span class="quit"><a href="./#/login">退出</a></span>
-        <span class="version">Version 3.3.1</span>
+        <span class="quit"><a href="./#/login"><Icon style="font-size: 20px" type="md-exit" /></a></span>
+        <span class="version"><a target="_blank" href="https://gitee.com/frankchenlong/plumelog">Version 3.3</a></span>
     </nav>
 </template>
 <script>
@@ -69,6 +72,11 @@ export default {
             top:16px;
             right:20px;
             color:#ddd;
+          z-index: 2;
+          a {
+            color: white;
+            cursor:pointer
+          }
         }
         .quit {
           position: absolute;
@@ -78,6 +86,7 @@ export default {
           z-index: 2;
           cursor: pointer;
           a {
+            color: white;
             cursor:pointer
           }
         }
