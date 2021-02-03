@@ -34,7 +34,9 @@
 
 * 如果配置了链路追踪，点击表格里的追踪码即可链接到链路追踪内容，如何配置链路追踪 =》[链路追踪使用点我](/plumelog-trace/README.md)
 
-![avatar](/pic/11.png) ![avatar](/pic/LL2.png)
+![avatar](/pic/11.png) 
+
+![avatar](/pic/LL2.png)
 
 #### 三、扩展字段
 
