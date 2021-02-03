@@ -19,6 +19,8 @@
    
    4.配置plumelog-server，并启动
    
+   5.后台查询语法详见plumelog使用指南
+   
    配置文件 plumelog-server/application.properties 详解：
 
 ```properties
