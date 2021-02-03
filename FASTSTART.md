@@ -40,7 +40,8 @@
         #如果使用kafka,启用下面配置
         #plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
         #plumelog.kafka.kafkaGroupName=logConsumer
-        
+        #解压缩模式，开启后不消费非压缩的队列
+        plumelog.redis.compressor=true
         #队列redis，3.3版本把队列redis独立出来，方便不用的应用用不通的队列
         plumelog.queue.redis.redisHost=127.0.0.1:6379
         #如果使用redis有密码,启用下面配置
@@ -287,6 +288,7 @@ RedisAppender
 | expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
 | maxCount  | （3.1）批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
+| compressionType  | （3.4）压缩方式配置，默认none |
 
 KafkaAppender
 
@@ -298,6 +300,7 @@ KafkaAppender
 | expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
 | maxCount  | 批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
+| compressor  | （3.4）是否开启日志压缩，默认false |
 
 * 普通日志使用
 
