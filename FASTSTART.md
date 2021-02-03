@@ -19,7 +19,7 @@
    
    4.配置plumelog-server，并启动
    
-   5.后台查询语法详见plumelog使用指南
+   5.后台查询语法详见[plumelog使用指南](/HELP.md)
    
    配置文件 plumelog-server/application.properties 详解：
 
@@ -332,7 +332,7 @@ KafkaAppender
 ``` 
 * [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
-* 扩展字段功能，MDC用法，例如，详细用法参照plumelog使用指南.pdf
+* 扩展字段功能，MDC用法，例如，详细用法参照[plumelog使用指南](/HELP.md)
 ```java
             MDC.put("orderid", "1");
             MDC.put("userid", "4");
