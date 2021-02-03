@@ -34,7 +34,7 @@
 
 * 如果配置了链路追踪，点击表格里的追踪码即可链接到链路追踪内容，如何配置链路追踪 =》[链路追踪使用点我](/plumelog-trace/README.md)
 
-![avatar](/pic/11.png) 
+![avatar](/pic/LL.png) 
 
 ![avatar](/pic/LL2.png)
 
@@ -44,7 +44,7 @@
 
 ![avatar](/pic/kzzd.png)
 
-![avatar](/pic/kzzdcx.png)
+![avatar](/pic/kzzdxc.png)
 
 * 通过扩展字段查询的时候在扩展字段查询里面输入内容后点击填加，及可以通过扩展字段筛选日志内容
  
@@ -54,7 +54,7 @@
             MDC.put("orderid", "312312312312");
             logger.info("扩展字段");
 ``` 
-![avatar](/pic/kzzddh.png)
+![avatar](/pic/kzzdddh.png)
 
 #### 四、报警管理
 
