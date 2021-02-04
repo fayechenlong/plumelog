@@ -155,7 +155,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j</artifactId>
-       <version>3.2.1</version>
+       <version>3.3</version>
    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -197,7 +197,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-logback</artifactId>
-       <version>3.2.1</version>
+       <version>3.3</version>
    </dependency>
 ```  
 * 配置
@@ -240,7 +240,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j2</artifactId>
-       <version>3.2.1</version>
+       <version>3.3</version>
    </dependency>       
 ```   
 * 配置
