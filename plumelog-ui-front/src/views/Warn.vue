@@ -3,7 +3,7 @@
      <log-header></log-header>
 
        <Tabs active-key="报警设置" >
-        <Tab-pane label="报警设置" key="报警设置">
+        <Tab-pane icon="md-settings" label="报警设置" key="报警设置">
           <Button icon="ios-add" @click="add" class="btn_add">添加</Button>
           <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="removeSelect" type="error">删除所选</Button>
           <div style="clear:both"></div>
@@ -66,7 +66,7 @@
             </div>
           </div>
         </Tab-pane>
-         <Tab-pane label="报警记录" key="报警记录">
+         <Tab-pane icon="md-alert" label="报警记录" key="报警记录">
            <div v-if="logs.length>0">
               <Button icon="ios-trash" class="btn_clear"  @click="clearWarn">清空记录</Button>
               <ul class="logList">
