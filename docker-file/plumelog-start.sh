@@ -2,7 +2,7 @@
 #create by 2020-06-19 xiaobai021sdo
 #update by 2020-08-20 xiaobai021sdo
 
-$IMAGE="xiaobai021sdo/plumelog:3.2"
+$IMAGE="xiaobai021sdo/plumelog:3.3"
 
 echo "拉取docker镜像 $IMAGE......"
 docker pull $IMAGE
