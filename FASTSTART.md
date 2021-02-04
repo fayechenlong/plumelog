@@ -284,6 +284,7 @@ RedisAppender
 | appName  | 自定义应用名称 |
 | redisHost  | redis地址 |
 | redisPort  | redis端口号 |
+| redisAuth  | redis密码 |
 | redisDb  | redis db |
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
