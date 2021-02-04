@@ -13,7 +13,7 @@
     </Row>
     <div class="pnl_sizes">
       <Tabs active-key="运行数据" @on-click="changeTab">
-        <Tab-pane label="运行数据" name="run" key="运行数据">
+        <Tab-pane icon="logo-buffer" label="运行数据" name="run" key="运行数据">
            <div class="pnl_size" v-if="sizeInfo.length>0">
              <Table height="600" @on-selection-change="changeSizeSelect" :content="self" :columns="columns_size" :data="sizeInfo">
                <template slot-scope="{ row, index }" slot="action">
@@ -22,7 +22,7 @@
              </Table>
           </div>
         </Tab-pane>
-        <Tab-pane label="链路数据" name="trace" key="链路数据">
+        <Tab-pane icon="md-git-merge" label="链路数据" name="trace" key="链路数据">
           <div class="pnl_size" v-if="traceInfo.length>0">
              <Table height="600" @on-selection-change="changeTraceSelect" :content="self" :columns="columns_size" :data="traceInfo">
                <template slot-scope="{ row, index }" slot="action">
@@ -69,7 +69,7 @@
 import axios from '@/services/http'
 import _ from 'lodash'
 import moment from 'moment'
-import '@/assets/prism.js' 
+import '@/assets/prism.js'
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
 import logHeader from '@/components/logHeader.vue'
@@ -219,7 +219,7 @@ export default {
     removeSelect(){
 
       var selected = this.currentTab == 'run' ? this.size_selection : this.trace_selection;
-      
+
       let deletePromise=[];
       for(var item of selected)
       {
@@ -290,7 +290,7 @@ export default {
     padding-left:20px;
     position: relative;
     width:800px;
-    // flex-direction: column; 
+    // flex-direction: column;
     // flex-wrap: nowrap;
     // justify-content: center;
 
@@ -305,10 +305,10 @@ export default {
       text-align:left;
       flex: 1;
       width:800px;
-      
+
       table{
         width:100%;
-        
+
         th{
           border-top: none;
           text-align: center;
