@@ -7,7 +7,7 @@
  
 ### 二、使用方法
 
-#### （1）安装
+#### （1）服务端安装
     
    1.安装 redis 或者 kafka（一般公司redis足够） redis 官网:https://redis.io   kafka：http://kafka.apache.org
      
@@ -146,7 +146,7 @@
       }
     }
 
-#### （2）项目使用
+#### （2）客户端在项目使用，非maven项目下载依赖包（https://gitee.com/frankchenlong/plumelog/releases）放在自己的lib下面直接使用
 
 #### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本
 
