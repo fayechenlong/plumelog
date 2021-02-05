@@ -32,12 +32,13 @@ public abstract class AbstractAspect {
         traceMessage.setPosition(LogMessageConstant.TRACE_START);
         traceMessage.getPositionNum().incrementAndGet();
         LogMessageThreadLocal.logMessageThreadLocal.set(traceMessage);
-        log.info(LogMessageConstant.TRACE_PRE + GfJsonUtil.toJSONString(traceMessage));
+
+        log.info(LogMessageConstant.TRACE_PRE + traceMessage.toString());
         Object proceed = ((ProceedingJoinPoint) joinPoint).proceed();
         traceMessage.setMessageType(joinPoint.getSignature().toString());
         traceMessage.setPosition(LogMessageConstant.TRACE_END);
         traceMessage.getPositionNum().incrementAndGet();
-        log.info(LogMessageConstant.TRACE_PRE + GfJsonUtil.toJSONString(traceMessage));
+        log.info(LogMessageConstant.TRACE_PRE + traceMessage.toString());
         return proceed;
     }
 }

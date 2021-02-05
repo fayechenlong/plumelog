@@ -1,6 +1,8 @@
 package com.plumelog.core;
 
 
+import com.plumelog.core.util.GfJsonUtil;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -51,4 +53,16 @@ public class TraceMessage {
     public void setPosition(String position) {
         this.position = position;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "traceId: \""+ traceId + "\"," +
+                ", \"messageType\":\"" + messageType + '\"' +
+                ",\" position\":\"" + position + '\"' +
+                ", \"positionNum\":\"" + positionNum +
+                "\"}";
+    }
+
+
 }
