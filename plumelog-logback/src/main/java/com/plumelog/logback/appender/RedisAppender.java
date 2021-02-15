@@ -7,6 +7,7 @@ import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.lang.ShutdownHookCallback;
 import com.plumelog.core.lang.ShutdownHookCallbacks;
 import com.plumelog.core.redis.JedisPoolRedisClient;
@@ -96,9 +97,10 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, event);
             MessageAppenderFactory.pushRundataQueue(message);
-        } else {
-            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
-        }
+        }else if (logMessage instanceof TraceLogMessage)  {
+            MessageAppenderFactory.pushTracedataQueue(logMessage.toString());
+        }else
+            MessageAppenderFactory.push(logMessage);
     }
 
     ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();

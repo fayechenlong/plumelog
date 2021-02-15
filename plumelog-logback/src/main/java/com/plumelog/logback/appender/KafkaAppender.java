@@ -8,6 +8,7 @@ import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.kafka.KafkaProducerClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.IpGetter;
@@ -77,9 +78,10 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, event);
             MessageAppenderFactory.pushRundataQueue(message);
-        } else {
-            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
-        }
+        } else if (logMessage instanceof TraceLogMessage){
+            MessageAppenderFactory.pushTracedataQueue(logMessage.toString());
+        }else
+            MessageAppenderFactory.push(logMessage);
     }
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();

@@ -10,7 +10,7 @@ package com.plumelog.core.dto;
  */
 public class TraceLogMessage extends BaseLogMessage {
 
-
+ß
     /**
      * 执行的毫秒时间
      */
@@ -48,5 +48,26 @@ public class TraceLogMessage extends BaseLogMessage {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"time\":")
+                .append(time);
+        sb.append(",\"position\":\"")
+                .append(position).append('\"');
+        sb.append(",\"positionNum\":")
+                .append(positionNum);
+        sb.append(",\"method\":")
+                .append(this.getMethod());
+        sb.append(",\"appName\":")
+                .append(this.getAppName());
+        sb.append(",\"traceId\":")
+                .append(this.getTraceId());
+        sb.append(",\"serverName\":")
+                .append(this.getServerName());
+        sb.append('}');
+        return sb.toString();
     }
 }
