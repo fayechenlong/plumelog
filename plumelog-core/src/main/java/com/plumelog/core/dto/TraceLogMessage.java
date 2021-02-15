@@ -10,7 +10,7 @@ package com.plumelog.core.dto;
  */
 public class TraceLogMessage extends BaseLogMessage {
 
-ß
+
     /**
      * 执行的毫秒时间
      */
