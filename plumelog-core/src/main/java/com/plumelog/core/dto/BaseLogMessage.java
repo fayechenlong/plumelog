@@ -60,4 +60,20 @@ public class BaseLogMessage {
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"serverName\":\"")
+                .append(serverName).append('\"');
+        sb.append(",\"traceId\":\"")
+                .append(traceId).append('\"');
+        sb.append(",\"appName\":\"")
+                .append(appName).append('\"');
+        sb.append(",\"method\":\"")
+                .append(method).append('\"');
+        sb.append('}');
+        return sb.toString();
+    }
 }
+

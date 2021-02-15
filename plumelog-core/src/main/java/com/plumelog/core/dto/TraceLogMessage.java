@@ -1,5 +1,7 @@
 package com.plumelog.core.dto;
 
+import com.plumelog.core.util.GfJsonUtil;
+
 /**
  * className：TraceLogMessage
  * description：
@@ -69,5 +71,12 @@ public class TraceLogMessage extends BaseLogMessage {
                 .append(this.getServerName()).append("\"");
         sb.append('}');
         return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        String json = "{\"appName\":\"5GOperationPlatformBE\",\"method\":\"void com.ai.op.xcore.be.security.service.UserCacheCleanService.cleanUserCache(String)\",\"position\":\">\",\"positionNum\":36,\"serverName\":\"10.21.10.39\",\"time\":1613413364793,\"traceId\":\"116472029800173568\"}";
+        TraceLogMessage t = GfJsonUtil.parseObject(json,TraceLogMessage.class);
+        System.out.println(GfJsonUtil.parseObject(t.toString(),TraceLogMessage.class));
+        System.out.println(GfJsonUtil.toJSONString(t));
     }
 }

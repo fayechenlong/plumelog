@@ -92,7 +92,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     }
 
     @Override
-    protected void append(ILoggingEvent event) {
+     protected void append(ILoggingEvent event) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, event);

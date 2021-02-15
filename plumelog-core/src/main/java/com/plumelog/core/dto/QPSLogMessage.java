@@ -138,4 +138,31 @@ public class QPSLogMessage {
     public void setAvgTime(long avgTime) {
         this.avgTime = avgTime;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"messageId\":\"")
+                .append(messageId).append('\"');
+        sb.append(",\"namespace\":\"")
+                .append(namespace).append('\"');
+        sb.append(",\"appName\":\"")
+                .append(appName).append('\"');
+        sb.append(",\"requestURI\":\"")
+                .append(requestURI).append('\"');
+        sb.append(",\"serverName\":\"")
+                .append(serverName).append('\"');
+        sb.append(",\"dtTime\":")
+                .append(dtTime);
+        sb.append(",\"incr\":")
+                .append(incr);
+        sb.append(",\"maxTime\":")
+                .append(maxTime);
+        sb.append(",\"minTime\":")
+                .append(minTime);
+        sb.append(",\"avgTime\":")
+                .append(avgTime);
+        sb.append('}');
+        return sb.toString();
+    }
 }
