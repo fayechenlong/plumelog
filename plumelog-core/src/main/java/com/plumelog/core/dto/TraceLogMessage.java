@@ -57,16 +57,16 @@ public class TraceLogMessage extends BaseLogMessage {
                 .append(time);
         sb.append(",\"position\":\"")
                 .append(position).append('\"');
-        sb.append(",\"positionNum\":")
-                .append(positionNum);
-        sb.append(",\"method\":")
-                .append(this.getMethod());
-        sb.append(",\"appName\":")
-                .append(this.getAppName());
-        sb.append(",\"traceId\":")
-                .append(this.getTraceId());
-        sb.append(",\"serverName\":")
-                .append(this.getServerName());
+        sb.append(",\"positionNum\":\"")
+                .append(positionNum).append('\"');
+        sb.append(",\"method\":\"")
+                .append(this.getMethod()).append('\"');
+        sb.append(",\"appName\":\"")
+                .append(this.getAppName()).append("\"");
+        sb.append(",\"traceId\":\"")
+                .append(this.getTraceId()).append("\"");
+        sb.append(",\"serverName\":\"")
+                .append(this.getServerName()).append("\"");
         sb.append('}');
         return sb.toString();
     }
