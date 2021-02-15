@@ -100,7 +100,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         }else if (logMessage instanceof TraceLogMessage)  {
       /*      System.out.println("GfJsonUtil.toJSONString(logMessage)==="+GfJsonUtil.toJSONString(logMessage));
             System.out.println("logMessage.toString()==="+logMessage.toString());*/
-            MessageAppenderFactory.pushTracedataQueue(logMessage.toString());
+            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }else
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
     }
