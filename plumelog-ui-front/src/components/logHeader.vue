@@ -3,31 +3,31 @@
         <a class="navbar-brand icon_log" target="_blank" href="http://www.plumelog.com"></a>
         <ul class="navbar-nav">
             <li class="nav-item " :class="{'active':pageName=='Home'}">
-                <a class="nav-link"  href="./#/">日志查询</a>
+                <a class="nav-link"  href="./#/"><Icon type="logo-buffer" />日志查询</a>
             </li>
             <li class="nav-item" :class="{'active':pageName=='Trace'}">
-                <a class="nav-link" href="./#/trace">链路追踪</a>
+                <a class="nav-link" href="./#/trace"><Icon type="md-git-merge" />链路追踪</a>
             </li>
             <!-- <li class="nav-item" :class="{'active':pageName=='Chart'}">
                 <a class="nav-link" href="./#/chart">数据统计</a>
             </li> -->
             <li class="nav-item" :class="{'active':pageName=='Expand'}">
-                <a class="nav-link" href="./#/expand">扩展字段</a>
+                <a class="nav-link" href="./#/expand"><Icon type="md-barcode" />扩展字段</a>
             </li>
           <li class="nav-item" :class="{'active':pageName=='Errors'}">
-            <a class="nav-link" href="./#/errors">错误统计</a>
+            <a class="nav-link" href="./#/errors"><Icon type="md-pie" />错误统计</a>
           </li>
             <li class="nav-item" :class="{'active':pageName=='Warn'}">
-                <a class="nav-link" href="./#/warn">报警管理</a>
+                <a class="nav-link" href="./#/warn"><Icon type="md-alert" />报警管理</a>
             </li>
             <li class="nav-item" :class="{'active':pageName=='Size'}">
-                <a class="nav-link" href="./#/size">管理</a>
+                <a class="nav-link" href="./#/size"><Icon type="md-settings" />管理</a>
             </li>
           <li class="nav-item">
             <a class="nav-link" target="_blank" href="https://gitee.com/frankchenlong/plumelog/blob/master/HELP.md"><Icon style="font-size: 20px" type="md-help-circle" /></a>
           </li>
         </ul>
-        <span class="quit"><a href="./#/login"><Icon style="font-size: 20px" type="md-exit" /></a></span>
+        <span class="quit"><a href="./#/login"><Icon style="font-size: 20px" type="md-exit" />退出</a></span>
         <span class="version"><a target="_blank" href="https://gitee.com/frankchenlong/plumelog">Version 3.3</a></span>
     </nav>
 </template>
