@@ -24,6 +24,7 @@
         <maxCount>100</maxCount>
         <logQueueSize>100000</logQueueSize>
         <runModel>2</runModel>
+        <expand>sleuth</expand>
     </appender>
 
     <!-- 日志输出级别 -->
