@@ -1,7 +1,7 @@
 package com.plumelog.server;
 
+import com.plumelog.core.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.redis.RedisClient;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
@@ -12,12 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -34,8 +32,8 @@ public class CollectStartBean implements InitializingBean {
     private static Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
     @Autowired
     private ElasticLowerClient elasticLowerClient;
-    @Autowired
-    private RedisClient redisQueueClient;
+    @Autowired(required = false)
+    private AbstractClient redisQueueClient;
     @Autowired(required = false)
     private KafkaConsumer kafkaConsumer;
     @Autowired
