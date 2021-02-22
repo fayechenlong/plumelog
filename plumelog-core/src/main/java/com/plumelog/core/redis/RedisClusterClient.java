@@ -22,33 +22,48 @@ public class RedisClusterClient extends AbstractClient {
             "if(rs<1) then return 0;end;" +
             "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
             "return 1;";
-    public static RedisClusterClient getInstance(String hosts) {
+    private int MAX_ACTIVE = 30;
+    private int MAX_IDLE = 8;
+    private int MAX_WAIT = 1000;
+    private boolean TEST_ON_BORROW = true;
+
+    public static RedisClusterClient getInstance(String hosts,String pass) {
         if (instance == null) {
             synchronized (RedisClusterClient.class) {
                 if (instance == null) {
-                    instance = new RedisClusterClient(hosts);
+                    instance = new RedisClusterClient(hosts,pass);
                 }
             }
         }
         return instance;
     }
-    private RedisClusterClient(String hosts){
+
+    public RedisClusterClient(String hosts,String pass){
         String [] clusterHosts= hosts.split(",");
         Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
         for(String hostAndPort:clusterHosts){
             String[] hap=hostAndPort.split(":");
             jedisClusterNodes.add(new HostAndPort(hap[0], Integer.parseInt(hap[1])));
         }
-        jedisCluster = new JedisCluster(jedisClusterNodes);
+        if (pass != null && !"".equals(pass)) {
+            JedisPoolConfig config = new JedisPoolConfig();
+            config.setMaxTotal(MAX_ACTIVE);
+            config.setMaxIdle(MAX_IDLE);
+            config.setMaxWaitMillis(MAX_WAIT);
+            config.setTestOnBorrow(TEST_ON_BORROW);
+            jedisCluster = new JedisCluster(jedisClusterNodes,200,200,1,pass,config);
+        } else {
+            jedisCluster = new JedisCluster(jedisClusterNodes);
+        }
     }
 
-    public List<String> getMessage(String key, long size) {
+    public List<String> getMessage(String key, int size) {
         List<String> list;
         try {
             list=jedisCluster.lrange(key,0L,size-1);
             jedisCluster.ltrim(key,size,-1);
         }finally {
-            jedisCluster.close();
+            //jedisCluster.close();
         }
         return list;
     }
@@ -68,11 +83,23 @@ public class RedisClusterClient extends AbstractClient {
 
     }
 
+    @Override
+    public void putMessageList(String key, List<String> list) throws LogQueueConnectException{
+        try {
+            list.forEach(str -> {
+                jedisCluster.rpush(key, str);
+            });
+        } catch (Exception e) {
+            throw new LogQueueConnectException("redis 写入失败！", e);
+        }
+
+    }
+
     public boolean existsKey(String key) {
         try {
             return jedisCluster.exists(key);
         } finally {
-            jedisCluster.close();
+            //jedisCluster.close();
         }
 
     }
@@ -82,7 +109,7 @@ public class RedisClusterClient extends AbstractClient {
         try {
             obj = jedisCluster.lpop(key);
         } finally {
-            jedisCluster.close();
+            //jedisCluster.close();
         }
         return obj;
     }
