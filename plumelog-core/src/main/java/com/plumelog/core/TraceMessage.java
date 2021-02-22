@@ -60,8 +60,8 @@ public class TraceMessage {
                 "traceId: \""+ traceId + "\"," +
                 ", \"messageType\":\"" + messageType + '\"' +
                 ",\" position\":\"" + position + '\"' +
-                ", \"positionNum\":\"" + positionNum +
-                "\"}";
+                ", \"positionNum\":" + positionNum +
+                "}";
     }
 
 

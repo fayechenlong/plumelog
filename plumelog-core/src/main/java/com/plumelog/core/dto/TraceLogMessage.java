@@ -59,8 +59,8 @@ public class TraceLogMessage extends BaseLogMessage {
                 .append(time);
         sb.append(",\"position\":\"")
                 .append(position).append('\"');
-        sb.append(",\"positionNum\":\"")
-                .append(positionNum).append('\"');
+        sb.append(",\"positionNum\":")
+                .append(positionNum).append("");
         sb.append(",\"method\":\"")
                 .append(this.getMethod()).append('\"');
         sb.append(",\"appName\":\"")
