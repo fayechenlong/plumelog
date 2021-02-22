@@ -65,4 +65,32 @@ public class RunLogMessage extends BaseLogMessage{
     public void setDateTime(String dateTime) {
         this.dateTime = dateTime;
     }
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"dtTime\":")
+                .append(dtTime);
+        sb.append(",\"content\":\"")
+                .append(content).append('\"');
+        sb.append(",\"logLevel\":\"")
+                .append(logLevel).append('\"');
+        sb.append(",\"className\":\"")
+                .append(className).append('\"');
+        sb.append(",\"logType\":\"")
+                .append(logType).append('\"');
+        sb.append(",\"dateTime\":\"")
+                .append(dateTime).append('\"');
+        sb.append(",\"method\":\"")
+                .append(this.getMethod()).append('\"');
+        sb.append(",\"appName\":\"")
+                .append(this.getAppName()).append("\"");
+        sb.append(",\"traceId\":\"")
+                .append(this.getTraceId()).append("\"");
+        sb.append(",\"serverName\":\"")
+                .append(this.getServerName()).append("\"");
+        sb.append('}');
+        return sb.toString();
+    }
 }

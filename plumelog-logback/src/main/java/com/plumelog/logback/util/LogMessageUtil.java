@@ -52,7 +52,7 @@ public class LogMessageUtil {
      */
     public static String getLogMessage(BaseLogMessage baseLogMessage,final ILoggingEvent iLoggingEvent){
         Map<String, String> mdc= iLoggingEvent.getMDCPropertyMap();
-        Map<String, Object> map=GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage),Map.class);
+        Map<String, Object> map=GfJsonUtil.parseObject(baseLogMessage.toString(),Map.class);
         if(mdc!=null) {
             map.putAll(mdc);
         }

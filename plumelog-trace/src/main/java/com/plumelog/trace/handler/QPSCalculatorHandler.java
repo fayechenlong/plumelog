@@ -146,8 +146,8 @@ public class QPSCalculatorHandler extends AbstractQPSHandler {
         }
 
         qpsLogMessage.setDtTime(bucket.getLatestPassedTime());
-        String msg = GfJsonUtil.toJSONString(qpsLogMessage);
-        list.add(msg);
+       // String msg = ;
+        list.add(qpsLogMessage.toString());
 
         for (int i = 0; i < 500; i++) {
             if (queue.isEmpty()) {

@@ -1,5 +1,7 @@
 package com.plumelog.core.dto;
 
+import com.plumelog.core.util.GfJsonUtil;
+
 /**
  * className：TraceLogMessage
  * description：
@@ -48,5 +50,33 @@ public class TraceLogMessage extends BaseLogMessage {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"time\":")
+                .append(time);
+        sb.append(",\"position\":\"")
+                .append(position).append('\"');
+        sb.append(",\"positionNum\":\"")
+                .append(positionNum).append('\"');
+        sb.append(",\"method\":\"")
+                .append(this.getMethod()).append('\"');
+        sb.append(",\"appName\":\"")
+                .append(this.getAppName()).append("\"");
+        sb.append(",\"traceId\":\"")
+                .append(this.getTraceId()).append("\"");
+        sb.append(",\"serverName\":\"")
+                .append(this.getServerName()).append("\"");
+        sb.append('}');
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        String json = "{\"appName\":\"5GOperationPlatformBE\",\"method\":\"void com.ai.op.xcore.be.security.service.UserCacheCleanService.cleanUserCache(String)\",\"position\":\">\",\"positionNum\":36,\"serverName\":\"10.21.10.39\",\"time\":1613413364793,\"traceId\":\"116472029800173568\"}";
+        TraceLogMessage t = GfJsonUtil.parseObject(json,TraceLogMessage.class);
+        System.out.println(GfJsonUtil.parseObject(t.toString(),TraceLogMessage.class));
+        System.out.println(GfJsonUtil.toJSONString(t));
     }
 }

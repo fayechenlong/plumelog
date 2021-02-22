@@ -30,6 +30,6 @@ public class LogMessageConsumer implements WorkHandler<LogEvent> {
                 baseLogMessage instanceof RunLogMessage
                         ? LogMessageConstant.LOG_KEY
                         : LogMessageConstant.LOG_KEY_TRACE;
-        AbstractClient.getClient().pushMessage(redisKey, GfJsonUtil.toJSONString(baseLogMessage));
+        AbstractClient.getClient().pushMessage(redisKey, (baseLogMessage.toString()));
     }
 }

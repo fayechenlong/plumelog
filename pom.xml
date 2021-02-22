@@ -149,5 +149,14 @@
 <!--                </executions>-->
 <!--            </plugin>-->
         </plugins>
+
+
     </build>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <name>aliyun</name>
+        </repository>
+    </repositories>
 </project>
