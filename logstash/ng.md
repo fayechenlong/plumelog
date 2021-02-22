@@ -4,6 +4,7 @@
 
 * 复制nginx.conf里面的配置到自己的nginx配置之下，在http{}中添加下面配置
 
+```
        log_format json '{"dtTime":"$time_iso8601",'
                    '"logLevel":"INFO",'
                    '"className":"$uri",'
@@ -14,6 +15,7 @@
                    '"appName":"nginx"'
                    '}';
        access_log  /var/log/nginx/access.log  json;
+```
 
 * nginx -t 后 nginx  -s reload  
 
@@ -23,27 +25,35 @@
 
 1、下载logstash-6.6.0安装包，下载路径：logstash-6.6.0，然后解压之es的同级目录（方便管理）；或直接在服务器上下载：
 
+```
     wget https://artifacts.elastic.co/downloads/logstash/logstash-6.6.0.tar.gz
+```
 
 2、将安装包上次到服务器，然后解压安装包，例如解压到：/usr/local/
 
-    tar –zxvf logstash-6.6.0.tar.gz 
+```
+    tar –zxvf logstash-6.6.0.tar.gz
+```
 
 3、重命名安装目录
-     
+
+```
     mv logstash-6.6.0 logstash
+```
 
 * 配置logstash
 
 1.进入logstash 安装目录
 
+```
      mkdir nginx-log
      cd nginx-log
      vim logstash.conf
+```
 
    * 配置内容
 
- ```  
+```
      input {
         file {
                 path => "/var/log/nginx/access.log" #这边和上面nginx的日志输出地址一致
@@ -77,7 +87,7 @@
                 }
         }
       }
-```            
+```
 
 
 复制logstash.conf内容进去，并保存；可以直接把logstash.conf放到这个目录下
@@ -86,5 +96,6 @@
 
 进入logstash/bin目录，用下面命令启动
 
+```
     ./logstash -f ../nginx-log/logstash.conf
-     
+```
