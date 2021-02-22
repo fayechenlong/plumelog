@@ -1,11 +1,11 @@
 package com.plumelog.server.collect;
 
 
+import com.plumelog.core.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.redis.RedisClient;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -21,11 +21,11 @@ import java.util.List;
  */
 public class RedisLogCollect extends BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(RedisLogCollect.class);
-    private RedisClient redisClient;
+    private AbstractClient client;
 
-    public RedisLogCollect(ElasticLowerClient elasticLowerClient, RedisClient redisClient, ApplicationEventPublisher applicationEventPublisher) {
+    public RedisLogCollect(ElasticLowerClient elasticLowerClient, AbstractClient client, ApplicationEventPublisher applicationEventPublisher) {
         super.elasticLowerClient = elasticLowerClient;
-        this.redisClient = redisClient;
+        this.client = client;
         super.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -51,7 +51,7 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 long startTime = System.currentTimeMillis();
-                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
+                logs = client.getMessage(LogMessageConstant.LOG_KEY, InitConfig.MAX_SEND_SIZE);
                 long endTime = System.currentTimeMillis();
                 if(logs.size()>0) {
                     logger.info("RuningLog日志获取耗时：{}", endTime - startTime);
@@ -81,7 +81,7 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 long startTime = System.currentTimeMillis();
-                logs = redisClient.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
+                logs = client.getMessage(LogMessageConstant.LOG_KEY_TRACE, InitConfig.MAX_SEND_SIZE);
                 long endTime = System.currentTimeMillis();
                 if(logs.size()>0) {
                     logger.info("TraceLog日志获取耗时：{}", endTime - startTime);

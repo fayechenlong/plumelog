@@ -26,4 +26,8 @@ public abstract class AbstractClient {
     public static void setClient(AbstractClient abstractClient) {
         client = abstractClient;
     }
+
+    public List<String> getMessage(String key, int size) throws LogQueueConnectException{
+        return null;
+    }
 }
