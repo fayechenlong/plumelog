@@ -419,6 +419,10 @@ KafkaAppender
   ]
 ``` 
 
+* nginx日志搜集解决方案参考
+
+  [nginx解决方案](/logstash/ng.md)
+
 ### 三、联系交流
 
    * QQ群：1072991065
