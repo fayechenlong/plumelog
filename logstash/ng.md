@@ -43,7 +43,7 @@
 
    * 配置内容
 
-
+ ```  
      input {
         file {
                 path => "/var/log/nginx/access.log" #这边和上面nginx的日志输出地址一致
@@ -77,7 +77,7 @@
                 }
         }
       }
-                 
+```            
 
 
 复制logstash.conf内容进去，并保存；可以直接把logstash.conf放到这个目录下
