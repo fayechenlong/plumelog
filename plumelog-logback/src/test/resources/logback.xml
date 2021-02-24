@@ -30,6 +30,7 @@
         <appName>plumelog-test</appName>
         <redisClusterNodes>10.100.2.47:6379,10.100.2.47:6380,10.100.2.57:6379,10.100.2.57:6380,10.100.2.77:6379,10.100.2.77:6380</redisClusterNodes>
         <runModel>2</runModel>
+        <redisAuth>devredis</redisAuth>
         <expand>sleuth</expand>
     </appender>
     <!-- 日志输出级别 -->

@@ -28,7 +28,7 @@ public class RedisLogCollect extends BaseLogCollect {
     private AbstractClient client;
     private boolean compressor;
 
-    public RedisLogCollect(ElasticLowerClient elasticLowerClient, AbstractClient client, ApplicationEventPublisher applicationEventPublisher) {
+    public RedisLogCollect(ElasticLowerClient elasticLowerClient, AbstractClient client, ApplicationEventPublisher applicationEventPublisher,boolean compressor) {
         super.elasticLowerClient = elasticLowerClient;
         this.client = client;
         super.applicationEventPublisher = applicationEventPublisher;
@@ -53,7 +53,7 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 long startTime=System.currentTimeMillis();
-                logs = redisClient.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
+                logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
                 if(logs.size() > 0) {
                     logger.info("RuningLog日志获取耗时：{}",endTime-startTime);
@@ -83,7 +83,7 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 long startTime=System.currentTimeMillis();
-                logs = redisClient.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
+                logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
                 if(logs.size()>0) {
                     logger.info("TraceLog日志获取耗时：{}",endTime-startTime);

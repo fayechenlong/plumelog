@@ -1,5 +1,6 @@
 package com.plumelog.server;
 
+import com.plumelog.core.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.server.client.ElasticLowerClient;
@@ -35,7 +36,7 @@ public class CollectStartBean implements InitializingBean {
     @Autowired
     private ElasticLowerClient elasticLowerClient;
     @Autowired
-    private RedisClient redisQueueClient;
+    private AbstractClient redisQueueClient;
     @Autowired(required = false)
     private KafkaConsumer kafkaConsumer;
     @Autowired

@@ -110,6 +110,7 @@ public class ClientConfig implements InitializingBean {
         }
 
         if(!StringUtils.isEmpty(queueRedisClusterNodes)){
+            logger.info("queue ClusterRedis hosts:{}",queueRedisClusterNodes);
             return new RedisClusterClient(queueRedisClusterNodes,queueRedisPassWord);
         } else {
             String[] hs = queueRedisHost.split(":");
