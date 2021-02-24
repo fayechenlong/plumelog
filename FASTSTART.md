@@ -340,11 +340,34 @@ KafkaAppender
             </dependency>
 ``` 
 * [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
+  
+* skywalking traceid获取方式
+  
+  1.引入依赖jar包
 
-   skywalking traceid获取方式
-   
+```xml
+  <!-- https://mvnrepository.com/artifact/org.apache.skywalking/apm-toolkit-trace -->
+  <dependency>
+  <groupId>org.apache.skywalking</groupId>
+  <artifactId>apm-toolkit-trace</artifactId>
+  <version>6.5.0</version>
+  </dependency>
+```
+
+  2.方法调用
+
 ```java
-     String traceId = TraceContext.traceId();  
+    import org.apache.skywalking.apm.toolkit.trace.TraceContext;
+
+    @Component
+    public class Interceptor extends HandlerInterceptorAdapter{
+        @Override
+        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+            String traceId = TraceContext.traceId();
+            TraceId.logTraceID.set(traceid);//设置TraceID值，不埋此点链路ID就没有
+            return true;
+        }
+    }
 ``` 
 * [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
