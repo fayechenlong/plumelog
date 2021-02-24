@@ -365,10 +365,11 @@ KafkaAppender
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
             String traceId = TraceContext.traceId();
             if(traceId!=null) {
-                TraceId.logTraceID.set(traceid);
+                TraceId.logTraceID.set(traceId);
             }else {
                 String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-                String traceid= uuid.substring(uuid.length() - 7);
+                traceId= uuid.substring(uuid.length() - 7);
+                TraceId.logTraceID.set(traceId);
             }
             return true;
         }
