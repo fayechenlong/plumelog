@@ -364,7 +364,12 @@ KafkaAppender
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
             String traceId = TraceContext.traceId();
-            TraceId.logTraceID.set(traceid);//设置TraceID值，不埋此点链路ID就没有
+            if(traceId!=null) {
+                TraceId.logTraceID.set(traceid);
+            }else {
+                String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+                String traceid= uuid.substring(uuid.length() - 7);
+            }
             return true;
         }
     }
