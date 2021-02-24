@@ -216,6 +216,18 @@
         <redisAuth>123456</redisAuth>
         <redisPort>6379</redisPort>
     </appender>
+    <!--使用redis集群启用下面配置-->
+    <!-- 字段说明 -->
+    <!-- appName:应用名称 -->
+    <!-- redisHost：redis地址 -->
+    <!-- redisPort：redis端口号 不配置，默认使用6379-->
+    <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
+    <!-- expand：整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth- -->
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisClusterAppender">
+        <appName>plumelog</appName>
+        <redisClusterNodes>10.100.2.47:6379,10.100.2.47:6380,10.100.2.57:6379,10.100.2.57:6380,10.100.2.77:6379,10.100.2.77:6380</redisClusterNodes>
+        <redisAuth>devredis</redisAuth>
+    </appender>
    <!-- 使用kafka启用下面配置 -->
    <!-- 字段说明 -->
    <!-- appName:应用名称 -->
