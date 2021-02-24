@@ -27,29 +27,32 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-
-    <!-- 如果使用kafka作为队列，启用下面配置 -->
-    <!--<appender name="plumelog_demo" class="KafkaAppender">-->
-    <!--<appName>plumelog_demo</appName>-->
-    <!--<kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>-->
-    <!-- runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1-->
-    <!--<runModel>2</runModel>-->
-    <!-- 整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth-->
-    <!--<expand>sleuth</expand>-->
-    <!--</appender>-->
     <springProperty scope="context" name="plumelog.appName" source="plumelog.appName"/>
+    <!-- 如果使用kafka作为队列，启用下面配置 -->
+<!--    <appender name="plumelog_kafka" class="com.plumelog.logback.appender.KafkaAppender">-->
+<!--        <appName>plumelog_demo</appName>-->
+<!--        <kafkaHosts>10.100.2.86:9092</kafkaHosts>-->
+<!--        <compressionType>lz4</compressionType>-->
+<!--        &lt;!&ndash; runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1&ndash;&gt;-->
+<!--        <runModel>2</runModel>-->
+<!--        &lt;!&ndash; 整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth&ndash;&gt;-->
+<!--        <expand>sleuth</expand>-->
+<!--    </appender>-->
+
     <springProperty scope="context" name="plumelog.redisHost" source="plumelog.redisHost"/>
     <springProperty scope="context" name="plumelog.redisPort" source="plumelog.redisPort"/>
+    <springProperty scope="context" name="plumelog.redisAuth" source="plumelog.redisAuth"/>
     <!-- 如果使用redis作为队列，启用下面配置 -->
-    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+    <appender name="plumelog_redis" class="com.plumelog.logback.appender.RedisAppender">
         <appName>${plumelog.appName}</appName>
         <redisHost>${plumelog.redisHost}</redisHost>
         <!-- 如果使用redis有密码，启用下面配置 -->
-        <!--<redisAuth>123456</redisAuth>-->
+        <redisAuth>${plumelog.redisAuth}</redisAuth>
         <!-- redis端口号，不配置默认6379-->
         <redisPort>${plumelog.redisPort}</redisPort>
         <!-- runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1-->
         <runModel>2</runModel>
+        <compressor>true</compressor>
         <!-- 整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth-->
         <!--<expand>sleuth</expand>-->
     </appender>
@@ -57,6 +60,7 @@
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="plumelog"/>
+<!--        <appender-ref ref="plumelog_kafka"/>-->
+        <appender-ref ref="plumelog_redis"/>
     </root>
 </configuration>

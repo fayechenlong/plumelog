@@ -38,9 +38,10 @@ public class KafkaAppender extends AbstractAppender {
     private int maxCount=500;
     private int logQueueSize=10000;
     private int threadPoolSize=1;
+    private String compressionType = "none";
 
     protected KafkaAppender(String name, String appName, String kafkaHosts, String runModel, Filter filter, Layout<? extends Serializable> layout,
-                            final boolean ignoreExceptions, String expand,int maxCount,int logQueueSize,int threadPoolSize) {
+                            final boolean ignoreExceptions, String expand,int maxCount,int logQueueSize,int threadPoolSize, String compressionType) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.kafkaHosts = kafkaHosts;
@@ -49,7 +50,7 @@ public class KafkaAppender extends AbstractAppender {
         this.maxCount=maxCount;
         this.logQueueSize=logQueueSize;
         this.threadPoolSize=threadPoolSize;
-
+        this.compressionType = compressionType;
     }
 
     @Override
@@ -76,13 +77,14 @@ public class KafkaAppender extends AbstractAppender {
             @PluginAttribute("maxCount") int maxCount,
             @PluginAttribute("logQueueSize") int logQueueSize,
             @PluginAttribute("threadPoolSize") int threadPoolSize,
+            @PluginAttribute("compressionType") String compressionType,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
         if (runModel != null) {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(runModel);
         }
         if (kafkaClient == null) {
-            kafkaClient = KafkaProducerClient.getInstance(kafkaHosts);
+            kafkaClient = KafkaProducerClient.getInstance(kafkaHosts, compressionType);
         }
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
@@ -107,6 +109,6 @@ public class KafkaAppender extends AbstractAppender {
                 MessageAppenderFactory.startTraceLog(kafkaClient,count);
             });
         }
-        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand,maxCount,logQueueSize,threadPoolSize);
+        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand,maxCount,logQueueSize,threadPoolSize, compressionType);
     }
 }

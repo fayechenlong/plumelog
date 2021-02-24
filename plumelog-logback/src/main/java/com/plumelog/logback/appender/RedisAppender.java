@@ -34,6 +34,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private int maxCount=100;
     private int logQueueSize=10000;
     private int threadPoolSize=1;
+    private boolean compressor = false;
 
     public String getExpand() {
         return expand;
@@ -79,6 +80,10 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         this.logQueueSize = logQueueSize;
     }
 
+    public void setCompressor(boolean compressor) {
+        this.compressor = compressor;
+    }
+
     @Override
     protected void append(ILoggingEvent event) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
@@ -109,14 +114,12 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         }
         MessageAppenderFactory.initQueue(this.logQueueSize);
             for (int a = 0; a < this.threadPoolSize; a++) {
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startRunLog(this.redisClient, this.maxCount);
-                });
+                threadPoolExecutor.execute(() -> MessageAppenderFactory.startRunLog(this.redisClient, this.maxCount,
+                        this.compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY, this.compressor));
             }
             for (int a = 0; a < this.threadPoolSize; a++) {
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startTraceLog(this.redisClient, this.maxCount);
-                });
+                threadPoolExecutor.execute(() -> MessageAppenderFactory.startTraceLog(this.redisClient, this.maxCount,
+                        this.compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, this.compressor));
             }
     }
 }

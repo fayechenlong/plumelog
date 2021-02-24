@@ -2,22 +2,23 @@ package com.plumelog.core;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.disruptor.LogMessageProducer;
 import com.plumelog.core.disruptor.LogRingBuffer;
 import com.plumelog.core.dto.BaseLogMessage;
-import com.plumelog.core.dto.RunLogMessage;
-import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.util.GfJsonUtil;
-import com.plumelog.core.util.ThreadPoolUtil;
+import com.plumelog.core.util.LZ4Util;
 
-import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * className：MessageAppenderFactory
@@ -33,6 +34,9 @@ public class MessageAppenderFactory {
 
     public static BlockingQueue<String> rundataQueue;
     public static BlockingQueue<String> tracedataQueue;
+
+    private static AtomicLong lastRunPushTime = new AtomicLong(0);
+    private static AtomicLong lastTracePushTime = new AtomicLong(0);
 
     public static int queueSize = 10000;
 
@@ -86,64 +90,99 @@ public class MessageAppenderFactory {
         }
     }
 
-    public static void push(String redisKey, List<String> baseLogMessage, AbstractClient client, String logOutPutKey) {
+    public static void push(String key, List<String> baseLogMessage, AbstractClient client, String logOutPutKey, boolean compress) {
         logOutPut = cache.getIfPresent(logOutPutKey);
         if (logOutPut == null || logOutPut) {
             try {
-                client.putMessageList(redisKey, baseLogMessage);
+                client.putMessageList(key, compress(baseLogMessage, compress));
                 cache.put(logOutPutKey, true);
             } catch (LogQueueConnectException e) {
                 cache.put(logOutPutKey, false);
                 e.printStackTrace();
             }
         }
+    }
 
+    private static List<String> compress(List<String> baseLogMessage, boolean compress){
+
+        if (!compress) {
+            return baseLogMessage;
+        }
+        String text = GfJsonUtil.toJSONString(baseLogMessage);
+        byte[] textByte = text.getBytes(StandardCharsets.UTF_8);
+        byte[] compressedByte = LZ4Util.compressedByte(textByte);
+        RunLogCompressMessage message = new RunLogCompressMessage();
+        message.setBody(compressedByte);
+        message.setLength(textByte.length);
+        return Lists.newArrayList(GfJsonUtil.toJSONString(message));
     }
 
     public static void startRunLog(AbstractClient client, int maxCount) {
+        startRunLog(client, maxCount, LogMessageConstant.LOG_KEY);
+    }
+
+    public static void startRunLog(AbstractClient client, int maxCount, String key) {
+        startRunLog(client, maxCount, key, false);
+    }
+
+    public static void startRunLog(AbstractClient client, int maxCount, String key, boolean compress) {
         while (true) {
             try {
-                List<String> logs = new ArrayList<>();
-                int count = rundataQueue.drainTo(logs, maxCount);
-                if (count > 0) {
-                    push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
-                } else {
-                    String log = rundataQueue.take();
-                    logs.add(log);
-                    push(LogMessageConstant.LOG_KEY, logs, client, "plume.log.ack");
-                }
+                doStartLog(client, maxCount, rundataQueue, key, "plume.log.ack", lastRunPushTime, compress);
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException interruptedException) {
+                } catch (InterruptedException interruptedException ){
+                }
+            }
+        }
+    }
+
+    public static void startTraceLog(AbstractClient client, int maxCount) {
+        startTraceLog(client, maxCount, LogMessageConstant.LOG_KEY_TRACE);
+    }
+
+    public static void startTraceLog(AbstractClient client, int maxCount, String key) {
+        startTraceLog(client, maxCount, key, false);
+    }
+
+    public static void startTraceLog(AbstractClient client, int maxCount, String key, boolean compress) {
+        while (true) {
+            try {
+                doStartLog(client, maxCount, tracedataQueue, key, "plume.log.ack", lastTracePushTime, compress);
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    Thread.sleep(1000);
+                }catch (InterruptedException interruptedException ) {
 
                 }
             }
         }
-
     }
 
-    public static void startTraceLog(AbstractClient client, int maxCount) {
-        while (true) {
-            try {
-                List<String> logs = new ArrayList<>();
-                int count = tracedataQueue.drainTo(logs, maxCount);
-                if (count > 0) {
-                    push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
-                } else {
-                    String log = tracedataQueue.take();
-                    logs.add(log);
-                    push(LogMessageConstant.LOG_KEY_TRACE, logs, client, "plume.log.ack");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException interruptedException) {
+    private static void doStartLog(AbstractClient client, int maxCount, BlockingQueue<String> queue, String key, String lock, AtomicLong pushTime, boolean compress) throws InterruptedException {
 
-                }
+        List<String> logs = new ArrayList<>();
+
+        int size = queue.size();
+        long currentTimeMillis = System.currentTimeMillis();
+        long time = currentTimeMillis - pushTime.get();
+
+        if (size >= maxCount || time > 500) {
+            if (size > 0) {
+                queue.drainTo(logs, maxCount);
+                push(key, logs, client, lock, compress);
+                pushTime.set(currentTimeMillis);
             }
+        } else if (size == 0) {
+            String log = queue.take();
+            logs.add(log);
+            push(key, logs, client, lock, compress);
+            pushTime.set(currentTimeMillis);
+        } else {
+            Thread.sleep(0);
         }
     }
 }

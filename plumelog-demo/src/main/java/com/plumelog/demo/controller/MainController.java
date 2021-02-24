@@ -20,7 +20,9 @@ public class MainController {
         if(data==null||"".equals(data)){
             data="你啥都没有输入！";
         }
+
         logger.info("你输入的是{}",data);
+
         mainService.testLog(data);
         return data;
     }
