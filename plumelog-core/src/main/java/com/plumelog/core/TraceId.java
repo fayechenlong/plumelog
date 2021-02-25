@@ -15,7 +15,7 @@ public class TraceId {
 
     public static void set() {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        String traceid= uuid.substring(uuid.length() - 7);
+        String traceid= uuid.substring(uuid.length() - 14);
         logTraceID.set(traceid);
     }
     public static void setSofa() {
