@@ -33,6 +33,10 @@ public class TraceLogMessageFactory<T> {
         logMessage.setAppName(appName);
         logMessage.setContent(message);
         logMessage.setDtTime(time);
+        String traceId=TraceId.logTraceID.get();
+        if(traceId==null) {
+            TraceId.setSofa();
+        }
         logMessage.setTraceId(TraceId.logTraceID.get());
         return logMessage;
     }
