@@ -38,15 +38,13 @@ public class LogMessageUtil {
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, loggingEvent.getTimeStamp());
         logMessage.setClassName(loggingEvent.getLoggerName());
-        if(LogMessageConstant.RUN_MODEL==1) {
-            logMessage.setMethod(loggingEvent.getThreadName());
-        }else {
-            LocationInfo locationInfo=loggingEvent.getLocationInformation();
-            String method=locationInfo.getMethodName();
-            String line=locationInfo.getLineNumber();
-            logMessage.setMethod(method+"("+locationInfo.getFileName()+":"+line+")");
-            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(loggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
-        }
+
+        LocationInfo locationInfo=loggingEvent.getLocationInformation();
+        String method=locationInfo.getMethodName();
+        String line=locationInfo.getLineNumber();
+        logMessage.setMethod(method+"("+locationInfo.getFileName()+":"+line+")");
+        logMessage.setDateTime(DateUtil.parseDateToStr(new Date(loggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+
         logMessage.setLogLevel(loggingEvent.getLevel().toString());
         return logMessage;
     }

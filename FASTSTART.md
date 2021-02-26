@@ -30,9 +30,11 @@
         spring.mvc.view.prefix=classpath:/templates/
         spring.mvc.view.suffix=.html
         spring.mvc.static-path-pattern=/plumelog/**
-        
-        #值为4种 redis,kafka,rest,restServer
+
+        #值为6种 redis,kafka,rest,restServer,redisCluster,redisSentinel
         #redis 表示用redis当队列
+        #redisCluster 表示用redisCluster当队列
+        #redisSentinel 表示用redisSentinel当队列
         #kafka 表示用kafka当队列
         #rest 表示从rest接口取日志
         #restServer 表示作为rest接口服务器启动
@@ -44,13 +46,15 @@
         #plumelog.kafka.kafkaGroupName=logConsumer
         #解压缩模式，开启后不消费非压缩的队列
         plumelog.redis.compressor=true
-        #队列redis，3.3版本把队列redis独立出来，方便不用的应用用不通的队列
+        #队列redis，3.3版本把队列redis独立出来，方便不用的应用用不通的队列,如果是集群模式用逗号隔开
         plumelog.queue.redis.redisHost=127.0.0.1:6379
         #如果使用redis有密码,启用下面配置
         #plumelog.queue.redis.redisPassWord=plumelog
         #plumelog.queue.redis.redisDb=0
+        #哨兵模式需要填写masterName
+        #plumelog.queue.redis.sentinel.masterName=plumelog
         
-        #redis配置,3.0版本必须配置redis地址，因为需要监控报警
+        #redis单机模式和kafka模式必须配置管理redis地址，redis集群模式不需要配置管理redis地址配置了也不起作用
         plumelog.redis.redisHost=127.0.0.1:6379
         #如果使用redis有密码,启用下面配置
         #plumelog.redis.redisPassWord=plumelog
@@ -288,7 +292,7 @@
 ```    
 #### （3）示例(所有的列子都在plumelog-demo里面)
 
-### 配置详解
+### 客户端配置详解
 
 RedisAppender
 
@@ -296,14 +300,14 @@ RedisAppender
 |  ----  | ----  |
 | appName  | 自定义应用名称 |
 | redisHost  | redis地址 |
-| redisPort  | redis端口号 |
+| redisPort  | redis端口号 3.4版本后可以不用配置可以配置在host上用冒号结尾|
 | redisAuth  | redis密码 |
 | redisDb  | redis db |
+| model  | （3.4）redis三种模式（standalone,cluster,sentinel） 不配置默认standalone|
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
-| expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
 | maxCount  | （3.1）批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
-| compressionType  | （3.4）压缩方式配置，默认none |
+| compressor  | （3.4）是否开启日志压缩，默认false |
 
 KafkaAppender
 
@@ -312,10 +316,9 @@ KafkaAppender
 | appName  | 自定义应用名称 |
 | kafkaHosts  | kafka集群地址，用逗号隔开 |
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
-| expand  | 整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth |
 | maxCount  | 批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
-| compressor  | （3.4）是否开启日志压缩，默认false |
+| compressionType  | （3.4）压缩方式配置，默认none |
 
 * 普通日志使用
 
@@ -334,10 +337,11 @@ KafkaAppender
 ```   
   spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceid
 ```xml
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-sleuth</artifactId>
-            </dependency>
+             <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+            <version>2.2.7.RELEASE</version>
+        </dependency>
 ``` 
 * [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
   

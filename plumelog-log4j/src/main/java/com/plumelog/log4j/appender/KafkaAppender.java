@@ -25,7 +25,6 @@ public class KafkaAppender extends AppenderSkeleton {
     private String appName;
     private String kafkaHosts;
     private String runModel;
-    private String topic;
     private int maxCount=100;
     private int logQueueSize=10000;
     private int threadPoolSize=1;
@@ -37,10 +36,6 @@ public class KafkaAppender extends AppenderSkeleton {
 
     public void setKafkaHosts(String kafkaHosts) {
         this.kafkaHosts = kafkaHosts;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
     }
 
     public void setRunModel(String runModel) {

@@ -19,17 +19,17 @@ import javax.servlet.Filter;
 public class FilterConfig {
 
 
-    @Bean
-    public FilterRegistrationBean filterRegistrationBean1() {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-        filterRegistrationBean.setFilter(initCustomFilter());
-        filterRegistrationBean.addUrlPatterns("/*");
-        filterRegistrationBean.setOrder(Integer.MIN_VALUE);
-        return filterRegistrationBean;
-    }
-
-    @Bean
-    public Filter initCustomFilter() {
-        return new TraceIdFilter();
-    }
+//    @Bean
+//    public FilterRegistrationBean filterRegistrationBean1() {
+//        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+//        filterRegistrationBean.setFilter(initCustomFilter());
+//        filterRegistrationBean.addUrlPatterns("/*");
+//        filterRegistrationBean.setOrder(Integer.MIN_VALUE);
+//        return filterRegistrationBean;
+//    }
+//
+//    @Bean
+//    public Filter initCustomFilter() {
+//        return new TraceIdFilter();
+//    }
 }
