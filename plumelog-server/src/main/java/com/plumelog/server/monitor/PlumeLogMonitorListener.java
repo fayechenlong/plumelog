@@ -2,6 +2,7 @@ package com.plumelog.server.monitor;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.plumelog.core.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
@@ -41,7 +42,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     @Autowired
     private PlumeLogMonitorRuleConfig plumeLogMonitorRuleConfig;
     @Autowired
-    private RedisClient redisClient;
+    private AbstractClient redisClient;
 
     private static final String WARNING_NOTICE = ":WARNING:NOTICE";
 

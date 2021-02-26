@@ -109,11 +109,19 @@ public class RedisAppender extends AbstractAppender {
         } else if (model.equals("sentinel")) {
             redisClient = RedisSentinelClient.getInstance(redisHost, masterName, redisAuth, redisDb);
         } else {
-            redisClient = RedisClient.getInstance(redisHost,
-                    redisPort == null ?
-                            LogMessageConstant.REDIS_DEFAULT_PORT
-                            : Integer.parseInt(redisPort),
-                    redisAuth, redisDb);
+            int port = 6379;
+            String ip = "127.0.0.1";
+            if(redisPort==null){
+                String[] hs = redisHost.split(":");
+                if (hs.length == 2) {
+                    ip = hs[0];
+                    port = Integer.valueOf(hs[1]);
+                }
+            }else {
+                ip=redisHost;
+                port=Integer.parseInt(redisPort);
+            }
+            redisClient = RedisClient.getInstance(ip,port,redisAuth,redisDb);
         }
         if (maxCount == 0) {
             maxCount = 100;

@@ -87,14 +87,14 @@ public class ClientConfig implements InitializingBean {
                 logger.error("redis config error! please check the application.properties(plumelog.queue.redis.cluster.nodes) ");
                 return null;
             }
-            logger.info("queue ClusterRedis hosts:{}", queueRedisHost);
+            logger.info("manger redis  hosts:{}", queueRedisHost);
             return new RedisClusterClient(queueRedisHost, queueRedisPassWord);
         }else if (InitConfig.REDIS_SENTINEL_MODE_NAME.equals(model)) {
             if (StringUtils.isEmpty(queueRedisHost)) {
                 logger.error("redis config error! please check the application.properties(plumelog.queue.redis.sentinel.nodes) ");
                 return null;
             }
-            logger.info("queue redisSentinelNodes hosts:{}", queueRedisHost);
+            logger.info("manger redis hosts:{}", queueRedisHost);
             return new RedisSentinelClient(queueRedisHost, queueRedisSentinelMasterName, queueRedisPassWord, queueRedisDb);
         }else{
             String[] hs = redisHost.split(":");

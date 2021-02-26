@@ -88,6 +88,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public boolean setNx(String key, Integer expire) {
         if (null == key) {
             return false;
@@ -103,6 +104,7 @@ public class RedisClusterClient extends AbstractClient {
         return false;
     }
 
+    @Override
     public boolean existsKey(String key) {
         try {
             return jedisCluster.exists(key);
@@ -111,6 +113,7 @@ public class RedisClusterClient extends AbstractClient {
 
     }
 
+    @Override
     public String getMessage(String key) {
         String obj;
         try {
@@ -120,6 +123,7 @@ public class RedisClusterClient extends AbstractClient {
         return obj;
     }
 
+    @Override
     public void set(String key, String value) {
         try {
             jedisCluster.set(key, value);
@@ -127,6 +131,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public void set(String key, String value, int seconds) {
         try {
             jedisCluster.set(key, value);
@@ -135,6 +140,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public void expireAt(String key, Long time) {
         try {
             jedisCluster.expireAt(key, time);
@@ -142,6 +148,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public void expire(String key, int seconds) {
         try {
             jedisCluster.expire(key, seconds);
@@ -149,6 +156,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public Long incr(String key) {
         Long re = 0L;
         try {
@@ -158,6 +166,7 @@ public class RedisClusterClient extends AbstractClient {
         return re;
     }
 
+    @Override
     public Long incrBy(String key, int value) {
         Long re = 0L;
         try {
@@ -167,6 +176,7 @@ public class RedisClusterClient extends AbstractClient {
         return re;
     }
 
+    @Override
     public void hset(String key, Map<String, String> value) {
         try {
             jedisCluster.hset(key, value);
@@ -174,6 +184,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public void sadd(String key, String value) {
         try {
             jedisCluster.sadd(key, value);
@@ -181,6 +192,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public Set<String> smembers(String key) {
         try {
             return jedisCluster.smembers(key);
@@ -188,6 +200,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public void del(String key) {
         try {
             jedisCluster.del(key);
@@ -195,6 +208,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public void hset(String key, String field, String value) {
         try {
             jedisCluster.hset(key, field, value);
@@ -202,6 +216,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public void hdel(String key, String... field) {
         try {
             jedisCluster.hdel(key, field);
@@ -209,6 +224,7 @@ public class RedisClusterClient extends AbstractClient {
         }
     }
 
+    @Override
     public String hget(String key, String field) {
         String value = "";
         try {
@@ -218,6 +234,7 @@ public class RedisClusterClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public Long llen(String key) {
         Long value = 0L;
         try {
@@ -227,6 +244,7 @@ public class RedisClusterClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public Map<String, String> hgetAll(String key) {
         Map<String, String> value = new HashMap<>();
         try {
@@ -236,6 +254,7 @@ public class RedisClusterClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public List<String> hmget(String key, String... field) {
         List<String> value = new ArrayList<>();
         try {
@@ -245,6 +264,7 @@ public class RedisClusterClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public Long hincrby(String key, String field, int num) {
         Long re = 0L;
         try {

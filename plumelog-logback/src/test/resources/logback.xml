@@ -26,10 +26,11 @@
 <!--        <runModel>2</runModel>-->
 <!--        <expand>sleuth</expand>-->
 <!--    </appender>-->
-    <appender name="plumelog" class="com.plumelog.logback.appender.RedisClusterAppender">
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plumelog-test</appName>
-        <redisClusterNodes>10.100.2.47:6379,10.100.2.47:6380,10.100.2.57:6379,10.100.2.57:6380,10.100.2.77:6379,10.100.2.77:6380</redisClusterNodes>
+        <redisHost>10.100.2.47:6379,10.100.2.47:6380,10.100.2.57:6379,10.100.2.57:6380,10.100.2.77:6379,10.100.2.77:6380</redisHost>
         <runModel>2</runModel>
+        <model>cluster</model>
         <redisAuth>devredis</redisAuth>
         <expand>sleuth</expand>
     </appender>

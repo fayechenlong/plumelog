@@ -109,11 +109,19 @@ public class RedisAppender extends AppenderSkeleton {
             } else if (this.model.equals("sentinel")) {
                 this.redisClient = RedisSentinelClient.getInstance(this.redisHost, this.masterName, this.redisAuth, this.redisDb);
             } else {
-                this.redisClient = RedisClient.getInstance(this.redisHost,
-                        this.redisPort == null ?
-                                LogMessageConstant.REDIS_DEFAULT_PORT
-                                : Integer.parseInt(this.redisPort),
-                        this.redisAuth, this.redisDb);
+                int port = 6379;
+                String ip = "127.0.0.1";
+                if(this.redisPort==null){
+                    String[] hs = redisHost.split(":");
+                    if (hs.length == 2) {
+                        ip = hs[0];
+                        port = Integer.valueOf(hs[1]);
+                    }
+                }else {
+                    ip=this.redisHost;
+                    port=Integer.parseInt(this.redisPort);
+                }
+                this.redisClient = RedisClient.getInstance(ip,port,this.redisAuth, this.redisDb);
             }
 
             MessageAppenderFactory.initQueue(this.logQueueSize);

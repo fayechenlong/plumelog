@@ -49,7 +49,7 @@ public class CollectStartBean implements InitializingBean {
             KafkaLogCollect kafkaLogCollect = new KafkaLogCollect(elasticLowerClient, kafkaConsumer, applicationEventPublisher);
             kafkaLogCollect.kafkaStart();
         }
-        if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL)) {
+        if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL)||InitConfig.REDIS_SENTINEL_MODE_NAME.equals(InitConfig.START_MODEL)||InitConfig.REDIS_CLUSTER_MODE_NAME.equals(InitConfig.START_MODEL)) {
             RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisQueueClient, applicationEventPublisher, compressor);
             redisLogCollect.redisStart();
         }

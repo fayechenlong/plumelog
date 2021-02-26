@@ -69,6 +69,7 @@ public class RedisSentinelClient extends AbstractClient {
 
     }
 
+    @Override
     public boolean setNx(String key, Integer expire) {
         if (null == key) {
             return false;
@@ -86,6 +87,7 @@ public class RedisSentinelClient extends AbstractClient {
         return false;
     }
 
+    @Override
     public boolean existsKey(String key) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -96,6 +98,7 @@ public class RedisSentinelClient extends AbstractClient {
 
     }
 
+    @Override
     public String getMessage(String key) {
         Jedis sj = jedisSentinelPool.getResource();
         String obj;
@@ -127,6 +130,7 @@ public class RedisSentinelClient extends AbstractClient {
 
     }
 
+    @Override
     public void set(String key, String value) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -136,6 +140,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public void set(String key, String value, int seconds) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -148,6 +153,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public void expireAt(String key, Long time) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -157,6 +163,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public void expire(String key, int seconds) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -166,6 +173,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public Long incr(String key) {
         Long re = 0L;
         Jedis sj = jedisSentinelPool.getResource();
@@ -177,6 +185,7 @@ public class RedisSentinelClient extends AbstractClient {
         return re;
     }
 
+    @Override
     public Long incrBy(String key, int value) {
         Long re = 0L;
         Jedis sj = jedisSentinelPool.getResource();
@@ -188,6 +197,7 @@ public class RedisSentinelClient extends AbstractClient {
         return re;
     }
 
+    @Override
     public void hset(String key, Map<String, String> value) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -197,6 +207,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public void sadd(String key, String value) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -206,6 +217,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public Set<String> smembers(String key) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -215,6 +227,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public void del(String key) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -224,6 +237,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public void hset(String key, String field, String value) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -233,6 +247,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public void hdel(String key, String... field) {
         Jedis sj = jedisSentinelPool.getResource();
         try {
@@ -242,6 +257,7 @@ public class RedisSentinelClient extends AbstractClient {
         }
     }
 
+    @Override
     public String hget(String key, String field) {
         String value = "";
         Jedis sj = jedisSentinelPool.getResource();
@@ -253,6 +269,7 @@ public class RedisSentinelClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public Long llen(String key) {
         Long value = 0L;
         Jedis sj = jedisSentinelPool.getResource();
@@ -264,6 +281,7 @@ public class RedisSentinelClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public Map<String, String> hgetAll(String key) {
         Map<String, String> value = new HashMap<>();
         Jedis sj = jedisSentinelPool.getResource();
@@ -275,6 +293,7 @@ public class RedisSentinelClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public List<String> hmget(String key, String... field) {
         List<String> value = new ArrayList<>();
         Jedis sj = jedisSentinelPool.getResource();
@@ -286,6 +305,7 @@ public class RedisSentinelClient extends AbstractClient {
         return value;
     }
 
+    @Override
     public Long hincrby(String key, String field, int num) {
         Long re = 0L;
         Jedis sj = jedisSentinelPool.getResource();
@@ -297,6 +317,7 @@ public class RedisSentinelClient extends AbstractClient {
         return re;
     }
 
+    @Override
     public List<String> getMessage(String key, int size) throws LogQueueConnectException {
         Jedis sj = null;
         List<String> list = new ArrayList<>();
