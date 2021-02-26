@@ -126,6 +126,8 @@
                                         <exclude>**/*.xml</exclude>
                                         <exclude>**/*.conf</exclude>
                                         <exclude>**/*.properties</exclude>
+                                        <exclude>**/*.sh</exclude>
+                                        <exclude>**/*.bat</exclude>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>
