@@ -18,7 +18,12 @@ public class TraceIdFilter implements Filter {
 
         try {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
-            TraceId.set();
+            String traceId=request.getParameter("traceId");
+            if(traceId==null||"".equals(traceId)) {
+                TraceId.set();
+            }else {
+                TraceId.logTraceID.set(traceId);
+            }
         } finally {
             filterChain.doFilter(servletRequest, servletResponse);
         }
