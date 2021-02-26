@@ -1,7 +1,10 @@
 package com.plumelog.log4j2.appender;
 
+import com.plumelog.core.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.redis.RedisClusterClient;
+import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j2.util.LogMessageUtil;
@@ -30,31 +33,37 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Plugin(name = "RedisAppender", category = "Core", elementType = "appender", printObject = true)
 public class RedisAppender extends AbstractAppender {
-    private static RedisClient redisClient;
+    private static AbstractClient redisClient;
     private String appName;
     private String redisHost;
     private String redisPort;
     private String redisAuth;
     private String runModel;
     private String expand;
-    private int redisDb=0;
-    private int maxCount=500;
-    private int logQueueSize=10000;
-    private int threadPoolSize=5;
+    private int redisDb = 0;
+    private int maxCount = 500;
+    private int logQueueSize = 10000;
+    private int threadPoolSize = 5;
+    private boolean compressor = false;
+    private String model = "standalone";
+    private String masterName;
 
-    protected RedisAppender(String name, String appName, String redisHost, String redisPort,String redisAuth,String runModel, Filter filter, Layout<? extends Serializable> layout,
-                            final boolean ignoreExceptions,String expand,int maxCount,int logQueueSize,int redisDb,int threadPoolSize) {
+    protected RedisAppender(String name, String appName, String redisHost, String redisPort, String redisAuth, String runModel, Filter filter, Layout<? extends Serializable> layout,
+                            final boolean ignoreExceptions, String expand, int maxCount, int logQueueSize, int redisDb, int threadPoolSize, boolean compressor, String model, String masterName) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.redisHost = redisHost;
         this.redisPort = redisPort;
-        this.redisAuth=redisAuth;
-        this.runModel=runModel;
+        this.redisAuth = redisAuth;
+        this.runModel = runModel;
         this.expand = expand;
-        this.maxCount=maxCount;
-        this.logQueueSize=logQueueSize;
-        this.redisDb=redisDb;
-        this.threadPoolSize=threadPoolSize;
+        this.maxCount = maxCount;
+        this.logQueueSize = logQueueSize;
+        this.redisDb = redisDb;
+        this.threadPoolSize = threadPoolSize;
+        this.compressor = compressor;
+        this.model = model;
+        this.masterName = masterName;
     }
 
     @Override
@@ -67,8 +76,10 @@ public class RedisAppender extends AbstractAppender {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
+
     @PluginFactory
     public static RedisAppender createAppender(
             @PluginAttribute("name") String name,
@@ -82,36 +93,57 @@ public class RedisAppender extends AbstractAppender {
             @PluginAttribute("redisDb") int redisDb,
             @PluginAttribute("logQueueSize") int logQueueSize,
             @PluginAttribute("threadPoolSize") int threadPoolSize,
+            @PluginAttribute("compressor") boolean compressor,
+            @PluginAttribute("model") String model,
+            @PluginAttribute("masterName") String masterName,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
-        if(runModel!=null){
-            LogMessageConstant.RUN_MODEL=Integer.parseInt(runModel);
+        if (runModel != null) {
+            LogMessageConstant.RUN_MODEL = Integer.parseInt(runModel);
         }
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
-        redisClient = RedisClient.getInstance(redisHost, redisPort == null ?
-                LogMessageConstant.REDIS_DEFAULT_PORT
-                : Integer.parseInt(redisPort), redisAuth,redisDb);
-        if(maxCount==0){
-            maxCount=100;
+        if (model.equals("cluster")) {
+            redisClient = RedisClusterClient.getInstance(redisHost, redisAuth);
+        } else if (model.equals("sentinel")) {
+            redisClient = RedisSentinelClient.getInstance(redisHost, masterName, redisAuth, redisDb);
+        } else {
+            int port = 6379;
+            String ip = "127.0.0.1";
+            if(redisPort==null){
+                String[] hs = redisHost.split(":");
+                if (hs.length == 2) {
+                    ip = hs[0];
+                    port = Integer.valueOf(hs[1]);
+                }
+            }else {
+                ip=redisHost;
+                port=Integer.parseInt(redisPort);
+            }
+            redisClient = RedisClient.getInstance(ip,port,redisAuth,redisDb);
         }
-        if(logQueueSize==0){
-            logQueueSize=10000;
+        if (maxCount == 0) {
+            maxCount = 100;
         }
-        if(threadPoolSize==0){
-            threadPoolSize=1;
+        if (logQueueSize == 0) {
+            logQueueSize = 10000;
         }
-        final int count=maxCount;
+        if (threadPoolSize == 0) {
+            threadPoolSize = 1;
+        }
+        final int count = maxCount;
         MessageAppenderFactory.initQueue(logQueueSize);
-        for(int a=0;a<threadPoolSize;a++){
-            threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.startRunLog(redisClient,count);
+        for (int a = 0; a < threadPoolSize; a++) {
+            threadPoolExecutor.execute(() -> {
+                MessageAppenderFactory.startRunLog(redisClient, count,
+                        compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY, compressor);
             });
-            threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.startTraceLog(redisClient,count);
+            threadPoolExecutor.execute(() -> {
+                MessageAppenderFactory.startTraceLog(redisClient, count,
+                        compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, compressor);
             });
         }
-        return new RedisAppender(name, appName, redisHost, redisPort,redisAuth,runModel, filter, layout, true,expand,maxCount,logQueueSize,redisDb,threadPoolSize);
+        return new RedisAppender(name, appName, redisHost, redisPort, redisAuth, runModel, filter, layout, true, expand, maxCount, logQueueSize, redisDb, threadPoolSize, compressor, model, masterName);
     }
 }

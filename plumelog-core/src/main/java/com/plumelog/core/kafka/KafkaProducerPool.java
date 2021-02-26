@@ -14,11 +14,11 @@ import org.apache.kafka.clients.producer.KafkaProducer;
  */
 public class KafkaProducerPool extends Pool<KafkaProducer> {
 
-    public KafkaProducerPool(final GenericObjectPoolConfig poolConfig, final String hosts) {
-        super(poolConfig,new KafkaProducerFactory(hosts));
+    public KafkaProducerPool(final GenericObjectPoolConfig poolConfig, final String hosts, final String compressionType) {
+        super(poolConfig,new KafkaProducerFactory(hosts, compressionType));
     }
-    public KafkaProducerPool( final String hosts) {
-        super(new GenericObjectPoolConfig(),new KafkaProducerFactory(hosts));
+    public KafkaProducerPool( final String hosts, final String compressionType) {
+        super(new GenericObjectPoolConfig(),new KafkaProducerFactory(hosts, compressionType));
     }
     @Override
     public KafkaProducer getResource() {

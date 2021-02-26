@@ -42,41 +42,38 @@ public class LogMessageUtil {
 
     /**
      * 扩展字段
+     *
      * @param baseLogMessage
      * @param logEvent
      * @return
      */
-    public static String getLogMessage(BaseLogMessage baseLogMessage,final LogEvent logEvent){
-        Map<String, String> mdc= logEvent.getContextData().toMap();
-        Map<String, Object> map= GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage),Map.class);
-        if(mdc!=null) {
+    public static String getLogMessage(BaseLogMessage baseLogMessage, final LogEvent logEvent) {
+        Map<String, String> mdc = logEvent.getContextData().toMap();
+        Map<String, Object> map = GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage), Map.class);
+        if (mdc != null) {
             map.putAll(mdc);
-        };
+        }
+        ;
         return GfJsonUtil.toJSONString(map);
     }
+
     public static BaseLogMessage getLogMessage(String appName, LogEvent logEvent) {
-        String traceId = isExpandRunLog(logEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(logEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {
-            if (!LogMessageConstant.EXPAND.equals(LogMessageConstant.DEFAULT_EXPAND) && traceId != null) {
-                traceMessage.setTraceId(traceId);
-            }
             return TraceLogMessageFactory.getTraceLogMessage(
                     traceMessage, appName, logEvent.getTimeMillis());
         }
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, logEvent.getTimeMillis());
         logMessage.setClassName(logEvent.getLoggerName());
-        if (LogMessageConstant.RUN_MODEL == 1) {
-            logMessage.setMethod(logEvent.getThreadName());
-        } else {
-            StackTraceElement atackTraceElement = logEvent.getSource();
-            String method = atackTraceElement.getMethodName();
-            String line = String.valueOf(atackTraceElement.getLineNumber());
-            logMessage.setMethod(method + "(" +atackTraceElement.getFileName()+":"+ line + ")");
-            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(logEvent.getTimeMillis()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
-        }
+
+        StackTraceElement stackTraceElement = logEvent.getSource();
+        String method = stackTraceElement.getMethodName();
+        String line = String.valueOf(stackTraceElement.getLineNumber());
+        logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
+        logMessage.setDateTime(DateUtil.parseDateToStr(new Date(logEvent.getTimeMillis()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+
         logMessage.setLogLevel(logEvent.getLevel().toString());
         return logMessage;
     }
@@ -105,7 +102,7 @@ public class LogMessageUtil {
     }
 
     private static String packageMessage(String message, Object[] args) {
-        if (message!=null&&message.indexOf(LogMessageConstant.DELIM_STR) > -1) {
+        if (message != null && message.indexOf(LogMessageConstant.DELIM_STR) > -1) {
             return INSTANCE.newMessage(message, args).getFormattedMessage();
         }
         return TraceLogMessageFactory.packageMessage(message, args);

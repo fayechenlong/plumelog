@@ -11,7 +11,6 @@ import com.plumelog.core.kafka.KafkaProducerClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -26,10 +25,10 @@ public class KafkaAppender extends AppenderSkeleton {
     private String appName;
     private String kafkaHosts;
     private String runModel;
-    private String topic;
     private int maxCount=100;
     private int logQueueSize=10000;
     private int threadPoolSize=1;
+    private String compressionType = "none";
 
     public void setAppName(String appName) {
         this.appName = appName;
@@ -37,10 +36,6 @@ public class KafkaAppender extends AppenderSkeleton {
 
     public void setKafkaHosts(String kafkaHosts) {
         this.kafkaHosts = kafkaHosts;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
     }
 
     public void setRunModel(String runModel) {
@@ -59,6 +54,10 @@ public class KafkaAppender extends AppenderSkeleton {
         this.kafkaClient = kafkaClient;
     }
 
+    public void setCompressionType(String compressionType) {
+        this.compressionType = compressionType;
+    }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
     @Override
@@ -67,7 +66,7 @@ public class KafkaAppender extends AppenderSkeleton {
             LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
         }
         if (this.kafkaClient == null) {
-            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts);
+            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressionType);
             MessageAppenderFactory.initQueue(this.logQueueSize);
             for(int a=0;a<this.threadPoolSize;a++){
 

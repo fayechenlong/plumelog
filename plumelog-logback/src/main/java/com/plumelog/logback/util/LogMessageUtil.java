@@ -9,18 +9,10 @@ import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
-import com.plumelog.core.util.DateUtil;
-import com.plumelog.core.util.GfJsonUtil;
-import com.plumelog.core.util.LogExceptionStackTrace;
-import com.plumelog.core.util.TraceLogMessageFactory;
+import com.plumelog.core.util.*;
 import org.slf4j.helpers.MessageFormatter;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,42 +38,37 @@ public class LogMessageUtil {
 
     /**
      * 扩展字段
+     *
      * @param baseLogMessage
      * @param iLoggingEvent
      * @return
      */
-    public static String getLogMessage(BaseLogMessage baseLogMessage,final ILoggingEvent iLoggingEvent){
-        Map<String, String> mdc= iLoggingEvent.getMDCPropertyMap();
-        Map<String, Object> map=GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage),Map.class);
-        if(mdc!=null) {
+    public static String getLogMessage(BaseLogMessage baseLogMessage, final ILoggingEvent iLoggingEvent) {
+        Map<String, String> mdc = iLoggingEvent.getMDCPropertyMap();
+        Map<String, Object> map = GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage), Map.class);
+        if (mdc != null) {
             map.putAll(mdc);
         }
         return GfJsonUtil.toJSONString(map);
     }
 
     public static BaseLogMessage getLogMessage(final String appName, final ILoggingEvent iLoggingEvent) {
-        String traceId = isExpandRunLog(iLoggingEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(iLoggingEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {
-            if (!LogMessageConstant.EXPAND.equals(LogMessageConstant.DEFAULT_EXPAND) && traceId != null) {
-                traceMessage.setTraceId(traceId);
-            }
             return TraceLogMessageFactory.getTraceLogMessage(
                     traceMessage, appName, iLoggingEvent.getTimeStamp());
         }
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, formattedMessage, iLoggingEvent.getTimeStamp());
         logMessage.setClassName(iLoggingEvent.getLoggerName());
-        if (LogMessageConstant.RUN_MODEL == 1) {
-            logMessage.setMethod(iLoggingEvent.getThreadName());
-        } else {
-            StackTraceElement atackTraceElement = iLoggingEvent.getCallerData()[0];
-            String method = atackTraceElement.getMethodName();
-            String line = String.valueOf(atackTraceElement.getLineNumber());
-            logMessage.setMethod(method + "(" +atackTraceElement.getFileName()+":"+ line + ")");
-            logMessage.setDateTime(DateUtil.parseDateToStr(new Date(iLoggingEvent.getTimeStamp()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
-        }
+
+        StackTraceElement stackTraceElement = iLoggingEvent.getCallerData()[0];
+        String method = stackTraceElement.getMethodName();
+        String line = String.valueOf(stackTraceElement.getLineNumber());
+        logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
+        logMessage.setDateTime(DateUtil.parseDateToStr(new Date(iLoggingEvent.getTimeStamp()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;
     }
@@ -108,7 +95,7 @@ public class LogMessageUtil {
     }
 
     private static String packageMessage(String message, Object[] args) {
-        if (message!=null&&message.indexOf(LogMessageConstant.DELIM_STR) > -1) {
+        if (message != null && message.indexOf(LogMessageConstant.DELIM_STR) > -1) {
             return MessageFormatter.arrayFormat(message, args).getMessage();
         }
         return TraceLogMessageFactory.packageMessage(message, args);

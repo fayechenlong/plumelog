@@ -1,6 +1,7 @@
 package com.plumelog.server.monitor;
 
 import com.alibaba.fastjson.JSON;
+import com.plumelog.core.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.redis.RedisClient;
@@ -27,7 +28,7 @@ public class PlumeLogMonitorRuleConfig {
     private static Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
 
     @Autowired
-    private RedisClient redisClient;
+    private AbstractClient redisClient;
 
     private static ConcurrentHashMap<String, List<WarningRule>> configMap = new ConcurrentHashMap<>();
 

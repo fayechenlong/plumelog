@@ -1,5 +1,18 @@
- ![avatar](/pic/icon.png)
- # Plumelog一个简单易用的java分布式日志组件
+<p align="center" >
+    <img src="https://gitee.com/frankchenlong/plumelog/raw/master/pic/icon.png" width="150">
+    <h3 align="center">Plumelog</h3>
+    <p align="center">
+        Plumelog一个简单易用的java分布式日志组件
+</p>
+
+[![star](https://gitee.com/frankchenlong/plumelog/badge/star.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/stargazers)
+[![fork](https://gitee.com/frankchenlong/plumelog/badge/fork.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/members)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
+
+Star趋势图
+[![Stargazers over time](https://whnb.wang/img/frankchenlong/plumelog)](https://whnb.wang/frankchenlong/plumelog)
+
 ### 一.系统介绍
 
  1. 无入侵的分布式日志系统，基于log4j、log4j2、logback搜集日志，设置链路ID，方便查询关联日志
@@ -45,12 +58,14 @@
           <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
         </properties>
 ```   
-* 非maven项目，到发行版中（https://gitee.com/frankchenlong/plumelog/releases）下载lib.zip，解压放到自己的lib目录，目前只上传了log4j的版本
+* 非maven项目，到发行版中（https://gitee.com/frankchenlong/plumelog/releases ）下载lib.zip，解压放到自己的lib目录，目前只上传了log4j的版本
   可能会涉及log4j jar冲突，需要自行排除
   
 * jdk1.6的项目下载源码，编译打包plumelog-client-jdk6，引入到自己的项目
   
 ### [使用文档](/FASTSTART.md)
+
+### [查询后台使用指南](/HELP.md)
 
 ### [版本升级注意事项](/update.md)
 
@@ -63,12 +78,13 @@
    | 3.1  | 增加扩展字段功能（MDC），优化日志搜集性能，合并UI和server模块，减少部署成本 |
    | 3.2  | 重大升级优化，老用户赶紧升级 plumelog-server 到3.2|
    | 3.3  | 用做redis队列的时候，不通的服务可以使用不通的队列，极大增大了redis模式下的吞吐|
+   | 3.4  | 可以配置日志压缩，redis使用LZ4压缩日志，kafka添加配置压缩类型，遵循kafka配置|
    
 ### 五.联系交流
 
    * QQ群：1072991065   
    
-   * 遇到使用问题加群讨论
+   * 遇到问题可以先提issue，实在处理不了的加群讨论；提问带上你的配置截图和运行截图
    
 
 ### 六.测试地址
@@ -76,3 +92,20 @@
    * 查询界面地址：http://demo.plumelog.com  用户名：admin 密码：admin   （测试服务器配置比较低大家简单体验即可）
       
    * 访问这个地址产生测试log数据：http://log.plumelog.com/index?data=1234  data参数自己随便传，传什么打印什么
+
+### 七.界面截图
+
+![avatar](/pic/0.png)
+
+![avatar](/pic/1.png)
+
+![avatar](/pic/2.png)
+
+![avatar](/pic/3.png)
+
+![avatar](/pic/4.png)
+
+![avatar](/pic/5.png)
+
+![avatar](/pic/6.png)
+

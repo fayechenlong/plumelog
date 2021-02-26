@@ -4,10 +4,7 @@ package com.plumelog.demo.service;
 import com.alibaba.ttl.threadpool.TtlExecutors;
 import com.plumelog.core.LogMessage;
 import com.plumelog.core.util.LogExceptionStackTrace;
-import com.plumelog.demo.dubbo.service.EasyLogDubboService;
 import com.plumelog.trace.annotation.Trace;
-import org.apache.dubbo.config.annotation.Reference;
-import org.apache.tomcat.util.ExceptionUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +29,7 @@ public class MainService {
 
     @Trace
     public void testLog(String data) {
-        logger.error("I am service! 下面调用EasyLogDubboService远程服务！");
+//        logger.error("I am service! 下面调用EasyLogDubboService远程服务！");
         //easyLogDubboService.testLogDubbo();
         logger.info("远程调用成功！");
 

@@ -1,5 +1,6 @@
 package com.plumelog.server.controller;
 
+import com.plumelog.core.AbstractClient;
 import com.plumelog.core.LogMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
@@ -42,9 +43,9 @@ public class MainController {
 
     private Logger logger = LoggerFactory.getLogger(MainController.class);
     @Autowired
-    private RedisClient redisClient;
+    private AbstractClient redisClient;
     @Autowired
-    private RedisClient redisQueueClient;
+    private AbstractClient redisQueueClient;
 
     @Autowired
     private ElasticLowerClient elasticLowerClient;
