@@ -15,6 +15,8 @@ public class InitConfig {
     public final static String KAFKA_MODE_NAME = "kafka";
     public final static String REDIS_MODE_NAME = "redis";
     public final static String REST_MODE_NAME = "rest";
+    public final static String REDIS_CLUSTER_MODE_NAME = "redisCluster";
+    public final static String REDIS_SENTINEL_MODE_NAME = "redisSentinel";
 
     public  static int ES_INDEX_SHARDS = 5;
     public  static int ES_INDEX_REPLICAS = 1;

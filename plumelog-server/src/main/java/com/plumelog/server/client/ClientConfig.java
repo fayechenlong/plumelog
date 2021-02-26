@@ -5,6 +5,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.kafka.KafkaConsumerClient;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisClusterClient;
+import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.server.CollectStartBean;
 import com.plumelog.server.InitConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -51,7 +52,7 @@ public class ClientConfig implements InitializingBean {
     @Value("${plumelog.redis.redisPassWord:}")
     private String redisPassWord;
     @Value("${plumelog.redis.redisDb:0}")
-    private int redisDb=0;
+    private int redisDb = 0;
     @Value("${plumelog.maxSendSize:5000}")
     public int maxSendSize = 5000;
     @Value("${plumelog.interval:100}")
@@ -71,48 +72,65 @@ public class ClientConfig implements InitializingBean {
 
     @Value("${plumelog.queue.redis.redisHost:''}")
     private String queueRedisHost;
-    @Value("${plumelog.queue.redis.cluster.nodes:''}")
-    private String queueRedisClusterNodes;
+    @Value("${plumelog.queue.redis.sentinel.masterName:''}")
+    private String queueRedisSentinelMasterName;
     @Value("${plumelog.queue.redis.redisPassWord:}")
     private String queueRedisPassWord;
     @Value("${plumelog.queue.redis.redisDb:0}")
-    private int queueRedisDb=0;
+    private int queueRedisDb = 0;
 
 
-
-    @Bean(name="redisClient")
-    public RedisClient initRedisClient() {
-        if (StringUtils.isEmpty(redisHost)) {
-            logger.error("can not find redisHost config! please check the application.properties(plumelog.redis.redisHost) ");
-            return null;
+    @Bean(name = "redisClient")
+    public AbstractClient initRedisClient() {
+        if (InitConfig.REDIS_CLUSTER_MODE_NAME.equals(model)) {
+            if (StringUtils.isEmpty(queueRedisHost)) {
+                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.cluster.nodes) ");
+                return null;
+            }
+            logger.info("queue ClusterRedis hosts:{}", queueRedisHost);
+            return new RedisClusterClient(queueRedisHost, queueRedisPassWord);
+        }else if (InitConfig.REDIS_SENTINEL_MODE_NAME.equals(model)) {
+            if (StringUtils.isEmpty(queueRedisHost)) {
+                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.sentinel.nodes) ");
+                return null;
+            }
+            logger.info("queue redisSentinelNodes hosts:{}", queueRedisHost);
+            return new RedisSentinelClient(queueRedisHost, queueRedisSentinelMasterName, queueRedisPassWord, queueRedisDb);
+        }else{
+            String[] hs = redisHost.split(":");
+            int port = 6379;
+            String ip = "127.0.0.1";
+            if (hs.length == 2) {
+                ip = hs[0];
+                port = Integer.valueOf(hs[1]);
+            } else {
+                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
+                return null;
+            }
+            logger.info("queue redis host:{},port:{}", ip, port);
+            return new RedisClient(ip, port, redisPassWord, redisDb);
         }
-        String[] hs = redisHost.split(":");
-        int port = 6379;
-        String ip = "127.0.0.1";
-        if (hs.length == 2) {
-            ip = hs[0];
-            port = Integer.valueOf(hs[1]);
-        } else {
-            logger.error("redis config error! please check the application.properties(plumelog.redis.redisHost) ");
-            return null;
-        }
-        logger.info("redis host:{},port:{}",ip,port);
-
-
-        return new RedisClient(ip, port, redisPassWord,redisDb);
     }
 
-    @Bean(name="redisQueueClient")
+    @Bean(name = "redisQueueClient")
     public AbstractClient initRedisQueueClient() {
-        if (StringUtils.isEmpty(queueRedisHost)&&StringUtils.isEmpty(queueRedisClusterNodes)) {
-            logger.error("can not find redisHost config! please check the application.properties(plumelog.queue.redis.redisHost) ");
-            return null;
+        if (InitConfig.REDIS_CLUSTER_MODE_NAME.equals(model)) {
+            if (StringUtils.isEmpty(queueRedisHost)) {
+                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.cluster.nodes) ");
+                return null;
+            }
+            logger.info("queue ClusterRedis hosts:{}", queueRedisHost);
+            return new RedisClusterClient(queueRedisHost, queueRedisPassWord);
         }
-
-        if(!StringUtils.isEmpty(queueRedisClusterNodes)){
-            logger.info("queue ClusterRedis hosts:{}",queueRedisClusterNodes);
-            return new RedisClusterClient(queueRedisClusterNodes,queueRedisPassWord);
-        } else {
+        if (InitConfig.REDIS_SENTINEL_MODE_NAME.equals(model)) {
+            if (StringUtils.isEmpty(queueRedisHost)) {
+                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.sentinel.nodes) ");
+                return null;
+            }
+            logger.info("queue redisSentinelNodes hosts:{}", queueRedisHost);
+            return new RedisSentinelClient(queueRedisHost, queueRedisSentinelMasterName, queueRedisPassWord, queueRedisDb);
+        }
+        if (InitConfig.REDIS_MODE_NAME.equals(model)) {
             String[] hs = queueRedisHost.split(":");
             int port = 6379;
             String ip = "127.0.0.1";
@@ -123,10 +141,10 @@ public class ClientConfig implements InitializingBean {
                 logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
                 return null;
             }
-            logger.info("queue redis host:{},port:{}",ip,port);
-            return new RedisClient(ip, port, queueRedisPassWord,queueRedisDb);
+            logger.info("queue redis host:{},port:{}", ip, port);
+            return new RedisClient(ip, port, queueRedisPassWord, queueRedisDb);
         }
-
+        return null;
     }
 
     @Bean
@@ -146,9 +164,8 @@ public class ClientConfig implements InitializingBean {
                 return null;
             }
             return KafkaConsumerClient.getInstance(kafkaHosts, InitConfig.KAFKA_GROUP_NAME, InitConfig.MAX_SEND_SIZE).getKafkaConsumer();
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -160,10 +177,10 @@ public class ClientConfig implements InitializingBean {
         InitConfig.MAX_INTERVAL = this.interval;
         InitConfig.START_MODEL = this.model;
 
-        InitConfig.ES_INDEX_SHARDS=this.shards;
-        InitConfig.ES_INDEX_REPLICAS=this.replicas;
-        InitConfig.ES_REFRESH_INTERVAL=this.refreshInterval;
-        InitConfig.ES_INDEX_MODEL=this.indexTypeModel;
+        InitConfig.ES_INDEX_SHARDS = this.shards;
+        InitConfig.ES_INDEX_REPLICAS = this.replicas;
+        InitConfig.ES_REFRESH_INTERVAL = this.refreshInterval;
+        InitConfig.ES_INDEX_MODEL = this.indexTypeModel;
 
         InitConfig.restUrl = this.restUrl;
         InitConfig.restUserName = this.restUserName;
