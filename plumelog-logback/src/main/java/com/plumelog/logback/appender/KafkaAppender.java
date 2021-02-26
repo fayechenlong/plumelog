@@ -30,7 +30,7 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private int maxCount = 100;
     private int logQueueSize = 10000;
     private int threadPoolSize = 1;
-    private String compressionType = "none";
+    private boolean compressor = false;
 
     public String getExpand() {
         return expand;
@@ -64,8 +64,8 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
         this.threadPoolSize = threadPoolSize;
     }
 
-    public void setCompressionType(String compressionType) {
-        this.compressionType = compressionType;
+    public void setCompressor(boolean compressor) {
+        this.compressor = compressor;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (this.kafkaClient == null) {
-            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressionType);
+            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressor ? "lz4" : "none");
         }
         if (this.expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
