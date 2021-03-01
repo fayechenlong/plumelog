@@ -32,7 +32,7 @@
           <tr>
             <td class="key">日志等级</td>
             <td>
-              <Select v-model="filter.logLevel" placeholder="请选择日志等级">
+              <Select v-model="filter.logLevel"  placeholder="请选择日志等级">
                 <Option value="" key="ALL">所有</Option>
                 <Option value="INFO" key="INFO">INFO</Option>
                 <Option value="ERROR" key="ERROR">ERROR</Option>
@@ -602,6 +602,7 @@ export default {
     appNameChange() {
       this.getExtendList();
     },
+    
     getExtendList() {
       this.allColumns = [
         ...this.allColumns
@@ -1212,6 +1213,9 @@ export default {
       if (this.$route.query.className) {
         this.filter['className'] = this.$route.query.className;
       }
+      if (this.$route.query.traceId) {
+        this.filter['traceId'] = this.$route.query.traceId;
+      }
       if (this.$route.query.logLevel) {
         this.filter['logLevel'] = [this.$route.query.logLevel];
       }
@@ -1221,9 +1225,12 @@ export default {
       if (this.$route.query.time) {
         let times = this.$route.query.time.split(',');
         if (times.length > 1) {
-          this.dateTimeRange = [moment(parseInt(times[0]) - 1000).format('YYYY-MM-DD HH:mm:ss'), moment(parseInt(times[1]) + 1000).format('YYYY-MM-DD HH:mm:ss')]
+          this.dateTimeRange = [moment(parseInt(times[0])).format('YYYY-MM-DD HH:mm:ss'), moment(parseInt(times[1])).format('YYYY-MM-DD HH:mm:ss')]
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
         }
+      }
+      if(this.$route.query.searchKey) {
+        this.searchKey = this.$route.query.searchKey
       }
       this.isSearching = false;
 
@@ -1235,14 +1242,34 @@ export default {
     }
   },
   watch: {
-    searchKey() {
-      this.from = 0;
-    },
     "filter": {
       handler() {
+        this.$router.push({
+          query: {...this.$route.query, ...this.filter} 
+        }).catch(err => {err})
         this.from = 0;
       },
       deep: true
+    },
+    "dateTimeRange": {
+        handler() {
+          if(this.dateTimeRange.length > 0) {
+            let startTime = moment(this.dateTimeRange[0]).valueOf()
+            let endTime = moment(this.dateTimeRange[1]).valueOf()
+            this.$router.push({
+              query: {...this.$route.query, time: [startTime, endTime].join()} 
+              }).catch(err => {err})
+          }
+      },
+      deep: true
+    },
+    "searchKey": {
+      handler() {
+        this.$router.push({
+          query: {...this.$route.query, searchKey: this.searchKey} 
+        }).catch(err => {err})
+        this.from = 0;
+      }
     },
     '$route.path': function (newVal, oldVal) {
       // console.log(newVal, oldVal)
