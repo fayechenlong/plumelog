@@ -56,7 +56,7 @@ public class RedisLogCollect extends BaseLogCollect {
                 logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
                 if(logs.size() > 0) {
-                    logger.info("TraceLog日志获取耗时：{} 日志条数：{}",endTime-startTime,logs.size());
+                    logger.info("RunLog日志获取耗时：{} 日志条数：{}",endTime-startTime,logs.size());
                     if(logger.isDebugEnabled()){
                         logs.forEach(log-> logger.debug(log));
                     }
