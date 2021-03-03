@@ -41,20 +41,6 @@ public class RedisClient extends AbstractClient {
         }
         return instance;
     }
-
-    private RedisClient(String host, int port, String pass) {
-        JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(MAX_ACTIVE);
-        config.setMaxIdle(MAX_IDLE);
-        config.setMaxWaitMillis(MAX_WAIT);
-        config.setTestOnBorrow(TEST_ON_BORROW);
-        if (pass != null && !"".equals(pass)) {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass, 0);
-        } else {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT);
-        }
-    }
-
     public RedisClient(String host, int port, String pass, int db) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(MAX_ACTIVE);
