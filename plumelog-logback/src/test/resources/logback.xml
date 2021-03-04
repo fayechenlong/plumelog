@@ -28,11 +28,9 @@
 <!--    </appender>-->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plumelog-test</appName>
-        <redisHost>10.100.2.47:6379,10.100.2.47:6380,10.100.2.57:6379,10.100.2.57:6380,10.100.2.77:6379,10.100.2.77:6380</redisHost>
-        <runModel>2</runModel>
-        <model>cluster</model>
+        <redisHost>10.100.2.54:6379</redisHost>
         <redisAuth>devredis</redisAuth>
-        <expand>sleuth</expand>
+        <compressor>true</compressor>
     </appender>
     <!-- 日志输出级别 -->
     <root level="INFO">

@@ -219,11 +219,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         if (redisClient.setNx(warningKey + KEY_NX, rule.getTime())) {
             logger.info(plumeLogMonitorTextMessage.getText());
             //default send to dingtalk
-            if (rule.getHookServe() == 1) {
-                sendToDingTalk(plumeLogMonitorTextMessage, rule.getWebhookUrl());
-            } else {
-                WechatClient.sendToWeChat(plumeLogMonitorTextMessage, rule.getWebhookUrl());
-            }
+            WaningMessageSend.send(rule,plumeLogMonitorTextMessage);
             sendMesageES(rule, count, errorContent);
         }
         redisClient.set(warningKey, warningKey);
@@ -245,7 +241,6 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
                     LogMessageConstant.ES_TYPE);
             logger.info("monitor message insert es success");
         } catch (IOException e) {
-            e.printStackTrace();
             logger.error("monitor message insert es failed!", e);
         }
     }

@@ -16,7 +16,7 @@ public class LogBackTest {
      * @param args
      */
     public static void main(String[] args) {
-            logger.error("1111");
+            logger.error("我是中文");
         System.out.println("执行成功！");
     }
 }
