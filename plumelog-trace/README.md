@@ -1,4 +1,6 @@
-## plumelog  plumelog-trace 提供链路日志
+## plumelog-trace 提供链路日志
+
+#### 本模块原理是利用springAOP切面产生链路日志，核心是配置springAOP,配置之前不熟悉springAOP的建议先熟悉下
 
 #### 使用注意事项，链路追踪模块会产生大量链路日志，并发高的模块不要过度使用，特别是全局打点
 
