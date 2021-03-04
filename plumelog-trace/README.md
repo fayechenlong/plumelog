@@ -2,6 +2,8 @@
 
 #### 使用注意事项，链路追踪模块会产生大量链路日志，并发高的模块不要过度使用，特别是全局打点
 
+#### 手动打点和全局打点不能同时使用用了全局打点，手动的会失效
+
 1. 引入
 ```xml
                     <dependency>
@@ -33,14 +35,14 @@
             easyLogDubboService.testLogDubbo();
         }
 ```
-5. 全局打点 需要自己定义切入点 (demo 如下 )  当定义全局打点时。手动打点就会失效
+5. 全局打点 需要自己定义切入点 (demo 如下 )  当定义全局打点时，手动打点就会失效
 
 ```java
     @Aspect
     @Component
     public class AspectConfig extends AbstractAspect {
     
-        @Around("within(com.plumelog..*))")
+        @Around("within(com.xxxx..*))")//这边写自己的包的路径
         public Object around(JoinPoint joinPoint) {
             return aroundExecute(joinPoint);
         }
