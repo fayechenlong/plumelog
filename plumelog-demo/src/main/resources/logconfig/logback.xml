@@ -56,11 +56,13 @@
         <!-- 整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth-->
         <!--<expand>sleuth</expand>-->
     </appender>
-
+    <logger name="plumelog" level="WARN">
+        <!-- 指定输出的appender -->
+        <appender-ref ref="plumelog_redis"/>
+    </logger>
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-<!--        <appender-ref ref="plumelog_kafka"/>-->
-        <appender-ref ref="plumelog_redis"/>
+        <appender-ref ref="plumelog"/>
     </root>
 </configuration>

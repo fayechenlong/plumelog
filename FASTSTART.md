@@ -44,8 +44,8 @@
         #如果使用kafka,启用下面配置
         #plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
         #plumelog.kafka.kafkaGroupName=logConsumer
-        #解压缩模式，开启后不消费非压缩的队列
-        plumelog.redis.compressor=true
+        #解压缩模式，开启后不消费非压缩的队列，如果开启压缩，客户端也要配置开启压缩否则不消费
+        #plumelog.redis.compressor=true
         #队列redis，3.3版本把队列redis独立出来，方便不用的应用用不通的队列,如果是集群模式用逗号隔开
         plumelog.queue.redis.redisHost=127.0.0.1:6379
         #如果使用redis有密码,启用下面配置
