@@ -1,11 +1,7 @@
  ![avatar](/pic/icon.png)
- # Plumelog一个简单易用的java分布式日志组件
+ # Plumelog使用方法
 
-### 一、架构
-
- ![avatar](/pic/plumelog.png)
- 
-### 二、使用方法
+### 一、使用方法
 
 #### （1）服务端安装
     
@@ -491,13 +487,3 @@ KafkaAppender
   可能会涉及log4j jar冲突，需要自行排除
 
 * jdk1.6的项目下载源码，编译打包plumelog-client-jdk6，引入到自己的项目
-
-### 三、联系交流
-
-   * QQ群：1072991065
-   
-### 四、测试地址（服务器配置比较差，访问比较慢）
-
-   * 查询界面地址：http://demo.plumelog.com
-      
-   * 访问这个地址产生测试log数据：http://demo.plumelog.com/demo/index?data=1234  data参数自己随便传，传什么打印什么

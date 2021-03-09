@@ -41,8 +41,6 @@ Star趋势图
    
 ### 三.使用方法
 
-### [点我快速开始](/FASTSTART.md)
-
 ### [使用文档](/FASTSTART.md)
 
 ### [查询后台使用指南](/HELP.md)
