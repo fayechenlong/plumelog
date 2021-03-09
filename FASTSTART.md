@@ -474,6 +474,27 @@ KafkaAppender
 
   [nginx解决方案](/logstash/ng.md)
 
+
+### 自己编译安装如下
+
+### 前提:kafka或者redis  和 elasticsearch 自行安装完毕，版本兼容已经做了，理论不用考虑ES版本
+
+1. 打包
+
+* maven deploy -DskipTests 上传包到自己的私服
+
+  私服地址到plumelog/pom.xml改
+```xml
+       <properties>
+          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+          <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
+        </properties>
+```   
+* 非maven项目，到发行版中（https://gitee.com/frankchenlong/plumelog/releases ）下载lib.zip，解压放到自己的lib目录，目前只上传了log4j的版本
+  可能会涉及log4j jar冲突，需要自行排除
+
+* jdk1.6的项目下载源码，编译打包plumelog-client-jdk6，引入到自己的项目
+
 ### 三、联系交流
 
    * QQ群：1072991065
