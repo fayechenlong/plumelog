@@ -153,7 +153,7 @@
 
 #### （2）客户端在项目使用，非maven项目下载依赖包（https://gitee.com/frankchenlong/plumelog/releases）放在自己的lib下面直接使用
 
-#### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本
+#### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
 
    （1）如果项目使用的log4j，引入
 ```xml
