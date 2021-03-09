@@ -39,6 +39,8 @@
         #如果使用kafka,启用下面配置
         #plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
         #plumelog.kafka.kafkaGroupName=logConsumer
+
+
         #解压缩模式，开启后不消费非压缩的队列，如果开启压缩，客户端也要配置开启压缩否则不消费
         #plumelog.redis.compressor=true
         #队列redis，3.3版本把队列redis独立出来，方便不用的应用用不通的队列,如果是集群模式用逗号隔开
@@ -149,8 +151,10 @@
 #### （2）客户端在项目使用，非maven项目下载依赖包（https://gitee.com/frankchenlong/plumelog/releases）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
 
 #### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
+#### 示例中仅仅是基本配置，更多配置请看文章下面配置详解
 
-   （1）如果项目使用的log4j，引入
+（1）如果项目使用的log4j，引入
+
 ```xml
    <dependency>
        <groupId>com.plumelog</groupId>
@@ -158,7 +162,7 @@
        <version>3.4</version>
    </dependency>
 ```                       
-   配置log4j配置文件，增加下面这个Appender
+   配置log4j配置文件，增加下面这个Appender,示例如下：
     
 ```properties
     log4j.rootLogger = INFO,stdout,L
@@ -167,28 +171,20 @@
     log4j.appender.stdout.layout = org.apache.log4j.PatternLayout
     log4j.appender.stdout.layout.ConversionPattern = [%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} [%c.%t]%n%m%n
     #kafka做为中间件
-    #<!-- 字段说明 -->
-    #<!-- appName:应用名称 -->
-    #<!-- kafkaHosts：kafka集群地址 -->
-    #<!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1-->
+
     log4j.appender.L=com.plumelog.log4j.appender.KafkaAppender
     #appName系统的名称(自己定义就好)
     log4j.appender.L.appName=plumelog
     log4j.appender.L.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
     #redis做为中间件
-    #字段说明
-    #<!-- appName:应用名称 -->
-    #<!-- redisHost：redis地址 -->
-    #<!-- redisPort：redis端口号 不配置，默认使用6379-->
-    #<!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
+
     log4j.appender.L=com.plumelog.log4j.appender.RedisAppender
     log4j.appender.L.appName=plumelog
-    log4j.appender.L.redisHost=172.16.249.72
-    log4j.appender.L.redisPort=6379
+    log4j.appender.L.redisHost=172.16.249.72:6379
     #redis没有密码这一项为空或者不需要
     #log4j.appender.L.redisAuth=123456
 ```
-   同理如果使用logback,和log4j2配置如下
+   同理如果使用logback,和log4j2配置如下,示例如下：
     
 #### logback
 
@@ -204,36 +200,12 @@
 ```xml
  <appenders>
     <!--使用redis启用下面配置-->
-    <!-- 字段说明 -->
-    <!-- appName:应用名称 -->
-    <!-- redisHost：redis地址 -->
-    <!-- redisPort：redis端口号 不配置，默认使用6379-->
-    <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
-    <!-- expand：整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth- -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plumelog</appName>
-        <redisHost>172.16.249.72</redisHost>
+        <redisHost>172.16.249.72:6379</redisHost>
         <redisAuth>123456</redisAuth>
-        <redisPort>6379</redisPort>
-    </appender>
-    <!--使用redis集群启用下面配置-->
-    <!-- 字段说明 -->
-    <!-- appName:应用名称 -->
-    <!-- redisHost：redis地址 -->
-    <!-- redisPort：redis端口号 不配置，默认使用6379-->
-    <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
-    <!-- expand：整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth- -->
-    <appender name="plumelog" class="com.plumelog.logback.appender.RedisClusterAppender">
-        <appName>plumelog</appName>
-        <redisClusterNodes>10.100.2.47:6379,10.100.2.47:6380,10.100.2.57:6379,10.100.2.57:6380,10.100.2.77:6379,10.100.2.77:6380</redisClusterNodes>
-        <redisAuth>devredis</redisAuth>
     </appender>
    <!-- 使用kafka启用下面配置 -->
-   <!-- 字段说明 -->
-   <!-- appName:应用名称 -->
-   <!-- kafkaHosts：kafka集群地址 -->
-   <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
-   <!-- expand：整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth- -->
     <appender name="plumelog" class="com.plumelog.logback.appender.KafkaAppender">
         <appName>plumelog</appName>
         <kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>
@@ -255,26 +227,16 @@
        <version>3.4</version>
    </dependency>       
 ```   
-* 配置
+* 配置,示例如下：
 ```xml
  <appenders>
    <!-- 使用kafka启用下面配置 -->
-   <!-- 字段说明 -->
-   <!-- appName:应用名称 -->
-   <!-- kafkaHosts：kafka集群地址 -->
-   <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
-   <!-- expand：整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth- -->
+
   <KafkaAppender name="kafkaAppender" appName="plumelog" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092" >
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
   </KafkaAppender>
      <!--使用redis启用下面配置-->
-     <!-- 字段说明 -->
-     <!-- appName:应用名称 -->
-     <!-- redisHost：redis地址 -->
-     <!-- redisPort：redis端口号 不配置，默认使用6379-->
-     <!-- runModel：runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1- -->
-     <!-- expand：整合其他链路插件，启用这个字段 expand=“sleuth” 表示整合springcloud.sleuth- -->
-  <RedisAppender name="redisAppender" appName="plumelog" redisHost="172.16.249.72" redisPort="6379" redisAuth="123456">
+  <RedisAppender name="redisAppender" appName="plumelog" redisHost="172.16.249.72:6379" redisAuth="123456">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
   </RedisAppender>
   </appenders>
@@ -315,9 +277,10 @@ KafkaAppender
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）压缩方式配置，默认false（true：开启lz4压缩） |
 
-* 普通日志使用
+* traceID生成配置
+  
+非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里（com.plumelog.core.TraceIdFilter），如果是定时任务,监听类的放在定时任务的最前端)
 
-   非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里，如果是定时任务放在定时任务的最前端)
 ```java
         @Component
         public class Interceptor extends HandlerInterceptorAdapter{
@@ -329,10 +292,40 @@ KafkaAppender
                 return true;
             }
         }
+        
+        //注解配置filter示例
+        @Bean
+        public FilterRegistrationBean filterRegistrationBean1() {
+            FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+            filterRegistrationBean.setFilter(initCustomFilter());
+            filterRegistrationBean.addUrlPatterns("/*");
+            filterRegistrationBean.setOrder(Integer.MIN_VALUE);
+            return filterRegistrationBean;
+        }
+    
+        @Bean
+        public Filter initCustomFilter() {
+            return new TraceIdFilter();
+        }
 ```   
-  spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceid
+  
+web.xml配置示例 
+
 ```xml
-             <dependency>
+        <filter>
+            <filter-name>TraceIdFilter</filter-name>
+            <filter-class>com.plumelog.core.TraceIdFilter</filter-class>
+        </filter>
+        <filter-mapping>
+            <filter-name>TraceIdFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>   
+``` 
+
+spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceId
+
+```xml
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-sleuth</artifactId>
             <version>2.2.7.RELEASE</version>
@@ -340,20 +333,20 @@ KafkaAppender
 ``` 
 * [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
   
+
 * skywalking traceid获取方式
-  
-  1.引入依赖jar包
+
+1.引入依赖jar包
 
 ```xml
-  <!-- https://mvnrepository.com/artifact/org.apache.skywalking/apm-toolkit-trace -->
-  <dependency>
-  <groupId>org.apache.skywalking</groupId>
-  <artifactId>apm-toolkit-trace</artifactId>
-  <version>6.5.0</version>
-  </dependency>
+      <dependency>
+          <groupId>org.apache.skywalking</groupId>
+          <artifactId>apm-toolkit-trace</artifactId>
+          <version>6.5.0</version>
+      </dependency>
 ```
 
-  2.方法调用
+  2.方法调用示例
 
 ```java
     import org.apache.skywalking.apm.toolkit.trace.TraceContext;
@@ -362,7 +355,7 @@ KafkaAppender
     public class Interceptor extends HandlerInterceptorAdapter{
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-            String traceId = TraceContext.traceId();
+            String traceId = TraceContext.traceId();//核心是此处获取skywalking的traceId
             if(traceId!=null) {
                 TraceId.logTraceID.set(traceId);
             }else {
@@ -377,6 +370,7 @@ KafkaAppender
 * [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
 * 扩展字段功能，MDC用法，例如，详细用法参照[plumelog使用指南](/HELP.md)
+
 ```java
             MDC.put("orderid", "1");
             MDC.put("userid", "4");
