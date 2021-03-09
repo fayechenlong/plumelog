@@ -49,3 +49,43 @@
         }
     }
 ```
+6. 如果不想再自己的控制台或者文件输出里看到trace日志可以通过添加过滤器过滤掉,logback的例子如下
+
+```xml
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!--此过滤器过滤掉所有的trace日志，3.4版本logback自带的过滤类-->
+        <filter class="com.plumelog.logback.util.FilterSyncLogger"/>
+        <encoder>
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>\
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+```
+3.4之前的版本可以复制以下代码创建一个过滤器再配置到logback里面去
+
+```java
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.filter.Filter;
+import ch.qos.logback.core.spi.FilterReply;
+
+public class FilterSyncLogger extends Filter<ILoggingEvent> {
+
+    @Override
+    public FilterReply decide(ILoggingEvent event) {
+
+        String filterPackage = "com.plumelog.trace.aspect";
+
+        if (getPackName(event.getLoggerName()).equals(filterPackage)
+                || getPackName(event.getLoggerName()).equals(filterPackage)) {
+            return FilterReply.DENY;
+        } else {
+            return FilterReply.ACCEPT;
+        }
+    }
+
+    public String getPackName(String className) {
+        return className.substring(0, className.lastIndexOf("."));
+    }
+
+}
+```
