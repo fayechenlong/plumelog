@@ -1,5 +1,4 @@
- ![avatar](/pic/icon.png)
- # Plumelog使用方法
+# Plumelog使用方法
 
 ### 一、使用方法
 
