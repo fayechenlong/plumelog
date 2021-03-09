@@ -151,7 +151,7 @@
       }
     }
 
-#### （2）客户端在项目使用，非maven项目下载依赖包（https://gitee.com/frankchenlong/plumelog/releases）放在自己的lib下面直接使用
+#### （2）客户端在项目使用，非maven项目下载依赖包（https://gitee.com/frankchenlong/plumelog/releases）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
 
 #### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
 
@@ -160,7 +160,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j</artifactId>
-       <version>3.3</version>
+       <version>3.4</version>
    </dependency>
 ```                       
    配置log4j配置文件，增加下面这个Appender
@@ -202,7 +202,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-logback</artifactId>
-       <version>3.3</version>
+       <version>3.4</version>
    </dependency>
 ```  
 * 配置
@@ -257,7 +257,7 @@
    <dependency>
        <groupId>com.plumelog</groupId>
        <artifactId>plumelog-log4j2</artifactId>
-       <version>3.3</version>
+       <version>3.4</version>
    </dependency>       
 ```   
 * 配置
