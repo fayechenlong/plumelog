@@ -70,6 +70,9 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
+        send(event);
+    }
+    protected void send(ILoggingEvent event) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, event);
@@ -78,7 +81,6 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
-
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
 

@@ -35,24 +35,28 @@ public class KafkaAppender extends AbstractAppender {
     private String kafkaHosts;
     private String runModel;
     private String expand;
-    private int maxCount=500;
-    private int logQueueSize=10000;
-    private int threadPoolSize=1;
+    private int maxCount = 500;
+    private int logQueueSize = 10000;
+    private int threadPoolSize = 1;
 
     protected KafkaAppender(String name, String appName, String kafkaHosts, String runModel, Filter filter, Layout<? extends Serializable> layout,
-                            final boolean ignoreExceptions, String expand,int maxCount,int logQueueSize,int threadPoolSize) {
+                            final boolean ignoreExceptions, String expand, int maxCount, int logQueueSize, int threadPoolSize) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
         this.kafkaHosts = kafkaHosts;
         this.runModel = runModel;
         this.expand = expand;
-        this.maxCount=maxCount;
-        this.logQueueSize=logQueueSize;
-        this.threadPoolSize=threadPoolSize;
+        this.maxCount = maxCount;
+        this.logQueueSize = logQueueSize;
+        this.threadPoolSize = threadPoolSize;
     }
 
     @Override
     public void append(LogEvent logEvent) {
+        send(logEvent);
+    }
+
+    protected void send(LogEvent logEvent) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, logEvent);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
@@ -60,10 +64,11 @@ public class KafkaAppender extends AbstractAppender {
         } else {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
-
     }
+
     private static ThreadPoolExecutor threadPoolExecutor
             = ThreadPoolUtil.getPool();
+
     @PluginFactory
     public static KafkaAppender createAppender(
             @PluginAttribute("name") String name,
@@ -87,26 +92,26 @@ public class KafkaAppender extends AbstractAppender {
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
-        if(maxCount==0){
-            maxCount=100;
+        if (maxCount == 0) {
+            maxCount = 100;
         }
-        if(logQueueSize==0){
-            logQueueSize=10000;
+        if (logQueueSize == 0) {
+            logQueueSize = 10000;
         }
-        if(threadPoolSize==0){
-            threadPoolSize=1;
+        if (threadPoolSize == 0) {
+            threadPoolSize = 1;
         }
-        final int count=maxCount;
+        final int count = maxCount;
         MessageAppenderFactory.initQueue(logQueueSize);
-        for(int a=0;a<threadPoolSize;a++){
+        for (int a = 0; a < threadPoolSize; a++) {
 
-            threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.startRunLog(kafkaClient,count);
+            threadPoolExecutor.execute(() -> {
+                MessageAppenderFactory.startRunLog(kafkaClient, count);
             });
-            threadPoolExecutor.execute(()->{
-                MessageAppenderFactory.startTraceLog(kafkaClient,count);
+            threadPoolExecutor.execute(() -> {
+                MessageAppenderFactory.startTraceLog(kafkaClient, count);
             });
         }
-        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand,maxCount,logQueueSize,threadPoolSize);
+        return new KafkaAppender(name, appName, kafkaHosts, runModel, filter, layout, true, expand, maxCount, logQueueSize, threadPoolSize);
     }
 }

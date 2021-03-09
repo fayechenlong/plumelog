@@ -68,6 +68,10 @@ public class RedisAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent logEvent) {
+        send(logEvent);
+    }
+
+    protected void send(LogEvent logEvent) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, logEvent);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
@@ -111,17 +115,17 @@ public class RedisAppender extends AbstractAppender {
         } else {
             int port = 6379;
             String ip = "127.0.0.1";
-            if(redisPort==null){
+            if (redisPort == null) {
                 String[] hs = redisHost.split(":");
                 if (hs.length == 2) {
                     ip = hs[0];
                     port = Integer.valueOf(hs[1]);
                 }
-            }else {
-                ip=redisHost;
-                port=Integer.parseInt(redisPort);
+            } else {
+                ip = redisHost;
+                port = Integer.parseInt(redisPort);
             }
-            redisClient = RedisClient.getInstance(ip,port,redisAuth,redisDb);
+            redisClient = RedisClient.getInstance(ip, port, redisAuth, redisDb);
         }
         if (maxCount == 0) {
             maxCount = 100;

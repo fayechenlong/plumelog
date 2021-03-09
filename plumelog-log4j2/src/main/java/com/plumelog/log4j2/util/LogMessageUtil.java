@@ -31,12 +31,10 @@ public class LogMessageUtil {
 
     private static String isExpandRunLog(LogEvent logEvent) {
         String traceId = null;
-        if (LogMessageConstant.EXPAND.equals(LogMessageConstant.SLEUTH_EXPAND)) {
             if (!logEvent.getContextData().isEmpty()) {
                 traceId = logEvent.getContextData().toMap().get(LogMessageConstant.TRACE_ID);
                 TraceId.logTraceID.set(traceId);
             }
-        }
         return traceId;
     }
 
@@ -58,6 +56,7 @@ public class LogMessageUtil {
     }
 
     public static BaseLogMessage getLogMessage(String appName, LogEvent logEvent) {
+        isExpandRunLog(logEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(logEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {

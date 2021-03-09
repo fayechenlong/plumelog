@@ -27,12 +27,10 @@ public class LogMessageUtil {
 
     private static String isExpandRunLog(ILoggingEvent logEvent) {
         String traceId = null;
-        if (LogMessageConstant.EXPAND.equals(LogMessageConstant.SLEUTH_EXPAND)) {
             if (!logEvent.getMDCPropertyMap().isEmpty()) {
                 traceId = logEvent.getMDCPropertyMap().get(LogMessageConstant.TRACE_ID);
                 TraceId.logTraceID.set(traceId);
             }
-        }
         return traceId;
     }
 
@@ -53,6 +51,7 @@ public class LogMessageUtil {
     }
 
     public static BaseLogMessage getLogMessage(final String appName, final ILoggingEvent iLoggingEvent) {
+        isExpandRunLog(iLoggingEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(iLoggingEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {

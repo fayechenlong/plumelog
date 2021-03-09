@@ -107,6 +107,10 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
+        send(event);
+    }
+
+    protected void send(ILoggingEvent event) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, event);
@@ -116,8 +120,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         }
     }
 
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool();
+    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
 
     @Override
     public void start() {
@@ -137,17 +140,17 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
             } else {
                 int port = 6379;
                 String ip = "127.0.0.1";
-                if(this.redisPort==null){
+                if (this.redisPort == null) {
                     String[] hs = redisHost.split(":");
                     if (hs.length == 2) {
                         ip = hs[0];
                         port = Integer.valueOf(hs[1]);
                     }
-                }else {
-                    ip=this.redisHost;
-                    port=Integer.parseInt(this.redisPort);
+                } else {
+                    ip = this.redisHost;
+                    port = Integer.parseInt(this.redisPort);
                 }
-                this.redisClient = RedisClient.getInstance(ip,port,this.redisAuth, this.redisDb);
+                this.redisClient = RedisClient.getInstance(ip, port, this.redisAuth, this.redisDb);
             }
         }
         MessageAppenderFactory.initQueue(this.logQueueSize);
