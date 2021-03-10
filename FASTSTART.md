@@ -1,22 +1,21 @@
 # Plumelog使用方法
 
-### 一、使用方法
-
-#### （1）服务端安装
+## 一、服务端安装
+1. 服务端安装
     
-   1.安装 redis 或者 kafka（一般公司redis足够） redis 官网:https://redis.io   kafka：http://kafka.apache.org
+   第一步：安装 redis 或者 kafka（一般公司redis足够） redis 官网:https://redis.io   kafka：http://kafka.apache.org
      
-   2.安装 elasticsearch 官网下载地址:https://www.elastic.co/cn/downloads/past-releases
+   第二步：安装 elasticsearch 官网下载地址:https://www.elastic.co/cn/downloads/past-releases
     
-   3.下载安装包，plumelog-server 下载地址：https://gitee.com/frankchenlong/plumelog/releases
+   第三步：下载安装包，plumelog-server 下载地址：https://gitee.com/frankchenlong/plumelog/releases
    
    备注：3.1版本以后UI和server合并，plumelog-ui这个项目可以不用部署
    
-   4.配置plumelog-server，并启动
+   第四步：配置plumelog-server，并启动
    
-   5.后台查询语法详见[plumelog使用指南](/HELP.md)
+   第五步：后台查询语法详见[plumelog使用指南](/HELP.md)
    
-   配置文件 plumelog-server/application.properties 详解：
+2. 服务端配置文件 plumelog-server/application.properties 详解：
 
 ```properties
         spring.application.name=plumelog_server
@@ -95,7 +94,7 @@
         login.password=admin
 ```       
 
- #### 提升性能推荐参考配置方法
+3. 提升性能推荐参考配置方法
    
  #### 单日日志体量在50G以内，并使用的SSD硬盘
    
@@ -148,7 +147,9 @@
       }
     }
 
-#### （2）客户端在项目使用，非maven项目下载依赖包（https://gitee.com/frankchenlong/plumelog/releases）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
+## 二、客户端使用
+
+1. 客户端在项目使用，非maven项目下载依赖包（https://gitee.com/frankchenlong/plumelog/releases）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
 
 #### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
 #### 示例中仅仅是基本配置，更多配置请看文章下面配置详解
@@ -247,7 +248,7 @@
       </root>
   </loggers>
 ```    
-#### （3）示例(所有的列子都在plumelog-demo里面)
+2. 示例(所有的列子都在plumelog-demo里面)
 
 ### 客户端配置详解
 
@@ -277,7 +278,7 @@ KafkaAppender
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）压缩方式配置，默认false（true：开启lz4压缩） |
 
-* traceID生成配置
+3. traceID生成配置
   
 非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里（com.plumelog.core.TraceIdFilter），如果是定时任务,监听类的放在定时任务的最前端)
 
@@ -367,16 +368,16 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
         }
     }
 ``` 
-* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
+4. [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
-* 扩展字段功能，MDC用法，例如，详细用法参照[plumelog使用指南](/HELP.md)
+5. 扩展字段功能，MDC用法，例如，详细用法参照[plumelog使用指南](/HELP.md)
 
 ```java
             MDC.put("orderid", "1");
             MDC.put("userid", "4");
             logger.info("扩展字段");
 ``` 
-* 错误报警说明
+6. 错误报警说明
 
    在ui的报警管理里配置报警规则：
    
@@ -396,7 +397,7 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
    2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
 
 
-* TraceId跨线程传递
+7. TraceId跨线程传递
 
     如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog-demo也有）
 
@@ -420,10 +421,10 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
 ```       
-* [docker版本安装点我](/docker-file/DOCKER.md)
+8. [docker版本安装点我](/docker-file/DOCKER.md)
 
 
-* 非java项目可以api方式接入，3.2后版本server支持，暂时只支持redis模式
+9. 非java项目可以api方式接入，3.2后版本server支持，暂时只支持redis模式
   
   接口地址：http://plumelog-server地址/sendLog?logKey=plume_log_list
   
@@ -456,16 +457,16 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
   ]
 ``` 
 
-* nginx日志搜集解决方案参考
+10. nginx日志搜集解决方案参考
 
   [nginx解决方案](/logstash/ng.md)
 
 
-### 自己编译安装如下
+## 三、自己编译安装如下
 
 ### 前提:kafka或者redis  和 elasticsearch 自行安装完毕，版本兼容已经做了，理论不用考虑ES版本
 
-1. 打包
+* 打包
 
 * maven deploy -DskipTests 上传包到自己的私服
 
