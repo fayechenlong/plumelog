@@ -146,6 +146,36 @@ public class MainController {
         }
     }
 
+    /**
+     * 根据条件删除
+     * @param queryStr
+     * @param index
+     * @param size
+     * @param from
+     * @return
+     */
+    @RequestMapping({"/deleteByQuery", "/plumelog/deleteByQuery"})
+    public String deleteByQuery(@RequestBody String queryStr, String index, String size, String from) {
+
+        String message = "";
+        String indexStr = "";
+        try {
+            //检查ES索引是否存在
+            String[] indexs = index.split(",");
+            List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
+            indexStr = String.join(",", reindexs);
+            if ("".equals(indexStr)) {
+                return message;
+            }
+            String url = "/" + indexStr + "/_delete_by_query?from=" + from + "&size=" + size;
+            logger.info("queryURL:" + url);
+            logger.info("queryStr:" + queryStr);
+            return elasticLowerClient.get(url, queryStr);
+        } catch (Exception e) {
+            logger.error("", e);
+            return e.getMessage();
+        }
+    }
     @RequestMapping({"/getServerInfo", "/plumelog/getServerInfo"})
     public String query(String index) {
         String res = elasticLowerClient.cat(index);
