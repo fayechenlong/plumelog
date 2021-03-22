@@ -108,6 +108,9 @@ public class RedisAppender extends AbstractAppender {
         if (expand != null && LogMessageConstant.EXPANDS.contains(expand)) {
             LogMessageConstant.EXPAND = expand;
         }
+        if (model == null) {
+            model = "standalone";
+        }
         if ("cluster".equals(model)) {
             redisClient = RedisClusterClient.getInstance(redisHost, redisAuth);
         } else if ("sentinel".equals(model)) {
