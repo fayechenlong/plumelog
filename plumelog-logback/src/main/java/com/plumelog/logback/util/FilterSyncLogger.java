@@ -3,27 +3,39 @@ package com.plumelog.logback.util;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
-
 /**
  * @author chenlongfei
+ * 自定义过滤器
  */
 public class FilterSyncLogger extends Filter<ILoggingEvent> {
+
+    private String level;
+    private String filterPackage;
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public void setFilterPackage(String filterPackage) {
+        this.filterPackage = filterPackage;
+    }
 
     @Override
     public FilterReply decide(ILoggingEvent event) {
 
-        String filterPackage = "com.plumelog.trace.aspect";
-
-        if (getPackName(event.getLoggerName()).equals(filterPackage)
-                || getPackName(event.getLoggerName()).equals(filterPackage)) {
-            return FilterReply.DENY;
-        } else {
-            return FilterReply.ACCEPT;
+        if (level != null) {
+            if (!event.getLevel().toString().toLowerCase().equals(level.toLowerCase())) {
+                return FilterReply.DENY;
+            } else {
+                if (event.getLoggerName().equals(filterPackage)) {
+                    return FilterReply.DENY;
+                }
+            }
         }
-    }
-
-    public String getPackName(String className) {
-        return className.substring(0, className.lastIndexOf("."));
+        if (event.getLoggerName().equals(filterPackage)) {
+            return FilterReply.DENY;
+        }
+        return FilterReply.ACCEPT;
     }
 
 }
