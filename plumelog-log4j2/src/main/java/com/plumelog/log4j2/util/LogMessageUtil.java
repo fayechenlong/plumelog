@@ -79,29 +79,30 @@ public class LogMessageUtil {
 
     private static String getMessage(LogEvent logEvent) {
         if (logEvent.getLevel().equals(Level.ERROR)) {
-            Object[] msg = new String[1];
-            if (logEvent.getThrown() != null) {
-                msg[0] = LogExceptionStackTrace.erroStackTrace(logEvent.getThrown()).toString();
-                return packageMessage(logEvent.getMessage().getFormat(), msg);
-            } else {
-                if (logEvent.getMessage().getParameters() != null) {
-                    Object[] args = logEvent.getMessage().getParameters();
-                    if (args != null) {
-                        for (int i = 0; i < args.length; i++) {
-                            if (args[i] instanceof Throwable) {
-                                args[i] = LogExceptionStackTrace.erroStackTrace(args[i]);
-                            }
-                        }
-                        return packageMessage(logEvent.getMessage().getFormat(), args);
+            // 如果占位符个数与参数个数相同,即使最后一个参数为Throwable类型,logEvent.getThrown()也会为null
+            Throwable thrown = logEvent.getThrown();
+            String formatMessage = logEvent.getMessage().getFormat();
+            Object[] args = logEvent.getMessage().getParameters();
+            if (args != null) {
+                for (int i = 0, l = args.length; i < l; i++) {
+                    // 当最后一个参数与thrown是同一个对象时,表示logEvent.getThrown()不为null,并且占位符个数与参数个数不相同,则将该thrown留后处理
+                    if ((i != l - 1 || args[i] != thrown) && args[i] instanceof Throwable) {
+                        args[i] = LogExceptionStackTrace.erroStackTrace(args[i]);
                     }
                 }
+                formatMessage = packageMessage(formatMessage, args);
             }
+            if (thrown != null) {
+                return packageMessage(formatMessage,
+                        new String[]{LogExceptionStackTrace.erroStackTrace(thrown).toString()});
+            }
+            return formatMessage;
         }
         return logEvent.getMessage().getFormattedMessage();
     }
 
     private static String packageMessage(String message, Object[] args) {
-        if (message != null && message.indexOf(LogMessageConstant.DELIM_STR) > -1) {
+        if (message != null && message.contains(LogMessageConstant.DELIM_STR)) {
             return INSTANCE.newMessage(message, args).getFormattedMessage();
         }
         return TraceLogMessageFactory.packageMessage(message, args);
