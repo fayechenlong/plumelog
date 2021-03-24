@@ -119,10 +119,15 @@ public class RedisAppender extends AbstractAppender {
             int port = 6379;
             String ip = "127.0.0.1";
             if (redisPort == null) {
-                String[] hs = redisHost.split(":");
-                if (hs.length == 2) {
-                    ip = hs[0];
-                    port = Integer.valueOf(hs[1]);
+                // 如果redisHost不包含:号则端口号默认使用6379
+                if (redisHost.contains(":")) {
+                    String[] hs = redisHost.split(":");
+                    if (hs.length == 2) {
+                        ip = hs[0];
+                        port = Integer.valueOf(hs[1]);
+                    }
+                } else {
+                    ip = redisHost;
                 }
             } else {
                 ip = redisHost;
