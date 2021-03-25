@@ -182,7 +182,7 @@ public class MessageAppenderFactory {
             push(key, logs, client, lock, compress);
             pushTime.set(currentTimeMillis);
         } else {
-            Thread.sleep(0);
+            Thread.sleep(100);
         }
     }
 }
