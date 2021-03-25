@@ -1,22 +1,21 @@
 package com.beeplay;
 
-import com.plumelog.core.TraceId;
-import com.plumelog.core.util.DateUtil;
-import com.plumelog.core.util.IdWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
-import java.util.Date;
-import java.util.UUID;
 
 public class LogBackTest {
-    private static final Logger logger = LoggerFactory.getLogger(LogBackTest.class);
+    private static final Logger logger = LoggerFactory.getLogger("com.aa");
+    private static final Logger logger1 = LoggerFactory.getLogger("com.bb");
     /**
      * @param args
      */
     public static void main(String[] args) {
-            logger.error("我是中文");
-        System.out.println("执行成功！");
+
+        for(int i=0;i<10000;i++){
+            logger.info("info");
+            logger1.info("info1");
+            logger.error("error");
+            logger.warn("warn");
+        }
     }
 }

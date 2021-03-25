@@ -21,7 +21,9 @@
 <!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
 <!--            <level>info</level>-->
 <!--        </filter>-->
-        <filter class="com.plumelog.logback.util.FilterSyncLogger"/>
+        <filter class="com.plumelog.logback.util.FilterSyncLogger">
+            <level></level>
+        </filter>
         <encoder>
             <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
             <!-- 设置字符集 -->
