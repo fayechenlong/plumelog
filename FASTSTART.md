@@ -284,6 +284,7 @@ KafkaAppender
   
 非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里（com.plumelog.core.TraceIdFilter），如果是定时任务,监听类的放在定时任务的最前端)
 
+servlet
 ```java
         @Component
         public class Interceptor extends HandlerInterceptorAdapter{
@@ -311,6 +312,14 @@ KafkaAppender
             return new TraceIdFilter();
         }
 ```   
+
+webflux
+```java
+        @Bean
+        public WebFluxTraceIdFilter initCustomFilter() {
+            return new WebFluxTraceIdFilter();
+        }
+```
   
 web.xml配置示例 
 
