@@ -171,18 +171,16 @@ public class MessageAppenderFactory {
         long time = currentTimeMillis - pushTime.get();
 
         if (size >= maxCount || time > 500) {
-            if (size > 0) {
-                queue.drainTo(logs, maxCount);
-                push(key, logs, client, lock, compress);
-                pushTime.set(currentTimeMillis);
-            }
+            queue.drainTo(logs, maxCount);
+            push(key, logs, client, lock, compress);
+            pushTime.set(currentTimeMillis);
         } else if (size == 0) {
             String log = queue.take();
             logs.add(log);
             push(key, logs, client, lock, compress);
             pushTime.set(currentTimeMillis);
         } else {
-            Thread.sleep(0);
+            Thread.sleep(100);
         }
     }
 }
