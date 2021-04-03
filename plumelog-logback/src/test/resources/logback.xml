@@ -30,10 +30,9 @@
 <!--    </appender>-->
     <!-- easylog日志 -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
-        <appName>plumelog-test</appName>
-        <redisHost>10.100.2.54</redisHost>
-        <redisPort>6379</redisPort>
-        <redisAuth>plumelogredis</redisAuth>
+        <appName>feeder</appName>
+        <redisHost>r-uf633f3f27aa2174pd.redis.rds.aliyuncs.com:6379</redisHost>
+        <redisAuth>Jch9shshl</redisAuth>
         <maxCount>100</maxCount>
         <logQueueSize>100000</logQueueSize>
         <runModel>2</runModel>
@@ -48,6 +47,6 @@
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
-<!--        <appender-ref ref="plumelog" />-->
+        <appender-ref ref="plumelog" />
     </root>
 </configuration>

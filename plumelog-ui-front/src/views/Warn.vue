@@ -129,8 +129,8 @@ export default {
       appNames:[],
       selection: [],
       showConfirm: false,
-      hookServeList: [{value: 1, label: '钉钉'}, {value: 2, label: '企业微信'}],
-      hookServeMap: {"1": '钉钉', "2": '企业微信'},
+      hookServeList: [{value: 1, label: '钉钉'}, {value: 2, label: '企业微信'}, {value: 3, label: '飞书'}, {value: 4, label: '其他'}],
+      hookServeMap: {"1": '钉钉', "2": '企业微信', "3": '飞书', "4": '其他'},
       dataInfo: {
         appName: '',
         appCategory: '',
