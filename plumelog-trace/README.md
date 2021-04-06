@@ -56,7 +56,7 @@
         <!--此过滤器过滤掉所有的trace日志，3.4.1版本logback自带的过滤类-->
         <filter class="com.plumelog.logback.util.FilterSyncLogger">
             <level>info</level>
-            <filterPackage>com.plumelog.trace.aspect</filterPackage>
+            <filterPackage>com.plumelog.trace.aspect.AbstractAspect</filterPackage>
         </filter>
         <encoder>
             <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>\
