@@ -35,7 +35,7 @@ public class CollectStartBean implements InitializingBean {
     private static Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
     @Autowired
     private ElasticLowerClient elasticLowerClient;
-    @Autowired
+    @Autowired(required = false)
     private AbstractClient redisQueueClient;
     @Autowired(required = false)
     private KafkaConsumer kafkaConsumer;
