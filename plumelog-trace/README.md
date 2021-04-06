@@ -76,7 +76,7 @@ public class FilterSyncLogger extends Filter<ILoggingEvent> {
     @Override
     public FilterReply decide(ILoggingEvent event) {
 
-        String filterPackage = "com.plumelog.trace.aspect";
+        String filterPackage = "com.plumelog.trace.aspect.AbstractAspect";
 
         if (getPackName(event.getLoggerName()).equals(filterPackage)
                 || getPackName(event.getLoggerName()).equals(filterPackage)) {
