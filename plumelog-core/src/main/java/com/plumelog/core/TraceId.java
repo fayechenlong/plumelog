@@ -2,6 +2,8 @@ package com.plumelog.core;
 
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import com.plumelog.core.util.IdWorker;
+
 import java.util.UUID;
 /**
  * className：TraceId
@@ -21,5 +23,19 @@ public class TraceId {
     public static void setSofa() {
         String traceid= TraceIdGenerator.generate();
         logTraceID.set(traceid);
+    }
+
+    /**
+     * if traceId is empty to reset
+     * @param traceId the trace
+     * @return new or old traceId
+     */
+    public static String getTraceId(String traceId) {
+        if (traceId == null || traceId.equals("")) {
+            IdWorker worker = new IdWorker(1,1,1);
+            traceId = String.valueOf(worker.nextId());
+            TraceId.logTraceID.set(traceId);
+        }
+        return traceId;
     }
 }
