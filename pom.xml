@@ -24,7 +24,6 @@
         <module>plumelog-log4j2</module>
         <module>plumelog-dubbo</module>
         <module>plumelog-trace</module>
-        <module>plumelog-rest</module>
         <module>plumelog-http</module>
         <module>plumelog-example</module>
     </modules>
