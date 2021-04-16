@@ -45,7 +45,6 @@ public class RedisLogCollect extends BaseLogCollect {
     private void collectRuningLog(String logKey) {
         while (true) {
             List<String> logs = new ArrayList<>(InitConfig.MAX_SEND_SIZE);
-            int size=logs.size();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -54,6 +53,7 @@ public class RedisLogCollect extends BaseLogCollect {
             try {
                 long startTime=System.currentTimeMillis();
                 logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
+                int size=logs.size();
                 long endTime=System.currentTimeMillis();
                 if(size > 0) {
                     logger.info("RunLog日志获取耗时：{} 日志条数：{}",endTime-startTime,size);
@@ -76,7 +76,6 @@ public class RedisLogCollect extends BaseLogCollect {
     private void collectTraceLog(String logKey) {
         while (true) {
             List<String> logs = new ArrayList<>(InitConfig.MAX_SEND_SIZE);
-            int size=logs.size();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -86,6 +85,7 @@ public class RedisLogCollect extends BaseLogCollect {
                 long startTime=System.currentTimeMillis();
                 logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
+                int size=logs.size();
                 if(size>0) {
                     logger.info("TraceLog日志获取耗时：{} 日志条数：{}",endTime-startTime,size);
                     if(logger.isDebugEnabled()){
