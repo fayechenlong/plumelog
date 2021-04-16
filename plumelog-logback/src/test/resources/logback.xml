@@ -31,8 +31,8 @@
     <!-- easylog日志 -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>feeder</appName>
-        <redisHost>r-uf633f3f27aa2174pd.redis.rds.aliyuncs.com:6379</redisHost>
-        <redisAuth>Jch9shshl</redisAuth>
+        <redisHost>127.0.0.1:6379</redisHost>
+        <redisAuth>123456</redisAuth>
         <maxCount>100</maxCount>
         <logQueueSize>100000</logQueueSize>
         <runModel>2</runModel>
