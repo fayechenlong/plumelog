@@ -11,9 +11,11 @@ public class LogBackTest {
      */
     public static void main(String[] args) {
 
+        for(int i=0;i<1000;i++) {
             logger.info("info");
             logger1.info("info1");
             logger.error("error");
             logger.warn("warn");
+        }
     }
 }

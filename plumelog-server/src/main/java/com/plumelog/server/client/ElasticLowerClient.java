@@ -221,7 +221,8 @@ public class ElasticLowerClient {
     private void insertList(List<String> list, String baseIndex, String type) throws IOException {
 
         StringBuffer sendStr = new StringBuffer();
-        for (int a = 0; a < list.size(); a++) {
+        int size=list.size();
+        for (int a = 0; a < size; a++) {
             String map = list.get(a);
             String ent = "{\"index\":{} ";
             sendStr.append(ent);

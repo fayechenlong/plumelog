@@ -44,8 +44,8 @@ public class RedisLogCollect extends BaseLogCollect {
 
     private void collectRuningLog(String logKey) {
         while (true) {
-            List<String> logs = new ArrayList<>();
-
+            List<String> logs = new ArrayList<>(InitConfig.MAX_SEND_SIZE);
+            int size=logs.size();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -55,8 +55,8 @@ public class RedisLogCollect extends BaseLogCollect {
                 long startTime=System.currentTimeMillis();
                 logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
-                if(logs.size() > 0) {
-                    logger.info("RunLog日志获取耗时：{} 日志条数：{}",endTime-startTime,logs.size());
+                if(size > 0) {
+                    logger.info("RunLog日志获取耗时：{} 日志条数：{}",endTime-startTime,size);
                     if(logger.isDebugEnabled()){
                         logs.forEach(log-> logger.debug(log));
                     }
@@ -66,6 +66,7 @@ public class RedisLogCollect extends BaseLogCollect {
                     super.sendLog(super.getRunLogIndex(), logs);
                     //发布一个事件
                     publisherMonitorEvent(logs);
+                    logs.clear();
                 }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
@@ -74,8 +75,8 @@ public class RedisLogCollect extends BaseLogCollect {
     }
     private void collectTraceLog(String logKey) {
         while (true) {
-            List<String> logs = new ArrayList<>();
-
+            List<String> logs = new ArrayList<>(InitConfig.MAX_SEND_SIZE);
+            int size=logs.size();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -85,12 +86,11 @@ public class RedisLogCollect extends BaseLogCollect {
                 long startTime=System.currentTimeMillis();
                 logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime=System.currentTimeMillis();
-                if(logs.size()>0) {
-                    logger.info("TraceLog日志获取耗时：{} 日志条数：{}",endTime-startTime,logs.size());
+                if(size>0) {
+                    logger.info("TraceLog日志获取耗时：{} 日志条数：{}",endTime-startTime,size);
                     if(logger.isDebugEnabled()){
                         logs.forEach(log-> logger.debug(log));
                     }
-
                     // 解压缩
                     logs = decompressor(logs);
 
@@ -107,19 +107,20 @@ public class RedisLogCollect extends BaseLogCollect {
         if (!compressor) {
             return logs;
         }
-
+        int size=logs.size();
         List<String> list = new ArrayList<>();
         if (logs != null && logs.size() > 0) {
-            logs.forEach(r -> {
-                try {
-                    RunLogCompressMessage message = JSON.parseObject(r, RunLogCompressMessage.class);
-                    byte[] bytes = LZ4Util.decompressorByte(message.getBody(), message.getLength());
-                    String json = new String(bytes);
-                    list.addAll(GfJsonUtil.parseArray(json, String.class));
-                } catch (Exception e) {
-                    logger.error("解析日志失败！", e);
-                }
-            });
+           for(int i=0;i<logs.size();i++){
+               String r=logs.get(i);
+               try {
+                   RunLogCompressMessage message = JSON.parseObject(r, RunLogCompressMessage.class);
+                   byte[] bytes = LZ4Util.decompressorByte(message.getBody(), message.getLength());
+                   String json = new String(bytes);
+                   list.addAll(GfJsonUtil.parseArray(json, String.class));
+               } catch (Exception e) {
+                   logger.error("解析日志失败！", e);
+               }
+           }
         }
         return list;
     }

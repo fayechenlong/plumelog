@@ -61,6 +61,7 @@ public class KafkaLogCollect extends BaseLogCollect {
             if (logList.size() > 0) {
                 super.sendLog(super.getRunLogIndex(), logList);
                 publisherMonitorEvent(logList);
+                logList.clear();
             }
             if (sendlogList.size() > 0) {
                 super.sendTraceLogList(super.getTraceLogIndex(), sendlogList);
