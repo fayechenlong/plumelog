@@ -82,7 +82,7 @@ public class BaseLogCollect {
                         errorLogs.add(runLogMessage);
                     }
                 }
-                logs.clear();
+                logs=null;
                 applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, errorLogs));
             }catch (Exception e){
                 logger.error("publisherMonitorEvent error!", e);
