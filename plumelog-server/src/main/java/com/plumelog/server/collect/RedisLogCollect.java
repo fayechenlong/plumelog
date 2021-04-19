@@ -66,7 +66,6 @@ public class RedisLogCollect extends BaseLogCollect {
                     super.sendLog(super.getRunLogIndex(), logs);
                     //发布一个事件
                     publisherMonitorEvent(logs);
-                    logs.clear();
                 }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
