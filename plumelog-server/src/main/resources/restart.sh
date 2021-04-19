@@ -7,5 +7,5 @@ if [[ -n $pid ]];then
 else
     echo "$PROJECT is not running"
 fi
-nohup java -jar $project &
+nohup java -jar $project > /dev/null 2>&1 &
 echo "$project has been restarting"

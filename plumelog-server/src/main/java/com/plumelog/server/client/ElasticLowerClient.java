@@ -230,6 +230,7 @@ public class ElasticLowerClient {
             sendStr.append(map);
             sendStr.append("\r\n");
         }
+        list=null;
         String endpoint = "";
         if (StringUtils.isEmpty(type)) {
             endpoint = "/" + baseIndex + "/_bulk";
