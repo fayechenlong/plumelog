@@ -244,6 +244,7 @@ public class ElasticLowerClient {
         client.performRequestAsync(request, new ResponseListener() {
             @Override
             public void onSuccess(Response response) {
+                request.setEntity(null);
                 try {
 
                     if(response.getStatusLine().getStatusCode()==200){
