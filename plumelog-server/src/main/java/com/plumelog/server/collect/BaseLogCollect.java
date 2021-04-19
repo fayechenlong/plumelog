@@ -1,6 +1,9 @@
 package com.plumelog.server.collect;
 
+import com.alibaba.fastjson.JSON;
+import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.server.InitConfig;
+import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.ThreadPoolUtil;
@@ -9,6 +12,7 @@ import com.plumelog.server.util.DateUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -66,9 +70,20 @@ public class BaseLogCollect {
     }
 
     protected void publisherMonitorEvent(List<String> logs) {
-        if (logs.size()>0){
+        int size=logs.size();
+        if (size>0){
             try {
-                applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, logs));
+                List<RunLogMessage> errorLogs = new ArrayList<>();
+                for(int i=0;i<size;i++) {
+                    String logString = logs.get(i);
+                    RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
+                    AppNameCache.appName.add(runLogMessage.getAppName());
+                    if (runLogMessage.getLogLevel().toUpperCase().equals("ERROR")) {
+                        errorLogs.add(runLogMessage);
+                    }
+                }
+                logs.clear();
+                applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, errorLogs));
             }catch (Exception e){
                 logger.error("publisherMonitorEvent error!", e);
             }

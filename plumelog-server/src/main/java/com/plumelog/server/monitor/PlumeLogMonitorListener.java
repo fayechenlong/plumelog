@@ -63,18 +63,9 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     @Async
     @Override
     public void onApplicationEvent(PlumelogMonitorEvent event) {
-        List<String> logs = event.getLogs();
-        List<RunLogMessage> runlogs = new ArrayList<>();
-        logs.forEach(logString -> {
-            RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
-            //redisClient.sadd(AppNameCache.APP_NAME_SET,runLogMessage.getAppName());
-            AppNameCache.appName.add(runLogMessage.getAppName());
-            if (runLogMessage.getLogLevel().toUpperCase().equals("ERROR")) {
-                runlogs.add(runLogMessage);
-            }
-        });
+        List<RunLogMessage> errorLogs = event.getLogs();
         //解析日志
-        parserLogMessage(runlogs);
+        parserLogMessage(errorLogs);
     }
 
     /**
