@@ -59,7 +59,6 @@ public class BaseLogCollect {
         try {
             if(sendTraceLogList.size()>0) {
                 elasticLowerClient.insertListTrace(sendTraceLogList, index, LogMessageConstant.ES_TYPE);
-                logger.info("traceLogList insert es success! count:{}", sendTraceLogList.size());
             }
         } catch (Exception e) {
             logger.error("traceLogList insert es failed!", e);

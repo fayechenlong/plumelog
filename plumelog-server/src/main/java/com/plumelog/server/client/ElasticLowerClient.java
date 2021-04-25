@@ -224,13 +224,13 @@ public class ElasticLowerClient {
             }
             logger.info("creatIndex:{}", baseIndex);
         }
-        insertList(list,baseIndex,type);
+        insertListV1(list,baseIndex,type);
     }
     public void insertListTrace(List<String> list, String baseIndex, String type) throws IOException {
-        insertList(list,baseIndex,type);
+        insertListV1(list,baseIndex,type);
     }
     public void insertListComm(List<String> list, String baseIndex, String type) throws IOException {
-        insertList(list,baseIndex,type);
+        insertListV1(list,baseIndex,type);
     }
     private void insertList(List<String> list, String baseIndex, String type) throws IOException {
 
