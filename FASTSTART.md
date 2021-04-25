@@ -62,8 +62,8 @@
         #plumelog.rest.restUserName=plumelog
         #plumelog.rest.restPassWord=123456
         
-        #elasticsearch相关配置
-        plumelog.es.esHosts=172.19.11.43:9200,172.19.11.44:9200,172.19.11.45:9200,172.19.11.46:9200,172.19.11.47:9200
+        #elasticsearch相关配置，host多个用逗号隔开
+        plumelog.es.esHosts=127.0.0.1:9200
         #ES7.*已经去除了索引type字段，所以如果是es7不用配置这个，7.*以下不配置这个会报错
         #plumelog.es.indexType=plumelog
         plumelog.es.shards=5
@@ -74,6 +74,10 @@
         #ES设置密码,启用下面配置
         #plumelog.es.userName=elastic
         #plumelog.es.passWord=123456
+        #是否信任自签证书
+        #plumelog.es.trustSelfSigned=true
+        #是否hostname验证
+        #plumelog.es.hostnameVerification=false
         
         #单次拉取日志条数
         plumelog.maxSendSize=100

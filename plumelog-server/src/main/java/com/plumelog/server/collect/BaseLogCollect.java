@@ -48,10 +48,7 @@ public class BaseLogCollect {
     public void sendLog(String index, List<String> sendList) {
         try {
             if(sendList.size()>0) {
-                long startTime=System.currentTimeMillis();
                 elasticLowerClient.insertListLog(sendList, index, LogMessageConstant.ES_TYPE);
-                long endTime=System.currentTimeMillis();
-                logger.info("logList insert es success! count:{} RuningLog日志写入耗时：{}", sendList.size(),endTime-startTime);
             }
         } catch (Exception e) {
             logger.error("logList insert es failed!", e);

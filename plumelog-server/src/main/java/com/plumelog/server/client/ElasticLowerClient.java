@@ -1,6 +1,7 @@
 package com.plumelog.server.client;
 
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.http.SkipHostnameVerifier;
 import com.plumelog.server.client.http.SkipSslVerificationHttpRequestFactory;
@@ -27,6 +28,8 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * className：ElasticLowerClient
@@ -39,6 +42,7 @@ public class ElasticLowerClient {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
     private static ElasticLowerClient instance;
     private RestClient client;
+    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5,5,100);
 
     public static ElasticLowerClient getInstance(String hosts, String userName, String passWord, boolean trustSelfSigned, boolean hostnameVerification) {
         if (instance == null) {
@@ -274,7 +278,48 @@ public class ElasticLowerClient {
             }
         });
     }
+    private void insertListV1(List<String> list, String baseIndex, String type) throws IOException {
 
+        StringBuffer sendStr = new StringBuffer();
+        int size=list.size();
+        for (int a = 0; a < size; a++) {
+            String map = list.get(a);
+            String ent = "{\"index\":{} ";
+            sendStr.append(ent);
+            sendStr.append("\r\n");
+            sendStr.append(map);
+            sendStr.append("\r\n");
+        }
+        list=null;
+        String endpoint = "";
+        if (StringUtils.isEmpty(type)) {
+            endpoint = "/" + baseIndex + "/_bulk";
+        } else {
+            endpoint = "/" + baseIndex + "/" + type + "/_bulk";
+        }
+        Request request = new Request(
+                "PUT",
+                endpoint);
+        request.setJsonEntity(sendStr.toString());
+        final Request requestStr=request;
+        threadPoolExecutor.execute(()->{
+            try {
+
+                long startTime=System.currentTimeMillis();
+                Response response=client.performRequest(requestStr);
+                long endTime=System.currentTimeMillis();
+                requestStr.setEntity(null);
+                if(response.getStatusLine().getStatusCode()==200){
+                    logger.info("ElasticSearch commit! success,日志提交ES耗时：{}",endTime-startTime);
+                }else {
+                    String responseStr = EntityUtils.toString(response.getEntity());
+                    logger.error("ElasticSearch commit Failure! {},日志提交ES耗时：{}", responseStr,endTime-startTime);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
     public String cat(String index) {
         String reStr = "";
         Request request = new Request(
