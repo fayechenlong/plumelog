@@ -20,7 +20,6 @@
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-core</artifactId>
-            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

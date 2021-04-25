@@ -67,7 +67,6 @@
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-logback</artifactId>
-            <version>${version}</version>
         </dependency>
     </dependencies>
     <build>
