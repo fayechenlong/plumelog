@@ -20,12 +20,10 @@
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-core</artifactId>
-            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-trace</artifactId>
-            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.openfeign</groupId>
