@@ -2,6 +2,8 @@ package com.plumelog.server.client;
 
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.server.InitConfig;
+import com.plumelog.server.client.http.SkipHostnameVerifier;
+import com.plumelog.server.client.http.SkipSslVerificationHttpRequestFactory;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -25,7 +27,6 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * className：ElasticLowerClient
@@ -39,11 +40,11 @@ public class ElasticLowerClient {
     private static ElasticLowerClient instance;
     private RestClient client;
 
-    public static ElasticLowerClient getInstance(String hosts, String userName, String passWord) {
+    public static ElasticLowerClient getInstance(String hosts, String userName, String passWord, boolean trustSelfSigned, boolean hostnameVerification) {
         if (instance == null) {
             synchronized (ElasticLowerClient.class) {
                 if (instance == null) {
-                    instance = new ElasticLowerClient(hosts, userName, passWord);
+                    instance = new ElasticLowerClient(hosts, userName, passWord, trustSelfSigned, hostnameVerification);
                 }
             }
         }
@@ -57,8 +58,7 @@ public class ElasticLowerClient {
      * @param userName
      * @param passWord
      */
-    public ElasticLowerClient(String hosts, String userName, String passWord) {
-
+    public ElasticLowerClient(String hosts, String userName, String passWord, boolean trustSelfSigned, boolean hostnameVerification) {
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, passWord));  //es账号密码
         String[] hostsAndPorts = hosts.split(",");
@@ -70,7 +70,17 @@ public class ElasticLowerClient {
             @Override
             public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
                 httpClientBuilder.disableAuthCaching();
-                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+                httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+
+                // 设置ssl配置
+                if (trustSelfSigned && !hostnameVerification) {
+                    httpClientBuilder.setSSLContext(SkipSslVerificationHttpRequestFactory.getSSLContext());
+                    httpClientBuilder.setSSLHostnameVerifier(new SkipHostnameVerifier());
+                } else if (trustSelfSigned) {
+                    httpClientBuilder.setSSLContext(SkipSslVerificationHttpRequestFactory.getSSLContext());
+                }
+
+                return httpClientBuilder;
             }
         }).build();
     }

@@ -31,8 +31,23 @@ public class ClientConfig implements InitializingBean {
     private String model;
     @Value("${plumelog.kafka.kafkaHosts:}")
     private String kafkaHosts;
+    /**
+     * 支持携带协议，如：http、https
+     */
     @Value("${plumelog.es.esHosts:}")
     private String esHosts;
+    /**
+     * 信任自签证书
+     * <p>默认：true
+     */
+    @Value("${plumelog.es.trustSelfSigned:true}")
+    private boolean trustSelfSigned = true;
+    /**
+     * hostname验证
+     * <p>默认：false
+     */
+    @Value("${plumelog.es.hostnameVerification:false}")
+    private boolean hostnameVerification = false;
     @Value("${plumelog.es.indexType:}")
     private String indexType;
     @Value("${plumelog.es.userName:}")
@@ -153,7 +168,7 @@ public class ClientConfig implements InitializingBean {
             logger.error("can not find esHosts config ! please check the application.properties(plumelog.es.esHosts) ");
             return null;
         }
-        return ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord);
+        return ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord, trustSelfSigned, hostnameVerification);
     }
 
     @Bean

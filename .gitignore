@@ -9,6 +9,10 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
+# yue-library ignore
+application-test-confidential.yml
+application-test-confidential.properties
+
 # Windows Installer files
 *.cab
 *.msi
