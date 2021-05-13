@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * className：RedisLogCollect
@@ -35,14 +36,46 @@ public class RestLogCollect extends BaseLogCollect {
     }
 
     public void restStart() {
+        Thread runLogThread = startRunLogThread();
+        Thread traceLogThread = startTraceLogThread();
 
-        threadPoolExecutor.execute(() -> {
-            collectRuningLog();
-        });
-        threadPoolExecutor.execute(() -> {
-            collectTraceLog();
-        });
+        scheduledThreadPoolExecutor.scheduleWithFixedDelay(() -> {
+            Thread runLog = runLogThread;
+            try {
+                boolean runLogThreadAlive = runLog.isAlive();
+                if (!runLogThreadAlive) {
+                    throw new NullPointerException("runLogThread alive false");
+                }
+            } catch (Exception ex) {
+                System.out.println("runLogThread 重启线程");
+                runLog = startRunLogThread();
+            }
+
+            Thread traceLog = traceLogThread;
+            try {
+                boolean traceLogThreadAlive = traceLog.isAlive();
+                if (!traceLogThreadAlive) {
+                    throw new NullPointerException("traceLogThread alive false");
+                }
+            } catch (Exception ex) {
+                logger.warn("traceLogThread 重启线程");
+                traceLog = startTraceLogThread();
+            }
+        }, 10, 30, TimeUnit.SECONDS);
+
         logger.info("RestLogCollect is starting!");
+    }
+
+    private Thread startRunLogThread() {
+        Thread runLogThread = new Thread(() -> collectRuningLog());
+        runLogThread.start();
+        return runLogThread;
+    }
+
+    private Thread startTraceLogThread() {
+        Thread traceLogThread = new Thread(() -> collectTraceLog());
+        traceLogThread.start();
+        return traceLogThread;
     }
 
     private void collectRuningLog() {
