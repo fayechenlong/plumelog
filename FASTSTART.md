@@ -155,7 +155,7 @@
 
 ## 二、客户端使用
 
-1. 客户端在项目使用，非maven项目下载依赖包（https://gitee.com/frankchenlong/plumelog/releases）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
+1. 客户端在项目使用，非maven项目下载依赖包（ https://gitee.com/frankchenlong/plumelog/releases ）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
 
 #### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
 #### 示例中仅仅是基本配置，更多配置请看文章下面配置详解
