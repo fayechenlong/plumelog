@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -27,6 +28,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class BaseLogCollect {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(BaseLogCollect.class);
     public ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
+    protected ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
     public ElasticLowerClient elasticLowerClient;
     protected ApplicationEventPublisher applicationEventPublisher;
 
