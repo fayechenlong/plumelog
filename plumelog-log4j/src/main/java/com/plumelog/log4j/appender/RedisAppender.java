@@ -14,7 +14,6 @@ import com.plumelog.core.redis.RedisClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -27,6 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class RedisAppender extends AppenderSkeleton {
     private AbstractClient redisClient;
     private String appName;
+    private String env = "default";
     private String redisHost;
     private String redisPort;
     private String redisAuth;
@@ -94,34 +94,43 @@ public class RedisAppender extends AppenderSkeleton {
     public void setMasterName(String masterName) {
         this.masterName = masterName;
     }
-
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool();
-
+    
+    public void setEnv(String env) {
+        this.env = env;
+    }
+    
+    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
+    
     @Override
     protected void append(LoggingEvent loggingEvent) {
         if (this.runModel != null) {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (this.redisClient == null) {
-            if (this.model.equals("cluster")) {
+            if ("cluster".equals(this.model)) {
                 this.redisClient = RedisClusterClient.getInstance(this.redisHost, this.redisAuth);
-            } else if (this.model.equals("sentinel")) {
-                this.redisClient = RedisSentinelClient.getInstance(this.redisHost, this.masterName, this.redisAuth, this.redisDb);
+            } else if ("sentinel".equals(this.model)) {
+                this.redisClient = RedisSentinelClient
+                        .getInstance(this.redisHost, this.masterName, this.redisAuth, this.redisDb);
             } else {
                 int port = 6379;
                 String ip = "127.0.0.1";
-                if(this.redisPort==null){
-                    String[] hs = redisHost.split(":");
-                    if (hs.length == 2) {
-                        ip = hs[0];
-                        port = Integer.valueOf(hs[1]);
+                if (this.redisPort == null) {
+                    // 如果redisHost不包含:号则端口号默认使用6379
+                    if (redisHost.contains(":")) {
+                        String[] hs = redisHost.split(":");
+                        if (hs.length == 2) {
+                            ip = hs[0];
+                            port = Integer.parseInt(hs[1]);
+                        }
+                    } else {
+                        ip = this.redisHost;
                     }
-                }else {
-                    ip=this.redisHost;
-                    port=Integer.parseInt(this.redisPort);
+                } else {
+                    ip = this.redisHost;
+                    port = Integer.parseInt(this.redisPort);
                 }
-                this.redisClient = RedisClient.getInstance(ip,port,this.redisAuth, this.redisDb);
+                this.redisClient = RedisClient.getInstance(ip, port, this.redisAuth, this.redisDb);
             }
 
             MessageAppenderFactory.initQueue(this.logQueueSize);
@@ -137,7 +146,7 @@ public class RedisAppender extends AppenderSkeleton {
                 });
             }
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, this.env, loggingEvent);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, loggingEvent);
             MessageAppenderFactory.pushRundataQueue(message);

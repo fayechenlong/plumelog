@@ -27,10 +27,10 @@ public class LogMessageUtil {
 
     private static String isExpandRunLog(ILoggingEvent logEvent) {
         String traceId = null;
-            if (!logEvent.getMDCPropertyMap().isEmpty()) {
-                traceId = logEvent.getMDCPropertyMap().get(LogMessageConstant.TRACE_ID);
-                TraceId.logTraceID.set(traceId);
-            }
+        if (!logEvent.getMDCPropertyMap().isEmpty()) {
+            traceId = logEvent.getMDCPropertyMap().get(LogMessageConstant.TRACE_ID);
+            TraceId.logTraceID.set(traceId);
+        }
         return traceId;
     }
 
@@ -41,6 +41,7 @@ public class LogMessageUtil {
      * @param iLoggingEvent
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static String getLogMessage(BaseLogMessage baseLogMessage, final ILoggingEvent iLoggingEvent) {
         Map<String, String> mdc = iLoggingEvent.getMDCPropertyMap();
         Map<String, Object> map = GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage), Map.class);
@@ -50,16 +51,16 @@ public class LogMessageUtil {
         return GfJsonUtil.toJSONString(map);
     }
 
-    public static BaseLogMessage getLogMessage(final String appName, final ILoggingEvent iLoggingEvent) {
+    public static BaseLogMessage getLogMessage(final String appName, final String env, final ILoggingEvent iLoggingEvent) {
         isExpandRunLog(iLoggingEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(iLoggingEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {
             return TraceLogMessageFactory.getTraceLogMessage(
-                    traceMessage, appName, iLoggingEvent.getTimeStamp());
+                    traceMessage, appName, env, iLoggingEvent.getTimeStamp());
         }
         RunLogMessage logMessage =
-                TraceLogMessageFactory.getLogMessage(appName, formattedMessage, iLoggingEvent.getTimeStamp());
+                TraceLogMessageFactory.getLogMessage(appName, env, formattedMessage, iLoggingEvent.getTimeStamp());
         logMessage.setClassName(iLoggingEvent.getLoggerName());
 
         StackTraceElement stackTraceElement = iLoggingEvent.getCallerData()[0];
@@ -94,7 +95,7 @@ public class LogMessageUtil {
     }
 
     private static String packageMessage(String message, Object[] args) {
-        if (message != null && message.indexOf(LogMessageConstant.DELIM_STR) > -1) {
+        if (message != null && message.contains(LogMessageConstant.DELIM_STR)) {
             return MessageFormatter.arrayFormat(message, args).getMessage();
         }
         return TraceLogMessageFactory.packageMessage(message, args);

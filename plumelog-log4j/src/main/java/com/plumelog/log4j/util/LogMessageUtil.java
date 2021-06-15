@@ -15,7 +15,6 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
 
@@ -27,23 +26,23 @@ import java.util.Map;
  * @version 1.0.0
  */
 public class LogMessageUtil {
-
-    public static BaseLogMessage getLogMessage(String appName, LoggingEvent loggingEvent) {
+    
+    public static BaseLogMessage getLogMessage(String appName, String env, LoggingEvent loggingEvent) {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(loggingEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {
             return TraceLogMessageFactory.getTraceLogMessage(
-                    traceMessage, appName, loggingEvent.getTimeStamp());
+                    traceMessage, appName, env, loggingEvent.getTimeStamp());
         }
         RunLogMessage logMessage =
-                TraceLogMessageFactory.getLogMessage(appName, formattedMessage, loggingEvent.getTimeStamp());
+                TraceLogMessageFactory.getLogMessage(appName, env, formattedMessage, loggingEvent.getTimeStamp());
         logMessage.setClassName(loggingEvent.getLoggerName());
 
-        LocationInfo locationInfo=loggingEvent.getLocationInformation();
-        String method=locationInfo.getMethodName();
-        String line=locationInfo.getLineNumber();
-        logMessage.setMethod(method+"("+locationInfo.getFileName()+":"+line+")");
-        logMessage.setDateTime(DateUtil.parseDateToStr(new Date(loggingEvent.getTimeStamp()),DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        LocationInfo locationInfo = loggingEvent.getLocationInformation();
+        String method = locationInfo.getMethodName();
+        String line = locationInfo.getLineNumber();
+        logMessage.setMethod(method + "(" + locationInfo.getFileName() + ":" + line + ")");
+        logMessage.setDateTime(DateUtil.parseDateToStr(new Date(loggingEvent.getTimeStamp()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
 
         logMessage.setLogLevel(loggingEvent.getLevel().toString());
         return logMessage;
@@ -55,10 +54,11 @@ public class LogMessageUtil {
      * @param logEvent
      * @return
      */
-    public static String getLogMessage(BaseLogMessage baseLogMessage,final LoggingEvent logEvent){
-        Map<String, String> mdc= logEvent.getProperties();
-        Map<String, Object> map= GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage),Map.class);
-        if(mdc!=null) {
+    @SuppressWarnings("unchecked")
+    public static String getLogMessage(BaseLogMessage baseLogMessage, final LoggingEvent logEvent) {
+        Map<String, String> mdc = logEvent.getProperties();
+        Map<String, Object> map = GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage), Map.class);
+        if (mdc != null) {
             map.putAll(mdc);
         }
         return GfJsonUtil.toJSONString(map);
@@ -66,11 +66,12 @@ public class LogMessageUtil {
     private static String getMessage(LoggingEvent logEvent) {
         if (logEvent.getLevel().toInt() == Priority.ERROR_INT) {
             String msg = "";
-            if (logEvent.getThrowableInformation() != null){
+            if (logEvent.getThrowableInformation() != null) {
                 msg = LogExceptionStackTrace.erroStackTrace(
                         logEvent.getThrowableInformation().getThrowable()).toString();
             }
-            if (logEvent.getRenderedMessage()!=null&&logEvent.getRenderedMessage().indexOf(LogMessageConstant.DELIM_STR) > -1) {
+            if (logEvent.getRenderedMessage() != null && logEvent.getRenderedMessage()
+                    .contains(LogMessageConstant.DELIM_STR)) {
                 FormattingTuple format = MessageFormatter.format(logEvent.getRenderedMessage(), msg);
                 return format.getMessage();
             }

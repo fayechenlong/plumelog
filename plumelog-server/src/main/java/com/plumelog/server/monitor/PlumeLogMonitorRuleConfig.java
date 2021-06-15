@@ -4,11 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.plumelog.core.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
-import com.plumelog.core.redis.RedisClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -39,11 +37,11 @@ public class PlumeLogMonitorRuleConfig {
      * @param appName
      * @return
      */
-    public List<WarningRule> getMonitorRuleConfig(String appName) {
+    public List<WarningRule> getMonitorRuleConfig(String appName, String env) {
         if (configMap.isEmpty()) {
             initMonitorRuleConfig();
         }
-        return configMap.get(appName);
+        return configMap.get(getKey(appName, env));
     }
 
     public synchronized void initMonitorRuleConfig() {
@@ -62,14 +60,15 @@ public class PlumeLogMonitorRuleConfig {
         if (warningRule.getStatus() == 0) {
             return;
         }
-        if (backConfigMap.containsKey(warningRule.getAppName())) {
-            List<WarningRule> warningRules = backConfigMap.get(warningRule.getAppName());
+        String key = getKey(warningRule.getAppName(), warningRule.getEnv());
+        if (backConfigMap.containsKey(key)) {
+            List<WarningRule> warningRules = backConfigMap.get(key);
             warningRules.add(warningRule);
-            backConfigMap.put(warningRule.getAppName(), warningRules);
+            backConfigMap.put(key, warningRules);
         } else {
             List<WarningRule> lists = new ArrayList<>();
             lists.add(warningRule);
-            backConfigMap.put(warningRule.getAppName(), lists);
+            backConfigMap.put(key, lists);
         }
     }
 
@@ -83,5 +82,9 @@ public class PlumeLogMonitorRuleConfig {
             logger.error("更新规则配置失败 {}", e);
 
         }
+    }
+    
+    private static String getKey(String appName, String env) {
+        return appName + ":" + env;
     }
 }

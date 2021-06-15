@@ -24,6 +24,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     private KafkaProducerClient kafkaClient;
     private String appName;
+    private String env = "default";
     private String kafkaHosts;
     private String runModel;
     private String expand;
@@ -43,7 +44,11 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     public void setAppName(String appName) {
         this.appName = appName;
     }
-
+    
+    public void setEnv(String env) {
+        this.env = env;
+    }
+    
     public void setKafkaHosts(String kafkaHosts) {
         this.kafkaHosts = kafkaHosts;
     }
@@ -73,7 +78,7 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
         send(event);
     }
     protected void send(ILoggingEvent event) {
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, event);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, event);
             MessageAppenderFactory.pushRundataQueue(message);
