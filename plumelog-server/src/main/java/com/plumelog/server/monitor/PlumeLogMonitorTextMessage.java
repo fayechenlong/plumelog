@@ -52,6 +52,8 @@ public class PlumeLogMonitorTextMessage {
         private Long time;
 
         private String appName;
+        
+        private String env;
 
         private String className;
 
@@ -59,8 +61,9 @@ public class PlumeLogMonitorTextMessage {
 
         private String errorContent;
 
-        public Builder(String appName) {
+        public Builder(String appName, String env) {
             this.appName = appName;
+            this.env = env;
         }
 
         public Builder className(String className) {
@@ -98,7 +101,9 @@ public class PlumeLogMonitorTextMessage {
         public String toString() {
 
             StringBuilder builder = new StringBuilder();
-            builder.append("#### 报警通知：").append(" \n> ").append("应用名 【").append(appName).append("】\n\n>");
+            builder.append("#### 报警通知：").append(" \n> ")
+                    .append("应用名 【").append(appName).append("】\n\n>")
+                    .append("应用环境【").append(env).append("】\n\n> ");
             if (!StringUtils.isEmpty(className)) {
                 builder.append("类路径【").append(className).append("】 \n\n> ");
             }

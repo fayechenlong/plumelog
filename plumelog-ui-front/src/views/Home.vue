@@ -12,67 +12,152 @@
         <log-header></log-header>
 
         <!--查询条件-->
-        <table class='tbl_filters'>
-          <tbody>
-          <tr>
-            <td class="key">应用名称</td>
-            <td>
-              <AutoComplete
-                  v-model="filter.appName"
-                  :data="appNameComplete"
-                  class="txt txtAppName"
-                  placeholder="搜索多个请用逗号或空格隔开"
-                  :clearable="true"
-                  :filter-method="completeFilter"
-                  @on-change="appNameChange">
-              </AutoComplete>
-              <Checkbox v-model="isExclude">排除</Checkbox>
-            </td>
-          </tr>
-          <tr>
-            <td class="key">日志等级</td>
-            <td>
-              <Select v-model="filter.logLevel"  placeholder="请选择日志等级">
-                <Option value="" key="ALL">所有</Option>
-                <Option value="INFO" key="INFO">INFO</Option>
-                <Option value="ERROR" key="ERROR">ERROR</Option>
-                <Option value="WARN" key="WARN">WARN</Option>
-                <Option value="DEBUG" key="DEBUG">DEBUG</Option>
-              </Select>
-            </td>
-          </tr>
-          <tr>
-            <td class="key">服务器名称</td>
-            <td>
-              <Input class="txt" name="serverName" v-model="filter.serverName" placeholder="搜索多个请用逗号或空格隔开"
-                     :clearable="true"/>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-        <table class='tbl_filters'>
-          <tr>
-            <td class="key">类名</td>
-            <td>
-              <Input class="txt" name="className" v-model="filter.className" placeholder="搜索多个请用逗号或空格隔开"
-                     :clearable="true"/>
-            </td>
-          </tr>
-          <tr>
-            <td class="key">追踪码</td>
-            <td>
-              <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
-            </td>
-          </tr>
-          <tr>
-            <td class="key">日期和时间</td>
-            <td>
-              <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChange" type="datetimerange"
-                          :options="dateOption" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期与时间"
-                          style="width: 315px"></DatePicker>
-            </td>
-          </tr>
-        </table>
+        <div style="width: 1000px; padding: 0 10px 0 30px">
+          <table class='tbl_filters' style="width: 100%">
+            <tbody>
+            <tr>
+              <td class="key">应用名称</td>
+              <td>
+                <AutoComplete
+                    v-model="filter.appName"
+                    :data="appNameComplete"
+                    class="txt txtAppName"
+                    placeholder="搜索多个请用逗号或空格隔开"
+                    :clearable="true"
+                    :filter-method="completeFilter"
+                    @on-change="appNameChange">
+                </AutoComplete>
+                <Checkbox v-model="isExclude">排除</Checkbox>
+              </td>
+              <td class="key">应用环境</td>
+              <td>
+                <AutoComplete
+                    v-model="filter.env"
+                    :data="envComplete"
+                    class="txt txtAppName"
+                    placeholder="搜索多个请用逗号或空格隔开"
+                    :clearable="true"
+                    :filter-method="completeFilter"
+                    @on-change="envChange">
+                </AutoComplete>
+              </td>
+              <td class="key">日志等级</td>
+              <td style="width: 150px">
+                <Select v-model="filter.logLevel"  placeholder="请选择日志等级">
+                  <Option value="" key="ALL">所有</Option>
+                  <Option value="INFO" key="INFO">INFO</Option>
+                  <Option value="ERROR" key="ERROR">ERROR</Option>
+                  <Option value="WARN" key="WARN">WARN</Option>
+                  <Option value="DEBUG" key="DEBUG">DEBUG</Option>
+                </Select>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          
+          <table class='tbl_filters' style="width: 50%">
+            <tbody>
+            <tr>
+              <td class="key">追踪码</td>
+              <td>
+                <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="key">类名</td>
+              <td>
+                <Input class="txt" name="className" v-model="filter.className" placeholder="搜索多个请用逗号或空格隔开"
+                       :clearable="true"/>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <table class='tbl_filters' style="float: right">
+            <tbody>
+            <tr>
+              <td class="key">服务器名称</td>
+              <td>
+                <Input class="txt" name="serverName" v-model="filter.serverName" placeholder="搜索多个请用逗号或空格隔开"
+                       :clearable="true"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="key">日期和时间</td>
+              <td>
+                <DatePicker ref='datePicker' v-model="dateTimeRange" @on-change="dateChange" type="datetimerange"
+                            :options="dateOption" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期与时间"
+                            style="width: 315px"></DatePicker>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+  
+          <div style="clear:both"></div>
+          <table class="tbl_filters" style="width:900px">
+            <tr v-if="extendList.length>0">
+              <td class="key">扩展字段</td>
+              <td>
+                <Select v-model="select_extend" @on-change="selectExtendHandler" label-in-value placeholder="选择扩展字段" style="width:150px;margin-right:10px">
+                  <Option v-for="extend in extendList" :value="extend.field" :key="extend.field">{{
+                    extend.fieldName
+                    }}
+                  </Option>
+                </Select>
+                <Input class="txt" @on-enter="addExtendTag" :clearable="true" v-model="extendTag" placeholder="输入查询内容"
+                       style="width:478px;"/>
+                <Button icon="md-add" @click="addExtendTag" style="margin-left:10px;width:100px">添加</Button>
+              </td>
+            </tr>
+            <tr v-if="extendOptions.length>0">
+              <td></td>
+              <td>
+                <Tag closable v-for="(tag,index) in extendOptions" size="medium" @on-close="closeExtendTag(index)"
+                     :key="index">
+                  <template v-if="index>0">{{ tag.type }}&nbsp;</template>
+                  {{ tag.label }}:{{ tag.tag }}
+                </Tag>
+              </td>
+            </tr>
+            <tr v-if="!useSearchQuery">
+              <td class="key">内容</td>
+              <td>
+                <Input class="txt" @on-enter="doSearch()" :clearable="true" style="width:638px" placeholder="输入搜索内容"
+                       v-model="searchKey"/>
+                <a href="javascript:void(0)" @click="useSearchQuery=true" class="link_changeModal">切换为条件模式</a>
+              </td>
+            </tr>
+            <tr v-if="useSearchQuery">
+              <td class="key">条件</td>
+              <td>
+                <Select v-if="searchOptions.length>0" v-model="selectOption" style="width:80px;margin-right:10px">
+                  <Option value="AND" key="AND">AND</Option>
+                  <Option value="OR" key="OR">OR</Option>
+                  <Option value="NOT" key="NOT">NOT</Option>
+                </Select>
+                <Input class="txt" @on-enter="addTag()" :clearable="true" v-model="tag" placeholder="输入搜索条件"
+                       style="width:196px;"/>
+                <Button icon="md-add" @click="addTag" style="margin-left:10px">添加</Button>
+                <a href="javascript:void(0)" @click="useSearchQuery=false" class="link_changeModal">切换为内容模式</a>
+              </td>
+            </tr>
+            <tr v-if="useSearchQuery">
+              <td></td>
+              <td>
+                <Tag closable v-for="(tag,index) in searchOptions" @on-close="closeTag(index)" :key="index">
+                  <template v-if="index>0">{{ tag.type }}&nbsp;</template>
+                  {{ tag.tag }}
+                </Tag>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style='padding-top:8px;position:relative'>
+                <Button type="primary" icon="ios-search" style="margin-right:10px" @click="doSearch">查询</Button>
+                <Button @click="clear">重置</Button>
+              </td>
+            </tr>
+          </table>
+        </div>
         <!-- 统计图表 -->
         <Carousel v-model="slideIndex" arrow="never">
           <CarouselItem>
@@ -82,72 +167,6 @@
             <div id="errorChart" class="chart"></div>
           </CarouselItem>
         </Carousel>
-
-        <div style="clear:both"></div>
-        <table class="tbl_filters" style="width:900px">
-          <tr v-if="extendList.length>0">
-            <td class="key">扩展字段</td>
-            <td>
-              <Select v-model="select_extend" @on-change="selectExtendHandler" label-in-value placeholder="选择扩展字段" style="width:150px;margin-right:10px">
-                <Option v-for="extend in extendList" :value="extend.field" :key="extend.field">{{
-                    extend.fieldName
-                  }}
-                </Option>
-              </Select>
-              <Input class="txt" @on-enter="addExtendTag" :clearable="true" v-model="extendTag" placeholder="输入查询内容"
-                     style="width:478px;"/>
-              <Button icon="md-add" @click="addExtendTag" style="margin-left:10px;width:100px">添加</Button>
-            </td>
-          </tr>
-          <tr v-if="extendOptions.length>0">
-            <td></td>
-            <td>
-              <Tag closable v-for="(tag,index) in extendOptions" size="medium" @on-close="closeExtendTag(index)"
-                   :key="index">
-                <template v-if="index>0">{{ tag.type }}&nbsp;</template>
-                {{ tag.label }}:{{ tag.tag }}
-              </Tag>
-            </td>
-          </tr>
-          <tr v-if="!useSearchQuery">
-            <td class="key">内容</td>
-            <td>
-              <Input class="txt" @on-enter="doSearch()" :clearable="true" style="width:638px" placeholder="输入搜索内容"
-                     v-model="searchKey"/>
-              <a href="javascript:void(0)" @click="useSearchQuery=true" class="link_changeModal">切换为条件模式</a>
-            </td>
-          </tr>
-          <tr v-if="useSearchQuery">
-            <td class="key">条件</td>
-            <td>
-              <Select v-if="searchOptions.length>0" v-model="selectOption" style="width:80px;margin-right:10px">
-                <Option value="AND" key="AND">AND</Option>
-                <Option value="OR" key="OR">OR</Option>
-                <Option value="NOT" key="NOT">NOT</Option>
-              </Select>
-              <Input class="txt" @on-enter="addTag()" :clearable="true" v-model="tag" placeholder="输入搜索条件"
-                     style="width:196px;"/>
-              <Button icon="md-add" @click="addTag" style="margin-left:10px">添加</Button>
-              <a href="javascript:void(0)" @click="useSearchQuery=false" class="link_changeModal">切换为内容模式</a>
-            </td>
-          </tr>
-          <tr v-if="useSearchQuery">
-            <td></td>
-            <td>
-              <Tag closable v-for="(tag,index) in searchOptions" @on-close="closeTag(index)" :key="index">
-                <template v-if="index>0">{{ tag.type }}&nbsp;</template>
-                {{ tag.tag }}
-              </Tag>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td style='padding-top:8px;position:relative'>
-              <Button type="primary" icon="ios-search" style="margin-right:10px" @click="doSearch">查询</Button>
-              <Button @click="clear">重置</Button>
-            </td>
-          </tr>
-        </table>
       </template>
       <div style="clear:both"></div>
     </div>
@@ -179,6 +198,10 @@
         <template slot-scope="{ row }" slot="appName">
           {{ row.appName }}
           <Icon type="ios-search" v-if="row.appName" @click="doSearch('appName',row)"/>
+        </template>
+        <template slot-scope="{ row }" slot="env">
+          {{ row.env }}
+          <Icon type="ios-search" v-if="row.env" @click="doSearch('env',row)"/>
         </template>
         <template slot-scope="{ row }" slot="traceId">
           <a :href="'./#/trace?traceId='+row.traceId+'&timeRange='+JSON.stringify(dateTimeRange)"
@@ -271,7 +294,10 @@ export default {
       select_extend: "",
       select_extend_label: "",
       completeFilterLoading: false,
+      appNameWithEnvMap: {},
+      envWithAppNameMap: {},
       appNameComplete: [],
+      envComplete: [],
       useSearchQuery: false,
       selectOption: 'AND',
       isExclude: false,
@@ -298,6 +324,11 @@ export default {
           width: 150
         },
         {
+          label: '应用环境',
+          value: 'env',
+          width: 100
+        },
+        {
           label: '追踪码',
           value: 'traceId',
           width: 170,
@@ -321,6 +352,7 @@ export default {
       filter: {
         "logLevel": '',
         "appName": "",
+        "env": "",
         "traceId": "",
         "className": "",
         "serverName": ""
@@ -328,7 +360,7 @@ export default {
       list: {
         hits: []
       },
-      size: 30,
+      size: 100,
       from: 0,
       columns: [
         {
@@ -382,6 +414,16 @@ export default {
           sortable: true,
           resizable: true,
           width: 150
+        },
+        {
+          title: '应用环境',
+          align: 'center',
+          key: 'env',
+          slot: 'env',
+          className: 'icon',
+          sortable: true,
+          resizable: true,
+          width: 100
         },
         {
           title: '追踪码',
@@ -562,10 +604,10 @@ export default {
   },
   methods: {
     hightLightCode(code, isHighlight) {
-      code = code.replace(/\\n\\t/g, "\n").replace(/\\n\\tat/g, "\n").replace(/\\n/g, '\n');
+      code = code.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
       let rows = [];
       if (code.indexOf('java.') > -1) {
-        let content = '<pre style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>"
+        let content = '<pre style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\t/g, '　　').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>"
         rows.push({isH: true, content})
         return rows;
       } else if (isHtml.test(code)) {
@@ -594,15 +636,44 @@ export default {
         rows.push({isH: false, content})
         return rows;
       } else {
-        let content = '<div style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\tat/g, '') + "</div>";
+        let content = '<div style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\t/g, '　　') + "</div>";
         rows.push({isH: true, content})
         return rows;
       }
     },
     appNameChange() {
       this.getExtendList();
+      if (this.filter.appName) {
+        this.envComplete = this.appNameWithEnvMap[this.filter.appName];
+      } else {
+        this.envComplete = [];
+        for (let env in this.envWithAppNameMap) {
+          if (this.envWithAppNameMap.hasOwnProperty(env)) {
+            this.envComplete.push(env);
+          }
+        }
+      }
+      if (this.filter.env && this.envComplete.indexOf(this.filter.env) < 0) {
+        this.filter.env = '';
+      }
+      this.envComplete.sort(function(a, b){return a.localeCompare(b)});
     },
-    
+    envChange() {
+      if (this.filter.env) {
+        this.appNameComplete = this.envWithAppNameMap[this.filter.env];
+      } else {
+        this.appNameComplete = [];
+        for (let appName in this.appNameWithEnvMap) {
+          if (this.appNameWithEnvMap.hasOwnProperty(appName)) {
+            this.appNameComplete.push(appName);
+          }
+        }
+      }
+      if (this.filter.appName && this.appNameComplete.indexOf(this.filter.appName) < 0) {
+        this.filter.appName = '';
+      }
+      this.appNameComplete.sort(function(a, b){return a.localeCompare(b)});
+    },
     getExtendList() {
       this.allColumns = [
         ...this.allColumns
@@ -634,18 +705,18 @@ export default {
     searchAppName() {
       if (this.appNameComplete.length == 0) {
 
-        if (sessionStorage['cache_appNames']) {
-          this.appNameComplete = JSON.parse(sessionStorage['cache_appNames'])
+        if (sessionStorage['cache_appNameWithEnvs']) {
+          this.analysisAppNameWithEnv();
         } else {
           this.completeFilterLoading = true;
           let q = "plume_log_run_" + moment().format("YYYYMMDD") + '*'
-          axios.post(process.env.VUE_APP_API + '/query?index=' + q + '&from=0&size=0&appName', {
+          axios.post(process.env.VUE_APP_API + '/query?index=' + q + '&from=0&size=0&appNameWithEnv', {
             "size": 0,
             "aggregations": {
               "dataCount": {
                 "terms": {
                   "size": 1000,
-                  "field": "appName"
+                  "field": "appNameWithEnv"
                 }
               }
             }
@@ -654,12 +725,41 @@ export default {
             let buckets = _.get(data, 'data.aggregations.dataCount.buckets', []).map(item => {
               return item.key
             });
-            sessionStorage['cache_appNames'] = JSON.stringify(buckets);
-            this.appNameComplete = buckets;
+            sessionStorage['cache_appNameWithEnvs'] = JSON.stringify(buckets);
+            this.analysisAppNameWithEnv();
           })
-
         }
       }
+    },
+    analysisAppNameWithEnv() {
+      let appNameWithEnvs = JSON.parse(sessionStorage['cache_appNameWithEnvs']);
+      this.appNameWithEnvMap = {};
+      this.envWithAppNameMap = {};
+      for (let i = 0,len = appNameWithEnvs.length; i < len; i++) {
+        let splitStr = appNameWithEnvs[i].split('-_-');
+        if (!this.appNameWithEnvMap[splitStr[0]]) {
+          this.appNameWithEnvMap[splitStr[0]] = [];
+        }
+        this.appNameWithEnvMap[splitStr[0]].push(splitStr[1]);
+        if (!this.envWithAppNameMap[splitStr[1]]) {
+          this.envWithAppNameMap[splitStr[1]] = [];
+        }
+        this.envWithAppNameMap[splitStr[1]].push(splitStr[0]);
+      }
+      this.appNameComplete = [];
+      for (let appName in this.appNameWithEnvMap) {
+        if (this.appNameWithEnvMap.hasOwnProperty(appName)) {
+          this.appNameComplete.push(appName);
+        }
+      }
+      this.appNameComplete.sort(function(a, b){return a.localeCompare(b)});
+      this.envComplete = [];
+      for (let env in this.envWithAppNameMap) {
+        if (this.envWithAppNameMap.hasOwnProperty(env)) {
+          this.envComplete.push(env);
+        }
+      }
+      this.envComplete.sort(function(a, b){return a.localeCompare(b)});
     },
     closeExtendTag(index) {
       this.extendOptions.splice(index, 1);
@@ -1209,6 +1309,9 @@ export default {
 
       if (this.$route.query.appName) {
         this.filter['appName'] = this.$route.query.appName;
+      }
+      if (this.$route.query.env) {
+        this.filter['env'] = this.$route.query.env;
       }
       if (this.$route.query.className) {
         this.filter['className'] = this.$route.query.className;

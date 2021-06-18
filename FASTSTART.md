@@ -182,11 +182,13 @@
     log4j.appender.L=com.plumelog.log4j.appender.KafkaAppender
     #appName系统的名称(自己定义就好)
     log4j.appender.L.appName=plumelog
+    log4j.appender.L.env=${spring.profiles.active}
     log4j.appender.L.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
     #redis做为中间件
 
     log4j.appender.L=com.plumelog.log4j.appender.RedisAppender
     log4j.appender.L.appName=plumelog
+    log4j.appender.L.env=${spring.profiles.active}
     log4j.appender.L.redisHost=172.16.249.72:6379
     #redis没有密码这一项为空或者不需要
     #log4j.appender.L.redisAuth=123456

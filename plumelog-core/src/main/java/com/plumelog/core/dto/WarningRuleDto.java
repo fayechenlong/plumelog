@@ -1,7 +1,5 @@
 package com.plumelog.core.dto;
 
-import com.plumelog.core.dto.WarningRule;
-
 /**
  * className：WarningRule
  * description：错误告警规则

@@ -269,6 +269,7 @@ public class MainController {
             WarningRuleDto warningRuleDto=new WarningRuleDto();
             warningRuleDto.setId(mapKey);
             warningRuleDto.setAppName(warningRule.getAppName());
+            warningRuleDto.setEnv(warningRule.getEnv());
             warningRuleDto.setAppCategory(warningRule.getAppCategory());
             warningRuleDto.setClassName(warningRule.getClassName());
             warningRuleDto.setReceiver(warningRule.getReceiver());

@@ -14,7 +14,6 @@ import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.logback.util.LogMessageUtil;
 
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -28,6 +27,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class RedisAppender extends AppenderBase<ILoggingEvent> {
     private AbstractClient redisClient;
     private String appName;
+    private String env = "default";
     private String redisHost;
     private String redisPort;
     private String redisAuth;
@@ -52,7 +52,11 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     public void setAppName(String appName) {
         this.appName = appName;
     }
-
+    
+    public void setEnv(String env) {
+        this.env = env;
+    }
+    
     public void setRedisHost(String redisHost) {
         this.redisHost = redisHost;
     }
@@ -111,7 +115,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     }
 
     protected void send(ILoggingEvent event) {
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, event);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, event);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, event);
             MessageAppenderFactory.pushRundataQueue(message);
@@ -133,18 +137,23 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
         }
         if (this.redisClient == null) {
 
-            if (this.model.equals("cluster")) {
+            if ("cluster".equals(this.model)) {
                 this.redisClient = RedisClusterClient.getInstance(this.redisHost, this.redisAuth);
-            } else if (this.model.equals("sentinel")) {
+            } else if ("sentinel".equals(this.model)) {
                 this.redisClient = RedisSentinelClient.getInstance(this.redisHost, this.masterName, this.redisAuth, this.redisDb);
             } else {
                 int port = 6379;
                 String ip = "127.0.0.1";
                 if (this.redisPort == null) {
-                    String[] hs = redisHost.split(":");
-                    if (hs.length == 2) {
-                        ip = hs[0];
-                        port = Integer.valueOf(hs[1]);
+                    // 如果redisHost不包含:号则端口号默认使用6379
+                    if (redisHost.contains(":")) {
+                        String[] hs = redisHost.split(":");
+                        if (hs.length == 2) {
+                            ip = hs[0];
+                            port = Integer.parseInt(hs[1]);
+                        }
+                    } else {
+                        ip = this.redisHost;
                     }
                 } else {
                     ip = this.redisHost;

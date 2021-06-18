@@ -46,10 +46,10 @@ export default {
   },
   methods: {
     hightLightCode(code, isHighlight) {
-      code = code.replace(/\\n\\t/g, "\n").replace(/\\n\\tat/g, "\n").replace(/\\n/g, '\n');
+      code = code.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
       let rows = [];
       if (code.indexOf('java.') > -1) {
-        let content = '<pre style="word-break:break-all;white-space: normal;">' + Prism.highlight(code.replace(/\n/g, '<br/>'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>"
+        let content = '<pre style="word-break:break-all;white-space: normal;">' + Prism.highlight(code.replace(/\n/g, '<br/>').replace(/\t/g, '　　'), Prism.languages.stackjava, 'stackjava').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>"
         rows.push({isH: true, content})
         return rows;
       }else if (isHtml.test(code)) {
@@ -78,7 +78,7 @@ export default {
         rows.push({isH: false, content})
         return rows;
       } else {
-        let content = '<div style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\tat/g, '') + "</div>";
+        let content = '<div style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\t/g, '　　') + "</div>";
         rows.push({isH: true, content})
         return rows;
       }
