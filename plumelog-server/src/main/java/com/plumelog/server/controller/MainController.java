@@ -5,7 +5,6 @@ import com.plumelog.core.LogMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.dto.WarningRuleDto;
-import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
@@ -14,7 +13,6 @@ import com.plumelog.server.controller.vo.LoginVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,8 +25,11 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * className：MainController
@@ -41,7 +42,7 @@ import java.util.*;
 @CrossOrigin
 public class MainController {
 
-    private Logger logger = LoggerFactory.getLogger(MainController.class);
+    private final Logger logger = LoggerFactory.getLogger(MainController.class);
     @Autowired
     private AbstractClient redisClient;
     @Autowired
@@ -56,11 +57,11 @@ public class MainController {
 
     @RequestMapping({"/login", "/plumelogServer/login"})
     public Result login(@RequestBody LoginVO login, HttpServletRequest request) {
-        if(StringUtils.isEmpty(InitConfig.loginUsername)) {
+        if (StringUtils.isEmpty(InitConfig.loginUsername)) {
             request.getSession().setAttribute("token", new Object());
             return new Result();
         }
-        if(InitConfig.loginUsername.equals(login.getUsername()) && InitConfig.loginPassword.equals(login.getPassword())) {
+        if (InitConfig.loginUsername.equals(login.getUsername()) && InitConfig.loginPassword.equals(login.getPassword())) {
             request.getSession().setAttribute("token", new Object());
             return new Result();
         } else {
@@ -104,10 +105,8 @@ public class MainController {
         Result result = new Result();
         if ("redis".equals(InitConfig.START_MODEL)) {
             try {
-                List<String> logStr=new ArrayList<>();
-                logs.forEach(log->{
-                    logStr.add(GfJsonUtil.toJSONString(log));
-                });
+                List<String> logStr = new ArrayList<>();
+                logs.forEach(log -> logStr.add(GfJsonUtil.toJSONString(log)));
                 redisClient.putMessageList(logKey, logStr);
             } catch (Exception e) {
                 result.setCode(500);
@@ -148,6 +147,7 @@ public class MainController {
 
     /**
      * 根据条件删除
+     *
      * @param queryStr
      * @param index
      * @param size
@@ -176,10 +176,11 @@ public class MainController {
             return e.getMessage();
         }
     }
+
     @RequestMapping({"/getServerInfo", "/plumelog/getServerInfo"})
     public String query(String index) {
         String res = elasticLowerClient.cat(index);
-        BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(res.getBytes(Charset.forName("utf8"))), Charset.forName("utf8")));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(res.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
         List<String> list = new ArrayList<>();
         try {
             while (true) {
@@ -207,11 +208,18 @@ public class MainController {
         }
         return "";
     }
+
     @RequestMapping({"/getQueueCounts", "/plumelog/getQueueCounts"})
     public Map<String, Object> getQueueCounts() {
+        Long runSize = 0L;
+        Long traceSize = 0L;
+        if (redisQueueClient != null) {
+            runSize = redisQueueClient.llen(LogMessageConstant.LOG_KEY);
+            traceSize = redisQueueClient.llen(LogMessageConstant.LOG_KEY_TRACE);
+        }
         Map<String, Object> map = new HashMap<>();
-        map.put("runSize",redisQueueClient.llen(LogMessageConstant.LOG_KEY));
-        map.put("traceSize",redisQueueClient.llen(LogMessageConstant.LOG_KEY_TRACE));
+        map.put("runSize", runSize);
+        map.put("traceSize", traceSize);
         return map;
     }
 
@@ -219,9 +227,11 @@ public class MainController {
     public Map<String, Object> deleteQueue(String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
-            redisQueueClient.del(LogMessageConstant.LOG_KEY);
-            redisQueueClient.del(LogMessageConstant.LOG_KEY_TRACE);
-        map.put("acknowledged", true);
+            if (redisQueueClient != null) {
+                redisQueueClient.del(LogMessageConstant.LOG_KEY);
+                redisQueueClient.del(LogMessageConstant.LOG_KEY_TRACE);
+            }
+            map.put("acknowledged", true);
         } else {
             map.put("acknowledged", false);
             map.put("message", "管理密码错误！");
@@ -234,10 +244,10 @@ public class MainController {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
             boolean re = elasticLowerClient.deleteIndex(index);
-            if(index.startsWith(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN)){
+            if (index.startsWith(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN)) {
                 creatIndiceLog(index);
             }
-            if(index.startsWith(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE)){
+            if (index.startsWith(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE)) {
                 creatIndiceTrace(index);
             }
             map.put("acknowledged", re);
@@ -248,25 +258,27 @@ public class MainController {
         return map;
     }
 
-    private void creatIndiceLog(String index){
-        if(!elasticLowerClient.existIndice(index)){
-            elasticLowerClient.creatIndice(index,LogMessageConstant.ES_TYPE);
-        };
+    private void creatIndiceLog(String index) {
+        if (!elasticLowerClient.existIndice(index)) {
+            elasticLowerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
+        }
     }
-    private void creatIndiceTrace(String index){
-        if(!elasticLowerClient.existIndice(index)){
-            elasticLowerClient.creatIndiceTrace(index,LogMessageConstant.ES_TYPE);
-        };
+
+    private void creatIndiceTrace(String index) {
+        if (!elasticLowerClient.existIndice(index)) {
+            elasticLowerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
+        }
     }
+
     @RequestMapping({"/getWarningRuleList", "/plumelog/getWarningRuleList"})
     public Object getWarningRuleList() {
-        List<WarningRuleDto> list=new ArrayList<>();
-        Map<String,String> map=redisClient.hgetAll(LogMessageConstant.WARN_RULE_KEY);
-        for(Map.Entry<String, String> entry : map.entrySet()){
+        List<WarningRuleDto> list = new ArrayList<>();
+        Map<String, String> map = redisClient.hgetAll(LogMessageConstant.WARN_RULE_KEY);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
             String mapKey = entry.getKey();
             String mapValue = entry.getValue();
-            WarningRule warningRule=GfJsonUtil.parseObject(mapValue,WarningRule.class);
-            WarningRuleDto warningRuleDto=new WarningRuleDto();
+            WarningRule warningRule = GfJsonUtil.parseObject(mapValue, WarningRule.class);
+            WarningRuleDto warningRuleDto = new WarningRuleDto();
             warningRuleDto.setId(mapKey);
             warningRuleDto.setAppName(warningRule.getAppName());
             warningRuleDto.setEnv(warningRule.getEnv());
@@ -282,45 +294,48 @@ public class MainController {
         }
         return list;
     }
+
     @RequestMapping({"/saveWarningRuleList", "/plumelog/saveWarningRuleList"})
     public Object saveWarningRule(String id, @RequestBody WarningRule warningRule) {
-        String warningRuleStr=GfJsonUtil.toJSONString(warningRule);
-        redisClient.hset(LogMessageConstant.WARN_RULE_KEY,id,warningRuleStr);
+        String warningRuleStr = GfJsonUtil.toJSONString(warningRule);
+        redisClient.hset(LogMessageConstant.WARN_RULE_KEY, id, warningRuleStr);
         Map<String, Object> result = new HashMap<>();
-        result.put("success",true);
+        result.put("success", true);
         return result;
     }
+
     @RequestMapping({"/deleteWarningRule", "/plumelog/deleteWarningRule"})
     public Object deleteWarningRule(String id) {
-        redisClient.hdel(LogMessageConstant.WARN_RULE_KEY,id);
+        redisClient.hdel(LogMessageConstant.WARN_RULE_KEY, id);
         Map<String, Object> result = new HashMap<>();
-        result.put("success",true);
+        result.put("success", true);
         return result;
     }
 
     @RequestMapping({"/getExtendfieldList", "/plumelog/getExtendfieldList"})
     public Object getExtendfieldList(String appName) {
-        Map<String,String> map=redisClient.hgetAll(LogMessageConstant.EXTEND_APP_MAP_KEY+appName);
+        Map<String, String> map = redisClient.hgetAll(LogMessageConstant.EXTEND_APP_MAP_KEY + appName);
         return map;
     }
 
     @RequestMapping({"/addExtendfield", "/plumelog/addExtendfield"})
-    public Object addExtendfield(String appName,String field,String fieldName) {
-        redisClient.hset(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, field,fieldName);
+    public Object addExtendfield(String appName, String field, String fieldName) {
+        redisClient.hset(LogMessageConstant.EXTEND_APP_MAP_KEY + appName, field, fieldName);
         Map<String, Object> result = new HashMap<>();
-        result.put("success",true);
+        result.put("success", true);
         return result;
     }
+
     @RequestMapping({"/delExtendfield", "/plumelog/delExtendfield"})
-    public Object delExtendfield(String appName,String field) {
-        redisClient.hdel(LogMessageConstant.EXTEND_APP_MAP_KEY+appName, field);
+    public Object delExtendfield(String appName, String field) {
+        redisClient.hdel(LogMessageConstant.EXTEND_APP_MAP_KEY + appName, field);
         Map<String, Object> result = new HashMap<>();
-        result.put("success",true);
+        result.put("success", true);
         return result;
     }
+
     @RequestMapping({"/getAppNames", "/plumelog/getAppNames"})
     public Object getAppNames() {
-        //return redisClient.smembers(AppNameCache.APP_NAME_SET);
         return AppNameCache.appName;
     }
 }
