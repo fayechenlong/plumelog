@@ -75,7 +75,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      */
     public void parserLogMessage(List<RunLogMessage> logMessages) {
         logMessages.forEach(runLogMessage -> {
-            List<WarningRule> monitorRuleConfig = plumeLogMonitorRuleConfig.getMonitorRuleConfig(runLogMessage.getAppName());
+            List<WarningRule> monitorRuleConfig = plumeLogMonitorRuleConfig.getMonitorRuleConfig(runLogMessage.getAppName(), runLogMessage.getEnv());
             if (monitorRuleConfig != null) {
                 //运行规则
                 enforcementRules(monitorRuleConfig, runLogMessage);
@@ -95,6 +95,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             WarningRule warningRule = rules.get(i);
             String className = warningRule.getClassName();
             String appName = warningRule.getAppName();
+            String env = warningRule.getEnv();
             if (containsClassName(className, runLogMessage.getClassName())) {
                 continue;
             }
@@ -102,7 +103,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             String cn = StringUtils.isEmpty(className) ? "" : runLogMessage.getClassName();
 
             //统计分析
-            statisticAlnalysis(getKey(appName, className), warningRule, errorContent, cn);
+            statisticAlnalysis(getKey(appName, env, className), warningRule, errorContent, cn);
         }
     }
 
@@ -171,8 +172,8 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      * @param className 类名
      * @return
      */
-    private static String getKey(String appName, String className) {
-        String key = LogMessageConstant.PLUMELOG_MONITOR_KEY + appName;
+    private static String getKey(String appName, String env, String className) {
+        String key = LogMessageConstant.PLUMELOG_MONITOR_KEY + appName + ":" + env;
         if (!StringUtils.isEmpty(className)) {
             key = key + ":" + className;
         }
@@ -188,7 +189,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      */
     private void earlyWarning(WarningRule rule, long count, String key, String errorContent, String className) {
         PlumeLogMonitorTextMessage plumeLogMonitorTextMessage =
-                new PlumeLogMonitorTextMessage.Builder(rule.getAppName())
+                new PlumeLogMonitorTextMessage.Builder(rule.getAppName(), rule.getEnv())
                         .className(rule.getClassName())
                         .errorCount(rule.getErrorCount())
                         .time(rule.getTime())
@@ -244,6 +245,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         long startTime = currentTime - time;
         StringBuilder builder = new StringBuilder(64);
         builder.append(url).append("/#/?appName=").append(rule.getAppName())
+                .append("&env=").append(rule.getEnv())
                 .append("&className=").append(className)
                 .append("&logLevel=ERROR")
                 .append("&time=").append(startTime).append(",").append(currentTime);

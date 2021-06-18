@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -75,7 +76,7 @@ public class BaseLogCollect {
                 for(int i=0;i<size;i++) {
                     String logString = logs.get(i);
                     RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
-                    AppNameCache.appName.add(runLogMessage.getAppName());
+                    AppNameCache.appName.computeIfAbsent(runLogMessage.getAppName(), k -> new HashSet<>()).add(runLogMessage.getEnv());
                     if (runLogMessage.getLogLevel().toUpperCase().equals("ERROR")) {
                         errorLogs.add(runLogMessage);
                     }

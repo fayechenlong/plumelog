@@ -31,10 +31,10 @@ public class LogMessageUtil {
 
     private static String isExpandRunLog(LogEvent logEvent) {
         String traceId = null;
-            if (!logEvent.getContextData().isEmpty()) {
-                traceId = logEvent.getContextData().toMap().get(LogMessageConstant.TRACE_ID);
-                TraceId.logTraceID.set(traceId);
-            }
+        if (!logEvent.getContextData().isEmpty()) {
+            traceId = logEvent.getContextData().toMap().get(LogMessageConstant.TRACE_ID);
+            TraceId.logTraceID.set(traceId);
+        }
         return traceId;
     }
 
@@ -45,6 +45,7 @@ public class LogMessageUtil {
      * @param logEvent
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static String getLogMessage(BaseLogMessage baseLogMessage, final LogEvent logEvent) {
         Map<String, String> mdc = logEvent.getContextData().toMap();
         Map<String, Object> map = GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage), Map.class);
@@ -55,16 +56,16 @@ public class LogMessageUtil {
         return GfJsonUtil.toJSONString(map);
     }
 
-    public static BaseLogMessage getLogMessage(String appName, LogEvent logEvent) {
+    public static BaseLogMessage getLogMessage(String appName, String env, LogEvent logEvent) {
         isExpandRunLog(logEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(logEvent);
         if (formattedMessage.startsWith(LogMessageConstant.TRACE_PRE)) {
             return TraceLogMessageFactory.getTraceLogMessage(
-                    traceMessage, appName, logEvent.getTimeMillis());
+                    traceMessage, appName, env, logEvent.getTimeMillis());
         }
         RunLogMessage logMessage =
-                TraceLogMessageFactory.getLogMessage(appName, formattedMessage, logEvent.getTimeMillis());
+                TraceLogMessageFactory.getLogMessage(appName, env, formattedMessage, logEvent.getTimeMillis());
         logMessage.setClassName(logEvent.getLoggerName());
 
         StackTraceElement stackTraceElement = logEvent.getSource();

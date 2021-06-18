@@ -21,7 +21,6 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.io.Serializable;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -35,6 +34,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class RedisAppender extends AbstractAppender {
     private static AbstractClient redisClient;
     private String appName;
+    private String env;
     private String redisHost;
     private String redisPort;
     private String redisAuth;
@@ -48,10 +48,11 @@ public class RedisAppender extends AbstractAppender {
     private String model = "standalone";
     private String masterName;
 
-    protected RedisAppender(String name, String appName, String redisHost, String redisPort, String redisAuth, String runModel, Filter filter, Layout<? extends Serializable> layout,
+    protected RedisAppender(String name, String appName, String env, String redisHost, String redisPort, String redisAuth, String runModel, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions, String expand, int maxCount, int logQueueSize, int redisDb, int threadPoolSize, boolean compressor, String model, String masterName) {
         super(name, filter, layout, ignoreExceptions);
         this.appName = appName;
+        this.env = env;
         this.redisHost = redisHost;
         this.redisPort = redisPort;
         this.redisAuth = redisAuth;
@@ -72,7 +73,7 @@ public class RedisAppender extends AbstractAppender {
     }
 
     protected void send(LogEvent logEvent) {
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, logEvent);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
             MessageAppenderFactory.pushRundataQueue(message);
@@ -88,6 +89,7 @@ public class RedisAppender extends AbstractAppender {
     public static RedisAppender createAppender(
             @PluginAttribute("name") String name,
             @PluginAttribute("appName") String appName,
+            @PluginAttribute("env") String env,
             @PluginAttribute("redisHost") String redisHost,
             @PluginAttribute("redisPort") String redisPort,
             @PluginAttribute("redisAuth") String redisAuth,
@@ -102,6 +104,9 @@ public class RedisAppender extends AbstractAppender {
             @PluginAttribute("masterName") String masterName,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
             @PluginElement("Filter") final Filter filter) {
+        if (env == null) {
+            env = "default";
+        }
         if (runModel != null) {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(runModel);
         }
@@ -124,7 +129,7 @@ public class RedisAppender extends AbstractAppender {
                     String[] hs = redisHost.split(":");
                     if (hs.length == 2) {
                         ip = hs[0];
-                        port = Integer.valueOf(hs[1]);
+                        port = Integer.parseInt(hs[1]);
                     }
                 } else {
                     ip = redisHost;
@@ -156,6 +161,6 @@ public class RedisAppender extends AbstractAppender {
                         compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, compressor);
             });
         }
-        return new RedisAppender(name, appName, redisHost, redisPort, redisAuth, runModel, filter, layout, true, expand, maxCount, logQueueSize, redisDb, threadPoolSize, compressor, model, masterName);
+        return new RedisAppender(name, appName, env, redisHost, redisPort, redisAuth, runModel, filter, layout, true, expand, maxCount, logQueueSize, redisDb, threadPoolSize, compressor, model, masterName);
     }
 }

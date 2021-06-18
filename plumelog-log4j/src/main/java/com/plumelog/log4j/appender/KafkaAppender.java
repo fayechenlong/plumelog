@@ -23,11 +23,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class KafkaAppender extends AppenderSkeleton {
     private KafkaProducerClient kafkaClient;
     private String appName;
+    private String env = "default";
     private String kafkaHosts;
     private String runModel;
-    private int maxCount=100;
-    private int logQueueSize=10000;
-    private int threadPoolSize=1;
+    private int maxCount = 100;
+    private int logQueueSize = 10000;
+    private int threadPoolSize = 1;
     private boolean compressor = false;
 
     public void setAppName(String appName) {
@@ -57,28 +58,32 @@ public class KafkaAppender extends AppenderSkeleton {
     public void setCompressor(boolean compressor) {
         this.compressor = compressor;
     }
-
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool();
+    
+    public void setEnv(String env) {
+        this.env = env;
+    }
+    
+    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
+    
     @Override
     protected void append(LoggingEvent loggingEvent) {
-        if(this.runModel!=null){
-            LogMessageConstant.RUN_MODEL=Integer.parseInt(this.runModel);
+        if (this.runModel != null) {
+            LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (this.kafkaClient == null) {
             this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressor ? "lz4" : "none");
             MessageAppenderFactory.initQueue(this.logQueueSize);
-            for(int a=0;a<this.threadPoolSize;a++){
+            for (int a = 0; a < this.threadPoolSize; a++) {
 
-                threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.startRunLog(this.kafkaClient,maxCount);
+                threadPoolExecutor.execute(() -> {
+                    MessageAppenderFactory.startRunLog(this.kafkaClient, maxCount);
                 });
-                threadPoolExecutor.execute(()->{
-                    MessageAppenderFactory.startTraceLog(this.kafkaClient,maxCount);
+                threadPoolExecutor.execute(() -> {
+                    MessageAppenderFactory.startTraceLog(this.kafkaClient, maxCount);
                 });
             }
         }
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, loggingEvent);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, this.env, loggingEvent);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, loggingEvent);
             MessageAppenderFactory.pushRundataQueue(message);

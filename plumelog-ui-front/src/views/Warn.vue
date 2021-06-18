@@ -37,6 +37,9 @@
                   <FormItem label="应用名称" required>
                     <Input v-model="dataInfo.appName" placeholder="输入应用名称"/>
                   </FormItem>
+                  <FormItem label="应用名称" required>
+                    <Input v-model="dataInfo.env" placeholder="输入应用环境"/>
+                  </FormItem>
                   <FormItem label="应用分类">
                     <Input v-model="dataInfo.appCategory" placeholder="输入应用分类"/>
                   </FormItem>
@@ -90,6 +93,7 @@
             <li v-for="(log,index) in logs" :key="index">
               <div class="time">{{ formatTime(log.dataTime) }}</div>
               <div class="cnt"><span class="key">应用名称: </span>{{ log.appName }}</div>
+              <div class="cnt"><span class="key">应用环境: </span>{{ log.env }}</div>
               <div class="cnt"><span class="key">类名: </span>{{ log.className }}</div>
               <div class="cnt"><span class="key">时间区间: </span>{{ log.time }}秒</div>
               <div class="cnt"><span class="key">实际错误: </span>{{ log.errorCount }}条</div>
@@ -133,6 +137,7 @@ export default {
       hookServeMap: {"1": '钉钉', "2": '企业微信', "3": '飞书', "4": '其他'},
       dataInfo: {
         appName: '',
+        env: '',
         appCategory: '',
         className: '',
         receiver: '',
@@ -165,7 +170,10 @@ export default {
         {
           title: '应用名称',
           key: 'appName'
-        }, {
+        },{
+          title: '应用环境',
+          key: 'env'
+        },{
           title: '应用分类',
           key: 'appCategory'
         },
@@ -298,6 +306,9 @@ export default {
         this.$Message.error('请填写间隔时间');
         return false;
       }
+      if (this.dataInfo.env == '') {
+        this.dataInfo.env = 'default';
+      }
       this.setData(this.dataInfo);
 
     },
@@ -332,6 +343,7 @@ export default {
     initDataInfo() {
       this.dataInfo = {
         appName: '',
+        env: '',
         appCategory: '',
         className: '',
         receiver: '',
@@ -408,6 +420,7 @@ export default {
         query: {
           className: info.className,
           appName: info.appName,
+          env: info.env,
           time: info.dataTime - 1000 * 60 + ',' + info.dataTime,
           logLevel: 'ERROR'
         }

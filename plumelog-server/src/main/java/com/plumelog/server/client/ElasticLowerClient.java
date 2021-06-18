@@ -141,12 +141,13 @@ public class ElasticLowerClient {
     }
 
     public boolean creatIndice(String indice,String type) {
-        List<String> existIndexList = new ArrayList<String>();
         try {
             Request request = new Request(
                     "PUT",
                     "/" + indice + "");
             String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+                    "\"env\":{\"type\":\"keyword\"}," +
+                    "\"appNameWithEnv\":{\"type\":\"keyword\"}," +
                     "\"logLevel\":{\"type\":\"keyword\"}," +
                     "\"serverName\":{\"type\":\"keyword\"}," +
                     "\"traceId\":{\"type\":\"keyword\"}," +
@@ -171,12 +172,13 @@ public class ElasticLowerClient {
         return false;
     }
     public boolean creatIndiceTrace(String indice, String type) {
-        List<String> existIndexList = new ArrayList<String>();
         try {
             Request request = new Request(
                     "PUT",
                     "/" + indice + "");
             String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+                    "\"env\":{\"type\":\"keyword\"}" +
+                    "\"appNameWithEnv\":{\"type\":\"keyword\"}" +
                     "\"traceId\":{\"type\":\"keyword\"}" +
                     "}";
             String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}";
