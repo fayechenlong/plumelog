@@ -77,8 +77,8 @@ public class LogMessageUtil {
         if (logEvent.getLevel().equals(Level.ERROR)) {
             if (logEvent.getThrowableProxy() != null) {
                 ThrowableProxy throwableProxy = (ThrowableProxy) logEvent.getThrowableProxy();
-                String[] args = new String[]{LogExceptionStackTrace.erroStackTrace(throwableProxy.getThrowable()).toString()};
-                return packageMessage(logEvent.getMessage(), args);
+                String[] args = new String[]{logEvent.getFormattedMessage() + "\n" + LogExceptionStackTrace.erroStackTrace(throwableProxy.getThrowable()).toString()};
+                return packageMessage("{}", args);
             } else {
                 Object[] args = logEvent.getArgumentArray();
                 if (args != null) {
