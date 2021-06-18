@@ -12,7 +12,7 @@
         <log-header></log-header>
 
         <!--查询条件-->
-        <div style="width: 1000px; padding: 0 10px 0 30px">
+        <div style="width: 1000px">
           <table class='tbl_filters' style="width: 100%">
             <tbody>
             <tr>
@@ -21,29 +21,28 @@
                 <AutoComplete
                     v-model="filter.appName"
                     :data="appNameComplete"
-                    class="txt txtAppName"
+                    class="txt"
                     placeholder="搜索多个请用逗号或空格隔开"
                     :clearable="true"
                     :filter-method="completeFilter"
                     @on-change="appNameChange">
                 </AutoComplete>
-                <Checkbox v-model="isExclude">排除</Checkbox>
               </td>
               <td class="key">应用环境</td>
               <td>
                 <AutoComplete
                     v-model="filter.env"
                     :data="envComplete"
-                    class="txt txtAppName"
-                    placeholder="搜索多个请用逗号或空格隔开"
+                    class="txt"
+                    placeholder="项目的环境"
                     :clearable="true"
                     :filter-method="completeFilter"
                     @on-change="envChange">
                 </AutoComplete>
               </td>
               <td class="key">日志等级</td>
-              <td style="width: 150px">
-                <Select v-model="filter.logLevel"  placeholder="请选择日志等级">
+              <td >
+                <Select v-model="filter.logLevel"  placeholder="请选择日志等级" style="width: 162px">
                   <Option value="" key="ALL">所有</Option>
                   <Option value="INFO" key="INFO">INFO</Option>
                   <Option value="ERROR" key="ERROR">ERROR</Option>
@@ -54,33 +53,29 @@
             </tr>
             </tbody>
           </table>
-          
-          <table class='tbl_filters' style="width: 50%">
+
+          <table class='tbl_filters' style="width: 100%">
             <tbody>
             <tr>
               <td class="key">追踪码</td>
               <td>
-                <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="搜索多个请用逗号或空格隔开" :clearable="true"/>
+                <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="TraceID" :clearable="true"/>
               </td>
-            </tr>
-            <tr>
               <td class="key">类名</td>
               <td>
-                <Input class="txt" name="className" v-model="filter.className" placeholder="搜索多个请用逗号或空格隔开"
+                <Input class="txt" name="className" v-model="filter.className" placeholder="类名的全路径"
+                       :clearable="true"/>
+              </td>
+              <td class="key">服务器名称</td>
+              <td>
+                <Input class="txt" style="width: 162px" name="serverName" v-model="filter.serverName" placeholder="服务器Ip或者host"
                        :clearable="true"/>
               </td>
             </tr>
             </tbody>
           </table>
-          <table class='tbl_filters' style="float: right">
+          <table class='tbl_filters' style="width: 100%">
             <tbody>
-            <tr>
-              <td class="key">服务器名称</td>
-              <td>
-                <Input class="txt" name="serverName" v-model="filter.serverName" placeholder="搜索多个请用逗号或空格隔开"
-                       :clearable="true"/>
-              </td>
-            </tr>
             <tr>
               <td class="key">日期和时间</td>
               <td>
@@ -91,9 +86,9 @@
             </tr>
             </tbody>
           </table>
-  
+
           <div style="clear:both"></div>
-          <table class="tbl_filters" style="width:900px">
+          <table class="tbl_filters" style="width:1000px">
             <tr v-if="extendList.length>0">
               <td class="key">扩展字段</td>
               <td>
@@ -121,7 +116,7 @@
             <tr v-if="!useSearchQuery">
               <td class="key">内容</td>
               <td>
-                <Input class="txt" @on-enter="doSearch()" :clearable="true" style="width:638px" placeholder="输入搜索内容"
+                <Input @on-enter="doSearch()" :clearable="true" style="width:720px" placeholder="输入搜索内容"
                        v-model="searchKey"/>
                 <a href="javascript:void(0)" @click="useSearchQuery=true" class="link_changeModal">切换为条件模式</a>
               </td>
@@ -135,7 +130,7 @@
                   <Option value="NOT" key="NOT">NOT</Option>
                 </Select>
                 <Input class="txt" @on-enter="addTag()" :clearable="true" v-model="tag" placeholder="输入搜索条件"
-                       style="width:196px;"/>
+                       style="width:224px;"/>
                 <Button icon="md-add" @click="addTag" style="margin-left:10px">添加</Button>
                 <a href="javascript:void(0)" @click="useSearchQuery=false" class="link_changeModal">切换为内容模式</a>
               </td>
@@ -1348,7 +1343,7 @@ export default {
     "filter": {
       handler() {
         this.$router.push({
-          query: {...this.$route.query, ...this.filter} 
+          query: {...this.$route.query, ...this.filter}
         }).catch(err => {err})
         this.from = 0;
       },
@@ -1360,7 +1355,7 @@ export default {
             let startTime = moment(this.dateTimeRange[0]).valueOf()
             let endTime = moment(this.dateTimeRange[1]).valueOf()
             this.$router.push({
-              query: {...this.$route.query, time: [startTime, endTime].join()} 
+              query: {...this.$route.query, time: [startTime, endTime].join()}
               }).catch(err => {err})
           }
       },
@@ -1369,7 +1364,7 @@ export default {
     "searchKey": {
       handler() {
         this.$router.push({
-          query: {...this.$route.query, searchKey: this.searchKey} 
+          query: {...this.$route.query, searchKey: this.searchKey}
         }).catch(err => {err})
         this.from = 0;
       }
