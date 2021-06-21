@@ -5,6 +5,10 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -118,9 +122,70 @@ public class DateUtil {
      * 日期格式，月日时分，例如：10-05 12:00
      */
     public static final String DATE_FORMAT_MMDDHHMI = "MM-dd HH:mm";
+    
+    private static final DateTimeFormatter DATETIME_FORMAT_NORMAL_SSS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    
+    private static final DateTimeFormatter DATE_FORMAT_SHORT = DateTimeFormatter.ofPattern(DATE_FORMAT_YYYYMMDD);
 
+    private static final DateTimeFormatter DATE_WITH_HOUR_FORMAT_SHORT = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_YYYYMMDDHH);
 
-	/* ************工具方法***************   */
+    /* ************工具方法***************   */
+    
+    /**
+     * 获取yyyy-MM-dd HH:mm:ss.SSS格式的字符串
+     */
+    public static String getDatetimeNormalStrWithMills(long epochMillis) {
+        return DATETIME_FORMAT_NORMAL_SSS.format(toLocalDateTime(epochMillis));
+    }
+    
+    /**
+     * 获取指定时区 "yyyy-MM-dd HH:mm:ss:SSS"
+     */
+    public static String getDateTimeNormalStrWithMills(String zoneId, long epochMillis) {
+        return DATETIME_FORMAT_NORMAL_SSS.format(toLocalDateTime(zoneId, epochMillis));
+    }
+
+    /**
+     * 获取yyyyMMdd格式的字符串
+     */
+    public static String getDateShortStr(long epochMillis) {
+        return DATE_FORMAT_SHORT.format(toLocalDateTime(epochMillis));
+    }
+
+    /**
+     * 获取yyyyMMdd格式的字符串
+     */
+    public static String getDateShortStr(String zoneId, long epochMillis) {
+        return DATE_FORMAT_SHORT.format(toLocalDateTime(zoneId, epochMillis));
+    }
+
+    /**
+     * 获取yyyyMMddHH格式的字符串
+     */
+    public static String getDateWithHourShortStr(long epochMillis) {
+        return DATE_WITH_HOUR_FORMAT_SHORT.format(toLocalDateTime(epochMillis));
+    }
+
+    /**
+     * 获取yyyyMMddHH格式的字符串
+     */
+    public static String getDateWithHourShortStr(String zoneId, long epochMillis) {
+        return DATE_WITH_HOUR_FORMAT_SHORT.format(toLocalDateTime(zoneId, epochMillis));
+    }
+    
+    /**
+     * 根据时间戳获取LocalDateTime对象，使用默认Zone
+     */
+    public static LocalDateTime toLocalDateTime(long epochMillis) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault());
+    }
+    
+    /**
+     * 根据指定时区id及时间戳获取LocalDateTime对象
+     */
+    public static LocalDateTime toLocalDateTime(String zoneId, long epochMillis) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.of(zoneId));
+    }
 
     public static Integer getYear(Date date) {
         Calendar cal = Calendar.getInstance();

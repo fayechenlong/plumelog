@@ -93,13 +93,9 @@
               <td class="key">扩展字段</td>
               <td>
                 <Select v-model="select_extend" @on-change="selectExtendHandler" label-in-value placeholder="选择扩展字段" style="width:150px;margin-right:10px">
-                  <Option v-for="extend in extendList" :value="extend.field" :key="extend.field">{{
-                    extend.fieldName
-                    }}
-                  </Option>
+                  <Option v-for="extend in extendList" :value="extend.field" :key="extend.field">{{ extend.fieldName }}</Option>
                 </Select>
-                <Input class="txt" @on-enter="addExtendTag" :clearable="true" v-model="extendTag" placeholder="输入查询内容"
-                       style="width:478px;"/>
+                <Input class="txt" @on-enter="addExtendTag" :clearable="true" v-model="extendTag" placeholder="输入查询内容" style="width:478px;"/>
                 <Button icon="md-add" @click="addExtendTag" style="margin-left:10px;width:100px">添加</Button>
               </td>
             </tr>
@@ -171,47 +167,104 @@
         <span class="text">收起</span>
       </div>
       <div style="position:absolute;top:-30px;right:20px">共 <b>{{ totalCount }}</b> 条数据</div>
-      <div class="tip_table">
-        <Icon size="14" type="md-star-outline"/>
-        表格字段宽度可拖拽调节，双击或点击箭头可查看详情
+      <div v-if="tableModel">
+        <div class="tip_table">
+          <Icon size="14" type="md-star-outline"/>
+          表格字段宽度可拖拽调节，双击或点击箭头可查看详情
+        </div>
+        <!--日志列表-->
+        <Table size="small" border highlight-row :columns="showColumns" :content="self" @on-row-dblclick="dblclick"
+               :row-class-name="getRowName" :data="list.hits">
+          <template slot-scope="{ row }" slot="className">
+            {{ row.className | substr }}
+            <Icon type="ios-search" v-if="row.className" @click="doSearch('className',row)"/>
+          </template>
+          <template slot-scope="{ row }" slot="logLevel">
+            {{ row.logLevel }}
+            <Icon type="ios-search" v-if="row.logLevel" @click="doSearch('logLevel',row)"/>
+          </template>
+          <template slot-scope="{ row }" slot="serverName">
+            {{ row.serverName }}
+            <Icon type="ios-search" v-if="row.serverName" @click="doSearch('serverName',row)"/>
+          </template>
+          <template slot-scope="{ row }" slot="appName">
+            {{ row.appName }}
+            <Icon type="ios-search" v-if="row.appName" @click="doSearch('appName',row)"/>
+          </template>
+          <template slot-scope="{ row }" slot="env">
+            {{ row.env }}
+            <Icon type="ios-search" v-if="row.env" @click="doSearch('env',row)"/>
+          </template>
+          <template slot-scope="{ row }" slot="traceId">
+            <a :href="'./#/trace?traceId='+row.traceId+'&timeRange='+JSON.stringify(dateTimeRange)"
+               title="点击查看链路追踪">{{ row.traceId }}</a>
+            <Icon type="ios-search" v-if="row.traceId" @click="doSearch('traceId',row)"/>
+          </template>
+          <template slot-scope="{ row }" slot="content">
+            <div style="white-space: pre-wrap; max-height: 100px;">
+              <span v-for="item in highLightCode(row.highlightCnt || row.content, !!row.highlightCnt)">
+                <span v-if="item.isH" v-html="item.content"></span>
+                <span v-else>{{ item.content }}</span>
+              </span>
+            </div>
+          </template>
+        </Table>
       </div>
-      <!--日志列表-->
-      <Table size="small" border highlight-row :columns="showColumns" :content="self" @on-row-dblclick="dblclick"
-             :row-class-name="getRowName" :data="list.hits">
-        <template slot-scope="{ row }" slot="className">
-          {{ row.className | substr }}
-          <Icon type="ios-search" v-if="row.className" @click="doSearch('className',row)"/>
-        </template>
-        <template slot-scope="{ row }" slot="logLevel">
-          {{ row.logLevel }}
-          <Icon type="ios-search" v-if="row.logLevel" @click="doSearch('logLevel',row)"/>
-        </template>
-        <template slot-scope="{ row }" slot="serverName">
-          {{ row.serverName }}
-          <Icon type="ios-search" v-if="row.serverName" @click="doSearch('serverName',row)"/>
-        </template>
-        <template slot-scope="{ row }" slot="appName">
-          {{ row.appName }}
-          <Icon type="ios-search" v-if="row.appName" @click="doSearch('appName',row)"/>
-        </template>
-        <template slot-scope="{ row }" slot="env">
-          {{ row.env }}
-          <Icon type="ios-search" v-if="row.env" @click="doSearch('env',row)"/>
-        </template>
-        <template slot-scope="{ row }" slot="traceId">
-          <a :href="'./#/trace?traceId='+row.traceId+'&timeRange='+JSON.stringify(dateTimeRange)"
-             title="点击查看链路追踪">{{ row.traceId }}</a>
-          <Icon type="ios-search" v-if="row.traceId" @click="doSearch('traceId',row)"/>
-        </template>
-        <template slot-scope="{ row }" slot="content">
-          <div style="white-space: pre-wrap; max-height: 100px;">
-                <span v-for="item in hightLightCode(row.highlightCnt || row.content, !!row.highlightCnt)">
-                                <span v-if="item.isH" v-html="item.content"></span>
-                                <span v-else>{{ item.content }}</span>
-                            </span>
+      <div v-else :style="this.darkMode && !this.autoWordWrap ? 'padding:0 0 0 10px' : 'padding:0 10px'">
+        <div class="log_model_normal" :class="[autoWordWrap ? 'auto_word_wrap' : 'word_inline', darkMode ? 'dark_mode' : 'bright_mode']">
+          <div class="log_model_normal_row" @mouseenter="logModelNormalRowMouseEnter($event)" @mouseleave="logModelNormalRowMouseLeave($event)" v-for="row in list.hits">
+            <Tooltip placement="top" delay="2000">
+              <div slot="content">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td class="tooltip_table_td_key">logTime:</td>
+                      <td class="tooltip_table_td_value">{{ dateFormat(row.dtTime) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tooltip_table_td_key">serverTime:</td>
+                      <td class="tooltip_table_td_value">{{ row.dateTime }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tooltip_table_td_key">logLevel:</td>
+                      <td class="tooltip_table_td_value">{{ row.logLevel }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tooltip_table_td_key">appName:</td>
+                      <td class="tooltip_table_td_value">{{ row.appName }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tooltip_table_td_key">env:</td>
+                      <td class="tooltip_table_td_value">{{ row.env }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tooltip_table_td_key">serverName:</td>
+                      <td class="tooltip_table_td_value">{{ row.serverName }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tooltip_table_td_key">traceId:</td>
+                      <td class="tooltip_table_td_value">{{ row.traceId }}</td>
+                    </tr>
+                    <tr>
+                      <td class="tooltip_table_td_key">className:</td>
+                      <td class="tooltip_table_td_value">{{ row.className + "." + row.method }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <span :class="row.logLevel">{{ dateFormat(row.dtTime) }}
+                <span v-if="showTheColumn('dateTime')">[serverTime: {{ row.dateTime }}] </span>
+                <span v-if="showTheColumn('logLevel')">{{ row.logLevel }} </span>
+                <span v-if="showTheColumn('appName')">[appName: {{ row.appName }}] </span>
+                <span v-if="row.env && showTheColumn('env')">[env: {{ row.env }}] </span>
+                <span v-if="showTheColumn('serverName')">[serverName: {{ row.serverName }}] </span>
+                <span v-if="row.traceId && showTheColumn('traceId')">[traceId: {{ row.traceId }}] </span>
+                <span v-if="showTheColumn('className')">{{ row.className + "." + row.method }} </span>
+                <span>: {{ row.content }}</span></span>
+            </Tooltip>
           </div>
-        </template>
-      </Table>
+        </div>
+      </div>
     </div>
 
     <!-- 功能区 -->
@@ -224,10 +277,25 @@
         </Select>
       </div>
 
+      <div class="pnl_select" style="margin-left:20px">
+        <Button @click="tableModelChange" v-if="tableModel" style="font-size:12px">切换至普通模式</Button>
+        <Button @click="tableModelChange" v-if="!tableModel" style="font-size:12px">切换至表格模式</Button>
+      </div>
+
+      <div class="pnl_select" style="margin-left:20px">
+        <Button @click="autoWordWrapChange" v-if="!tableModel && autoWordWrap" style="font-size:12px">切换至单行模式</Button>
+        <Button @click="autoWordWrapChange" v-if="!tableModel && !autoWordWrap" style="font-size:12px">切换至自动换行</Button>
+      </div>
+
+      <div class="pnl_select" style="margin-left:20px">
+        <Button @click="darkModeChange" v-if="!tableModel && darkMode" style="font-size:12px">切换至日间模式</Button>
+        <Button @click="darkModeChange" v-if="!tableModel && !darkMode" style="font-size:12px">切换至夜间换行</Button>
+      </div>
+
       <ul v-if="totalCount && parseInt(totalCount/size) > 0" class="pagination justify-content-center"
           style="float:right;margin-right:30px">
         <li class="page-item" :class="{'disabled': !isShowLastPage }">
-          <a class="page-link" href="javascript:void(0)" @click="prevePage" tabindex="-1">上一页</a>
+          <a class="page-link" href="javascript:void(0)" @click="prevPage" tabindex="-1">上一页</a>
         </li>
         <li class="page-item" :class="{'disabled': !haveNextPage }">
           <a class="page-link" href="javascript:void(0)" @click="nextPage">下一页</a>
@@ -271,11 +339,11 @@ import dateOption from './dateOption';
 import $ from 'jquery'
 import expandRow from '@/components/table-expand.vue';
 
-let isHtml = /<\/?[a-z][\s\S]*>/i
+let isHtml = /<\/?[a-z][\s\S]*>/i;
 export default {
   name: "Home",
   data() {
-    this.slotColumns = ['logLevel','serverName', 'appName', 'traceId', 'className'];
+    this.slotColumns = ['logLevel', 'serverName', 'appName', 'env', 'traceId', 'className'];
     return {
       sizeList: [{label: "30", value: 30}, {label: "50", value: 50}, {label: "100", value: 100}, {
         label: "200",
@@ -303,15 +371,16 @@ export default {
       searchOptions: [],
       showColumnTitles: ['appName', 'traceId'],
       allColumns: [
+        // 增加服务器时间字段，用于显示不同时区的应用当地时间，若无多时区应用则不需要显示该字段
+        {
+          label: '服务器时间',
+          value: 'dateTime',
+          width: 180
+        },
         {
           label: '日志等级',
           value: 'logLevel',
-          width:90
-        },
-        {
-          label: '服务器名称',
-          value: 'serverName',
-          width: 150
+          width: 90
         },
         {
           label: '应用名称',
@@ -324,21 +393,29 @@ export default {
           width: 100
         },
         {
-          label: '追踪码',
-          value: 'traceId',
-          width: 170,
+          label: '服务器名称',
+          value: 'serverName',
+          width: 150
         },
         {
           label: '类名',
           value: 'className',
           width: 270
+        },
+        {
+          label: '追踪码',
+          value: 'traceId',
+          width: 170,
         }
       ],
+      tableModel: false,
+      autoWordWrap: true,
+      darkMode: true,
       showFilter: true,
       api: process.env.api,
       dateOption,
 
-      dateTimeRange: [moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'), moment(new Date()).format('YYYY-MM-DD 23:59:59')],
+      dateTimeRange: [moment(new Date().getTime() - 3600000).format('YYYY-MM-DD HH:mm:ss'), moment(new Date()).format('YYYY-MM-DD 23:59:59')],
       content: {
         _source: {}
       },
@@ -379,6 +456,13 @@ export default {
           render: (h, params) => {
             return h('div', moment(parseInt(params.row.dtTime)).format('YYYY-MM-DD HH:mm:ss.SSS'))
           }
+        },
+        {
+          title: '服务器时间',
+          key: 'dateTime',
+          sortable: true,
+          resizable: true,
+          width: 180
         },
         {
           title: '日志等级',
@@ -489,7 +573,7 @@ export default {
         } else {
           //从allColmns里获取label和value
           let item = _.find(this.allColumns, (o) => {
-            return o.value == title
+            return o.value === title
           });
           if (item) {
 
@@ -513,7 +597,7 @@ export default {
           }
         }
       }
-      columns.push(_.find(this.columns, ['key', 'content']))
+      columns.push(_.find(this.columns, ['key', 'content']));
       this.columns = columns; //让新加入的拓展字段，可以被vue管理
       return columns;
     },
@@ -521,7 +605,7 @@ export default {
       if (this.dateTimeRange.length > 0) {
         let start = new Date(this.dateTimeRange[0]);
         let end = new Date(this.dateTimeRange[1]);
-        let now = new Date()
+        let now = new Date();
         if(end > now) {
           end = now
         }
@@ -591,55 +675,78 @@ export default {
       return this.from > 0
     },
     haveNextPage() {
-      if (this.totalCount > (this.from + this.size))
-        return true
-      else
-        return false
+      return this.totalCount > (this.from + this.size);
     }
   },
   methods: {
-    hightLightCode(code, isHighlight) {
+    dateFormat(time) {
+      return moment(parseInt(time)).format('YYYY-MM-DD HH:mm:ss.SSS');
+    },
+    tableModelChange() {
+      this.tableModel = !this.tableModel;
+      this.localStorageChange('tableModel', this.tableModel);
+    },
+    autoWordWrapChange() {
+      this.autoWordWrap = !this.autoWordWrap;
+      this.localStorageChange('autoWordWrap', this.autoWordWrap);
+      // 由于单行模式下字符串超出当前屏幕宽度，因为将屏幕外的html也修改背景颜色以保证风格统一
+      if (this.darkMode && !this.autoWordWrap) {
+        document.querySelector('html').style.cssText = `background: #2b2b2b;`;
+      } else {
+        document.querySelector('html').style.cssText = `background: #ffffff;`;
+      }
+    },
+    darkModeChange() {
+      this.darkMode = !this.darkMode;
+      this.localStorageChange('darkMode', this.darkMode);
+      // 由于单行模式下字符串超出当前屏幕宽度，因为将屏幕外的html也修改背景颜色以保证风格统一
+      if (this.darkMode && !this.autoWordWrap) {
+        document.querySelector('html').style.cssText = `background: #2b2b2b;`;
+      } else {
+        document.querySelector('html').style.cssText = `background: #ffffff;`;
+      }
+    },
+    showTheColumn(columnName) {
+      return this.showColumnTitles.indexOf(columnName) > -1;
+    },
+    highLightCode(code, isHighlight) {
       code = code.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
       let rows = [];
       if (code.indexOf('java.') > -1) {
-        let content = '<pre style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\t/g, '　　').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>"
-        rows.push({isH: true, content})
+        let content = '<pre style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\t/g, '　　').replace(/&lt;/g, '<').replace(/&gt;/g, '>') + "</pre>";
+        rows.push({isH: true, content});
         return rows;
       } else if (isHtml.test(code)) {
         let content = code;
         if (isHighlight) {
           let h = [];
           let hContent = code.match(/<em>([\s\S]*?)<\/em>/g);
-          code = code.replace(/<em>([\s\S]*?)<\/em>/g, "@Highlight@")
+          code = code.replace(/<em>([\s\S]*?)<\/em>/g, "@Highlight@");
 
-          var strings = code.split('@');
-          strings = strings.filter(x => !!x)
-          // console.log(code)
-          // console.log(hContent)
-          // console.log(strings)
-          let hi = 0
+          let strings = code.split('@');
+          strings = strings.filter(x => !!x);
+          let hi = 0;
           for (let i = 0; i < strings.length; i++) {
             let isH = strings[i] === 'Highlight';
             let content = isH ? hContent[hi] : strings[i];
-            h.push({isH, content})
+            h.push({isH, content});
             isH && hi++
           }
-          rows.push(...h)
-          // console.log(rows)
+          rows.push(...h);
           return rows;
         }
-        rows.push({isH: false, content})
+        rows.push({isH: false, content});
         return rows;
       } else {
         let content = '<div style="word-break:break-all;white-space: normal;">' + code.replace(/\n/g, '<br/>').replace(/\t/g, '　　') + "</div>";
-        rows.push({isH: true, content})
+        rows.push({isH: true, content});
         return rows;
       }
     },
     appNameChange() {
       this.getExtendList();
       if (this.filter.appName) {
-        this.envComplete = this.appNameWithEnvMap[this.filter.appName];
+        this.envComplete = this.appNameWithEnvMap[this.filter.appName] || [];
       } else {
         this.envComplete = [];
         for (let env in this.envWithAppNameMap) {
@@ -655,7 +762,7 @@ export default {
     },
     envChange() {
       if (this.filter.env) {
-        this.appNameComplete = this.envWithAppNameMap[this.filter.env];
+        this.appNameComplete = this.envWithAppNameMap[this.filter.env] || [];
       } else {
         this.appNameComplete = [];
         for (let appName in this.appNameWithEnvMap) {
@@ -678,14 +785,16 @@ export default {
           let _data = _.get(data, 'data', {});
           let list = [];
           for (let item in _data) {
-            list.push({
-              field: item,
-              fieldName: _data[item]
-            });
-            this.allColumns.push({
-              label: _data[item],
-              value: item
-            })
+            if (_data.hasOwnProperty(item)) {
+              list.push({
+                field: item,
+                fieldName: _data[item]
+              });
+              this.allColumns.push({
+                label: _data[item],
+                value: item
+              })
+            }
           }
           this.extendList = list;
         })
@@ -695,17 +804,18 @@ export default {
       }
     },
     completeFilter(value, option) {
-      return option.indexOf(value) == 0;
+      return option.indexOf(value) === 0;
     },
     searchAppName() {
-      if (this.appNameComplete.length == 0) {
+      if (this.appNameComplete.length === 0) {
 
-        if (sessionStorage['cache_appNameWithEnvs']) {
+        // 为了防止客户端长时间未关闭造成的sessionStorage缓存不失效的问题加一个sessionStorage缓存半小时失效一次的判断
+        if (sessionStorage['cache_appNameWithEnvs'] && sessionStorage['cache_appNameWithEnvs_time']
+                && sessionStorage['cache_appNameWithEnvs_time'] > new Date().getTime() - 1800000) {
           this.analysisAppNameWithEnv();
         } else {
           this.completeFilterLoading = true;
-          let q = "plume_log_run_" + moment().format("YYYYMMDD") + '*'
-          axios.post(process.env.VUE_APP_API + '/query?index=' + q + '&from=0&size=0&appNameWithEnv', {
+          axios.post(process.env.VUE_APP_API + '/queryAppName?appNameWithEnv', {
             "size": 0,
             "aggregations": {
               "dataCount": {
@@ -721,6 +831,7 @@ export default {
               return item.key
             });
             sessionStorage['cache_appNameWithEnvs'] = JSON.stringify(buckets);
+            sessionStorage['cache_appNameWithEnvs_time'] = new Date().getTime();
             this.analysisAppNameWithEnv();
           })
         }
@@ -735,11 +846,15 @@ export default {
         if (!this.appNameWithEnvMap[splitStr[0]]) {
           this.appNameWithEnvMap[splitStr[0]] = [];
         }
-        this.appNameWithEnvMap[splitStr[0]].push(splitStr[1]);
-        if (!this.envWithAppNameMap[splitStr[1]]) {
-          this.envWithAppNameMap[splitStr[1]] = [];
+        if (splitStr.length > 1) {
+          this.appNameWithEnvMap[splitStr[0]].push(splitStr[1]);
+          if (!this.envWithAppNameMap[splitStr[1]]) {
+            this.envWithAppNameMap[splitStr[1]] = [];
+          }
+          this.envWithAppNameMap[splitStr[1]].push(splitStr[0]);
+        } else {
+          this.appNameWithEnvMap[splitStr[0]].push('');
         }
-        this.envWithAppNameMap[splitStr[1]].push(splitStr[0]);
       }
       this.appNameComplete = [];
       for (let appName in this.appNameWithEnvMap) {
@@ -763,7 +878,7 @@ export default {
       this.searchOptions.splice(index, 1);
     },
     selectExtendHandler(extend) {
-      this.select_extend = extend.value
+      this.select_extend = extend.value;
       this.select_extend_label = extend.label
     },
     addExtendTag() {
@@ -771,12 +886,12 @@ export default {
         //同样的field只能出现一次，有的话覆盖
         let isExistField = false;
         for (let i = 0; i < this.extendOptions.length; i++) {
-          if (this.extendOptions[i].field == this.select_extend) {
+          if (this.extendOptions[i].field === this.select_extend) {
             this.extendOptions[i] = {
               field: this.select_extend,
               label: this.select_extend_label,
               tag: this.extendTag
-            }
+            };
             isExistField = true;
             break;
           }
@@ -797,7 +912,7 @@ export default {
         this.searchOptions.push({
           type: this.selectOption,
           tag: this.tag
-        })
+        });
         this.tag = "";
       }
     },
@@ -805,8 +920,7 @@ export default {
 
       this.list.hists = _.clone(this.list.hists);
       this.$nextTick(()=> {
-        localStorage['cache_showColumnTitles'] = JSON.stringify(this.showColumnTitles)
-        console.log(this.showColumnTitles)
+        this.localStorageChange('showColumnTitles', this.showColumnTitles);
       })
     },
     substr(str, limit) {
@@ -816,21 +930,21 @@ export default {
       }
       return str;
     },
-    getRowName(row, index) {
+    getRowName(row) {
       return row.logLevel + ' ' + row.id
     },
-    dblclick(row, index) {
+    dblclick(row) {
       let ele = $('.' + row.id);
       ele.find('.ivu-table-cell-expand').click();
     },
     sortChange({key, order}) {
       let sort = {};
       sort[key] = order;
-      this.sort = [sort]
+      this.sort = [sort];
       $('.row_detail').remove();
       this.doSearch();
     },
-    setShowFilter(show) {
+    setShowFilter() {
       this.showFilter = !this.showFilter;
       if (this.showFilter) {
         this.$nextTick(() => {
@@ -839,9 +953,9 @@ export default {
       }
     },
     drawLine() {
-      let myChart = this.$echarts.init(document.getElementById('myChart'))
-      if (this.chartData.length == 0) {
-        myChart.clear()
+      let myChart = this.$echarts.init(document.getElementById('myChart'));
+      if (this.chartData.length === 0) {
+        myChart.clear();
         return false;
       }
       window.addEventListener('resize', () => {
@@ -862,7 +976,7 @@ export default {
         //     }
         // },
         tooltip: {
-          formatter(p, ticket) {
+          formatter(p) {
             return '时间：' + p.name + '<br/>数量：' + p.value + '条'
           },
           position: function (p) {   //其中p为当前鼠标的位置
@@ -903,9 +1017,9 @@ export default {
       });
     },
     drawErrorLine(data) {
-      let errorChart = this.$echarts.init(document.getElementById('errorChart'))
-      if (data.length == 0) {
-        errorChart.clear()
+      let errorChart = this.$echarts.init(document.getElementById('errorChart'));
+      if (data.length === 0) {
+        errorChart.clear();
         return;
       }
 
@@ -925,7 +1039,7 @@ export default {
         //     }
         // },
         tooltip: {
-          formatter(p, ticket) {
+          formatter(p) {
             return '时间：' + p.name + '<br/>错误数：' + p.value
           },
           position: function (p) {   //其中p为当前鼠标的位置
@@ -967,34 +1081,35 @@ export default {
     },
     getShouldFilter() {
       let filters = [];
-      let date = [];
       for (let itemKey in this.filter) {
-        if (this.isExclude && itemKey == 'appName') {
-          continue;
-        } else if (this.filter[itemKey]) {
+        if (this.filter.hasOwnProperty(itemKey)) {
+          if (this.isExclude && itemKey === 'appName') {
+            continue;
+          } else if (this.filter[itemKey]) {
 
-          let _data = this.filter[itemKey];
-          let query = '';
-          //判断是否是数组
-          if (Array.isArray(_data)) {
-            query = _data.join(',');
-            if (query) {
+            let _data = this.filter[itemKey];
+            let query = '';
+            //判断是否是数组
+            if (Array.isArray(_data)) {
+              query = _data.join(',');
+              if (query) {
+                filters.push({
+                  "query_string": {
+                    "query": query,
+                    "default_field": itemKey
+                  }
+                })
+              }
+            } else {
+              query = _data.replace(/,/g, ' ');
               filters.push({
-                "query_string": {
-                  "query": query,
-                  "default_field": itemKey
+                "match_phrase": {
+                  [itemKey]: {
+                    "query": query
+                  }
                 }
               })
             }
-          } else {
-            query = _data.replace(/,/g, ' ');
-            filters.push({
-              "match_phrase": {
-                [itemKey]: {
-                  "query": query
-                }
-              }
-            })
           }
         }
       }
@@ -1019,14 +1134,13 @@ export default {
       }
 
       //判断日期
-      if (this.dateTimeRange.length > 0 && this.dateTimeRange[0] != '') {
-        let now = new Date()
+      if (this.dateTimeRange.length > 0 && this.dateTimeRange[0] !== '') {
+        let now = new Date();
         let startDate = new Date(this.dateTimeRange[0]);
         let endDate = new Date(this.dateTimeRange[1]);
         if(endDate > now) {
           endDate = now
         }
-        // console.log(startDate, endDate)
         filters.push({
           "range": {
             "dtTime": {
@@ -1043,23 +1157,36 @@ export default {
       this.filter = {
         "logLevel": '',
         "appName": "",
+        "env": "",
         "traceId": ""
-      }
+      };
       this.searchKey = "";
-      this.dateTimeRange = [moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'), moment(new Date()).format('YYYY-MM-DD 23:59:59')];
-      this.$refs.datePicker.internalValue = [moment(new Date().getTime() - 60 * 1000 * 15).format('YYYY-MM-DD HH:mm:ss'), moment(new Date()).format('YYYY-MM-DD 23:59:59')];
+      this.dateTimeRange = [moment(new Date().getTime() - 3600000).format('YYYY-MM-DD HH:mm:ss'), moment(new Date()).format('YYYY-MM-DD 23:59:59')];
+      this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
       this.doSearch();
     },
     dateChange() {
-      let startDate = new Date(this.dateTimeRange[0]);
-      let endDate = new Date(this.dateTimeRange[1]);
-      if (startDate.getHours() == 0 && startDate.getMinutes() == 0 && endDate.getHours() == 0 && endDate.getMinutes() == 0) {
-        this.dateTimeRange[1].setHours(23, 59)
-        this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
+      if (this.dateTimeRange.length > 0) {
+        if (this.dateTimeRange[0] !== '' && this.dateTimeRange[1] !== '') {
+          let startDate = new Date(this.dateTimeRange[0]);
+          let endDate = new Date(this.dateTimeRange[1]);
+          if (startDate.getHours() === 0 && startDate.getMinutes() === 0 && endDate.getHours() === 0 && endDate.getMinutes() === 0) {
+            this.dateTimeRange[1].setHours(23, 59);
+            this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
+          }
+        } else if (this.dateTimeRange[0] !== '') {
+          let startDate = new Date(this.dateTimeRange[0]);
+          this.dateTimeRange[1] = moment(startDate).format('YYYY-MM-DD 23:59:59');
+          this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
+        } else if (this.dateTimeRange[1] !== '') {
+          let endDate = new Date(this.dateTimeRange[1]);
+          this.dateTimeRange[0] = moment(endDate).format('YYYY-MM-DD 00:00:00');
+          this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
+        }
       }
     },
     doSearch(keyName, item) {
-
+      this.localStorageChange('size', this.size);
 
       if (this.isSearching) {
         return false;
@@ -1067,7 +1194,7 @@ export default {
 
       if (keyName && item) {
 
-        if (keyName == 'appName' && this.isExclude && this.filter[keyName]) {
+        if (keyName === 'appName' && this.isExclude && this.filter[keyName]) {
           this.filter[keyName] += ',' + item[keyName]
         } else {
           this.filter[keyName] = item[keyName]
@@ -1075,22 +1202,10 @@ export default {
       }
 
       //列出范围内的日期
-      let dateList = [];
-      let startDate = _.clone(new Date(this.dateTimeRange[0]));
       let shouldFilter = this.getShouldFilter();
 
-      if (startDate) {
-        while (startDate <= this.dateTimeRange[1]) {
-          dateList.push('plume_log_run_' + moment(startDate).format('YYYYMMDD') + '*')
-          startDate = new Date(startDate.setDate(startDate.getDate() + 1));
-        }
-      }
-
-      if (dateList.length == 0) {
-        dateList.push('plume_log_run_' + moment().format('YYYYMMDD') + '*');
-      }
-
-      let url = process.env.VUE_APP_API + '/query?index=' + dateList.join(',');
+      let url = process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+              + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
 
       let query = {
         "query": {
@@ -1140,7 +1255,7 @@ export default {
         let _searchData = _.get(data, 'data.hits', {
           total: 0,
           hits: []
-        })
+        });
 
         _searchData.hits = _.map(_searchData.hits, item => {
           return {
@@ -1148,11 +1263,11 @@ export default {
             highlightCnt: _.get(item, "highlight.content[0]", ""),
             ...item._source,
           }
-        })
+        });
 
         this.list = _searchData;
 
-      })
+      });
 
 
       let chartFilter = {
@@ -1172,18 +1287,20 @@ export default {
             }
           }
         }
-      }
-      axios.post(process.env.VUE_APP_API + '/query?index=' + dateList.join(',') + '&from=0&size=0&chartData', chartFilter).then(data => {
+      };
+
+      axios.post(process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+              + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&chartData', chartFilter).then(data => {
         this.chartData = _.get(data, 'data.aggregations.2.buckets', []);
         this.drawLine();
-      })
+      });
 
-      this.getErrorRate(dateList).then(data => {
+      this.getErrorRate().then(data => {
         this.drawErrorLine(data)
       });
     },
-    getErrorRate(dateList) {
-      let now = new Date()
+    getErrorRate() {
+      let now = new Date();
       let startDate = new Date(this.dateTimeRange[0]);
       let endDate = new Date(this.dateTimeRange[1]);
       if(endDate > now) {
@@ -1202,7 +1319,7 @@ export default {
             }
           }
         }
-      }
+      };
       query = {
         "query": {
           "bool": {
@@ -1218,7 +1335,7 @@ export default {
           }
         },
         ...aggs
-      }
+      };
 
       let _errorQuery = {
         "query": {
@@ -1241,18 +1358,17 @@ export default {
           }
         },
         ...aggs
-      }
+      };
 
-
-      let url = process.env.VUE_APP_API + '/query?size=0&from=0&index=' + dateList.join(',') + "&errChat"
-
+      let url = process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+              + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&errChat';
       _promise.push(axios.post(url, _errorQuery).then(data => {
         return _.get(data, 'data.aggregations.dataCount.buckets', [])
-      }))
+      }));
 
       return Promise.all(_promise).then(datas => {
         let errorDatas = datas[0];
-        if (errorDatas.length == 0) {
+        if (errorDatas.length === 0) {
           return []
         } else {
           let _array = [];
@@ -1275,17 +1391,16 @@ export default {
         }
       })
     },
-    prevePage() {
-      let from = this.from - this.size
-      if (from < 0) {
-        from = 0;
+    prevPage() {
+      let localFrom = this.from - this.size;
+      if (localFrom < 0) {
+        localFrom = 0;
       }
-      this.from = from;
+      this.from = localFrom;
       this.doSearch();
     },
     nextPage() {
-      let from = this.from + this.size
-      this.from = from;
+      this.from = this.from + this.size;
       this.doSearch();
     },
     goPage() {
@@ -1295,11 +1410,23 @@ export default {
       }
     },
     init() {
-      let titles = localStorage['cache_showColumnTitles'];
-      if (titles) {
+      let plumeLogParamsStr = localStorage['cache_plumeLogParams'];
+      if (plumeLogParamsStr) {
         this.$nextTick(() => {
-          this.showColumnTitles = JSON.parse(titles)
+          let plumeLogParams = JSON.parse(plumeLogParamsStr);
+          plumeLogParams['showColumnTitles'] !== undefined && (this.showColumnTitles = plumeLogParams['showColumnTitles']);
+          plumeLogParams['tableModel'] !== undefined && (this.tableModel = plumeLogParams['tableModel']);
+          plumeLogParams['autoWordWrap'] !== undefined && (this.autoWordWrap = plumeLogParams['autoWordWrap']);
+          plumeLogParams['darkMode'] !== undefined && (this.darkMode = plumeLogParams['darkMode']);
+          plumeLogParams['size'] !== undefined && (this.size = plumeLogParams['size']);
+          if (!this.tableModel && this.darkMode && !this.autoWordWrap) {
+            document.querySelector('html').style.cssText = `background: #2b2b2b;`;
+          } else {
+            document.querySelector('html').style.cssText = `background: #ffffff;`;
+          }
         })
+      } else {
+        localStorage['cache_plumeLogParams'] = '{}';
       }
 
       if (this.$route.query.appName) {
@@ -1323,7 +1450,7 @@ export default {
       if (this.$route.query.time) {
         let times = this.$route.query.time.split(',');
         if (times.length > 1) {
-          this.dateTimeRange = [moment(parseInt(times[0])).format('YYYY-MM-DD HH:mm:ss'), moment(parseInt(times[1])).format('YYYY-MM-DD HH:mm:ss')]
+          this.dateTimeRange = [moment(parseInt(times[0])).format('YYYY-MM-DD HH:mm:ss'), moment(parseInt(times[1])).format('YYYY-MM-DD HH:mm:ss')];
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
         }
       }
@@ -1337,42 +1464,82 @@ export default {
         this.searchAppName();
         this.getExtendList();
       }, 0)
+    },
+    queryFilterCheck(localFilter, key, value) {
+      if (value !== '') {
+        localFilter[key] = value;
+      } else {
+        localFilter[key] && (delete localFilter[key]);
+      }
+    },
+    localStorageChange(key, value) {
+      let plumeLogParamsStr = localStorage['cache_plumeLogParams'];
+      let plumeLogParams = plumeLogParamsStr ? JSON.parse(plumeLogParamsStr) : {};
+      plumeLogParams[key] = value;
+      localStorage['cache_plumeLogParams'] = JSON.stringify(plumeLogParams);
+    },
+    logModelNormalRowMouseEnter($event) {
+      $event.currentTarget.className = 'log_model_normal_row_enter';
+    },
+    logModelNormalRowMouseLeave($event) {
+      $event.currentTarget.className = 'log_model_normal_row';
     }
   },
   watch: {
     "filter": {
       handler() {
+        let localFilter = {...this.$route.query};
+        for (let k in this.filter) {
+          if (this.filter.hasOwnProperty(k)) {
+            this.queryFilterCheck(localFilter, k, this.filter[k]);
+          }
+        }
         this.$router.push({
-          query: {...this.$route.query, ...this.filter}
-        }).catch(err => {err})
+          query: {...localFilter}
+        }).catch(err => err);
         this.from = 0;
       },
       deep: true
     },
     "dateTimeRange": {
         handler() {
+          let localFilter = {...this.$route.query};
           if(this.dateTimeRange.length > 0) {
-            let startTime = moment(this.dateTimeRange[0]).valueOf()
-            let endTime = moment(this.dateTimeRange[1]).valueOf()
-            this.$router.push({
-              query: {...this.$route.query, time: [startTime, endTime].join()}
-              }).catch(err => {err})
+            if (this.dateTimeRange[0] !== '' && this.dateTimeRange[1] !== '') {
+              let startTime = moment(this.dateTimeRange[0]).valueOf();
+              let endTime = moment(this.dateTimeRange[1]).valueOf();
+              this.queryFilterCheck(localFilter, 'time', [startTime, endTime].join());
+            } else if (this.dateTimeRange[0] !== '') {
+              let startTime = moment(this.dateTimeRange[0]).valueOf();
+              this.queryFilterCheck(localFilter, 'time', [startTime, ''].join());
+            } else if (this.dateTimeRange[1] !== '') {
+              let endTime = moment(this.dateTimeRange[1]).valueOf();
+              this.queryFilterCheck(localFilter, 'time', ['', endTime].join());
+            } else {
+              this.queryFilterCheck(localFilter, 'time', '');
+            }
+          } else {
+            this.queryFilterCheck(localFilter, 'time', '');
           }
+          this.$router.push({
+            query: {...localFilter}
+          }).catch(err => err)
       },
       deep: true
     },
     "searchKey": {
       handler() {
+        let localFilter = {...this.$route.query};
+        this.queryFilterCheck(localFilter, 'searchKey', this.searchKey);
         this.$router.push({
-          query: {...this.$route.query, searchKey: this.searchKey}
-        }).catch(err => {err})
+          query: {...localFilter}
+        }).catch(err => err);
         this.from = 0;
       }
     },
     '$route.path': function (newVal, oldVal) {
-      // console.log(newVal, oldVal)
       if (newVal === '/' && oldVal === '/login')
-        this.init()
+        this.init();
       else if (newVal === '/' && oldVal === '/warn')
         this.init()
     }
@@ -1508,6 +1675,12 @@ export default {
     }
   }
 }
+.ivu-tooltip {
+  width: 100%;
+}
+.ivu-tooltip-inner {
+  max-width: fit-content;
+}
 </style>
 <style lang="less" src="../assets/less/filters.less" scoped></style>
 <style lang="less" scoped>
@@ -1572,5 +1745,110 @@ export default {
 
 .page-count {
   padding: .5rem 1rem;
+}
+
+.log_model_normal {
+  text-align: left;
+  font-size: 12px;
+  font-family: "Roboto Mono", Consolas, Menlo, Courier, monospace, Avenir, Helvetica, Arial, sans-serif;
+
+  .log_model_normal_row {
+    padding: 4px 10px;
+  }
+
+  .log_model_normal_row_enter {
+    padding: 4px 10px;
+  }
+}
+
+.auto_word_wrap {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.word_inline {
+  white-space: pre;
+  word-break: break-all;
+}
+
+.bright_mode {
+
+  .log_model_normal_row {
+    background-color: #ffffff;
+
+    .DEBUG {
+      color: rgba(0,0,0,.4);
+    }
+    .INFO {
+      color: #13750B;
+    }
+    .WARN {
+      color: #878A03;
+    }
+    .ERROR {
+      color: #FB0014;
+    }
+  }
+
+  .log_model_normal_row_enter {
+    background-color: #ffe8e5;
+
+    .DEBUG {
+      color: #888888;
+    }
+    .INFO {
+      color: #1c8400;
+    }
+    .WARN {
+      color: #926e00;
+    }
+    .ERROR {
+      color: #f71111;
+    }
+  }
+}
+
+.dark_mode {
+
+  .log_model_normal_row {
+    background-color: #2b2b2b;
+
+    .DEBUG {
+      color: #7a7a7a;
+    }
+    .INFO {
+      color: #92c584;
+    }
+    .WARN {
+      color: #e5e431;
+    }
+    .ERROR {
+      color: #fc5759;
+    }
+  }
+
+  .log_model_normal_row_enter {
+    background-color: #ffe8e5;
+
+    .DEBUG {
+      color: #888888;
+    }
+    .INFO {
+      color: #1c8400;
+    }
+    .WARN {
+      color: #926e00;
+    }
+    .ERROR {
+      color: #f71111;
+    }
+  }
+}
+.tooltip_table_td_key {
+  font-size: 12px;
+}
+.tooltip_table_td_value {
+  font-size: 12px;
+  padding-left: 6px;
 }
 </style>

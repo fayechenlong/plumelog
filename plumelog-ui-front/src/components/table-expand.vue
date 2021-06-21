@@ -24,7 +24,7 @@
                           <td class="key">内容</td>
                           <td class="value">
                             <div style="white-space: pre-wrap;">
-                            <span v-for="item in hightLightCode(row.highlightCnt || row.content, !!row.highlightCnt)">
+                            <span v-for="item in highLightCode(row.highlightCnt || row.content, !!row.highlightCnt)">
                                 <span v-if="item.isH" v-html="item.content"></span>
                                 <span v-else>{{ item.content }}</span>
                             </span>
@@ -45,7 +45,7 @@ export default {
     row: Object,
   },
   methods: {
-    hightLightCode(code, isHighlight) {
+    highLightCode(code, isHighlight) {
       code = code.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
       let rows = [];
       if (code.indexOf('java.') > -1) {

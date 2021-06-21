@@ -108,29 +108,11 @@ export default {
     },
     getChartData(){
 
-      let dateList=[];
-
       let query = {};
       let startDate=  _.clone(new Date(this.dateTimeRange[0]));
-      let endDate=new Date(this.dateTimeRange[1]);
+      let endDate = new Date(this.dateTimeRange[1]);
      
-       //判断日期
-        
-      let _date = _.clone(new Date(this.dateTimeRange[0]));
-    
-      if(_date){
-        while(_date<=this.dateTimeRange[1]){
-          //plume_log_run_
-          dateList.push('plume_log_run_'+moment(_date).format('YYYYMMDD')+"*")
-          _date = new Date(_date.setDate(_date.getDate()+1));
-        }
-      }
-    
-      if(dateList.length==0){
-        dateList.push('plume_log_run_'+moment().format('YYYYMMDD') + "*");
-      }
-
-      query = { 
+      query = {
         "query": {
             "bool": {
               "must": [{
@@ -155,7 +137,8 @@ export default {
           }
       }
 
-      let url= process.env.VUE_APP_API+'/query?size=1000&from=0&index='+dateList.join(',')
+      let url = process.env.VUE_APP_API + '/clientQuery?size=1000&from=0&clientStartDate=' + Date.parse(this.dateTimeRange[0])
+              + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
       return axios.post(url,query).then(data=>{
         let _data = _.get(data,'data.aggregations.dataCount.buckets',[])
         return _.map(_data,d=>{
@@ -168,25 +151,9 @@ export default {
     },
     getErrorRate(){
      
-      let dateList=[];
       let startDate=  _.clone(new Date(this.dateTimeRange[0]));
       let endDate=new Date(this.dateTimeRange[1]);
      
-       //判断日期
-      let _date = _.clone(new Date(this.dateTimeRange[0]));
-    
-      if(_date){
-        while(_date<=this.dateTimeRange[1]){
-          //plume_log_run_
-          dateList.push('plume_log_run_'+moment(_date).format('YYYYMMDD') + "*")
-          _date = new Date(_date.setDate(_date.getDate()+1));
-        }
-      }
-    
-      if(dateList.length==0){
-        dateList.push('plume_log_run_'+moment().format('YYYYMMDD') + "*");
-      }
-
       let _promise =[];
       //按时间查询日志数量
       let query = {};
@@ -240,7 +207,8 @@ export default {
       }
   
 
-      let url= process.env.VUE_APP_API+'/query?size=1000&from=0&index='+dateList.join(',')
+      let url = process.env.VUE_APP_API + '/clientQuery?size=1000&from=0&clientStartDate=' + Date.parse(this.dateTimeRange[0])
+              + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
 
       _promise.push(axios.post(url,query).then(data=>{
         return _.get(data,'data.aggregations.dataCount.buckets',[])

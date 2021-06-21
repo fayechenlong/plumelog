@@ -13,6 +13,7 @@ package com.plumelog.core;
  */
 public class LogMessage {
     private String appName;
+    private String env;
     private String serverName;
     private Long dtTime;
     private String traceId;
@@ -29,6 +30,14 @@ public class LogMessage {
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+    
+    public String getEnv() {
+        return env;
+    }
+    
+    public void setEnv(String env) {
+        this.env = env;
     }
 
     public String getServerName() {

@@ -18,10 +18,11 @@ public class InitConfig {
     public final static String REDIS_CLUSTER_MODE_NAME = "redisCluster";
     public final static String REDIS_SENTINEL_MODE_NAME = "redisSentinel";
 
-    public  static int ES_INDEX_SHARDS = 5;
-    public  static int ES_INDEX_REPLICAS = 1;
-    public  static String ES_REFRESH_INTERVAL = "30s";
-    public  static String ES_INDEX_MODEL = "day";
+    public static int ES_INDEX_SHARDS = 5;
+    public static int ES_INDEX_REPLICAS = 1;
+    public static String ES_REFRESH_INTERVAL = "30s";
+    public static String ES_INDEX_MODEL = "day";
+    public static String ES_INDEX_ZONE_ID = "GMT+8";
 
     public static String restUserName = "";
     public static String restPassWord = "";
@@ -30,4 +31,9 @@ public class InitConfig {
 
     public static String loginUsername = "";
     public static String loginPassword = "";
+
+    public static int keepDays = 0;
+    public static int traceKeepDays = 0;
+
+    public static final long MILLS_ONE_DAY = 24 * 60 * 60 * 1000;
 }

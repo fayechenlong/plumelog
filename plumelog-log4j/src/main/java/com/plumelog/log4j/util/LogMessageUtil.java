@@ -15,7 +15,6 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -42,7 +41,8 @@ public class LogMessageUtil {
         String method = locationInfo.getMethodName();
         String line = locationInfo.getLineNumber();
         logMessage.setMethod(method + "(" + locationInfo.getFileName() + ":" + line + ")");
-        logMessage.setDateTime(DateUtil.parseDateToStr(new Date(loggingEvent.getTimeStamp()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        // dateTime字段用来保存当前服务器的时间戳字符串
+        logMessage.setDateTime(DateUtil.getDatetimeNormalStrWithMills(loggingEvent.getTimeStamp()));
 
         logMessage.setLogLevel(loggingEvent.getLevel().toString());
         return logMessage;

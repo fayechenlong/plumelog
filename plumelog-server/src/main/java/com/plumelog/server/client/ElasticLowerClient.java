@@ -42,7 +42,7 @@ public class ElasticLowerClient {
     private org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
     private static ElasticLowerClient instance;
     private RestClient client;
-    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5,5,100);
+    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5, 5, 100);
 
     public static ElasticLowerClient getInstance(String hosts, String userName, String passWord, boolean trustSelfSigned, boolean hostnameVerification) {
         if (instance == null) {
@@ -140,7 +140,7 @@ public class ElasticLowerClient {
         return false;
     }
 
-    public boolean creatIndice(String indice,String type) {
+    public boolean creatIndice(String indice, String type) {
         try {
             Request request = new Request(
                     "PUT",
@@ -153,17 +153,17 @@ public class ElasticLowerClient {
                     "\"traceId\":{\"type\":\"keyword\"}," +
                     "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}" +
                     "}";
-            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}";
-            if(StringUtils.isEmpty(type)){
-                ent=ent+",\"mappings\":{"+properties+"}}";
-            }else {
-                ent=ent+",\"mappings\":{\""+type+"\":{"+properties+"}}}";
+            String ent = "{\"settings\":{\"number_of_shards\":" + InitConfig.ES_INDEX_SHARDS + ",\"number_of_replicas\":" + InitConfig.ES_INDEX_REPLICAS + ",\"refresh_interval\":\"" + InitConfig.ES_REFRESH_INTERVAL + "\"}";
+            if (StringUtils.isEmpty(type)) {
+                ent = ent + ",\"mappings\":{" + properties + "}}";
+            } else {
+                ent = ent + ",\"mappings\":{\"" + type + "\":{" + properties + "}}}";
             }
 
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
-                logger.info("creat indice {}",indice);
+                logger.info("creat indice {}", indice);
                 return true;
             }
         } catch (Exception e) {
@@ -171,26 +171,27 @@ public class ElasticLowerClient {
         }
         return false;
     }
+
     public boolean creatIndiceTrace(String indice, String type) {
         try {
             Request request = new Request(
                     "PUT",
                     "/" + indice + "");
             String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
-                    "\"env\":{\"type\":\"keyword\"}" +
-                    "\"appNameWithEnv\":{\"type\":\"keyword\"}" +
+                    "\"env\":{\"type\":\"keyword\"}," +
+                    "\"appNameWithEnv\":{\"type\":\"keyword\"}," +
                     "\"traceId\":{\"type\":\"keyword\"}" +
                     "}";
-            String ent = "{\"settings\":{\"number_of_shards\":"+ InitConfig.ES_INDEX_SHARDS+",\"number_of_replicas\":"+InitConfig.ES_INDEX_REPLICAS+",\"refresh_interval\":\""+InitConfig.ES_REFRESH_INTERVAL+"\"}";
-            if(StringUtils.isEmpty(type)){
-                ent=ent+",\"mappings\":{"+properties+"}}";
-            }else {
-                ent=ent+",\"mappings\":{\""+type+"\":{"+properties+"}}}";
+            String ent = "{\"settings\":{\"number_of_shards\":" + InitConfig.ES_INDEX_SHARDS + ",\"number_of_replicas\":" + InitConfig.ES_INDEX_REPLICAS + ",\"refresh_interval\":\"" + InitConfig.ES_REFRESH_INTERVAL + "\"}";
+            if (StringUtils.isEmpty(type)) {
+                ent = ent + ",\"mappings\":{" + properties + "}}";
+            } else {
+                ent = ent + ",\"mappings\":{\"" + type + "\":{" + properties + "}}}";
             }
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
-                logger.info("creat indice {}",indice);
+                logger.info("creat indice {}", indice);
                 return true;
             }
         } catch (Exception e) {
@@ -198,6 +199,7 @@ public class ElasticLowerClient {
         }
         return false;
     }
+
     public boolean creatIndiceNomal(String indice, String type) {
         List<String> existIndexList = new ArrayList<String>();
         try {
@@ -219,25 +221,28 @@ public class ElasticLowerClient {
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
 
         if (!existIndice(baseIndex)) {
-            if(baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
-                creatIndice(baseIndex,type);
-            }else {
-                creatIndiceNomal(baseIndex,type);
+            if (baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
+                creatIndice(baseIndex, type);
+            } else {
+                creatIndiceNomal(baseIndex, type);
             }
             logger.info("creatIndex:{}", baseIndex);
         }
-        insertListV1(list,baseIndex,type);
+        insertListV1(list, baseIndex, type);
     }
+
     public void insertListTrace(List<String> list, String baseIndex, String type) throws IOException {
-        insertListV1(list,baseIndex,type);
+        insertListV1(list, baseIndex, type);
     }
+
     public void insertListComm(List<String> list, String baseIndex, String type) throws IOException {
-        insertListV1(list,baseIndex,type);
+        insertListV1(list, baseIndex, type);
     }
+
     private void insertList(List<String> list, String baseIndex, String type) throws IOException {
 
         StringBuffer sendStr = new StringBuffer();
-        int size=list.size();
+        int size = list.size();
         for (int a = 0; a < size; a++) {
             String map = list.get(a);
             String ent = "{\"index\":{} ";
@@ -246,7 +251,7 @@ public class ElasticLowerClient {
             sendStr.append(map);
             sendStr.append("\r\n");
         }
-        list=null;
+        list = null;
         String endpoint = "";
         if (StringUtils.isEmpty(type)) {
             endpoint = "/" + baseIndex + "/_bulk";
@@ -263,9 +268,9 @@ public class ElasticLowerClient {
                 request.setEntity(null);
                 try {
 
-                    if(response.getStatusLine().getStatusCode()==200){
+                    if (response.getStatusLine().getStatusCode() == 200) {
                         logger.info("ElasticSearch commit! success");
-                    }else {
+                    } else {
                         String responseStr = EntityUtils.toString(response.getEntity());
                         logger.error("ElasticSearch commit Failure! {}", responseStr);
                     }
@@ -280,10 +285,11 @@ public class ElasticLowerClient {
             }
         });
     }
+
     private void insertListV1(List<String> list, String baseIndex, String type) throws IOException {
 
         StringBuffer sendStr = new StringBuffer();
-        int size=list.size();
+        int size = list.size();
         for (int a = 0; a < size; a++) {
             String map = list.get(a);
             String ent = "{\"index\":{} ";
@@ -292,7 +298,7 @@ public class ElasticLowerClient {
             sendStr.append(map);
             sendStr.append("\r\n");
         }
-        list=null;
+        list = null;
         String endpoint = "";
         if (StringUtils.isEmpty(type)) {
             endpoint = "/" + baseIndex + "/_bulk";
@@ -303,25 +309,26 @@ public class ElasticLowerClient {
                 "PUT",
                 endpoint);
         request.setJsonEntity(sendStr.toString());
-        final Request requestStr=request;
-        threadPoolExecutor.execute(()->{
+        final Request requestStr = request;
+        threadPoolExecutor.execute(() -> {
             try {
 
-                long startTime=System.currentTimeMillis();
-                Response response=client.performRequest(requestStr);
-                long endTime=System.currentTimeMillis();
+                long startTime = System.currentTimeMillis();
+                Response response = client.performRequest(requestStr);
+                long endTime = System.currentTimeMillis();
                 requestStr.setEntity(null);
-                if(response.getStatusLine().getStatusCode()==200){
-                    logger.info("ElasticSearch commit! success,日志提交ES耗时：{}",endTime-startTime);
-                }else {
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    logger.info("ElasticSearch commit! success,日志提交ES耗时：{}", endTime - startTime);
+                } else {
                     String responseStr = EntityUtils.toString(response.getEntity());
-                    logger.error("ElasticSearch commit Failure! {},日志提交ES耗时：{}", responseStr,endTime-startTime);
+                    logger.error("ElasticSearch commit Failure! {},日志提交ES耗时：{}", responseStr, endTime - startTime);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
     }
+
     public String cat(String index) {
         String reStr = "";
         Request request = new Request(
@@ -343,22 +350,15 @@ public class ElasticLowerClient {
         return reStr;
     }
 
-    public String get(String url, String queryStr) {
-        String reStr = "";
+    public String get(String url, String queryStr) throws Exception {
         StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
         stringEntity.setContentType("application/json");
         Request request = new Request(
                 "GET",
                 url);
         request.setEntity(stringEntity);
-        try {
-            Response res = client.performRequest(request);
-            return EntityUtils.toString(res.getEntity(), "utf-8");
-        } catch (Exception e) {
-            reStr = "";
-            e.printStackTrace();
-        }
-        return reStr;
+        Response res = client.performRequest(request);
+        return EntityUtils.toString(res.getEntity(), "utf-8");
     }
 
     public List<String> getExistIndices(String[] indices) {

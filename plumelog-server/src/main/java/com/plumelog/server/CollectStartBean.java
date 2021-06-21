@@ -2,7 +2,6 @@ package com.plumelog.server;
 
 import com.plumelog.core.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.redis.RedisClient;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
@@ -18,9 +17,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
-import java.util.Date;
-
 /**
  * className：CollectStartBean
  * description：日誌搜集spring bean
@@ -32,25 +28,34 @@ import java.util.Date;
 @Component
 @Order(100)
 public class CollectStartBean implements InitializingBean {
+
     private static Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
+
     @Autowired
     private ElasticLowerClient elasticLowerClient;
+
     @Autowired(required = false)
     private AbstractClient redisQueueClient;
+
     @Autowired(required = false)
     private KafkaConsumer kafkaConsumer;
+
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+
     @Value("${plumelog.redis.compressor:false}")
     private Boolean compressor;
 
     private void serverStart() {
         if (InitConfig.KAFKA_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            KafkaLogCollect kafkaLogCollect = new KafkaLogCollect(elasticLowerClient, kafkaConsumer, applicationEventPublisher);
+            KafkaLogCollect kafkaLogCollect = new KafkaLogCollect(elasticLowerClient, kafkaConsumer,
+                    applicationEventPublisher);
             kafkaLogCollect.kafkaStart();
         }
-        if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL)||InitConfig.REDIS_SENTINEL_MODE_NAME.equals(InitConfig.START_MODEL)||InitConfig.REDIS_CLUSTER_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisQueueClient, applicationEventPublisher, compressor);
+        if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL) || InitConfig.REDIS_SENTINEL_MODE_NAME
+                .equals(InitConfig.START_MODEL) || InitConfig.REDIS_CLUSTER_MODE_NAME.equals(InitConfig.START_MODEL)) {
+            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisQueueClient,
+                    applicationEventPublisher, compressor);
             redisLogCollect.redisStart();
         }
         if (InitConfig.REST_MODE_NAME.equals(InitConfig.START_MODEL)) {
@@ -58,9 +63,9 @@ public class CollectStartBean implements InitializingBean {
             restLogCollect.restStart();
         }
     }
-    @Override
-    public void afterPropertiesSet() throws Exception {
 
+    @Override
+    public void afterPropertiesSet() {
         try {
             autoCreatIndice();
             serverStart();
@@ -68,28 +73,32 @@ public class CollectStartBean implements InitializingBean {
             logger.error("plumelog server starting failed!", e);
         }
     }
-    private void autoCreatIndice(){
-        Date date = new Date();
-        if(InitConfig.ES_INDEX_MODEL.equals("day")) {
-            creatIndiceLog(IndexUtil.getRunLogIndex(date));
-            creatIndiceTrace(IndexUtil.getTraceLogIndex(date));
-        }else {
-            for (int a = 0; a < 24; a++) {
-                String hour=String.format("%02d",a);
-                creatIndiceLog(IndexUtil.getRunLogIndex(date,hour));
-                creatIndiceTrace(IndexUtil.getTraceLogIndex(date,hour));
 
+    private void autoCreatIndice() {
+        long epochMillis = System.currentTimeMillis();
+        String runLogIndex = IndexUtil.getRunLogIndex(epochMillis);
+        String traceLogIndex = IndexUtil.getTraceLogIndex(epochMillis);
+        if ("day".equals(InitConfig.ES_INDEX_MODEL)) {
+            creatIndiceLog(runLogIndex);
+            creatIndiceTrace(traceLogIndex);
+        } else {
+            for (int a = 0; a < 24; a++) {
+                String hour = String.format("%02d", a);
+                creatIndiceLog(runLogIndex + hour);
+                creatIndiceTrace(traceLogIndex + hour);
             }
         }
     }
-    private void creatIndiceLog(String index){
-        if(!elasticLowerClient.existIndice(index)){
-            elasticLowerClient.creatIndice(index,LogMessageConstant.ES_TYPE);
-        };
+
+    private void creatIndiceLog(String index) {
+        if (!elasticLowerClient.existIndice(index)) {
+            elasticLowerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
+        }
     }
-    private void creatIndiceTrace(String index){
-        if(!elasticLowerClient.existIndice(index)){
-            elasticLowerClient.creatIndiceTrace(index,LogMessageConstant.ES_TYPE);
-        };
+
+    private void creatIndiceTrace(String index) {
+        if (!elasticLowerClient.existIndice(index)) {
+            elasticLowerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
+        }
     }
 }

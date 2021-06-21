@@ -71,6 +71,8 @@
         plumelog.es.refresh.interval=30s
         #日志索引建立方式day表示按天、hour表示按照小时，如果每天日志量超过了500G建议启动小时模式
         plumelog.es.indexType.model=day
+        #指定索引建立的时区
+        plumelog.es.indexType.zoneId=GMT+8
         #ES设置密码,启用下面配置
         #plumelog.es.userName=elastic
         #plumelog.es.passWord=123456

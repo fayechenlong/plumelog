@@ -5,6 +5,10 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -15,7 +19,7 @@ import java.util.*;
  * @version 1.0.0
  */
 public class DateUtil {
-
+    
     // ==格式到年==
     /**
      * 日期格式，年份，例如：2004，2008
@@ -110,10 +114,17 @@ public class DateUtil {
      * 日期格式，月日时分，例如：10-05 12:00
      */
     public static final String DATE_FORMAT_MMDDHHMI = "MM-dd HH:mm";
-
+    
+    private static final DateTimeFormatter DATETIME_FORMAT_NORMAL_SSS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
 	/* ************工具方法***************   */
-
+    
+    /**
+     * 获取yyyy-MM-dd HH:mm:ss.SSS格式的字符串
+     */
+    public static String getDatetimeNormalStrWithMills(long epochMillis) {
+        return DATETIME_FORMAT_NORMAL_SSS.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()));
+    }
 
     public static Integer getYear(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -654,14 +665,4 @@ public class DateUtil {
     }
 
 
-    public static void main(String[] args) {
-        try {
-            DateUtil dateUtil = new DateUtil();
-            System.out.println();
-
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-
-    }
 }

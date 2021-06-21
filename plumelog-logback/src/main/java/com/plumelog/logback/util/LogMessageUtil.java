@@ -12,7 +12,6 @@ import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.*;
 import org.slf4j.helpers.MessageFormatter;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -67,7 +66,8 @@ public class LogMessageUtil {
         String method = stackTraceElement.getMethodName();
         String line = String.valueOf(stackTraceElement.getLineNumber());
         logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
-        logMessage.setDateTime(DateUtil.parseDateToStr(new Date(iLoggingEvent.getTimeStamp()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        // dateTime字段用来保存当前服务器的时间戳字符串
+        logMessage.setDateTime(DateUtil.getDatetimeNormalStrWithMills(iLoggingEvent.getTimeStamp()));
 
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;

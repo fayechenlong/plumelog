@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
+import java.time.ZoneId;
+
 /**
  * className：RedisClientConfig
  * description： TODO
@@ -62,6 +64,8 @@ public class ClientConfig implements InitializingBean {
     private String refreshInterval;
     @Value("${plumelog.es.indexType.model:day}")
     private String indexTypeModel;
+    @Value("${plumelog.es.indexType.zoneId:GMT+8}")
+    private String indexTypeZoneId;
     @Value("${plumelog.redis.redisHost:127.0.0.1:6379}")
     private String redisHost;
     @Value("${plumelog.redis.redisPassWord:}")
@@ -94,6 +98,10 @@ public class ClientConfig implements InitializingBean {
     @Value("${plumelog.queue.redis.redisDb:0}")
     private int queueRedisDb = 0;
 
+    @Value("${admin.log.keepDays:0}")
+    private int keepDays;
+    @Value("${admin.log.trace.keepDays:0}")
+    private int traceKeepDays;
 
     @Bean(name = "redisClient")
     public AbstractClient initRedisClient() {
@@ -104,20 +112,20 @@ public class ClientConfig implements InitializingBean {
             }
             logger.info("manger redis  hosts:{}", queueRedisHost);
             return new RedisClusterClient(queueRedisHost, queueRedisPassWord);
-        }else if (InitConfig.REDIS_SENTINEL_MODE_NAME.equals(model)) {
+        } else if (InitConfig.REDIS_SENTINEL_MODE_NAME.equals(model)) {
             if (StringUtils.isEmpty(queueRedisHost)) {
                 logger.error("redis config error! please check the application.properties(plumelog.queue.redis.sentinel.nodes) ");
                 return null;
             }
             logger.info("manger redis hosts:{}", queueRedisHost);
             return new RedisSentinelClient(queueRedisHost, queueRedisSentinelMasterName, queueRedisPassWord, queueRedisDb);
-        }else{
+        } else {
             String[] hs = redisHost.split(":");
             int port = 6379;
             String ip = "127.0.0.1";
             if (hs.length == 2) {
                 ip = hs[0];
-                port = Integer.valueOf(hs[1]);
+                port = Integer.parseInt(hs[1]);
             } else {
                 logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
                 return null;
@@ -151,7 +159,7 @@ public class ClientConfig implements InitializingBean {
             String ip = "127.0.0.1";
             if (hs.length == 2) {
                 ip = hs[0];
-                port = Integer.valueOf(hs[1]);
+                port = Integer.parseInt(hs[1]);
             } else {
                 logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
                 return null;
@@ -197,6 +205,14 @@ public class ClientConfig implements InitializingBean {
         InitConfig.ES_REFRESH_INTERVAL = this.refreshInterval;
         InitConfig.ES_INDEX_MODEL = this.indexTypeModel;
 
+        try {
+            ZoneId.of(this.indexTypeZoneId);
+            InitConfig.ES_INDEX_ZONE_ID = this.indexTypeZoneId;
+        } catch (Exception e) {
+           logger.error("Please check config 'plumelog.es.indexType.zoneId', the value '{}' is invalid, use default value '{}'!",
+                   this.indexTypeZoneId, InitConfig.ES_INDEX_ZONE_ID);
+        }
+
         InitConfig.restUrl = this.restUrl;
         InitConfig.restUserName = this.restUserName;
         InitConfig.restPassWord = this.restPassWord;
@@ -205,6 +221,9 @@ public class ClientConfig implements InitializingBean {
 
         InitConfig.loginUsername = this.loginUsername;
         InitConfig.loginPassword = this.loginPassword;
+
+        InitConfig.keepDays = this.keepDays;
+        InitConfig.traceKeepDays = this.traceKeepDays;
 
         logger.info("server run model:" + this.model);
         logger.info("maxSendSize:" + this.maxSendSize);

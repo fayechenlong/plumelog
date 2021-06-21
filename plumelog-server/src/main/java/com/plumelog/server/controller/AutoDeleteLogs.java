@@ -1,50 +1,41 @@
 package com.plumelog.server.controller;
 
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.util.DateUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.util.IndexUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * className：AutoDeleteLogs
  * description：自动删除日志，凌晨0点执行
- * time：2020/6/11  11:39
+ * time：2020/6/11 11:39
  *
  * @author Frank.chen
  * @version 1.0.0
  */
 @Component
 public class AutoDeleteLogs {
+
     private org.slf4j.Logger logger = LoggerFactory.getLogger(AutoDeleteLogs.class);
+
     @Autowired
     private ElasticLowerClient elasticLowerClient;
-    @Value("${admin.log.keepDays:0}")
-    private int keepDays;
-    @Value("${admin.log.trace.keepDays:0}")
-    private int traceKeepDays;
+
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteLogs() {
-        if (keepDays > 0) {
+        if (InitConfig.keepDays > 0) {
             try {
-                logger.info("begin delete {} days ago logs!", keepDays);
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DATE, -keepDays);
-                Date date = cal.getTime();
-                String runLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
+                logger.info("begin delete {} days ago run logs!", InitConfig.keepDays);
+                String runLogIndex = IndexUtil.getRunLogIndex(
+                        System.currentTimeMillis() - InitConfig.keepDays * InitConfig.MILLS_ONE_DAY);
                 elasticLowerClient.deleteIndex(runLogIndex);
                 for (int a = 0; a < 24; a++) {
-                    String hour=String.format("%02d",a);
-                    elasticLowerClient.deleteIndex(runLogIndex+hour);
-
+                    String hour = String.format("%02d", a);
+                    elasticLowerClient.deleteIndex(runLogIndex + hour);
                 }
                 logger.info("delete success! index:" + runLogIndex);
             } catch (Exception e) {
@@ -53,18 +44,15 @@ public class AutoDeleteLogs {
         } else {
             logger.info("unwanted delete logs");
         }
-        if (traceKeepDays > 0) {
+        if (InitConfig.traceKeepDays > 0) {
             try {
-                logger.info("begin delete {} days ago logs!", traceKeepDays);
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DATE, -traceKeepDays);
-                Date date = cal.getTime();
-                String traceLogIndex = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_TRACE + "_" + DateUtil.parseDateToStr(date, DateUtil.DATE_FORMAT_YYYYMMDD);
+                logger.info("begin delete {} days ago trace logs!", InitConfig.traceKeepDays);
+                String traceLogIndex = IndexUtil.getTraceLogIndex(
+                        System.currentTimeMillis() - InitConfig.traceKeepDays * InitConfig.MILLS_ONE_DAY);
                 elasticLowerClient.deleteIndex(traceLogIndex);
                 for (int a = 0; a < 24; a++) {
-                    String hour=String.format("%02d",a);
-                    elasticLowerClient.deleteIndex(traceLogIndex+hour);
-
+                    String hour = String.format("%02d", a);
+                    elasticLowerClient.deleteIndex(traceLogIndex + hour);
                 }
                 logger.info("delete success! index:" + traceLogIndex);
             } catch (Exception e) {
@@ -74,34 +62,37 @@ public class AutoDeleteLogs {
             logger.info("unwanted delete logs");
         }
     }
-    /**
-     * 每天夜里11点自动创建第二天的索引
-     */
-    @Scheduled(cron = "0 0 23 * * ?")
-    public void creatIndice() {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 1);
-        Date date = cal.getTime();
-        if(InitConfig.ES_INDEX_MODEL.equals("day")){
-            creatIndiceLog(IndexUtil.getRunLogIndex(date));
-            creatIndiceTrace(IndexUtil.getTraceLogIndex(date));
-        }else {
-            for (int a = 0; a < 24; a++) {
-                String hour=String.format("%02d",a);
-                creatIndiceLog(IndexUtil.getRunLogIndex(date,hour));
-                creatIndiceTrace(IndexUtil.getTraceLogIndex(date,hour));
 
+    /**
+     * 每隔一个小时自动创建未来24小时的索引
+     * 由于无法确定指定的是哪个时区，因此每个小时都执行一次
+     */
+    @Scheduled(cron = "0 30 * * * ?")
+    public void creatIndice() {
+        long time = System.currentTimeMillis() + InitConfig.MILLS_ONE_DAY;
+        String runLogIndex = IndexUtil.getRunLogIndex(time);
+        String traceLogIndex = IndexUtil.getTraceLogIndex(time);
+        if ("day".equals(InitConfig.ES_INDEX_MODEL)) {
+            creatIndiceLog(runLogIndex);
+            creatIndiceTrace(traceLogIndex);
+        } else {
+            for (int a = 0; a < 24; a++) {
+                String hour = String.format("%02d", a);
+                creatIndiceLog(runLogIndex + hour);
+                creatIndiceTrace(traceLogIndex + hour);
             }
         }
     }
-    private void creatIndiceLog(String index){
-        if(!elasticLowerClient.existIndice(index)){
-            elasticLowerClient.creatIndice(index,LogMessageConstant.ES_TYPE);
-        };
+
+    private void creatIndiceLog(String index) {
+        if (!elasticLowerClient.existIndice(index)) {
+            elasticLowerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
+        }
     }
-    private void creatIndiceTrace(String index){
-        if(!elasticLowerClient.existIndice(index)){
-            elasticLowerClient.creatIndiceTrace(index,LogMessageConstant.ES_TYPE);
-        };
+
+    private void creatIndiceTrace(String index) {
+        if (!elasticLowerClient.existIndice(index)) {
+            elasticLowerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
+        }
     }
 }

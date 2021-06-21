@@ -10,6 +10,8 @@ import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.controller.vo.LoginVO;
+import com.plumelog.server.util.IndexUtil;
+import org.elasticsearch.client.ResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.TreeSet;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -43,6 +49,7 @@ import java.util.Map;
 public class MainController {
 
     private final Logger logger = LoggerFactory.getLogger(MainController.class);
+
     @Autowired
     private AbstractClient redisClient;
     @Autowired
@@ -121,16 +128,124 @@ public class MainController {
         return result;
     }
 
+    @RequestMapping({"/queryAppName", "/plumelog/queryAppName"})
+    public String queryAppName(@RequestBody String queryStr) {
+
+        // 查询过去n天的索引
+        String[] indexs = new String[InitConfig.keepDays];
+        for (int i = 0; i < InitConfig.keepDays; i++) {
+            indexs[i] = IndexUtil.getRunLogIndex(
+                    System.currentTimeMillis() - i * InitConfig.MILLS_ONE_DAY) + "*";
+        }
+
+        // 检查ES索引是否存在
+        List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
+        String indexStr = String.join(",", reindexs);
+        if ("".equals(indexStr)) {
+            return "";
+        }
+        String url = "/" + indexStr + "/_search?from=0&size=0";
+        logger.info("queryURL:" + url);
+        logger.info("queryStr:" + queryStr);
+
+        try {
+            return elasticLowerClient.get(url, queryStr);
+        } catch (Exception e) {
+            // 为兼容旧的索引如果按照appNameWithEnv查询失败则重新按照appName查询
+            if (e instanceof ResponseException && queryStr.contains("appNameWithEnv")) {
+                queryStr = queryStr.replaceAll("appNameWithEnv", "appName");
+                logger.info("queryURL:" + url);
+                logger.info("queryStr:" + queryStr);
+
+                try {
+                    return elasticLowerClient.get(url, queryStr);
+                } catch (Exception ex) {
+                    logger.error("queryAppName fail!", ex);
+                    return "";
+                }
+            }
+            logger.error("queryAppName fail!", e);
+            return "";
+        }
+    }
+
+    @RequestMapping({"/clientQuery", "/plumelog/clientQuery"})
+    public String clientQuery(@RequestBody String queryStr, String size, String from,
+                              String clientStartDate, String clientEndDate, String trace) {
+
+        Long clientStartDateTime = 0L;
+        try {
+            clientStartDateTime = Long.valueOf(clientStartDate);
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        if (clientStartDateTime <= 0) {
+            clientStartDateTime = System.currentTimeMillis();
+        }
+
+        Long clientEndDateTime = 0L;
+        try {
+            clientEndDateTime = Long.valueOf(clientEndDate);
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+
+        if (clientEndDateTime <= 0) {
+            clientEndDateTime = System.currentTimeMillis();
+        }
+
+        Set<String> indexSet = new LinkedHashSet<>();
+        while (clientStartDateTime <= clientEndDateTime) {
+            indexSet.add(("true".equalsIgnoreCase(trace) ?
+                    IndexUtil.getTraceLogIndex(clientStartDateTime) : IndexUtil.getRunLogIndex(clientStartDateTime)) + "*");
+            clientStartDateTime += InitConfig.MILLS_ONE_DAY;
+        }
+        indexSet.add(("true".equalsIgnoreCase(trace) ?
+                IndexUtil.getTraceLogIndex(clientEndDateTime) : IndexUtil.getRunLogIndex(clientEndDateTime)) + "*");
+
+        try {
+            //检查ES索引是否存在
+            List<String> existIndices = elasticLowerClient.getExistIndices(indexSet.toArray(new String[0]));
+            String indexStr = String.join(",", existIndices);
+            if ("".equals(indexStr)) {
+                return "";
+            }
+            String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
+            logger.info("queryURL:" + url);
+            logger.info("queryStr:" + queryStr);
+            return elasticLowerClient.get(url, queryStr);
+        } catch (Exception e) {
+            logger.error("clientQuery fail!", e);
+            return "";
+        }
+    }
 
     @RequestMapping({"/query", "/plumelog/query"})
-    public String query(@RequestBody String queryStr, String index, String size, String from) {
+    public String query(@RequestBody String queryStr, String index, String size, String from, String range) {
 
         String message = "";
         String indexStr = "";
         try {
             //检查ES索引是否存在
             String[] indexs = index.split(",");
-            List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
+            Set<String> indexSet = new TreeSet<>();
+            if (indexs.length > 0) {
+                indexSet.addAll(Arrays.asList(indexs));
+            }
+            if (!StringUtils.isEmpty(range)) {
+                int rangeDays = 0;
+                if ("day".equalsIgnoreCase(range)) {
+                    rangeDays = 1;
+                } else if ("week".equalsIgnoreCase(range)) {
+                    rangeDays = 7;
+                } else if ("month".equalsIgnoreCase(range)) {
+                    rangeDays = 30;
+                }
+                for (int i = 0; i < rangeDays; i++) {
+                    indexSet.add(IndexUtil.getRunLogIndex(System.currentTimeMillis() - i * InitConfig.MILLS_ONE_DAY) + "*");
+                }
+            }
+            List<String> reindexs = elasticLowerClient.getExistIndices(indexSet.toArray(new String[0]));
             indexStr = String.join(",", reindexs);
             if ("".equals(indexStr)) {
                 return message;
@@ -140,8 +255,8 @@ public class MainController {
             logger.info("queryStr:" + queryStr);
             return elasticLowerClient.get(url, queryStr);
         } catch (Exception e) {
-            logger.error("", e);
-            return e.getMessage();
+            logger.error("query fail!", e);
+            return "";
         }
     }
 
@@ -172,8 +287,8 @@ public class MainController {
             logger.info("queryStr:" + queryStr);
             return elasticLowerClient.get(url, queryStr);
         } catch (Exception e) {
-            logger.error("", e);
-            return e.getMessage();
+            logger.error("deleteByQuery fail!", e);
+            return "";
         }
     }
 
@@ -314,8 +429,7 @@ public class MainController {
 
     @RequestMapping({"/getExtendfieldList", "/plumelog/getExtendfieldList"})
     public Object getExtendfieldList(String appName) {
-        Map<String, String> map = redisClient.hgetAll(LogMessageConstant.EXTEND_APP_MAP_KEY + appName);
-        return map;
+        return redisClient.hgetAll(LogMessageConstant.EXTEND_APP_MAP_KEY + appName);
     }
 
     @RequestMapping({"/addExtendfield", "/plumelog/addExtendfield"})
