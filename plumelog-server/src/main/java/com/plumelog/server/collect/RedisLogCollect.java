@@ -67,7 +67,7 @@ public class RedisLogCollect extends BaseLogCollect {
     }
 
     private Thread startRunLogThread() {
-        Thread runLogThread = new Thread(() -> collectRuningLog(compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY));
+        Thread runLogThread = new Thread(() -> collectRunningLog(compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY));
         runLogThread.start();
         return runLogThread;
     }
@@ -79,13 +79,14 @@ public class RedisLogCollect extends BaseLogCollect {
     }
 
 
-    private void collectRuningLog(String logKey) {
+    private void collectRunningLog(String logKey) {
         while (true) {
             List<String> logs = new ArrayList<>(InitConfig.MAX_SEND_SIZE);
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
                 logger.error("", e);
+                Thread.currentThread().interrupt();
             }
             try {
                 long startTime = System.currentTimeMillis();
@@ -117,6 +118,7 @@ public class RedisLogCollect extends BaseLogCollect {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
                 logger.error("", e);
+                Thread.currentThread().interrupt();
             }
             try {
                 long startTime = System.currentTimeMillis();

@@ -293,16 +293,9 @@ export default {
         query.query.bool.must.push({"term": {"appName": this.currentAppName}});
       }
 
+      let localRange = '';
       if(this.loadType === 'all' || this.loadType === 'app') {
-        if (this.range === 'day') {
-          dataList.push('plume_log_run_' + moment().format('YYYYMMDD') + '*');
-        } else if (this.range === 'week') {
-          for (let i = 1; i < 8; i++) {
-            dataList.push('plume_log_run_' + moment().subtract(i, 'days').format('YYYYMMDD') + '*');
-          }
-        } else if (this.range === 'month') {
-          dataList.push('plume_log_run_' + moment().format('YYYYMM') + '*');
-        }
+        localRange = this.range;
       }
 
       if (this.loadType === 'app' || this.loadType === 'day') {
@@ -311,7 +304,7 @@ export default {
       }
 
 
-      let url = process.env.VUE_APP_API + '/query?index=' + dataList.join(",") + '&size=0&from=0&classErrChat'
+      let url = process.env.VUE_APP_API + '/query?index=' + dataList.join(",") + '&range=' + localRange + '&size=0&from=0&classErrChat'
 
       _promise.push(axios.post(url, query).then(data => {
         return _.get(data, 'data.aggregations.dataCount.buckets', [])
@@ -380,16 +373,9 @@ export default {
         delete query.aggs.dataCount.terms
       }
 
+      let localRange = '';
       if(this.loadType === 'all' || this.loadType === 'app') {
-        if (this.range === 'day') {
-          dataList.push('plume_log_run_' + moment().format('YYYYMMDD') + '*');
-        } else if (this.range === 'week') {
-          for (let i = 1; i < 8; i++) {
-            dataList.push('plume_log_run_' + moment().subtract(i, 'days').format('YYYYMMDD') + '*');
-          }
-        } else if (this.range === 'month') {
-          dataList.push('plume_log_run_' + moment().format('YYYYMM') + '*');
-        }
+        localRange = this.range;
       }
 
       if (this.loadType === 'app') {
@@ -401,7 +387,7 @@ export default {
       }
 
 
-      let url = process.env.VUE_APP_API + '/query?index=' + dataList.join(",") + '&size=0&from=0&errChat'
+      let url = process.env.VUE_APP_API + '/query?index=' + dataList.join(",") + '&range=' + localRange + '&size=0&from=0&errChat'
 
       _promise.push(axios.post(url, query).then(data => {
         return _.get(data, 'data.aggregations.dataCount.buckets', [])
@@ -467,11 +453,11 @@ export default {
       })
     },
     getAppNames() {
-      if (sessionStorage['cache_appNames']) {
+      if (sessionStorage['cache_appNames'] && sessionStorage['cache_appNames_time']
+              && sessionStorage['cache_appNames_time'] > new Date().getTime() - 1800000) {
         this.appNames = JSON.parse(sessionStorage['cache_appNames'])
       } else {
-        let q = "plume_log_run_" + moment().format("YYYYMMDD") + '*'
-        axios.post(process.env.VUE_APP_API + '/query?index=' + q + '&from=0&size=0', {
+        axios.post(process.env.VUE_APP_API + '/queryAppName?from=0&size=0', {
           "size": 0,
           "aggregations": {
             "dataCount": {
@@ -486,6 +472,7 @@ export default {
             return item.key
           });
           sessionStorage['cache_appNames'] = JSON.stringify(buckets);
+          sessionStorage['cache_appNames_time'] = new Date().getTime();
           this.appNames = buckets;
         })
       }

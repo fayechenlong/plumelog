@@ -4,6 +4,7 @@ package com.plumelog.core;
  * className：LogMessage
  * description：LogMessage
  *             appName 应用名称用来区分日志属于哪个应用
+ *             env 应用环境用来区分日志属于哪个应用环境
  *             serverName 应用运行所属IP地址
  *             traceId 应用traceId，配置了拦截器才能自动生成
  *             logType 日志类型，区分运行日志还是链路日志
@@ -12,6 +13,7 @@ package com.plumelog.core;
  */
 public class LogMessage {
     private String appName;
+    private String env;
     private String serverName;
     private Long dtTime;
     private String traceId;
@@ -29,7 +31,15 @@ public class LogMessage {
     public void setAppName(String appName) {
         this.appName = appName;
     }
-
+    
+    public String getEnv() {
+        return env;
+    }
+    
+    public void setEnv(String env) {
+        this.env = env;
+    }
+    
     public String getServerName() {
         return serverName;
     }

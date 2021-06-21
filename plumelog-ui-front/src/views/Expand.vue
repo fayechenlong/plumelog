@@ -163,13 +163,11 @@ export default {
       },
       getAppNames(){
 
-        if(sessionStorage['cache_appNames']){
+        if(sessionStorage['cache_appNames'] && sessionStorage['cache_appNames_time']
+            && sessionStorage['cache_appNames_time'] > new Date().getTime() - 1800000){
             this.appNames = JSON.parse(sessionStorage['cache_appNames'])
-        }
-        else
-        {
-            let q = "plume_log_run_" + moment().format("YYYYMMDD") + '*'
-            axios.post(process.env.VUE_APP_API+'/query?index='+q+'&from=0&size=0',{
+        } else {
+            axios.post(process.env.VUE_APP_API+'/queryAppName?from=0&size=0',{
                 "size": 0,
                 "aggregations": {
                     "dataCount": {
@@ -184,6 +182,7 @@ export default {
                     return item.key
                 });
                 sessionStorage['cache_appNames'] = JSON.stringify(buckets);
+                sessionStorage['cache_appNames_time'] = new Date().getTime();
                 this.appNames = buckets;
             })
         }

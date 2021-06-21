@@ -110,21 +110,8 @@ export default {
       this.traces=[];
       sessionStorage['cache_traceId'] = this.traceId;
 
-      let dateList=[];
-      let startDate = new Date(this.timeRange[0]);
-      if(startDate){
-         while(startDate<=new Date(this.timeRange[1])){
-          dateList.push('plume_log_trace_'+moment(startDate).format('YYYYMMDD') + '*')
-          startDate = new Date(startDate.setDate(startDate.getDate()+1));
-        }
-      }
-      let _index = 'plume_log_trace*'
-
-      if(dateList.length>0){
-        _index = dateList.join(',')
-      }
-
-      let url= process.env.VUE_APP_API+'/query?size=1000&from=0&index='+_index;
+      let url= process.env.VUE_APP_API+'/clientQuery?size=1000&from=0&trace=true&clientStartDate=' + Date.parse(this.timeRange[0])
+              + '&clientEndDate=' + Date.parse(this.timeRange[1]);
 
       let filter = {
         "query": {

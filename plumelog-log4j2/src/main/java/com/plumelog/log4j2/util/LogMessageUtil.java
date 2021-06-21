@@ -13,7 +13,6 @@ import com.plumelog.core.util.TraceLogMessageFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 
-import java.util.Date;
 import java.util.Map;
 
 import static org.apache.logging.log4j.message.ParameterizedMessageFactory.INSTANCE;
@@ -52,7 +51,6 @@ public class LogMessageUtil {
         if (mdc != null) {
             map.putAll(mdc);
         }
-        ;
         return GfJsonUtil.toJSONString(map);
     }
 
@@ -72,7 +70,8 @@ public class LogMessageUtil {
         String method = stackTraceElement.getMethodName();
         String line = String.valueOf(stackTraceElement.getLineNumber());
         logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
-        logMessage.setDateTime(DateUtil.parseDateToStr(new Date(logEvent.getTimeMillis()), DateUtil.DATE_TIME_FORMAT_YYYY_MM_DD_HH_MI));
+        // dateTime字段用来保存当前服务器的时间戳字符串
+        logMessage.setDateTime(DateUtil.getDatetimeNormalStrWithMills(logEvent.getTimeMillis()));
 
         logMessage.setLogLevel(logEvent.getLevel().toString());
         return logMessage;
