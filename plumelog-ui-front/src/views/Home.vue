@@ -1,5 +1,5 @@
 <template>
-  <div id="top" class="pnl_wraper">
+  <div class="pnl_wraper">
     <div class="icon_arrow down" v-if="!showFilter" @click="setShowFilter">
       <Icon type="ios-arrow-down" v-show="!showFilter"/>
       <span class="text">展开</span>
@@ -59,7 +59,7 @@
             <tr>
               <td class="key">追踪码</td>
               <td>
-                <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="TraceID" :clearable="true"/>
+                <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="TraceId" :clearable="true"/>
               </td>
               <td class="key">类名</td>
               <td>
@@ -161,7 +161,7 @@
       </template>
       <div style="clear:both"></div>
     </div>
-    <div style="position:relative;margin-top:30px;">
+    <div class="pnl_content">
       <div class="icon_arrow up" v-if="showFilter" @click="setShowFilter">
         <Icon type="ios-arrow-up" v-show="showFilter"/>
         <span class="text">收起</span>
@@ -212,56 +212,66 @@
       </div>
       <div v-else :style="this.darkMode && !this.autoWordWrap ? 'padding:0 0 0 10px' : 'padding:0 10px'">
         <div class="log_model_normal" :class="[autoWordWrap ? 'auto_word_wrap' : 'word_inline', darkMode ? 'dark_mode' : 'bright_mode']">
-          <div class="log_model_normal_row" @mouseenter="logModelNormalRowMouseEnter($event)" @mouseleave="logModelNormalRowMouseLeave($event)" v-for="row in list.hits">
-            <Tooltip placement="top" delay="2000">
-              <div slot="content">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td class="tooltip_table_td_key">logTime:</td>
-                      <td class="tooltip_table_td_value">{{ dateFormat(row.dtTime) }}</td>
-                    </tr>
-                    <tr>
-                      <td class="tooltip_table_td_key">serverTime:</td>
-                      <td class="tooltip_table_td_value">{{ row.dateTime }}</td>
-                    </tr>
-                    <tr>
-                      <td class="tooltip_table_td_key">logLevel:</td>
-                      <td class="tooltip_table_td_value">{{ row.logLevel }}</td>
-                    </tr>
-                    <tr>
-                      <td class="tooltip_table_td_key">appName:</td>
-                      <td class="tooltip_table_td_value">{{ row.appName }}</td>
-                    </tr>
-                    <tr>
-                      <td class="tooltip_table_td_key">env:</td>
-                      <td class="tooltip_table_td_value">{{ row.env }}</td>
-                    </tr>
-                    <tr>
-                      <td class="tooltip_table_td_key">serverName:</td>
-                      <td class="tooltip_table_td_value">{{ row.serverName }}</td>
-                    </tr>
-                    <tr>
-                      <td class="tooltip_table_td_key">traceId:</td>
-                      <td class="tooltip_table_td_value">{{ row.traceId }}</td>
-                    </tr>
-                    <tr>
-                      <td class="tooltip_table_td_key">className:</td>
-                      <td class="tooltip_table_td_value">{{ row.className + "." + row.method }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <span :class="row.logLevel">{{ dateFormat(row.dtTime) }}
-                <span v-if="showTheColumn('dateTime')">[serverTime: {{ row.dateTime }}] </span>
-                <span v-if="showTheColumn('logLevel')">{{ row.logLevel }} </span>
-                <span v-if="showTheColumn('appName')">[appName: {{ row.appName }}] </span>
-                <span v-if="row.env && showTheColumn('env')">[env: {{ row.env }}] </span>
-                <span v-if="showTheColumn('serverName')">[serverName: {{ row.serverName }}] </span>
-                <span v-if="row.traceId && showTheColumn('traceId')">[traceId: {{ row.traceId }}] </span>
-                <span v-if="showTheColumn('className')">{{ row.className + "." + row.method }} </span>
-                <span>: {{ row.content }}</span></span>
-            </Tooltip>
+          <div class="log_model_normal_row" @mouseenter="logModelNormalRowMouseEnter($event)"
+               @mouseleave="logModelNormalRowMouseLeave($event)" v-for="row in list.hits">
+            <div class="log_model_normal_row_selector row_over_flow_hidden">
+              <Tooltip placement="top-start" delay="1500">
+                <div slot="content">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td class="tooltip_table_td_key">logTime:</td>
+                        <td class="tooltip_table_td_value">{{ dateFormat(row.dtTime) }}</td>
+                      </tr>
+                      <tr>
+                        <td class="tooltip_table_td_key">serverTime:</td>
+                        <td class="tooltip_table_td_value">{{ row.dateTime }}</td>
+                      </tr>
+                      <tr>
+                        <td class="tooltip_table_td_key">logLevel:</td>
+                        <td class="tooltip_table_td_value">{{ row.logLevel }}</td>
+                      </tr>
+                      <tr>
+                        <td class="tooltip_table_td_key">appName:</td>
+                        <td class="tooltip_table_td_value">{{ row.appName }}</td>
+                      </tr>
+                      <tr>
+                        <td class="tooltip_table_td_key">env:</td>
+                        <td class="tooltip_table_td_value">{{ row.env }}</td>
+                      </tr>
+                      <tr>
+                        <td class="tooltip_table_td_key">serverName:</td>
+                        <td class="tooltip_table_td_value">{{ row.serverName }}</td>
+                      </tr>
+                      <tr>
+                        <td class="tooltip_table_td_key">traceId:</td>
+                        <td class="tooltip_table_td_value">{{ row.traceId }}</td>
+                      </tr>
+                      <tr>
+                        <td class="tooltip_table_td_key">className:</td>
+                        <td class="tooltip_table_td_value">{{ row.className + "." + row.method }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <span :class="row.logLevel">
+                  <span :title="'日志时间: ' + dateFormat(row.dtTime)">{{ dateFormat(row.dtTime) }}</span>
+                  <span v-if="showTheColumn('logLevel')" class="row_underline row_search"
+                        @click="doSearch('logLevel', row)" :title="'点击查询日志等级: ' + row.logLevel">{{ row.logLevel }}</span>
+                  <span v-if="showTheColumn('appName')" class="row_app_name row_underline row_search"
+                        @click="doSearch('appName',row)" :title="'点击查询应用名称: ' + row.appName">{{ row.appName }}</span>
+                  <span v-if="row.env && showTheColumn('env')" class="row_env row_underline row_search"
+                        @click="doSearch('env', row)" :title="'点击查询应用环境: ' + row.env">{{ row.env }}</span>
+                  <span v-if="showTheColumn('serverName')" class="row_server_name row_underline row_search"
+                        @click="doSearch('serverName',row)" :title="'点击查询服务器名称: ' + row.serverName">{{ row.serverName }}</span>
+                  <span v-if="row.traceId && showTheColumn('traceId')" class="row_trace_id row_underline row_search"
+                        @click="doSearch('traceId',row)" :title="'点击查询TraceId: ' + row.traceId">{{ row.traceId }}</span>
+                  <span v-if="showTheColumn('className')" class="row_class_name row_underline row_search"
+                        @click="doSearch('className', row)" :title="'点击查询类名: ' + row.className">{{ row.className + "." + row.method }}</span>
+                  <span>: {{ row.content }}<a class="row_pick_up_text">[点击收起]</a></span>
+                </span>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </div>
@@ -318,11 +328,13 @@
           <div class="page-count">第{{ parseInt(from / size) + 1 }}页 / 共{{ parseInt(totalCount / size) + 1 }}页</div>
         </li>
         <li class="page-item">
-          <div class="page-count"><a href="#top">返回顶部</a></div>
+          <div class="page-count">
+            <a @click="goDown" href="javascript:void(0)" style="margin-right:10px">去往底部</a>
+            <a @click="goTop" href="javascript:void(0)">返回顶部</a>
+          </div>
         </li>
       </ul>
     </nav>
-
   </div>
 </template>
 
@@ -371,12 +383,6 @@ export default {
       searchOptions: [],
       showColumnTitles: ['appName', 'traceId'],
       allColumns: [
-        // 增加服务器时间字段，用于显示不同时区的应用当地时间，若无多时区应用则不需要显示该字段
-        {
-          label: '服务器时间',
-          value: 'dateTime',
-          width: 180
-        },
         {
           label: '日志等级',
           value: 'logLevel',
@@ -456,13 +462,6 @@ export default {
           render: (h, params) => {
             return h('div', moment(parseInt(params.row.dtTime)).format('YYYY-MM-DD HH:mm:ss.SSS'))
           }
-        },
-        {
-          title: '服务器时间',
-          key: 'dateTime',
-          sortable: true,
-          resizable: true,
-          width: 180
         },
         {
           title: '日志等级',
@@ -689,7 +688,7 @@ export default {
     autoWordWrapChange() {
       this.autoWordWrap = !this.autoWordWrap;
       this.localStorageChange('autoWordWrap', this.autoWordWrap);
-      // 由于单行模式下字符串超出当前屏幕宽度，因为将屏幕外的html也修改背景颜色以保证风格统一
+      // 由于单行模式下字符串超出当前屏幕宽度，因此将屏幕外的html也修改背景颜色以保证风格统一
       if (this.darkMode && !this.autoWordWrap) {
         document.querySelector('html').style.cssText = `background: #2b2b2b;`;
       } else {
@@ -699,7 +698,7 @@ export default {
     darkModeChange() {
       this.darkMode = !this.darkMode;
       this.localStorageChange('darkMode', this.darkMode);
-      // 由于单行模式下字符串超出当前屏幕宽度，因为将屏幕外的html也修改背景颜色以保证风格统一
+      // 由于单行模式下字符串超出当前屏幕宽度，因此将屏幕外的html也修改背景颜色以保证风格统一
       if (this.darkMode && !this.autoWordWrap) {
         document.querySelector('html').style.cssText = `background: #2b2b2b;`;
       } else {
@@ -1233,6 +1232,12 @@ export default {
         query.query.bool['must_not'] = mustNotArr;
       }
 
+      // 如果指定了traceId，根据阅读习惯，把排序规则改为正序排序
+      let localSort = this.sort;
+      if (this.filter.traceId !== '') {
+        localSort = [{"dtTime": "asc"}];
+      }
+
       let esFilter = {
         ...query,
         "highlight": {
@@ -1242,7 +1247,7 @@ export default {
             }
           }
         },
-        "sort": this.sort
+        "sort": localSort
       };
 
       this.$Loading.start();
@@ -1483,6 +1488,33 @@ export default {
     },
     logModelNormalRowMouseLeave($event) {
       $event.currentTarget.className = 'log_model_normal_row';
+    },
+    goTop() {
+      let timer = setInterval(function() {
+        let osTop = document.documentElement.scrollTop || document.body.scrollTop;
+        let speed = Math.floor(-osTop / 5);
+        if (speed > -100) {
+          speed = -100;
+        }
+        document.documentElement.scrollTop = document.body.scrollTop = osTop + speed;
+        if(osTop <= 0) {
+          clearInterval(timer);
+        }
+      }, 30)
+    },
+    goDown() {
+      let timer = setInterval(function() {
+        let currTop = document.documentElement.scrollTop || document.body.scrollTop;
+        let targetTop = document.documentElement.scrollHeight - $(window).height();
+        let speed = Math.floor((targetTop - currTop) / 5);
+        if (speed < 100) {
+          speed = 100;
+        }
+        document.documentElement.scrollTop = document.body.scrollTop = currTop + speed;
+        if(currTop >= targetTop) {
+          clearInterval(timer);
+        }
+      }, 30)
     }
   },
   watch: {
@@ -1542,6 +1574,40 @@ export default {
         this.init();
       else if (newVal === '/' && oldVal === '/warn')
         this.init()
+    },
+    'list': function() {
+      this.$nextTick(function() {
+        if (!this.tableModel) {
+          $('.log_model_normal_row_selector').each(function () {
+            let rowSelector = $(this);
+            if (rowSelector.find('.ivu-tooltip-rel')[0].offsetHeight > 72) {
+              let rowSelectorClickFunc = function (e) {
+                if (e.target.nodeName !== 'A' && e.target.className.indexOf('row_search') < 0) {
+                  e.preventDefault();
+                  if (rowSelector.hasClass('row_over_flow_hidden')) {
+                    rowSelector.removeClass('row_over_flow_hidden can_click').removeAttr('title').off("click");
+                  } else {
+                    rowSelector.addClass('row_over_flow_hidden can_click').attr('title', '点击显示完整信息').on("click", function(e) {rowSelectorClickFunc(e)});
+                  }
+                }
+              };
+              rowSelector.addClass('can_click').attr('title', '点击显示完整信息').on("click", function(e) {rowSelectorClickFunc(e)});
+              $(rowSelector.find('.row_pick_up_text')[0]).show().on("click", function(e) {
+                e.preventDefault();
+                if (!rowSelector.hasClass('row_over_flow_hidden')) {
+                  let rowSelectorTop = rowSelector[0].offsetTop + document.getElementsByClassName('pnl_content')[0].offsetTop;
+                  if (rowSelectorTop < (document.documentElement.scrollTop || document.body.scrollTop)) {
+                      document.documentElement.scrollTop = document.body.scrollTop = rowSelectorTop;
+                  }
+                  rowSelector.addClass('row_over_flow_hidden can_click').attr('title', '点击显示完整信息').on("click", function(e) {rowSelectorClickFunc(e)});
+                }
+              });
+            } else {
+              $(rowSelector.find('.row_pick_up_text')[0]).hide()
+            }
+          });
+        }
+      })
     }
   },
   activated() {
@@ -1631,9 +1697,9 @@ export default {
       i {
         cursor: pointer;
         position: absolute;
-        top: 2px;
-        right: 5px;
-        font-size: 16px;
+        top: 0px;
+        right: 6px;
+        font-size: 14px;
         display: none;
       }
     }
@@ -1684,7 +1750,10 @@ export default {
 </style>
 <style lang="less" src="../assets/less/filters.less" scoped></style>
 <style lang="less" scoped>
-
+.pnl_content {
+  position: relative;
+  margin-top: 30px;
+}
 
 .ivu-carousel {
   position: absolute;
@@ -1703,7 +1772,6 @@ export default {
   width: 100%;
   height: 280px;
 }
-
 
 .icon_arrow {
   cursor: pointer;
@@ -1752,12 +1820,47 @@ export default {
   font-size: 12px;
   font-family: "Roboto Mono", Consolas, Menlo, Courier, monospace, Avenir, Helvetica, Arial, sans-serif;
 
-  .log_model_normal_row {
-    padding: 4px 10px;
+  .log_model_normal_row_selector {
+    padding: 5px 10px;
+    line-height: 20px;
   }
 
-  .log_model_normal_row_enter {
-    padding: 4px 10px;
+  .row_over_flow_hidden {
+    max-height: 68px;
+    overflow: hidden;
+  }
+
+  .row_pick_up_text {
+    float: right;
+    cursor: pointer;
+    position: relative;
+    display: none;
+  }
+
+  .row_underline {
+    cursor: pointer;
+    position: relative;
+    margin-left: 10px;
+  }
+  .row_underline::after, .row_pick_up_text::after {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    content: '';
+    background-color: aqua;
+    width: 100%;
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    transition: all .5s;
+    -webkit-transition: all .5s;
+  }
+  .row_underline:hover::after, .row_pick_up_text:hover::after {
+    height: 1px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  .row_date_time {
+    margin-left: 10px;
   }
 }
 
@@ -1776,6 +1879,21 @@ export default {
   .log_model_normal_row {
     background-color: #ffffff;
 
+    .row_app_name {
+      color: #f7c4c4;
+    }
+    .row_env {
+      color: #d89bd0;
+    }
+    .row_server_name {
+      color: #ffffff;
+    }
+    .row_trace_id {
+      color: #ffffff;
+    }
+    .row_class_name {
+      color: #ffffff;
+    }
     .DEBUG {
       color: rgba(0,0,0,.4);
     }
@@ -1788,11 +1906,32 @@ export default {
     .ERROR {
       color: #FB0014;
     }
+    .row_pick_up_text {
+      color: #d6d6d6;
+    }
+    .row_pick_up_text::after {
+      background-color: #d6d6d6;
+    }
   }
 
   .log_model_normal_row_enter {
     background-color: #ffe8e5;
 
+    .row_app_name {
+      color: #f7c4c4;
+    }
+    .row_env {
+      color: #d89bd0;
+    }
+    .row_server_name {
+      color: #ffffff;
+    }
+    .row_trace_id {
+      color: #ffffff;
+    }
+    .row_class_name {
+      color: #ffffff;
+    }
     .DEBUG {
       color: #888888;
     }
@@ -1805,14 +1944,34 @@ export default {
     .ERROR {
       color: #f71111;
     }
+    .row_pick_up_text {
+      color: #7e7ecc;
+    }
+    .row_pick_up_text::after {
+      background-color: #7e7ecc;
+    }
   }
 }
 
 .dark_mode {
-
   .log_model_normal_row {
     background-color: #2b2b2b;
 
+    .row_app_name {
+      color: #f7c4c4;
+    }
+    .row_env {
+      color: #d89bd0;
+    }
+    .row_server_name {
+      color: #a7b962;
+    }
+    .row_trace_id {
+      color: #8b8cc3;
+    }
+    .row_class_name {
+      color: #1F8483;
+    }
     .DEBUG {
       color: #7a7a7a;
     }
@@ -1825,22 +1984,49 @@ export default {
     .ERROR {
       color: #fc5759;
     }
+    .row_pick_up_text {
+      color: #484848;
+    }
+    .row_pick_up_text::after {
+      background-color: #484848;
+    }
   }
 
   .log_model_normal_row_enter {
-    background-color: #ffe8e5;
+    background-color: #1a1a1a;
 
+    .row_app_name {
+      color: #ff9a9a;
+    }
+    .row_env {
+      color: #ff6aeb;
+    }
+    .row_server_name {
+      color: #d4f555;
+    }
+    .row_trace_id {
+      color: #8789f7;
+    }
+    .row_class_name {
+      color: #1F8483;
+    }
     .DEBUG {
-      color: #888888;
+      color: #8e8e8e;
     }
     .INFO {
-      color: #1c8400;
+      color: #4de03c;
     }
     .WARN {
-      color: #926e00;
+      color: #e2ae0d;
     }
     .ERROR {
-      color: #f71111;
+      color: #ff3b3b;
+    }
+    .row_pick_up_text {
+      color: #9ea5ff;
+    }
+    .row_pick_up_text::after {
+      background-color: #9ea5ff;
     }
   }
 }
@@ -1850,5 +2036,8 @@ export default {
 .tooltip_table_td_value {
   font-size: 12px;
   padding-left: 6px;
+}
+.can_click {
+  cursor: pointer;
 }
 </style>
