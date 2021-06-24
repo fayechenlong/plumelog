@@ -15,6 +15,7 @@ public class RunLogMessage extends BaseLogMessage{
     private String content;
     private String logLevel;
     private String className;
+    private String threadName;
     private String logType;
     private String dateTime;
 
@@ -48,6 +49,14 @@ public class RunLogMessage extends BaseLogMessage{
 
     public void setClassName(String className) {
         this.className = className;
+    }
+
+    public String getThreadName() {
+        return threadName;
+    }
+
+    public void setThreadName(String threadName) {
+        this.threadName = threadName;
     }
 
     public String getLogType() {

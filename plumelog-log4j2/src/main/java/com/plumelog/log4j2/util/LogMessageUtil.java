@@ -65,6 +65,7 @@ public class LogMessageUtil {
         RunLogMessage logMessage =
                 TraceLogMessageFactory.getLogMessage(appName, env, formattedMessage, logEvent.getTimeMillis());
         logMessage.setClassName(logEvent.getLoggerName());
+        logMessage.setThreadName(logEvent.getThreadName());
 
         StackTraceElement stackTraceElement = logEvent.getSource();
         String method = stackTraceElement.getMethodName();

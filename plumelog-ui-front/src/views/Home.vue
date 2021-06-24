@@ -223,7 +223,7 @@
                         <td class="tooltip_table_td_key">logTime:</td>
                         <td class="tooltip_table_td_value">{{ dateFormat(row.dtTime) }}</td>
                       </tr>
-                      <tr>
+                      <tr v-if="row.dateTime">
                         <td class="tooltip_table_td_key">serverTime:</td>
                         <td class="tooltip_table_td_value">{{ row.dateTime }}</td>
                       </tr>
@@ -235,13 +235,17 @@
                         <td class="tooltip_table_td_key">appName:</td>
                         <td class="tooltip_table_td_value">{{ row.appName }}</td>
                       </tr>
-                      <tr>
+                      <tr v-if="row.env">
                         <td class="tooltip_table_td_key">env:</td>
                         <td class="tooltip_table_td_value">{{ row.env }}</td>
                       </tr>
                       <tr>
                         <td class="tooltip_table_td_key">serverName:</td>
                         <td class="tooltip_table_td_value">{{ row.serverName }}</td>
+                      </tr>
+                      <tr v-if="row.threadName">
+                        <td class="tooltip_table_td_key">threadName:</td>
+                        <td class="tooltip_table_td_value">{{ row.threadName }}</td>
                       </tr>
                       <tr>
                         <td class="tooltip_table_td_key">traceId:</td>

@@ -24,6 +24,10 @@
               <td class="key">方法名</td>
               <td class="value">{{ row.method }}</td>
             </tr>
+            <tr v-if="row.threadName">
+              <td class="key">线程名</td>
+              <td class="value">{{ row.threadName }}</td>
+            </tr>
             <tr>
               <td class="key">内容</td>
               <td class="value">

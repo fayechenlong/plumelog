@@ -19,6 +19,7 @@ public class LogMessage {
     private String traceId;
     private String content;
     private String logLevel;
+    private String threadName;
     private String className;
     private String method;
     private String logType;
@@ -62,6 +63,14 @@ public class LogMessage {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getThreadName() {
+        return threadName;
+    }
+
+    public void setThreadName(String threadName) {
+        this.threadName = threadName;
     }
 
     public String getLogLevel() {
