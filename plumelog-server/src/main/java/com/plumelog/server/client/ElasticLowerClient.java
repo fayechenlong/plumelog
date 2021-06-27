@@ -151,7 +151,8 @@ public class ElasticLowerClient {
                     "\"logLevel\":{\"type\":\"keyword\"}," +
                     "\"serverName\":{\"type\":\"keyword\"}," +
                     "\"traceId\":{\"type\":\"keyword\"}," +
-                    "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}" +
+                    "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}," +
+                    "\"seq\":{\"type\":\"long\"}" +
                     "}";
             String ent = "{\"settings\":{\"number_of_shards\":" + InitConfig.ES_INDEX_SHARDS + ",\"number_of_replicas\":" + InitConfig.ES_INDEX_REPLICAS + ",\"refresh_interval\":\"" + InitConfig.ES_REFRESH_INTERVAL + "\"}";
             if (StringUtils.isEmpty(type)) {

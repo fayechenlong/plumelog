@@ -15,6 +15,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * className：RedisAppender
@@ -24,6 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @version 1.0.0
  */
 public class RedisAppender extends AppenderSkeleton {
+    private static final AtomicBoolean INIT = new AtomicBoolean();
     private AbstractClient redisClient;
     private String appName;
     private String env = "default";
@@ -107,6 +109,7 @@ public class RedisAppender extends AppenderSkeleton {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (this.redisClient == null) {
+            MessageAppenderFactory.initQueue(this.logQueueSize);
             if ("cluster".equals(this.model)) {
                 this.redisClient = RedisClusterClient.getInstance(this.redisHost, this.redisAuth);
             } else if ("sentinel".equals(this.model)) {
@@ -133,17 +136,19 @@ public class RedisAppender extends AppenderSkeleton {
                 this.redisClient = RedisClient.getInstance(ip, port, this.redisAuth, this.redisDb);
             }
 
-            MessageAppenderFactory.initQueue(this.logQueueSize);
-            for (int a = 0; a < this.threadPoolSize; a++) {
+            // 当多并发情况下若redisClient为空时会多次执行以下代码，因此增加是否已初始化的判断
+            if (INIT.compareAndSet(false, true)) {
+                for (int a = 0; a < this.threadPoolSize; a++) {
 
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startRunLog(this.redisClient, maxCount,
-                            this.compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY, this.compressor);
-                });
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startTraceLog(this.redisClient, maxCount,
-                            this.compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, this.compressor);
-                });
+                    threadPoolExecutor.execute(() -> {
+                        MessageAppenderFactory.startRunLog(this.redisClient, maxCount,
+                                this.compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY, this.compressor);
+                    });
+                    threadPoolExecutor.execute(() -> {
+                        MessageAppenderFactory.startTraceLog(this.redisClient, maxCount,
+                                this.compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, this.compressor);
+                    });
+                }
             }
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, this.env, loggingEvent);

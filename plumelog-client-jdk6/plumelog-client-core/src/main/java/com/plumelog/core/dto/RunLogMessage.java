@@ -12,6 +12,7 @@ public class RunLogMessage extends BaseLogMessage {
 
 
     private Long dtTime;
+    private Long seq;
     private String content;
     private String logLevel;
     private String className;
@@ -24,6 +25,14 @@ public class RunLogMessage extends BaseLogMessage {
 
     public void setDtTime(Long dtTime) {
         this.dtTime = dtTime;
+    }
+
+    public Long getSeq() {
+        return seq;
+    }
+
+    public void setSeq(Long seq) {
+        this.seq = seq;
     }
 
     public String getContent() {

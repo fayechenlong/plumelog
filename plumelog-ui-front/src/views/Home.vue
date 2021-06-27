@@ -536,6 +536,8 @@ export default {
       ],
       sort: [{
         "dtTime": "desc"
+      }, {
+        "seq": "desc"
       }]
     }
   },
@@ -1239,7 +1241,7 @@ export default {
       // 如果指定了traceId，根据阅读习惯，把排序规则改为正序排序
       let localSort = this.sort;
       if (this.filter.traceId !== '') {
-        localSort = [{"dtTime": "asc"}];
+        localSort = [{"dtTime": "asc"},{"seq": "asc"}];
       }
 
       let esFilter = {

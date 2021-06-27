@@ -203,18 +203,35 @@ public class MainController {
         indexSet.add(("true".equalsIgnoreCase(trace) ?
                 IndexUtil.getTraceLogIndex(clientEndDateTime) : IndexUtil.getRunLogIndex(clientEndDateTime)) + "*");
 
+        //检查ES索引是否存在
+        List<String> existIndices = elasticLowerClient.getExistIndices(indexSet.toArray(new String[0]));
+        String indexStr = String.join(",", existIndices);
+        if ("".equals(indexStr)) {
+            return "";
+        }
+        String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
+        logger.info("queryURL:" + url);
+        logger.info("queryStr:" + queryStr);
+
         try {
-            //检查ES索引是否存在
-            List<String> existIndices = elasticLowerClient.getExistIndices(indexSet.toArray(new String[0]));
-            String indexStr = String.join(",", existIndices);
-            if ("".equals(indexStr)) {
-                return "";
-            }
-            String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
-            logger.info("queryURL:" + url);
-            logger.info("queryStr:" + queryStr);
             return elasticLowerClient.get(url, queryStr);
         } catch (Exception e) {
+            // 为兼容旧的索引如果排序使用seq查询失败则重新按照去掉seq查询
+            if (e instanceof ResponseException
+                    && (queryStr.contains(",{\"seq\":\"desc\"}") || queryStr.contains(",{\"seq\":\"asc\"}"))) {
+                queryStr = queryStr.replace(",{\"seq\":\"desc\"}", "");
+                queryStr = queryStr.replace(",{\"seq\":\"asc\"}", "");
+                logger.info("queryURL:" + url);
+                logger.info("queryStr:" + queryStr);
+
+                try {
+                    return elasticLowerClient.get(url, queryStr);
+                } catch (Exception ex) {
+                    logger.error("clientQuery fail!", ex);
+                    return "";
+                }
+            }
+
             logger.error("clientQuery fail!", e);
             return "";
         }

@@ -16,6 +16,7 @@ import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * className：LogMessageUtil
@@ -25,6 +26,12 @@ import java.util.Map;
  * @version 1.0.0
  */
 public class LogMessageUtil {
+
+    /**
+     * 序列生成器：当日志在一毫秒内打印多次时，发送到服务端排序时无法按照正常顺序显示，因此加一个序列保证同一毫秒内的日志按顺序显示
+     * 使用AtomicLong不要使用LongAdder，LongAdder在该场景高并发下无法严格保证顺序性，也不需要考虑Long是否够用，假设每秒打印10万日志，也需要两百多万年才能用的完
+     */
+    private static final AtomicLong SEQ_BUILDER = new AtomicLong();
     
     public static BaseLogMessage getLogMessage(String appName, String env, LoggingEvent loggingEvent) {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
@@ -37,6 +44,7 @@ public class LogMessageUtil {
                 TraceLogMessageFactory.getLogMessage(appName, env, formattedMessage, loggingEvent.getTimeStamp());
         logMessage.setClassName(loggingEvent.getLoggerName());
         logMessage.setThreadName(loggingEvent.getThreadName());
+        logMessage.setSeq(SEQ_BUILDER.getAndIncrement());
 
         LocationInfo locationInfo = loggingEvent.getLocationInformation();
         String method = locationInfo.getMethodName();

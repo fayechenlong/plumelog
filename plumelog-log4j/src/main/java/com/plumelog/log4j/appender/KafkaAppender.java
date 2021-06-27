@@ -12,6 +12,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * className：KafkaAppender
@@ -21,6 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @version 1.0.0
  */
 public class KafkaAppender extends AppenderSkeleton {
+    private static final AtomicBoolean INIT = new AtomicBoolean();
     private KafkaProducerClient kafkaClient;
     private String appName;
     private String env = "default";
@@ -71,16 +73,20 @@ public class KafkaAppender extends AppenderSkeleton {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
         if (this.kafkaClient == null) {
-            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressor ? "lz4" : "none");
             MessageAppenderFactory.initQueue(this.logQueueSize);
-            for (int a = 0; a < this.threadPoolSize; a++) {
+            this.kafkaClient = KafkaProducerClient.getInstance(this.kafkaHosts, this.compressor ? "lz4" : "none");
 
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startRunLog(this.kafkaClient, maxCount);
-                });
-                threadPoolExecutor.execute(() -> {
-                    MessageAppenderFactory.startTraceLog(this.kafkaClient, maxCount);
-                });
+            // 当多并发情况下若kafkaClient为空时会多次执行以下代码，因此增加是否已初始化的判断
+            if (INIT.compareAndSet(false, true)) {
+                for (int a = 0; a < this.threadPoolSize; a++) {
+
+                    threadPoolExecutor.execute(() -> {
+                        MessageAppenderFactory.startRunLog(this.kafkaClient, maxCount);
+                    });
+                    threadPoolExecutor.execute(() -> {
+                        MessageAppenderFactory.startTraceLog(this.kafkaClient, maxCount);
+                    });
+                }
             }
         }
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(this.appName, this.env, loggingEvent);
