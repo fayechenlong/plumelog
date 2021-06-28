@@ -41,6 +41,7 @@ public class RedisClient extends AbstractClient {
         }
         return instance;
     }
+
     public RedisClient(String host, int port, String pass, int db) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(MAX_ACTIVE);
@@ -135,8 +136,8 @@ public class RedisClient extends AbstractClient {
         if (null == key) {
             return false;
         }
+        Jedis jedis = jedisPool.getResource();
         try {
-            Jedis jedis = jedisPool.getResource();
             Long result = (Long) jedis.evalsha(jedis.scriptLoad(script), Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
             jedis.close();
             if (result == 1) {
@@ -144,6 +145,10 @@ public class RedisClient extends AbstractClient {
             }
         } catch (Exception e) {
             return false;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
         return false;
     }

@@ -31,7 +31,7 @@ public class RedisSentinelClient extends AbstractClient {
         if (instance == null) {
             synchronized (RedisSentinelClient.class) {
                 if (instance == null) {
-                    instance = new RedisSentinelClient(hosts, masterName, pass,db);
+                    instance = new RedisSentinelClient(hosts, masterName, pass, db);
                 }
             }
         }
@@ -47,9 +47,9 @@ public class RedisSentinelClient extends AbstractClient {
         config.setMaxWaitMillis(MAX_WAIT);
         config.setTestOnBorrow(TEST_ON_BORROW);
         if (pass != null && !"".equals(pass)) {
-            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config,db, pass);
+            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config, db, pass);
         } else {
-            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config,db);
+            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config, db);
         }
     }
 
@@ -74,8 +74,8 @@ public class RedisSentinelClient extends AbstractClient {
         if (null == key) {
             return false;
         }
+        Jedis jedis = jedisSentinelPool.getResource();
         try {
-            Jedis jedis = jedisSentinelPool.getResource();
             Long result = (Long) jedis.evalsha(jedis.scriptLoad(script), Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
             jedis.close();
             if (result == 1) {
@@ -83,6 +83,10 @@ public class RedisSentinelClient extends AbstractClient {
             }
         } catch (Exception e) {
             return false;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
         return false;
     }
