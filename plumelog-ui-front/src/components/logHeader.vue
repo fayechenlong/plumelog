@@ -24,10 +24,10 @@
                 <a class="nav-link" href="./#/size"><Icon type="md-settings" />管理</a>
             </li>
           <li class="nav-item">
-            <a class="nav-link" target="_blank" href="https://gitee.com/frankchenlong/plumelog/blob/master/HELP.md"><Icon style="font-size: 20px" type="md-help-circle" /></a>
+            <a class="nav-link" target="_blank" href="https://gitee.com/frankchenlong/plumelog/blob/master/HELP.md"><Icon style="font-size: 16px" type="md-help-circle" /></a>
           </li>
         </ul>
-        <span class="quit"><a href="./#/login"><Icon style="font-size: 20px" type="md-exit" />退出</a></span>
+        <span class="quit"><a href="./#/login"><Icon style="font-size: 16px" type="md-exit" />退出</a></span>
         <span class="version"><a target="_blank" href="https://gitee.com/frankchenlong/plumelog">Version 3.4.2</a></span>
     </nav>
 </template>
@@ -62,8 +62,8 @@ export default {
         .navbar-nav{
             flex-direction:row;
              .nav-link{
-                padding-right: .5rem;
-                padding-left: .5rem;
+                padding-right: .6rem;
+                padding-left: .6rem;
             }
         }
         .version
@@ -81,7 +81,7 @@ export default {
         .quit {
           position: absolute;
           top:16px;
-          right:120px;
+          right:125px;
           color:#ddd;
           z-index: 2;
           cursor: pointer;

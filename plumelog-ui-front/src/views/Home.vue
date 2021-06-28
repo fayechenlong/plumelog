@@ -17,7 +17,7 @@
             <tbody>
             <tr>
               <td class="key">应用名称</td>
-              <td>
+              <td style="width: 245px">
                 <AutoComplete
                     v-model="filter.appName"
                     :data="appNameComplete"
@@ -29,7 +29,7 @@
                 </AutoComplete>
               </td>
               <td class="key">应用环境</td>
-              <td>
+              <td style="width: 245px">
                 <AutoComplete
                     v-model="filter.env"
                     :data="envComplete"
@@ -41,7 +41,7 @@
                 </AutoComplete>
               </td>
               <td class="key">日志等级</td>
-              <td >
+              <td style="width: 180px">
                 <Select v-model="filter.logLevel"  placeholder="请选择日志等级" style="width: 162px">
                   <Option value="" key="ALL">所有</Option>
                   <Option value="INFO" key="INFO">INFO</Option>
@@ -58,16 +58,16 @@
             <tbody>
             <tr>
               <td class="key">追踪码</td>
-              <td>
+              <td style="width: 245px">
                 <Input class="txt" name="traceId" v-model="filter.traceId" placeholder="TraceId" :clearable="true"/>
               </td>
               <td class="key">类名</td>
-              <td>
+              <td style="width: 245px">
                 <Input class="txt" name="className" v-model="filter.className" placeholder="类名的全路径"
                        :clearable="true"/>
               </td>
               <td class="key">服务器名称</td>
-              <td>
+              <td style="width: 180px">
                 <Input class="txt" style="width: 162px" name="serverName" v-model="filter.serverName" placeholder="服务器Ip或者host"
                        :clearable="true"/>
               </td>
@@ -1878,6 +1878,7 @@ export default {
 .word_inline {
   white-space: pre;
   word-break: break-all;
+  width: fit-content;
 }
 
 .bright_mode {
@@ -1885,7 +1886,7 @@ export default {
   .log_model_normal_row {
     background-color: #ffffff;
 
-    .row_app_name {
+    /*.row_app_name {
       color: #f7c4c4;
     }
     .row_env {
@@ -1899,7 +1900,7 @@ export default {
     }
     .row_class_name {
       color: #ffffff;
-    }
+    }*/
     .DEBUG {
       color: rgba(0,0,0,.4);
     }
@@ -1963,7 +1964,7 @@ export default {
   .log_model_normal_row {
     background-color: #2b2b2b;
 
-    .row_app_name {
+    /*.row_app_name {
       color: #f7c4c4;
     }
     .row_env {
@@ -1977,7 +1978,7 @@ export default {
     }
     .row_class_name {
       color: #1F8483;
-    }
+    }*/
     .DEBUG {
       color: #7a7a7a;
     }
