@@ -1,12 +1,12 @@
 <p align="center" >
-    <img src="https://gitee.com/frankchenlong/plumelog/raw/master/pic/icon.png" width="150">
+    <img src="https://gitee.com/plumeorg/plumelog/raw/master/pic/icon.png" width="150">
     <h3 align="center">Plumelog</h3>
     <p align="center">
         Plumelog一个简单易用的java分布式日志组件
 </p>
 
-[![star](https://gitee.com/frankchenlong/plumelog/badge/star.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/stargazers)
-[![fork](https://gitee.com/frankchenlong/plumelog/badge/fork.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/members)
+[![star](https://gitee.com/plumeorg/plumelog/badge/star.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/stargazers)
+[![fork](https://gitee.com/plumeorg/plumelog/badge/fork.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/members)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
 
