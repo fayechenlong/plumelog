@@ -11,7 +11,7 @@
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
 
 Star趋势图
-[![Stargazers over time](https://whnb.wang/img/frankchenlong/plumelog)](https://whnb.wang/plumeorg/plumelog)
+[![Stargazers over time](https://whnb.wang/img/plumeorg/plumelog)](https://whnb.wang/plumeorg/plumelog)
 
 ### 一.系统介绍
 
