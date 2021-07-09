@@ -1827,7 +1827,7 @@ export default {
   font-family: "Roboto Mono", Consolas, Menlo, Courier, monospace, Avenir, Helvetica, Arial, sans-serif;
 
   .log_model_normal_row_selector {
-    padding: 5px 10px;
+    padding: 6px 10px;
     line-height: 20px;
   }
 
@@ -1925,19 +1925,19 @@ export default {
     background-color: #ffe8e5;
 
     .row_app_name {
-      color: #f7c4c4;
+      color: #404dff;
     }
     .row_env {
-      color: #d89bd0;
+      color: #4f8494;
     }
     .row_server_name {
-      color: #ffffff;
+      color: #717933;
     }
     .row_trace_id {
-      color: #ffffff;
+      color: #ff00af;
     }
     .row_class_name {
-      color: #ffffff;
+      color: #1F8483;
     }
     .DEBUG {
       color: #888888;
@@ -2027,7 +2027,7 @@ export default {
       color: #e2ae0d;
     }
     .ERROR {
-      color: #ff3b3b;
+      color: #ff5353;
     }
     .row_pick_up_text {
       color: #9ea5ff;
