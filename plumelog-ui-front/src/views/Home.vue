@@ -329,7 +329,7 @@
           </div>
         </li>
         <li class="page-item">
-          <div class="page-count">第{{ parseInt(from / size) + 1 }}页 / 共{{ parseInt(totalCount / size) + 1 }}页</div>
+          <div class="page-count">第{{ parseInt(from / size) + 1 }}页 / 共{{ parseInt(totalCount / size) + (totalCount % size === 0 ? 0 : 1) }}页</div>
         </li>
         <li class="page-item">
           <div class="page-count">
@@ -1416,7 +1416,7 @@ export default {
     },
     goPage() {
       this.from = (this.jumpPageIndex - 1) * this.size;
-      if (this.from > 0) {
+      if (this.from >= 0) {
         this.doSearch();
       }
     },
