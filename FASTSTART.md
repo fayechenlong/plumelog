@@ -9,7 +9,7 @@
      
    第二步：安装 elasticsearch 官网下载地址:https://www.elastic.co/cn/downloads/past-releases
     
-   第三步：下载安装包，plumelog-server 下载地址：https://gitee.com/frankchenlong/plumelog/releases
+   第三步：下载安装包，plumelog-server 下载地址：https://gitee.com/plumeorg/plumelog/releases
    
    备注：3.1版本以后UI和server合并，plumelog-ui这个项目可以不用部署
    
