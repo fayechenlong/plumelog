@@ -30,11 +30,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Plugin(name = "KafkaAppender", category = "Core", elementType = "appender", printObject = true)
 public class KafkaAppender extends AbstractAppender {
     private static KafkaProducerClient kafkaClient;
-    private String appName;
-    private String env;
-    private String kafkaHosts;
-    private String runModel;
-    private String expand;
+    private static final ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool();
+    private final String appName;
+    private final String env;
+    private final String kafkaHosts;
+    private final String runModel;
+    private final String expand;
     private int maxCount = 500;
     private int logQueueSize = 10000;
     private int threadPoolSize = 1;
@@ -51,24 +53,6 @@ public class KafkaAppender extends AbstractAppender {
         this.logQueueSize = logQueueSize;
         this.threadPoolSize = threadPoolSize;
     }
-
-    @Override
-    public void append(LogEvent logEvent) {
-        send(logEvent);
-    }
-
-    protected void send(LogEvent logEvent) {
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
-        if (logMessage instanceof RunLogMessage) {
-            final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
-            MessageAppenderFactory.pushRundataQueue(message);
-        } else {
-            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
-        }
-    }
-
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool();
 
     @PluginFactory
     public static KafkaAppender createAppender(
@@ -118,5 +102,20 @@ public class KafkaAppender extends AbstractAppender {
             });
         }
         return new KafkaAppender(name, appName, env, kafkaHosts, runModel, filter, layout, true, expand, maxCount, logQueueSize, threadPoolSize);
+    }
+
+    @Override
+    public void append(LogEvent logEvent) {
+        send(logEvent);
+    }
+
+    protected void send(LogEvent logEvent) {
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
+        if (logMessage instanceof RunLogMessage) {
+            final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
+            MessageAppenderFactory.pushRundataQueue(message);
+        } else {
+            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
+        }
     }
 }

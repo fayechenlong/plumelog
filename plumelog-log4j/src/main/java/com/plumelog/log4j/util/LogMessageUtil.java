@@ -32,7 +32,7 @@ public class LogMessageUtil {
      * 使用AtomicLong不要使用LongAdder，LongAdder在该场景高并发下无法严格保证顺序性，也不需要考虑Long是否够用，假设每秒打印10万日志，也需要两百多万年才能用的完
      */
     private static final AtomicLong SEQ_BUILDER = new AtomicLong();
-    
+
     public static BaseLogMessage getLogMessage(String appName, String env, LoggingEvent loggingEvent) {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(loggingEvent);
@@ -59,6 +59,7 @@ public class LogMessageUtil {
 
     /**
      * 扩展字段
+     *
      * @param baseLogMessage
      * @param logEvent
      * @return
@@ -72,6 +73,7 @@ public class LogMessageUtil {
         }
         return GfJsonUtil.toJSONString(map);
     }
+
     private static String getMessage(LoggingEvent logEvent) {
         if (logEvent.getLevel().toInt() == Priority.ERROR_INT) {
             String msg = "";

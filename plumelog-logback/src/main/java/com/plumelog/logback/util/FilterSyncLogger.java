@@ -3,6 +3,7 @@ package com.plumelog.logback.util;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
+
 /**
  * @author chenlongfei
  * 自定义过滤器
@@ -24,7 +25,7 @@ public class FilterSyncLogger extends Filter<ILoggingEvent> {
     public FilterReply decide(ILoggingEvent event) {
 
         if (level != null) {
-            if (!event.getLevel().toString().toLowerCase().equals(level.toLowerCase())) {
+            if (!event.getLevel().toString().equalsIgnoreCase(level)) {
                 return FilterReply.DENY;
             } else {
                 if (event.getLoggerName().equals(filterPackage)) {

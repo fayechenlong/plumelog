@@ -1,16 +1,16 @@
 package com.plumelog.log4j2.appender;
 
 import com.plumelog.core.AbstractClient;
+import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisClusterClient;
 import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j2.util.LogMessageUtil;
-import com.plumelog.core.MessageAppenderFactory;
-import com.plumelog.core.dto.BaseLogMessage;
-import com.plumelog.core.redis.RedisClient;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -33,20 +33,22 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Plugin(name = "RedisAppender", category = "Core", elementType = "appender", printObject = true)
 public class RedisAppender extends AbstractAppender {
     private static AbstractClient redisClient;
-    private String appName;
-    private String env;
-    private String redisHost;
-    private String redisPort;
-    private String redisAuth;
-    private String runModel;
-    private String expand;
+    private static final ThreadPoolExecutor threadPoolExecutor
+            = ThreadPoolUtil.getPool();
+    private final String appName;
+    private final String env;
+    private final String redisHost;
+    private final String redisPort;
+    private final String redisAuth;
+    private final String runModel;
+    private final String expand;
     private int redisDb = 0;
     private int maxCount = 500;
     private int logQueueSize = 10000;
     private int threadPoolSize = 5;
     private boolean compressor = false;
     private String model = "standalone";
-    private String masterName;
+    private final String masterName;
 
     protected RedisAppender(String name, String appName, String env, String redisHost, String redisPort, String redisAuth, String runModel, Filter filter, Layout<? extends Serializable> layout,
                             final boolean ignoreExceptions, String expand, int maxCount, int logQueueSize, int redisDb, int threadPoolSize, boolean compressor, String model, String masterName) {
@@ -66,24 +68,6 @@ public class RedisAppender extends AbstractAppender {
         this.model = model;
         this.masterName = masterName;
     }
-
-    @Override
-    public void append(LogEvent logEvent) {
-        send(logEvent);
-    }
-
-    protected void send(LogEvent logEvent) {
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
-        if (logMessage instanceof RunLogMessage) {
-            final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
-            MessageAppenderFactory.pushRundataQueue(message);
-        } else {
-            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
-        }
-    }
-
-    private static ThreadPoolExecutor threadPoolExecutor
-            = ThreadPoolUtil.getPool();
 
     @PluginFactory
     public static RedisAppender createAppender(
@@ -162,5 +146,20 @@ public class RedisAppender extends AbstractAppender {
             });
         }
         return new RedisAppender(name, appName, env, redisHost, redisPort, redisAuth, runModel, filter, layout, true, expand, maxCount, logQueueSize, redisDb, threadPoolSize, compressor, model, masterName);
+    }
+
+    @Override
+    public void append(LogEvent logEvent) {
+        send(logEvent);
+    }
+
+    protected void send(LogEvent logEvent) {
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
+        if (logMessage instanceof RunLogMessage) {
+            final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
+            MessageAppenderFactory.pushRundataQueue(message);
+        } else {
+            MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
+        }
     }
 }

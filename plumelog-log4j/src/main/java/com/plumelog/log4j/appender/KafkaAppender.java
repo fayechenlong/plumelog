@@ -1,13 +1,13 @@
 package com.plumelog.log4j.appender;
 
+import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.kafka.KafkaProducerClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j.util.LogMessageUtil;
-import com.plumelog.core.MessageAppenderFactory;
-import com.plumelog.core.dto.BaseLogMessage;
-import com.plumelog.core.kafka.KafkaProducerClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class KafkaAppender extends AppenderSkeleton {
     private static final AtomicBoolean INIT = new AtomicBoolean();
+    private static final ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     private KafkaProducerClient kafkaClient;
     private String appName;
     private String env = "default";
@@ -30,7 +31,7 @@ public class KafkaAppender extends AppenderSkeleton {
     private String runModel;
     private int maxCount = 100;
     private int logQueueSize = 10000;
-    private int threadPoolSize = 1;
+    private final int threadPoolSize = 1;
     private boolean compressor = false;
 
     public void setAppName(String appName) {
@@ -60,13 +61,11 @@ public class KafkaAppender extends AppenderSkeleton {
     public void setCompressor(boolean compressor) {
         this.compressor = compressor;
     }
-    
+
     public void setEnv(String env) {
         this.env = env;
     }
-    
-    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
-    
+
     @Override
     protected void append(LoggingEvent loggingEvent) {
         if (this.runModel != null) {

@@ -1,16 +1,16 @@
 package com.plumelog.log4j.appender;
 
 import com.plumelog.core.AbstractClient;
+import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisClusterClient;
 import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j.util.LogMessageUtil;
-import com.plumelog.core.MessageAppenderFactory;
-import com.plumelog.core.dto.BaseLogMessage;
-import com.plumelog.core.redis.RedisClient;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class RedisAppender extends AppenderSkeleton {
     private static final AtomicBoolean INIT = new AtomicBoolean();
+    private static final ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     private AbstractClient redisClient;
     private String appName;
     private String env = "default";
@@ -96,13 +97,11 @@ public class RedisAppender extends AppenderSkeleton {
     public void setMasterName(String masterName) {
         this.masterName = masterName;
     }
-    
+
     public void setEnv(String env) {
         this.env = env;
     }
-    
-    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
-    
+
     @Override
     protected void append(LoggingEvent loggingEvent) {
         if (this.runModel != null) {

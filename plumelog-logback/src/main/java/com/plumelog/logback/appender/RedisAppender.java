@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @version 1.0.0
  */
 public class RedisAppender extends AppenderBase<ILoggingEvent> {
+    private static final ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     private AbstractClient redisClient;
     private String appName;
     private String env = "default";
@@ -52,11 +53,11 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
     public void setAppName(String appName) {
         this.appName = appName;
     }
-    
+
     public void setEnv(String env) {
         this.env = env;
     }
-    
+
     public void setRedisHost(String redisHost) {
         this.redisHost = redisHost;
     }
@@ -123,8 +124,6 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
-
-    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
 
     @Override
     public void start() {

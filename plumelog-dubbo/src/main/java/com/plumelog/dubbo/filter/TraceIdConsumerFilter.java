@@ -8,18 +8,19 @@ import org.springframework.util.StringUtils;
 
 import static org.apache.dubbo.common.constants.CommonConstants.CONSUMER;
 
-@Activate(group =CONSUMER)
+@Activate(group = CONSUMER)
 public class TraceIdConsumerFilter implements Filter {
     private static final String TRACE_ID = "trace_id";
+
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        String traceId =TraceId.logTraceID.get();
+        String traceId = TraceId.logTraceID.get();
         if (StringUtils.isEmpty(traceId)) {
-            IdWorker worker = new IdWorker(1,1,1);
-            traceId=String.valueOf(worker.nextId());
+            IdWorker worker = new IdWorker(1, 1, 1);
+            traceId = String.valueOf(worker.nextId());
             TraceId.logTraceID.set(traceId);
         }
-        invocation.setAttachment(TRACE_ID,traceId);
+        invocation.setAttachment(TRACE_ID, traceId);
         return invoker.invoke(invocation);
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-@ConditionalOnMissingBean(value = AbstractAspect.class,ignored = TraceAspect.class)
+@ConditionalOnMissingBean(value = AbstractAspect.class, ignored = TraceAspect.class)
 public class TraceAspect extends AbstractAspect {
     @Around("@annotation(com.plumelog.trace.annotation.Trace))")
     public Object around(JoinPoint joinPoint) throws Throwable {
