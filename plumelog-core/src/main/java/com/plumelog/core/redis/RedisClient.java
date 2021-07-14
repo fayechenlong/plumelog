@@ -16,31 +16,19 @@ import java.util.*;
  * @version 1.0.0
  */
 public class RedisClient extends AbstractClient {
-    private static RedisClient instance;
-    private int MAX_ACTIVE = 30;
-    private int MAX_IDLE = 8;
-    private int MAX_WAIT = 1000;
-    private int TIMEOUT = 1000;
-    private boolean TEST_ON_BORROW = true;
-    private JedisPool jedisPool = null;
-
     private static final String script = "local rs=redis.call(" +
             "'setnx',KEYS[1],ARGV[1]);" +
             "if(rs<1) then return 0;end;" +
             "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
             "return 1;";
+    private static RedisClient instance;
+    private final int MAX_ACTIVE = 30;
+    private final int MAX_IDLE = 8;
+    private final int MAX_WAIT = 1000;
+    private final int TIMEOUT = 1000;
+    private final boolean TEST_ON_BORROW = true;
+    private JedisPool jedisPool = null;
 
-
-    public static RedisClient getInstance(String host, int port, String pass, int db) {
-        if (instance == null) {
-            synchronized (RedisClient.class) {
-                if (instance == null) {
-                    instance = new RedisClient(host, port, pass, db);
-                }
-            }
-        }
-        return instance;
-    }
 
     public RedisClient(String host, int port, String pass, int db) {
         JedisPoolConfig config = new JedisPoolConfig();
@@ -53,6 +41,17 @@ public class RedisClient extends AbstractClient {
         } else {
             jedisPool = new JedisPool(config, host, port, TIMEOUT);
         }
+    }
+
+    public static RedisClient getInstance(String host, int port, String pass, int db) {
+        if (instance == null) {
+            synchronized (RedisClient.class) {
+                if (instance == null) {
+                    instance = new RedisClient(host, port, pass, db);
+                }
+            }
+        }
+        return instance;
     }
 
     @Override

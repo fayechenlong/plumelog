@@ -8,18 +8,21 @@ package com.plumelog.core.exception;
  * @author frank.chen
  * @version 1.0.0
  */
-public class LogQueueConnectException extends Exception{
+public class LogQueueConnectException extends Exception {
 
-    public LogQueueConnectException(){
+    public LogQueueConnectException() {
         super();
     }
-    public LogQueueConnectException(String message){
+
+    public LogQueueConnectException(String message) {
         super(message);
     }
-    public LogQueueConnectException(String message, Throwable cause){
-        super(message,cause);
+
+    public LogQueueConnectException(String message, Throwable cause) {
+        super(message, cause);
     }
-    public LogQueueConnectException(Throwable cause){
+
+    public LogQueueConnectException(Throwable cause) {
         super(cause);
     }
 }

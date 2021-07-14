@@ -67,6 +67,7 @@ public class IpGetter {
         }
         return ip;
     }
+
     public static Collection<InetAddress> getAllHostAddress() {
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -87,24 +88,24 @@ public class IpGetter {
         }
     }
 
-    public static String getIp(){
+    public static String getIp() {
         String localHostAddress = "127.0.0.1";
         try {
             Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
 
-            while(allNetInterfaces.hasMoreElements()){
+            while (allNetInterfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = allNetInterfaces.nextElement();
                 Enumeration<InetAddress> address = networkInterface.getInetAddresses();
-                while(address.hasMoreElements()){
+                while (address.hasMoreElements()) {
                     InetAddress inetAddress = address.nextElement();
-                    if(inetAddress != null
+                    if (inetAddress != null
                             && inetAddress instanceof Inet4Address
-                            && !"127.0.0.1".equals(inetAddress.getHostAddress())){
+                            && !"127.0.0.1".equals(inetAddress.getHostAddress())) {
                         localHostAddress = inetAddress.getHostAddress();
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
         return localHostAddress;

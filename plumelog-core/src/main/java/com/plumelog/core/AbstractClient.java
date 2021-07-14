@@ -1,9 +1,6 @@
 package com.plumelog.core;
 
 import com.plumelog.core.exception.LogQueueConnectException;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
 
 import java.util.*;
 
@@ -30,9 +27,11 @@ public abstract class AbstractClient {
     public void pushMessage(String key, String strings) throws LogQueueConnectException {
 
     }
+
     public void putMessageList(String key, List<String> list) throws LogQueueConnectException {
 
     }
+
     public List<String> getMessage(String key, int size) throws LogQueueConnectException {
         List<String> list = new ArrayList<>();
         return list;
@@ -44,7 +43,7 @@ public abstract class AbstractClient {
     }
 
     public boolean existsKey(String key) {
-      return true;
+        return true;
 
     }
 

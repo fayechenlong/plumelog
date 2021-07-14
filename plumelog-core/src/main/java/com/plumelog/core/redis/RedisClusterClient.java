@@ -2,7 +2,9 @@ package com.plumelog.core.redis;
 
 import com.plumelog.core.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
-import redis.clients.jedis.*;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.*;
 
@@ -15,28 +17,17 @@ import java.util.*;
  * @version 1.0.0
  */
 public class RedisClusterClient extends AbstractClient {
-    private static RedisClusterClient instance;
-    private JedisCluster jedisCluster = null;
     private static final String script = "local rs=redis.call(" +
             "'setnx',KEYS[1],ARGV[1]);" +
             "if(rs<1) then return 0;end;" +
             "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
             "return 1;";
-    private int MAX_ACTIVE = 30;
-    private int MAX_IDLE = 8;
-    private int MAX_WAIT = 1000;
-    private boolean TEST_ON_BORROW = true;
-
-    public static RedisClusterClient getInstance(String hosts, String pass) {
-        if (instance == null) {
-            synchronized (RedisClusterClient.class) {
-                if (instance == null) {
-                    instance = new RedisClusterClient(hosts, pass);
-                }
-            }
-        }
-        return instance;
-    }
+    private static RedisClusterClient instance;
+    private JedisCluster jedisCluster = null;
+    private final int MAX_ACTIVE = 30;
+    private final int MAX_IDLE = 8;
+    private final int MAX_WAIT = 1000;
+    private final boolean TEST_ON_BORROW = true;
 
     public RedisClusterClient(String hosts, String pass) {
         String[] clusterHosts = hosts.split(",");
@@ -55,6 +46,17 @@ public class RedisClusterClient extends AbstractClient {
         } else {
             jedisCluster = new JedisCluster(jedisClusterNodes, 200, 200, 1, config);
         }
+    }
+
+    public static RedisClusterClient getInstance(String hosts, String pass) {
+        if (instance == null) {
+            synchronized (RedisClusterClient.class) {
+                if (instance == null) {
+                    instance = new RedisClusterClient(hosts, pass);
+                }
+            }
+        }
+        return instance;
     }
 
     @Override

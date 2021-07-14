@@ -7,10 +7,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TraceIdGenerator {
 
-    private static final String   EMPTY_STRING             = "";
-    private static String       P_ID_CACHE  = null;
-    private static String      IP_16 = "ffffffff";
-    private static AtomicInteger count = new AtomicInteger(1000);
+    private static final String EMPTY_STRING = "";
+    private static String P_ID_CACHE = null;
+    private static String IP_16 = "ffffffff";
+    private static final AtomicInteger count = new AtomicInteger(1000);
 
     static {
         try {
@@ -24,6 +24,7 @@ public class TraceIdGenerator {
              */
         }
     }
+
     private static String getInetAddress() {
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -43,6 +44,7 @@ public class TraceIdGenerator {
             return null;
         }
     }
+
     private static boolean isBlank(String str) {
         int strLen;
         if (str == null || (strLen = str.length()) == 0) {
@@ -59,9 +61,10 @@ public class TraceIdGenerator {
     private static boolean isNotBlank(String str) {
         return !isBlank(str);
     }
-   /**
+
+    /**
      * This method can be a better way under JDK9, but in the current JDK version, it can only be implemented in this way.
-     *
+     * <p>
      * In Mac OS , JDK6，JDK7，JDK8 ,it's OK
      * In Linux OS,JDK6，JDK7，JDK8 ,it's OK
      *
@@ -119,7 +122,7 @@ public class TraceIdGenerator {
     }
 
     private static int getNextId() {
-        for (;;) {
+        for (; ; ) {
             int current = count.get();
             int next = (current > 9000) ? 1000 : current + 1;
             if (count.compareAndSet(current, next)) {

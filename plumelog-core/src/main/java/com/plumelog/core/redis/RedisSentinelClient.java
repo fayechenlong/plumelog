@@ -15,28 +15,17 @@ import java.util.*;
  * @version 1.0.0
  */
 public class RedisSentinelClient extends AbstractClient {
-    private static RedisSentinelClient instance;
-    private JedisSentinelPool jedisSentinelPool = null;
     private static final String script = "local rs=redis.call(" +
             "'setnx',KEYS[1],ARGV[1]);" +
             "if(rs<1) then return 0;end;" +
             "redis.call('expire',KEYS[1],tonumber(ARGV[2]));" +
             "return 1;";
-    private int MAX_ACTIVE = 30;
-    private int MAX_IDLE = 8;
-    private int MAX_WAIT = 1000;
-    private boolean TEST_ON_BORROW = true;
-
-    public static RedisSentinelClient getInstance(String hosts, String masterName, String pass, int db) {
-        if (instance == null) {
-            synchronized (RedisSentinelClient.class) {
-                if (instance == null) {
-                    instance = new RedisSentinelClient(hosts, masterName, pass, db);
-                }
-            }
-        }
-        return instance;
-    }
+    private static RedisSentinelClient instance;
+    private JedisSentinelPool jedisSentinelPool = null;
+    private final int MAX_ACTIVE = 30;
+    private final int MAX_IDLE = 8;
+    private final int MAX_WAIT = 1000;
+    private final boolean TEST_ON_BORROW = true;
 
     public RedisSentinelClient(String hosts, String masterName, String pass, int db) {
         String[] clusterHosts = hosts.split(",");
@@ -51,6 +40,17 @@ public class RedisSentinelClient extends AbstractClient {
         } else {
             jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config, db);
         }
+    }
+
+    public static RedisSentinelClient getInstance(String hosts, String masterName, String pass, int db) {
+        if (instance == null) {
+            synchronized (RedisSentinelClient.class) {
+                if (instance == null) {
+                    instance = new RedisSentinelClient(hosts, masterName, pass, db);
+                }
+            }
+        }
+        return instance;
     }
 
     @Override

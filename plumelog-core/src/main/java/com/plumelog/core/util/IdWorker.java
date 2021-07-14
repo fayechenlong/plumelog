@@ -38,19 +38,6 @@ public class IdWorker {
     //记录产生时间毫秒数，判断是否是同1毫秒
     private long lastTimestamp = -1L;
 
-    public long getWorkerId() {
-        return workerId;
-    }
-
-    public long getDatacenterId() {
-        return datacenterId;
-    }
-
-    public long getTimestamp() {
-        return System.currentTimeMillis();
-    }
-
-
     public IdWorker(long workerId, long datacenterId, long sequence) {
 
         // 检查机房id和机器id是否超过31 不能小于0
@@ -67,6 +54,25 @@ public class IdWorker {
         this.workerId = workerId;
         this.datacenterId = datacenterId;
         this.sequence = sequence;
+    }
+
+    public static void main(String[] args) {
+        IdWorker worker = new IdWorker(1, 1, 1);
+        for (int i = 0; i < 22; i++) {
+            System.out.println(worker.nextId());
+        }
+    }
+
+    public long getWorkerId() {
+        return workerId;
+    }
+
+    public long getDatacenterId() {
+        return datacenterId;
+    }
+
+    public long getTimestamp() {
+        return System.currentTimeMillis();
     }
 
     // 这个是核心方法，通过调用nextId()方法，让当前这台机器上的snowflake算法程序生成一个全局唯一的id
@@ -107,7 +113,6 @@ public class IdWorker {
                 (workerId << workerIdShift) | sequence;
     }
 
-
     private long tilNextMillis(long lastTimestamp) {
 
         long timestamp = timeGen();
@@ -121,13 +126,5 @@ public class IdWorker {
     //获取当前时间戳
     private long timeGen() {
         return System.currentTimeMillis();
-    }
-
-
-    public static void main(String[] args) {
-		IdWorker worker = new IdWorker(1,1,1);
-		for (int i = 0; i < 22; i++) {
-			System.out.println(worker.nextId());
-		}
     }
 }

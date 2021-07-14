@@ -8,7 +8,7 @@ package com.plumelog.core.dto;
  * @author Tank
  * @version 1.0.0
  */
-public class RunLogMessage extends BaseLogMessage{
+public class RunLogMessage extends BaseLogMessage {
 
     private Long dtTime;
     private String content;

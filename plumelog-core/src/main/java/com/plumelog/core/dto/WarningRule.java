@@ -28,15 +28,15 @@ public class WarningRule {
     public void setAppName(String appName) {
         this.appName = appName;
     }
-    
+
     public String getEnv() {
         return env;
     }
-    
+
     public void setEnv(String env) {
         this.env = env;
     }
-    
+
     public String getAppCategory() {
         return appCategory;
     }

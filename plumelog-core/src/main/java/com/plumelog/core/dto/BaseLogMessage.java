@@ -23,12 +23,12 @@ public class BaseLogMessage {
      * 应用名
      */
     private String appName;
-    
+
     /**
      * 应用环境
      */
     private String env;
-    
+
     /**
      * 方法名
      */
@@ -49,15 +49,15 @@ public class BaseLogMessage {
     public void setAppName(String appName) {
         this.appName = appName;
     }
-    
-    public void setEnv(String env) {
-        this.env = env;
-    }
-    
+
     public String getEnv() {
         return env;
     }
-    
+
+    public void setEnv(String env) {
+        this.env = env;
+    }
+
     public String getMethod() {
         return method;
     }
@@ -73,7 +73,7 @@ public class BaseLogMessage {
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
-    
+
     public String getAppNameWithEnv() {
         return this.appName + "-_-" + this.env;
     }

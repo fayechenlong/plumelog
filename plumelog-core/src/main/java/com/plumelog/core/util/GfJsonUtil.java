@@ -3,6 +3,7 @@ package com.plumelog.core.util;
 import com.alibaba.fastjson.JSON;
 
 import java.util.*;
+
 /**
  * className：GfJsonUtil
  * description：fastjson工具类
@@ -15,11 +16,12 @@ public abstract class GfJsonUtil {
 
     private GfJsonUtil() {
     }
+
     public static <T> T parseObject(String json, Class<T> clazz) {
         if (json == null) {
             return null;
         }
-        return (T) JSON.parseObject(json, clazz);
+        return JSON.parseObject(json, clazz);
     }
 
 

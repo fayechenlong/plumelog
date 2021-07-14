@@ -30,29 +30,24 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class MessageAppenderFactory {
 
-    private static Boolean logOutPut = true;
-
-    public static BlockingQueue<String> rundataQueue;
-    public static BlockingQueue<String> tracedataQueue;
-
-    private static AtomicLong lastRunPushTime = new AtomicLong(0);
-    private static AtomicLong lastTracePushTime = new AtomicLong(0);
-
-    public static int queueSize = 10000;
-
     /**
      * 当下游异常的时候，状态缓存时间
      */
     private final static Cache<String, Boolean> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(10, TimeUnit.SECONDS).build();
-
+    public static BlockingQueue<String> rundataQueue;
+    public static BlockingQueue<String> tracedataQueue;
+    public static int queueSize = 10000;
+    private static Boolean logOutPut = true;
+    private static AtomicLong lastRunPushTime = new AtomicLong(0);
+    private static AtomicLong lastTracePushTime = new AtomicLong(0);
 
     public static void initQueue(int logQueueSize) {
         queueSize = logQueueSize;
-        if(rundataQueue==null) {
+        if (rundataQueue == null) {
             rundataQueue = new LinkedBlockingQueue<>(logQueueSize);
         }
-        if(tracedataQueue==null) {
+        if (tracedataQueue == null) {
             tracedataQueue = new LinkedBlockingQueue<>(logQueueSize);
         }
     }
@@ -103,7 +98,7 @@ public class MessageAppenderFactory {
         }
     }
 
-    private static List<String> compress(List<String> baseLogMessage, boolean compress){
+    private static List<String> compress(List<String> baseLogMessage, boolean compress) {
 
         if (!compress) {
             return baseLogMessage;
@@ -133,7 +128,7 @@ public class MessageAppenderFactory {
                 e.printStackTrace();
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException interruptedException ){
+                } catch (InterruptedException interruptedException) {
                 }
             }
         }
@@ -155,7 +150,7 @@ public class MessageAppenderFactory {
                 e.printStackTrace();
                 try {
                     Thread.sleep(1000);
-                }catch (InterruptedException interruptedException ) {
+                } catch (InterruptedException interruptedException) {
 
                 }
             }

@@ -1,7 +1,7 @@
 package com.plumelog.core.disruptor;
 
-import com.plumelog.core.dto.BaseLogMessage;
 import com.lmax.disruptor.RingBuffer;
+import com.plumelog.core.dto.BaseLogMessage;
 
 /**
  * className：LogMessageProducer
@@ -14,7 +14,7 @@ import com.lmax.disruptor.RingBuffer;
 public class LogMessageProducer {
 
 
-    private RingBuffer<LogEvent> ringBuffer;
+    private final RingBuffer<LogEvent> ringBuffer;
 
     public LogMessageProducer(RingBuffer<LogEvent> ringBuffer) {
         this.ringBuffer = ringBuffer;

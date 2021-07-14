@@ -19,16 +19,14 @@ public class LogEvent implements Serializable {
 
     private BaseLogMessage baseLogMessage;
 
+    public LogEvent() {
+    }
+
     public BaseLogMessage getBaseLogMessage() {
         return baseLogMessage;
     }
 
     public void setBaseLogMessage(BaseLogMessage baseLogMessage) {
         this.baseLogMessage = baseLogMessage;
-    }
-
-
-    public LogEvent() {
-
     }
 }

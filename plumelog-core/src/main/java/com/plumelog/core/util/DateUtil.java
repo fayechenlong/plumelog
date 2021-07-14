@@ -19,7 +19,7 @@ import java.util.*;
  * @version 1.0.0
  */
 public class DateUtil {
-    
+
     // ==格式到年==
     /**
      * 日期格式，年份，例如：2004，2008
@@ -114,11 +114,11 @@ public class DateUtil {
      * 日期格式，月日时分，例如：10-05 12:00
      */
     public static final String DATE_FORMAT_MMDDHHMI = "MM-dd HH:mm";
-    
+
     private static final DateTimeFormatter DATETIME_FORMAT_NORMAL_SSS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
-	/* ************工具方法***************   */
-    
+    /* ************工具方法***************   */
+
     /**
      * 获取yyyy-MM-dd HH:mm:ss.SSS格式的字符串
      */
@@ -437,7 +437,7 @@ public class DateUtil {
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
 
-        int day = c.getActualMinimum(c.DAY_OF_MONTH);
+        int day = c.getActualMinimum(Calendar.DAY_OF_MONTH);
 
         c.set(Calendar.DAY_OF_MONTH, day);
         c.set(Calendar.HOUR_OF_DAY, 0);
@@ -452,7 +452,7 @@ public class DateUtil {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
-        int day = c.getActualMaximum(c.DAY_OF_MONTH);
+        int day = c.getActualMaximum(Calendar.DAY_OF_MONTH);
         c.set(Calendar.DAY_OF_MONTH, day);
         c.set(Calendar.HOUR_OF_DAY, 23);
         c.set(Calendar.MINUTE, 59);

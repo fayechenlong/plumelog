@@ -18,16 +18,17 @@ public class TraceIdFilter implements Filter {
 
         try {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
-            String traceId=request.getParameter("traceId");
-            if(traceId==null||"".equals(traceId)) {
+            String traceId = request.getParameter("traceId");
+            if (traceId == null || "".equals(traceId)) {
                 TraceId.set();
-            }else {
+            } else {
                 TraceId.logTraceID.set(traceId);
             }
         } finally {
             filterChain.doFilter(servletRequest, servletResponse);
         }
     }
+
     @Override
     public void destroy() {
     }
