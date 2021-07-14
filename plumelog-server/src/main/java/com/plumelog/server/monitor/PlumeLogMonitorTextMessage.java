@@ -18,6 +18,10 @@ public class PlumeLogMonitorTextMessage {
     private List<String> atMobiles;
     private boolean isAtAll = false;
 
+    private PlumeLogMonitorTextMessage(Builder builder) {
+        this.text = builder.toString();
+    }
+
     public String getText() {
         return text;
     }
@@ -52,7 +56,7 @@ public class PlumeLogMonitorTextMessage {
         private Long time;
 
         private String appName;
-        
+
         private String env;
 
         private String className;
@@ -119,11 +123,6 @@ public class PlumeLogMonitorTextMessage {
         public PlumeLogMonitorTextMessage build() {
             return new PlumeLogMonitorTextMessage(this);
         }
-
-    }
-
-    private PlumeLogMonitorTextMessage(Builder builder) {
-        this.text = builder.toString();
 
     }
 }

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AutoDeleteLogs {
 
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(AutoDeleteLogs.class);
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(AutoDeleteLogs.class);
 
     @Autowired
     private ElasticLowerClient elasticLowerClient;

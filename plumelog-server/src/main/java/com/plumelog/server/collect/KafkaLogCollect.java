@@ -1,14 +1,16 @@
 package com.plumelog.server.collect;
 
-import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.server.client.ElasticLowerClient;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * className：KafkaLogCollect
@@ -18,7 +20,7 @@ import java.util.*;
  * @version 1.0.0
  */
 public class KafkaLogCollect extends BaseLogCollect {
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(KafkaLogCollect.class);
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(KafkaLogCollect.class);
 
     private KafkaConsumer<String, String> kafkaConsumer;
 
@@ -45,7 +47,7 @@ public class KafkaLogCollect extends BaseLogCollect {
             try {
                 ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(1000));
                 records.forEach(record -> {
-                    if(logger.isDebugEnabled()) {
+                    if (logger.isDebugEnabled()) {
                         logger.debug("get log:" + record.value() + "  logType:" + record.topic());
                     }
                     if (record.topic().equals(LogMessageConstant.LOG_KEY)) {

@@ -28,7 +28,13 @@ import java.time.ZoneId;
  */
 @Configuration
 public class ClientConfig implements InitializingBean {
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
+    @Value("${plumelog.maxSendSize:5000}")
+    public int maxSendSize = 5000;
+    @Value("${plumelog.interval:100}")
+    public int interval = 100;
+    @Value("${plumelog.kafka.kafkaGroupName:logConsumer}")
+    public String kafkaGroupName = "logConsumer";
     @Value("${plumelog.model:redis}")
     private String model;
     @Value("${plumelog.kafka.kafkaHosts:}")
@@ -72,12 +78,6 @@ public class ClientConfig implements InitializingBean {
     private String redisPassWord;
     @Value("${plumelog.redis.redisDb:0}")
     private int redisDb = 0;
-    @Value("${plumelog.maxSendSize:5000}")
-    public int maxSendSize = 5000;
-    @Value("${plumelog.interval:100}")
-    public int interval = 100;
-    @Value("${plumelog.kafka.kafkaGroupName:logConsumer}")
-    public String kafkaGroupName = "logConsumer";
     @Value("${plumelog.rest.restUrl:}")
     private String restUrl;
     @Value("${plumelog.rest.restUserName:}")
@@ -209,8 +209,8 @@ public class ClientConfig implements InitializingBean {
             ZoneId.of(this.indexTypeZoneId);
             InitConfig.ES_INDEX_ZONE_ID = this.indexTypeZoneId;
         } catch (Exception e) {
-           logger.error("Please check config 'plumelog.es.indexType.zoneId', the value '{}' is invalid, use default value '{}'!",
-                   this.indexTypeZoneId, InitConfig.ES_INDEX_ZONE_ID);
+            logger.error("Please check config 'plumelog.es.indexType.zoneId', the value '{}' is invalid, use default value '{}'!",
+                    this.indexTypeZoneId, InitConfig.ES_INDEX_ZONE_ID);
         }
 
         InitConfig.restUrl = this.restUrl;

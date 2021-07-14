@@ -1,18 +1,14 @@
 package com.plumelog.server.monitor;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.plumelog.core.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
-import com.plumelog.core.redis.RedisClient;
-import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
@@ -23,8 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.plumelog.server.monitor.DingTalkClient.sendToDingTalk;
 
 /**
  * className：PlumeLogMonitorListener
@@ -37,28 +31,35 @@ import static com.plumelog.server.monitor.DingTalkClient.sendToDingTalk;
 @Component
 public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMonitorEvent> {
 
-    private static Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
-
-    @Autowired
-    private PlumeLogMonitorRuleConfig plumeLogMonitorRuleConfig;
-    @Autowired
-    private AbstractClient redisClient;
-
     private static final String WARNING_NOTICE = ":WARNING:NOTICE";
-
-    @Value("${plumelog.ui.url:127.0.0.1:8989}")
-    private String url;
-
     /**
      * 当KEY设置过期时间时加的后缀
      */
     private static final String KEY_NX = ":NX";
-
-
-
+    private static final Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
+    @Autowired
+    private PlumeLogMonitorRuleConfig plumeLogMonitorRuleConfig;
+    @Autowired
+    private AbstractClient redisClient;
+    @Value("${plumelog.ui.url:127.0.0.1:8989}")
+    private String url;
     @Autowired
     private ElasticLowerClient elasticLowerClient;
 
+    /**
+     * 组装key
+     *
+     * @param appName   应用名
+     * @param className 类名
+     * @return
+     */
+    private static String getKey(String appName, String env, String className) {
+        String key = LogMessageConstant.PLUMELOG_MONITOR_KEY + appName + ":" + env;
+        if (!StringUtils.isEmpty(className)) {
+            key = key + ":" + className;
+        }
+        return key;
+    }
 
     @Async
     @Override
@@ -110,11 +111,11 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     /**
      * 判断告警路径是否匹配
      *
-     * @param cn    告警路径条件
-     * @param mcn   日志告警类路径
+     * @param cn  告警路径条件
+     * @param mcn 日志告警类路径
      * @return
      */
-    private boolean containsClassName(String cn, String mcn){
+    private boolean containsClassName(String cn, String mcn) {
         if (StringUtils.isEmpty(cn)) {
             return false;
         }
@@ -144,7 +145,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     private void statisticAlnalysis(String key, WarningRule rule, String errorContent, String className) {
         String time = redisClient.hget(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME);
         if (StringUtils.isEmpty(time)) {
-            time=String.valueOf(System.currentTimeMillis());
+            time = String.valueOf(System.currentTimeMillis());
             redisClient.hset(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME, time);
         }
         long startTime = Long.parseLong(time);
@@ -163,21 +164,6 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
                     String.valueOf(System.currentTimeMillis()));
         }
 
-    }
-
-    /**
-     * 组装key
-     *
-     * @param appName   应用名
-     * @param className 类名
-     * @return
-     */
-    private static String getKey(String appName, String env, String className) {
-        String key = LogMessageConstant.PLUMELOG_MONITOR_KEY + appName + ":" + env;
-        if (!StringUtils.isEmpty(className)) {
-            key = key + ":" + className;
-        }
-        return key;
     }
 
     /**
@@ -202,7 +188,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             List<String> receivers = new ArrayList<String>(Arrays.asList(split));
             if (receivers.contains("all") || receivers.contains("ALL")) {
                 plumeLogMonitorTextMessage.setAtAll(true);
-               receivers.remove("all");
+                receivers.remove("all");
                 receivers.remove("ALL");
             }
             plumeLogMonitorTextMessage.setAtMobiles(receivers);
@@ -211,7 +197,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         if (redisClient.setNx(warningKey + KEY_NX, rule.getTime())) {
             logger.info(plumeLogMonitorTextMessage.getText());
             //default send to dingtalk
-            WaningMessageSend.send(rule,plumeLogMonitorTextMessage);
+            WaningMessageSend.send(rule, plumeLogMonitorTextMessage);
             sendMesageES(rule, count, errorContent);
         }
         redisClient.set(warningKey, warningKey);
@@ -252,7 +238,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         return builder.toString();
     }
 
-    private String getErrorContent(String content){
+    private String getErrorContent(String content) {
 
         if (content == null) {
             return "";

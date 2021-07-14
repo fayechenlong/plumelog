@@ -9,14 +9,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * className：DateUtil
@@ -122,22 +115,22 @@ public class DateUtil {
      * 日期格式，月日时分，例如：10-05 12:00
      */
     public static final String DATE_FORMAT_MMDDHHMI = "MM-dd HH:mm";
-    
+
     private static final DateTimeFormatter DATETIME_FORMAT_NORMAL_SSS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-    
+
     private static final DateTimeFormatter DATE_FORMAT_SHORT = DateTimeFormatter.ofPattern(DATE_FORMAT_YYYYMMDD);
 
     private static final DateTimeFormatter DATE_WITH_HOUR_FORMAT_SHORT = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_YYYYMMDDHH);
 
     /* ************工具方法***************   */
-    
+
     /**
      * 获取yyyy-MM-dd HH:mm:ss.SSS格式的字符串
      */
     public static String getDatetimeNormalStrWithMills(long epochMillis) {
         return DATETIME_FORMAT_NORMAL_SSS.format(toLocalDateTime(epochMillis));
     }
-    
+
     /**
      * 获取指定时区 "yyyy-MM-dd HH:mm:ss:SSS"
      */
@@ -172,14 +165,14 @@ public class DateUtil {
     public static String getDateWithHourShortStr(String zoneId, long epochMillis) {
         return DATE_WITH_HOUR_FORMAT_SHORT.format(toLocalDateTime(zoneId, epochMillis));
     }
-    
+
     /**
      * 根据时间戳获取LocalDateTime对象，使用默认Zone
      */
     public static LocalDateTime toLocalDateTime(long epochMillis) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault());
     }
-    
+
     /**
      * 根据指定时区id及时间戳获取LocalDateTime对象
      */
@@ -493,7 +486,7 @@ public class DateUtil {
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
 
-        int day = c.getActualMinimum(c.DAY_OF_MONTH);
+        int day = c.getActualMinimum(Calendar.DAY_OF_MONTH);
 
         c.set(Calendar.DAY_OF_MONTH, day);
         c.set(Calendar.HOUR_OF_DAY, 0);
@@ -508,7 +501,7 @@ public class DateUtil {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
-        int day = c.getActualMaximum(c.DAY_OF_MONTH);
+        int day = c.getActualMaximum(Calendar.DAY_OF_MONTH);
         c.set(Calendar.DAY_OF_MONTH, day);
         c.set(Calendar.HOUR_OF_DAY, 23);
         c.set(Calendar.MINUTE, 59);
@@ -571,10 +564,7 @@ public class DateUtil {
                 break;
         }
 
-        if (date != null) {
-            return true;
-        }
-        return false;
+        return date != null;
     }
 
     public static Date formatHhMmSsOfDate(Date date) {
@@ -606,6 +596,7 @@ public class DateUtil {
         long daysBetween = (endDate.getTime() - startDate.getTime() + 1000000) / (3600 * 24 * 1000);
         return daysBetween;
     }
+
     public static Boolean compareIsSameMonth(Date date1, Date date2) {
         boolean flag = false;
         int year1 = getYear(date1);

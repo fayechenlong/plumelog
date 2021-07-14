@@ -1,14 +1,15 @@
 package com.plumelog.server.collect;
 
 import com.alibaba.fastjson.JSON;
+import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
-import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.server.monitor.PlumelogMonitorEvent;
 import com.plumelog.server.util.IndexUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -26,15 +27,11 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class BaseLogCollect {
 
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(BaseLogCollect.class);
-
     public ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
-
-    protected ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
-
     public ElasticLowerClient elasticLowerClient;
-
+    protected ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
     protected ApplicationEventPublisher applicationEventPublisher;
+    private final Logger logger = LoggerFactory.getLogger(BaseLogCollect.class);
 
     public String getRunLogIndex() {
         if ("day".equals(InitConfig.ES_INDEX_MODEL)) {
@@ -81,7 +78,7 @@ public class BaseLogCollect {
                     RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
                     AppNameCache.appName.computeIfAbsent(runLogMessage.getAppName(), k -> new HashSet<>())
                             .add(runLogMessage.getEnv());
-                    if ("ERROR".equals(runLogMessage.getLogLevel().toUpperCase())) {
+                    if ("ERROR".equalsIgnoreCase(runLogMessage.getLogLevel())) {
                         errorLogs.add(runLogMessage);
                     }
                 }

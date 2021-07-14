@@ -2,9 +2,11 @@ package com.plumelog.server.monitor;
 
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.util.HttpClient;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author : pdl
@@ -20,7 +22,7 @@ public class WechatClient {
         requestBody.put("markdown", content);
         HttpClient.doPost(URL, GfJsonUtil.toJSONString(requestBody));
 
-        boolean atMobiles = plumeLogMonitorTextMessage.getAtMobiles() != null && plumeLogMonitorTextMessage.getAtMobiles().size()> 0;
+        boolean atMobiles = plumeLogMonitorTextMessage.getAtMobiles() != null && plumeLogMonitorTextMessage.getAtMobiles().size() > 0;
         if (plumeLogMonitorTextMessage.isAtAll() || atMobiles) {
             requestBody.clear();
             content.clear();

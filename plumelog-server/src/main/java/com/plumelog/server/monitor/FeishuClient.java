@@ -3,9 +3,7 @@ package com.plumelog.server.monitor;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.util.HttpClient;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

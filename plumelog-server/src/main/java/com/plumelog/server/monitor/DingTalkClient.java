@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class DingTalkClient {
 
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(DingTalkClient.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DingTalkClient.class);
 
     public static void sendToDingTalk(PlumeLogMonitorTextMessage plumeLogMonitorTextMessage, String URL) {
         com.dingtalk.api.DingTalkClient client = new DefaultDingTalkClient(URL);

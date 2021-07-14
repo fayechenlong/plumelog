@@ -23,15 +23,32 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class PlumeLogMonitorRuleConfig {
-    private static Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
+    private static ConcurrentHashMap<String, List<WarningRule>> configMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, List<WarningRule>> backConfigMap = new ConcurrentHashMap<>();
     @Autowired
     private AbstractClient redisClient;
 
-    private static ConcurrentHashMap<String, List<WarningRule>> configMap = new ConcurrentHashMap<>();
+    private static void parserConfig(String config) {
+        WarningRule warningRule = JSON.parseObject(config, WarningRule.class);
+        if (warningRule.getStatus() == 0) {
+            return;
+        }
+        String key = getKey(warningRule.getAppName(), warningRule.getEnv());
+        if (backConfigMap.containsKey(key)) {
+            List<WarningRule> warningRules = backConfigMap.get(key);
+            warningRules.add(warningRule);
+            backConfigMap.put(key, warningRules);
+        } else {
+            List<WarningRule> lists = new ArrayList<>();
+            lists.add(warningRule);
+            backConfigMap.put(key, lists);
+        }
+    }
 
-    private static ConcurrentHashMap<String, List<WarningRule>> backConfigMap = new ConcurrentHashMap<>();
-
+    private static String getKey(String appName, String env) {
+        return appName + ":" + env;
+    }
 
     /**
      * @param appName
@@ -55,24 +72,6 @@ public class PlumeLogMonitorRuleConfig {
         configMap = backConfigMap;
     }
 
-    private static void parserConfig(String config) {
-        WarningRule warningRule = JSON.parseObject(config, WarningRule.class);
-        if (warningRule.getStatus() == 0) {
-            return;
-        }
-        String key = getKey(warningRule.getAppName(), warningRule.getEnv());
-        if (backConfigMap.containsKey(key)) {
-            List<WarningRule> warningRules = backConfigMap.get(key);
-            warningRules.add(warningRule);
-            backConfigMap.put(key, warningRules);
-        } else {
-            List<WarningRule> lists = new ArrayList<>();
-            lists.add(warningRule);
-            backConfigMap.put(key, lists);
-        }
-    }
-
-
     @Scheduled(cron = "0 */1 * * * ?")
     private void configureTasks() {
         try {
@@ -82,9 +81,5 @@ public class PlumeLogMonitorRuleConfig {
             logger.error("更新规则配置失败 {}", e);
 
         }
-    }
-    
-    private static String getKey(String appName, String env) {
-        return appName + ":" + env;
     }
 }

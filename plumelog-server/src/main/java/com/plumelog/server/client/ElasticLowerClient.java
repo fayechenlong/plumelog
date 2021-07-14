@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -39,21 +38,10 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @version 1.0.0
  */
 public class ElasticLowerClient {
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
     private static ElasticLowerClient instance;
-    private RestClient client;
     private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5, 5, 100);
-
-    public static ElasticLowerClient getInstance(String hosts, String userName, String passWord, boolean trustSelfSigned, boolean hostnameVerification) {
-        if (instance == null) {
-            synchronized (ElasticLowerClient.class) {
-                if (instance == null) {
-                    instance = new ElasticLowerClient(hosts, userName, passWord, trustSelfSigned, hostnameVerification);
-                }
-            }
-        }
-        return instance;
-    }
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
+    private RestClient client;
 
     /**
      * 带密码认证的
@@ -124,8 +112,18 @@ public class ElasticLowerClient {
         }
     }
 
+    public static ElasticLowerClient getInstance(String hosts, String userName, String passWord, boolean trustSelfSigned, boolean hostnameVerification) {
+        if (instance == null) {
+            synchronized (ElasticLowerClient.class) {
+                if (instance == null) {
+                    instance = new ElasticLowerClient(hosts, userName, passWord, trustSelfSigned, hostnameVerification);
+                }
+            }
+        }
+        return instance;
+    }
+
     public boolean existIndice(String indice) {
-        List<String> existIndexList = new ArrayList<String>();
         try {
             Request request = new Request(
                     "HEAD",
@@ -202,7 +200,6 @@ public class ElasticLowerClient {
     }
 
     public boolean creatIndiceNomal(String indice, String type) {
-        List<String> existIndexList = new ArrayList<String>();
         try {
             Request request = new Request(
                     "PUT",

@@ -17,13 +17,13 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if(!Objects.equals(request.getMethod(), HttpMethod.POST.name())) {
+        if (!Objects.equals(request.getMethod(), HttpMethod.POST.name())) {
             return true;
         }
-        if(StringUtils.isEmpty(InitConfig.loginUsername))
+        if (StringUtils.isEmpty(InitConfig.loginUsername))
             return true;
         Object token = request.getSession().getAttribute("token");
-        if(token == null) {
+        if (token == null) {
             printMessage(response, Result.UN_LOGIN);
             return false;
         }

@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0.0
  */
 public class RestLogCollect extends BaseLogCollect {
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(RestLogCollect.class);
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(RestLogCollect.class);
     private String restUserName = "";
     private String restPassWord = "";
     private String restUrl = "";
@@ -89,8 +89,8 @@ public class RestLogCollect extends BaseLogCollect {
             }
             try {
                 logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY, this.restUserName, this.restPassWord);
-                if(logger.isDebugEnabled()){
-                    logs.forEach(log->{
+                if (logger.isDebugEnabled()) {
+                    logs.forEach(log -> {
                         logger.debug(log);
                     });
                 }
@@ -98,7 +98,7 @@ public class RestLogCollect extends BaseLogCollect {
                 logger.error("从plumelog-server拉取日志失败！", e);
             }
             //发布一个事件
-            super.sendLog(super.getRunLogIndex(),logs);
+            super.sendLog(super.getRunLogIndex(), logs);
             publisherMonitorEvent(logs);
         }
     }
@@ -113,15 +113,15 @@ public class RestLogCollect extends BaseLogCollect {
             }
             try {
                 logs = PlumeRestClient.getLogs(this.restUrl + "?maxSendSize=" + InitConfig.MAX_SEND_SIZE + "&logKey=" + LogMessageConstant.LOG_KEY_TRACE, this.restUserName, this.restPassWord);
-                if(logger.isDebugEnabled()){
-                    logs.forEach(log->{
+                if (logger.isDebugEnabled()) {
+                    logs.forEach(log -> {
                         logger.debug(log);
                     });
                 }
             } catch (Exception e) {
                 logger.error("从plumelog-server队列拉取日志失败！", e);
             }
-            super.sendLog(super.getTraceLogIndex(),logs);
+            super.sendLog(super.getTraceLogIndex(), logs);
         }
     }
 

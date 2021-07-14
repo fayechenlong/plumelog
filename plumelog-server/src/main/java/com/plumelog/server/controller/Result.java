@@ -12,12 +12,11 @@ import java.util.List;
  * @version 1.0.0
  */
 public class Result {
+    public static Result UN_LOGIN = new Result(401);
+    public static Result INVALID_LOGIN = new Result(402);
     private Integer code;
     private String message;
     private List<String> logs = new ArrayList<>();
-
-    public static Result UN_LOGIN = new Result(401);
-    public static Result INVALID_LOGIN = new Result(402);
 
     public Result() {
     }

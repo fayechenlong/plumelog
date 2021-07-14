@@ -1,14 +1,14 @@
 package com.plumelog.server.collect;
 
 import com.alibaba.fastjson.JSON;
-import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.AbstractClient;
+import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.LZ4Util;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
-import com.plumelog.core.constant.LogMessageConstant;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0.0
  */
 public class RedisLogCollect extends BaseLogCollect {
-    private org.slf4j.Logger logger = LoggerFactory.getLogger(RedisLogCollect.class);
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(RedisLogCollect.class);
     private AbstractClient client;
     private boolean compressor;
 

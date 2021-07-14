@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Order(100)
 public class CollectStartBean implements InitializingBean {
 
-    private static Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
 
     @Autowired
     private ElasticLowerClient elasticLowerClient;
