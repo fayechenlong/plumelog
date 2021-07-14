@@ -15,10 +15,10 @@ import java.util.Properties;
  * @version 1.0.0
  */
 public class KafkaConsumerClient {
-    private static KafkaConsumerClient instance;
+    private static volatile KafkaConsumerClient instance = null;
     private KafkaConsumer kafkaConsumer;
 
-    KafkaConsumerClient(String hosts, String groupName, int maxPullSize) {
+    private KafkaConsumerClient(String hosts, String groupName, int maxPullSize) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPullSize);

@@ -38,7 +38,6 @@ public abstract class AbstractClient {
     }
 
     public boolean setNx(String key, Integer expire) {
-
         return false;
     }
 
@@ -80,7 +79,7 @@ public abstract class AbstractClient {
     }
 
     public Set<String> smembers(String key) {
-        return null;
+        return new HashSet<>();
     }
 
     public void del(String key) {
@@ -108,7 +107,7 @@ public abstract class AbstractClient {
     }
 
     public List<String> hmget(String key, String... field) {
-        return null;
+        return new ArrayList<>();
     }
 
     public Long hincrby(String key, String field, int num) {
