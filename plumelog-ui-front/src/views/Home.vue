@@ -418,7 +418,7 @@ export default {
           width: 170,
         }
       ],
-      tableModel: false,
+      tableModel: true,
       autoWordWrap: true,
       darkMode: true,
       showFilter: true,
