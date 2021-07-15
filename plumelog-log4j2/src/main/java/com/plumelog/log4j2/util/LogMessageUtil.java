@@ -38,7 +38,9 @@ public class LogMessageUtil {
         String traceId = null;
         if (!logEvent.getContextData().isEmpty()) {
             traceId = logEvent.getContextData().toMap().get(LogMessageConstant.TRACE_ID);
-            TraceId.logTraceID.set(traceId);
+            if(traceId!=null) {
+                TraceId.logTraceID.set(traceId);
+            }
         }
         return traceId;
     }

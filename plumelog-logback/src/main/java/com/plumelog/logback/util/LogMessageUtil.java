@@ -13,6 +13,7 @@ import com.plumelog.core.util.DateUtil;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
+import com.sun.tools.javac.util.StringUtils;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.util.Map;
@@ -38,7 +39,9 @@ public class LogMessageUtil {
         String traceId = null;
         if (!logEvent.getMDCPropertyMap().isEmpty()) {
             traceId = logEvent.getMDCPropertyMap().get(LogMessageConstant.TRACE_ID);
-            TraceId.logTraceID.set(traceId);
+            if(traceId!=null) {
+                TraceId.logTraceID.set(traceId);
+            }
         }
         return traceId;
     }
