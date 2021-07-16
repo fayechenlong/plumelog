@@ -54,7 +54,10 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      * @return
      */
     private static String getKey(String appName, String env, String className) {
-        String key = LogMessageConstant.PLUMELOG_MONITOR_KEY + appName + ":" + env;
+        String key = LogMessageConstant.PLUMELOG_MONITOR_KEY + appName;
+        if (!StringUtils.isEmpty(env)) {
+            key = key + ":" + env;
+        }
         if (!StringUtils.isEmpty(className)) {
             key = key + ":" + className;
         }

@@ -13,7 +13,6 @@ import com.plumelog.core.util.DateUtil;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.core.util.TraceLogMessageFactory;
-import com.sun.tools.javac.util.StringUtils;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.util.Map;

@@ -37,7 +37,7 @@
                   <FormItem label="应用名称" required>
                     <Input v-model="dataInfo.appName" placeholder="输入应用名称"/>
                   </FormItem>
-                  <FormItem label="应用名称" required>
+                  <FormItem label="应用环境" >
                     <Input v-model="dataInfo.env" placeholder="输入应用环境"/>
                   </FormItem>
                   <FormItem label="应用分类">
