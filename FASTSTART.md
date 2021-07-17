@@ -276,6 +276,7 @@ RedisAppender
 | maxCount  | （3.1）批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）是否开启日志压缩，默认false |
+| env  | （3.4.2）环境 默认是default|
 
 KafkaAppender
 
@@ -287,6 +288,7 @@ KafkaAppender
 | maxCount  | 批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）压缩方式配置，默认false（true：开启lz4压缩） |
+| env  | （3.4.2）环境 默认是default|
 
 3. traceID生成配置
   
