@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * className：MainController
@@ -237,11 +238,14 @@ public class MainController {
         String indexStr = "";
         try {
             //检查ES索引是否存在
-            String[] indexs = index.split(",");
             Set<String> indexSet = new TreeSet<>();
-            if (indexs.length > 0) {
-                indexSet.addAll(Arrays.asList(indexs));
+            if (!StringUtils.isEmpty(index)) {
+                String[] indexs = index.split(",");
+                if (indexs.length > 0) {
+                    indexSet.addAll(Arrays.asList(indexs));
+                }
             }
+            
             if (!StringUtils.isEmpty(range)) {
                 int rangeDays = 0;
                 if ("day".equalsIgnoreCase(range)) {
@@ -256,7 +260,7 @@ public class MainController {
                 }
             }
             List<String> reindexs = elasticLowerClient.getExistIndices(indexSet.toArray(new String[0]));
-            indexStr = String.join(",", reindexs);
+            indexStr = reindexs.stream().filter(s -> !StringUtils.isEmpty(s)).collect(Collectors.joining(","));
             if ("".equals(indexStr)) {
                 return message;
             }

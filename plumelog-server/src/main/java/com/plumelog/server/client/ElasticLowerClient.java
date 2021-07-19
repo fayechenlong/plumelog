@@ -386,6 +386,11 @@ public class ElasticLowerClient {
             if (res.getStatusLine().getStatusCode() == 200) {
                 return true;
             }
+        } catch (ResponseException e) {
+            if (e.getResponse().getStatusLine().getStatusCode() != 404) {
+                e.printStackTrace();
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
