@@ -38,7 +38,7 @@ public class RedisClusterClient extends AbstractClient {
         Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
         for(String hostAndPort:clusterHosts){
             String[] hap=hostAndPort.split(":");
-            jedisClusterNodes.add(new HostAndPort(hap[0], Integer.parseInt(hap[1])));
+            jedisClusterNodes.add(new HostAndPort(hap[0].trim(), Integer.parseInt(hap[1].trim())));
         }
         jedisCluster = new JedisCluster(jedisClusterNodes);
     }

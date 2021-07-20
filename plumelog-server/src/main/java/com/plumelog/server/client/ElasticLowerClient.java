@@ -56,7 +56,10 @@ public class ElasticLowerClient {
         String[] hostsAndPorts = hosts.split(",");
         HttpHost[] httpHosts = new HttpHost[hostsAndPorts.length];
         for (int i = 0; i < hostsAndPorts.length; i++) {
-            httpHosts[i] = HttpHost.create(hostsAndPorts[i]);
+            String hostAndPort = hostsAndPorts[i].trim();
+            if (!StringUtils.isEmpty(hostAndPort)) {
+                httpHosts[i] = HttpHost.create(hostAndPort);
+            }
         }
         client = RestClient.builder(httpHosts).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
             @Override
@@ -98,7 +101,10 @@ public class ElasticLowerClient {
             String[] hostsAndPorts = hosts.split(",");
             HttpHost[] httpHosts = new HttpHost[hostsAndPorts.length];
             for (int i = 0; i < hostsAndPorts.length; i++) {
-                httpHosts[i] = HttpHost.create(hostsAndPorts[i]);
+                String hostAndPort = hostsAndPorts[i].trim();
+                if (!StringUtils.isEmpty(hostAndPort)) {
+                    httpHosts[i] = HttpHost.create(hostAndPort);
+                }
             }
             client = RestClient.builder(httpHosts).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
                 @Override

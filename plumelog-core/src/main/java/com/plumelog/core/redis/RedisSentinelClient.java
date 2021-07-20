@@ -2,9 +2,12 @@ package com.plumelog.core.redis;
 
 import com.plumelog.core.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
+import org.springframework.util.StringUtils;
 import redis.clients.jedis.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * className：RedisClusterClient
@@ -29,7 +32,7 @@ public class RedisSentinelClient extends AbstractClient {
 
     public RedisSentinelClient(String hosts, String masterName, String pass, int db) {
         String[] clusterHosts = hosts.split(",");
-        Set<String> sentinels = new HashSet<String>(Arrays.asList(clusterHosts));
+        Set<String> sentinels = Stream.of(clusterHosts).map(String::trim).filter(s -> !StringUtils.isEmpty(s)).collect(Collectors.toSet());
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(MAX_ACTIVE);
         config.setMaxIdle(MAX_IDLE);
