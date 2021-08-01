@@ -820,7 +820,7 @@ export default {
           this.analysisAppNameWithEnv();
         } else {
           this.completeFilterLoading = true;
-          axios.post(process.env.VUE_APP_API + '/queryAppName?appNameWithEnv', {
+          axios.post(process.env.VUE_APP_API + '/queryAppNames?appNameWithEnv', {
             "size": 0,
             "aggregations": {
               "dataCount": {
@@ -832,10 +832,7 @@ export default {
             }
           }).then(data => {
             this.completeFilterLoading = false;
-            let buckets = _.get(data, 'data.aggregations.dataCount.buckets', []).map(item => {
-              return item.key
-            });
-            sessionStorage['cache_appNameWithEnvs'] = JSON.stringify(buckets);
+            sessionStorage['cache_appNameWithEnvs'] = JSON.stringify(data.data);
             sessionStorage['cache_appNameWithEnvs_time'] = new Date().getTime();
             this.analysisAppNameWithEnv();
           })

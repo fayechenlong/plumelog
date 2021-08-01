@@ -1,5 +1,8 @@
 package com.plumelog.server.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.plumelog.core.AbstractClient;
 import com.plumelog.core.LogMessage;
 import com.plumelog.core.constant.LogMessageConstant;
@@ -162,6 +165,41 @@ public class MainController {
             logger.error("queryAppName fail!", e);
             return "";
         }
+    }
+    
+    @RequestMapping({"/queryAppNames", "/plumelog/queryAppNames"})
+    public Set<String> queryAppNames(@RequestBody String queryStr) {
+        
+        // 查询过去n天的索引
+        String[] indexs = new String[InitConfig.keepDays];
+        for (int i = 0; i < InitConfig.keepDays; i++) {
+            indexs[i] = IndexUtil.getRunLogIndex(
+                    System.currentTimeMillis() - i * InitConfig.MILLS_ONE_DAY) + "*";
+        }
+        
+        // 检查ES索引是否存在
+        List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
+        String indexStr = String.join(",", reindexs);
+        if ("".equals(indexStr)) {
+            return Collections.emptySet();
+        }
+        
+        String url = "/" + indexStr + "/_search?from=0&size=0";
+        logger.info("queryURL:" + url);
+        logger.info("queryStr:" + queryStr);
+        Set<String> appNameSet = new HashSet<>();
+        boolean isQueryWithEnv = queryStr.contains("appNameWithEnv");
+        Set<String> appNameWithEnvSet = new TreeSet<>(
+                queryAppNameWithEnvSet(url, queryStr, appNameSet, isQueryWithEnv));
+        
+        // 为兼容旧的索引及旧的客户端增加按照appName查询的方式
+        if (isQueryWithEnv) {
+            queryStr = queryStr.replaceAll("appNameWithEnv", "appName");
+            logger.info("queryURL:" + url);
+            logger.info("queryStr:" + queryStr);
+            appNameWithEnvSet.addAll(queryAppNameWithEnvSet(url, queryStr, appNameSet, false));
+        }
+        return appNameWithEnvSet;
     }
 
     @RequestMapping({"/clientQuery", "/plumelog/clientQuery"})
@@ -470,4 +508,39 @@ public class MainController {
     public Object getAppNames() {
         return AppNameCache.appName;
     }
+    
+    private Set<String> queryAppNameWithEnvSet(String url, String queryStr, Set<String> appNameSet, boolean isQueryWithEnv) {
+        try {
+            String result = elasticLowerClient.get(url, queryStr);
+            if (!"".equals(result)) {
+                Set<String> appNameWithEnvSet = new HashSet<>();
+                JSONObject jsonObject = JSON.parseObject(result);
+                jsonObject = (JSONObject) jsonObject.get("aggregations");
+                jsonObject = (JSONObject) jsonObject.get("dataCount");
+                JSONArray jsonArray = (JSONArray) jsonObject.get("buckets");
+                if (isQueryWithEnv) {
+                    jsonArray.forEach(key -> {
+                        JSONObject keyJsonObject = (JSONObject) key;
+                        String appNameWithEnv = (String) keyJsonObject.get("key");
+                        appNameWithEnvSet.add(appNameWithEnv);
+                        appNameSet.add(appNameWithEnv.split("-_-")[0]);
+                    });
+                } else {
+                    jsonArray.forEach(key -> {
+                        JSONObject keyJsonObject = (JSONObject) key;
+                        String appName = (String) keyJsonObject.get("key");
+                        if (!appNameSet.contains(appName)) {
+                            appNameSet.add(appName);
+                            appNameWithEnvSet.add(appName + "-_-");
+                        }
+                    });
+                }
+                return appNameWithEnvSet;
+            }
+        } catch (Exception ex) {
+            logger.error("queryAppName fail!", ex);
+        }
+        return Collections.emptySet();
+    }
+    
 }
