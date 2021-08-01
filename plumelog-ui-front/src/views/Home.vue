@@ -375,6 +375,8 @@ export default {
       completeFilterLoading: false,
       appNameWithEnvMap: {},
       envWithAppNameMap: {},
+      allAppNames: [],
+      allEnvs: [],
       appNameComplete: [],
       envComplete: [],
       useSearchQuery: false,
@@ -752,34 +754,22 @@ export default {
       this.getExtendList();
       if (this.filter.appName) {
         this.envComplete = this.appNameWithEnvMap[this.filter.appName] || [];
-      } else {
-        this.envComplete = [];
-        for (let env in this.envWithAppNameMap) {
-          if (this.envWithAppNameMap.hasOwnProperty(env)) {
-            this.envComplete.push(env);
-          }
+        if (this.envComplete.length === 0) {
+          this.envComplete = this.allEnvs;
         }
+      } else {
+        this.envComplete = this.allEnvs;
       }
-      if (this.filter.env && this.envComplete.indexOf(this.filter.env) < 0) {
-        this.filter.env = '';
-      }
-      this.envComplete.sort(function(a, b){return a.localeCompare(b)});
     },
     envChange() {
       if (this.filter.env) {
         this.appNameComplete = this.envWithAppNameMap[this.filter.env] || [];
-      } else {
-        this.appNameComplete = [];
-        for (let appName in this.appNameWithEnvMap) {
-          if (this.appNameWithEnvMap.hasOwnProperty(appName)) {
-            this.appNameComplete.push(appName);
-          }
+        if (this.appNameComplete.length === 0) {
+          this.appNameComplete = this.allAppNames;
         }
+      } else {
+        this.appNameComplete = this.allAppNames;
       }
-      if (this.filter.appName && this.appNameComplete.indexOf(this.filter.appName) < 0) {
-        this.filter.appName = '';
-      }
-      this.appNameComplete.sort(function(a, b){return a.localeCompare(b)});
     },
     getExtendList() {
       this.allColumns = [
@@ -848,30 +838,30 @@ export default {
         if (!this.appNameWithEnvMap[splitStr[0]]) {
           this.appNameWithEnvMap[splitStr[0]] = [];
         }
-        if (splitStr.length > 1) {
+        if (splitStr.length > 1 && splitStr[1] !== '') {
           this.appNameWithEnvMap[splitStr[0]].push(splitStr[1]);
           if (!this.envWithAppNameMap[splitStr[1]]) {
             this.envWithAppNameMap[splitStr[1]] = [];
           }
           this.envWithAppNameMap[splitStr[1]].push(splitStr[0]);
-        } else {
-          this.appNameWithEnvMap[splitStr[0]].push('');
         }
       }
-      this.appNameComplete = [];
+      this.allAppNames = [];
       for (let appName in this.appNameWithEnvMap) {
         if (this.appNameWithEnvMap.hasOwnProperty(appName)) {
-          this.appNameComplete.push(appName);
+          this.allAppNames.push(appName);
         }
       }
-      this.appNameComplete.sort(function(a, b){return a.localeCompare(b)});
-      this.envComplete = [];
+      this.allAppNames.sort(function(a, b){return a.localeCompare(b)});
+      this.appNameComplete = this.allAppNames;
+      this.allEnvs = [];
       for (let env in this.envWithAppNameMap) {
         if (this.envWithAppNameMap.hasOwnProperty(env)) {
-          this.envComplete.push(env);
+          this.allEnvs.push(env);
         }
       }
-      this.envComplete.sort(function(a, b){return a.localeCompare(b)});
+      this.allEnvs.sort(function(a, b){return a.localeCompare(b)});
+      this.envComplete = this.allEnvs;
     },
     closeExtendTag(index) {
       this.extendOptions.splice(index, 1);
