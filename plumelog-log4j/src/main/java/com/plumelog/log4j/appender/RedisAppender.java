@@ -41,15 +41,27 @@ public class RedisAppender extends AppenderSkeleton {
     private boolean compressor = false;
     private String model = "standalone";
     private String masterName;
-
+    
+    public String getAppName() {
+        return appName;
+    }
+    
     public void setAppName(String appName) {
         this.appName = appName;
     }
-
+    
+    public String getRedisHost() {
+        return redisHost;
+    }
+    
     public void setRedisHost(String redisHost) {
         this.redisHost = redisHost;
     }
-
+    
+    public String getRedisPort() {
+        return redisPort;
+    }
+    
     public void setRedisPort(String redisPort) {
         this.redisPort = redisPort;
     }
@@ -57,27 +69,51 @@ public class RedisAppender extends AppenderSkeleton {
     public void setRedisAuth(String redisAuth) {
         this.redisAuth = redisAuth;
     }
-
+    
+    public int getRedisDb() {
+        return redisDb;
+    }
+    
     public void setRedisDb(int redisDb) {
         this.redisDb = redisDb;
     }
-
+    
+    public String getRunModel() {
+        return runModel;
+    }
+    
     public void setRunModel(String runModel) {
         this.runModel = runModel;
     }
-
+    
+    public int getMaxCount() {
+        return maxCount;
+    }
+    
     public void setMaxCount(int maxCount) {
         this.maxCount = maxCount;
     }
-
+    
+    public int getLogQueueSize() {
+        return logQueueSize;
+    }
+    
     public void setLogQueueSize(int logQueueSize) {
         this.logQueueSize = logQueueSize;
     }
-
+    
+    public int getThreadPoolSize() {
+        return threadPoolSize;
+    }
+    
     public void setThreadPoolSize(int threadPoolSize) {
         this.threadPoolSize = threadPoolSize;
     }
-
+    
+    public boolean isCompressor() {
+        return compressor;
+    }
+    
     public void setCompressor(boolean compressor) {
         this.compressor = compressor;
     }
@@ -97,7 +133,11 @@ public class RedisAppender extends AppenderSkeleton {
     public void setMasterName(String masterName) {
         this.masterName = masterName;
     }
-
+    
+    public String getEnv() {
+        return env;
+    }
+    
     public void setEnv(String env) {
         this.env = env;
     }

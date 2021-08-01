@@ -118,4 +118,36 @@ public class KafkaAppender extends AbstractAppender {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
+    
+    public String getAppName() {
+        return appName;
+    }
+    
+    public String getEnv() {
+        return env;
+    }
+    
+    public String getKafkaHosts() {
+        return kafkaHosts;
+    }
+    
+    public String getRunModel() {
+        return runModel;
+    }
+    
+    public String getExpand() {
+        return expand;
+    }
+    
+    public int getMaxCount() {
+        return maxCount;
+    }
+    
+    public int getLogQueueSize() {
+        return logQueueSize;
+    }
+    
+    public int getThreadPoolSize() {
+        return threadPoolSize;
+    }
 }

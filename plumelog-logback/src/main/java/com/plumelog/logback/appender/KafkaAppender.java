@@ -42,35 +42,67 @@ public class KafkaAppender extends AppenderBase<ILoggingEvent> {
     public void setExpand(String expand) {
         this.expand = expand;
     }
-
+    
+    public String getAppName() {
+        return appName;
+    }
+    
     public void setAppName(String appName) {
         this.appName = appName;
     }
-
+    
+    public String getEnv() {
+        return env;
+    }
+    
     public void setEnv(String env) {
         this.env = env;
     }
-
+    
+    public String getKafkaHosts() {
+        return kafkaHosts;
+    }
+    
     public void setKafkaHosts(String kafkaHosts) {
         this.kafkaHosts = kafkaHosts;
     }
-
+    
+    public String getRunModel() {
+        return runModel;
+    }
+    
     public void setRunModel(String runModel) {
         this.runModel = runModel;
     }
-
+    
+    public int getMaxCount() {
+        return maxCount;
+    }
+    
     public void setMaxCount(int maxCount) {
         this.maxCount = maxCount;
     }
-
+    
+    public int getLogQueueSize() {
+        return logQueueSize;
+    }
+    
     public void setLogQueueSize(int logQueueSize) {
         this.logQueueSize = logQueueSize;
     }
-
+    
+    public int getThreadPoolSize() {
+        return threadPoolSize;
+    }
+    
     public void setThreadPoolSize(int threadPoolSize) {
         this.threadPoolSize = threadPoolSize;
     }
-
+    
+    public boolean isCompressor() {
+        return compressor;
+    }
+    
     public void setCompressor(boolean compressor) {
         this.compressor = compressor;
     }

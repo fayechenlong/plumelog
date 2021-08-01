@@ -33,23 +33,43 @@ public class KafkaAppender extends AppenderSkeleton {
     private int logQueueSize = 10000;
     private final int threadPoolSize = 1;
     private boolean compressor = false;
-
+    
+    public String getAppName() {
+        return appName;
+    }
+    
     public void setAppName(String appName) {
         this.appName = appName;
     }
-
+    
+    public String getKafkaHosts() {
+        return kafkaHosts;
+    }
+    
     public void setKafkaHosts(String kafkaHosts) {
         this.kafkaHosts = kafkaHosts;
     }
-
+    
+    public String getRunModel() {
+        return runModel;
+    }
+    
     public void setRunModel(String runModel) {
         this.runModel = runModel;
     }
-
+    
+    public int getMaxCount() {
+        return maxCount;
+    }
+    
     public void setMaxCount(int maxCount) {
         this.maxCount = maxCount;
     }
-
+    
+    public int getLogQueueSize() {
+        return logQueueSize;
+    }
+    
     public void setLogQueueSize(int logQueueSize) {
         this.logQueueSize = logQueueSize;
     }
@@ -57,11 +77,19 @@ public class KafkaAppender extends AppenderSkeleton {
     public void setKafkaClient(KafkaProducerClient kafkaClient) {
         this.kafkaClient = kafkaClient;
     }
-
+    
+    public boolean isCompressor() {
+        return compressor;
+    }
+    
     public void setCompressor(boolean compressor) {
         this.compressor = compressor;
     }
-
+    
+    public String getEnv() {
+        return env;
+    }
+    
     public void setEnv(String env) {
         this.env = env;
     }
