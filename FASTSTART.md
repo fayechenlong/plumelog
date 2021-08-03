@@ -228,6 +228,61 @@
         <appender-ref ref="plumelog" />
     </root>
 ```   
+#### logback整合配置中心案例，推荐使用
+
+* application.properties
+
+```properties
+plumelog.appName=plumelog_demo
+plumelog.redisHost=127.0.0.1:6379
+plumelog.redisAuth=plumelogredis
+spring.profiles.active=dev
+```  
+* logback.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+    <!-- 彩色日志格式 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <!--输出到控制台-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!--过滤trace日志到控制台-->
+        <filter class="com.plumelog.logback.util.FilterSyncLogger">
+            <level></level>
+        </filter>
+        <encoder>
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            <!-- 设置字符集 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <springProperty scope="context" name="plumelog.appName" source="plumelog.appName"/>
+    <springProperty scope="context" name="plumelog.redisHost" source="plumelog.redisHost"/>
+    <springProperty scope="context" name="plumelog.redisAuth" source="plumelog.redisAuth"/>
+    <springProperty scope="context" name="plumelog.env" source="spring.profiles.active"/>
+
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+        <appName>${plumelog.appName}</appName>
+        <redisHost>${plumelog.redisHost}</redisHost>
+        <redisAuth>${plumelog.redisAuth}</redisAuth>
+        <redisDB>0</redisDB>
+        <env>${plumelog.env}</env>
+    </appender>
+    <!-- 日志输出级别 -->
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="plumelog"/>
+    </root>
+</configuration>
+```   
+
 #### log4j2
 
 * 引入

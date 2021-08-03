@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
-    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-    <!--<property name="LOG_HOME" value="/home" />-->
-    <!-- 控制台输出 -->
-    <!-- 彩色日志 -->
-    <!-- 彩色日志依赖的渲染类 -->
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
                     converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
@@ -13,14 +8,8 @@
     <!-- 彩色日志格式 -->
     <property name="CONSOLE_LOG_PATTERN"
               value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
-
-
     <!--输出到控制台-->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <!--此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
-<!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
-<!--            <level>info</level>-->
-<!--        </filter>-->
         <filter class="com.plumelog.logback.util.FilterSyncLogger">
             <level></level>
         </filter>
@@ -31,30 +20,17 @@
         </encoder>
     </appender>
     <springProperty scope="context" name="plumelog.appName" source="plumelog.appName"/>
-    <!-- 如果使用kafka作为队列，启用下面配置 -->
-<!--    <appender name="plumelog_kafka" class="com.plumelog.logback.appender.KafkaAppender">-->
-<!--        <appName>plumelog_demo</appName>-->
-<!--        <kafkaHosts>10.100.2.86:9092</kafkaHosts>-->
-<!--        <compressionType>lz4</compressionType>-->
-<!--        &lt;!&ndash; runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1&ndash;&gt;-->
-<!--        <runModel>2</runModel>-->
-<!--        &lt;!&ndash; 整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth&ndash;&gt;-->
-<!--        <expand>sleuth</expand>-->
-<!--    </appender>-->
-
     <springProperty scope="context" name="plumelog.redisHost" source="plumelog.redisHost"/>
     <springProperty scope="context" name="plumelog.redisPort" source="plumelog.redisPort"/>
     <springProperty scope="context" name="plumelog.redisAuth" source="plumelog.redisAuth"/>
-    <!-- 如果使用redis作为队列，启用下面配置 -->
+    <springProperty scope="context" name="env" source="spring.profiles.active"/>
+
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>${plumelog.appName}</appName>
         <redisHost>${plumelog.redisHost}</redisHost>
-        <!-- 如果使用redis有密码，启用下面配置 -->
         <redisAuth>${plumelog.redisAuth}</redisAuth>
-        <!-- redis端口号，不配置默认6379-->
-        <!-- runModel 1,2  1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1-->
-        <!-- 整合其他链路插件，启用下面配置 sleuth表示整合springcloud.sleuth-->
-        <!--<expand>sleuth</expand>-->
+        <redisDB>0</redisDB>
+        <env>env</env>
     </appender>
     <!-- 日志输出级别 -->
     <root level="info">
