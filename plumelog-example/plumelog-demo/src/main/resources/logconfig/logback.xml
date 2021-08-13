@@ -23,14 +23,16 @@
     <springProperty scope="context" name="plumelog.redisHost" source="plumelog.redisHost"/>
     <springProperty scope="context" name="plumelog.redisPort" source="plumelog.redisPort"/>
     <springProperty scope="context" name="plumelog.redisAuth" source="plumelog.redisAuth"/>
-    <springProperty scope="context" name="env" source="spring.profiles.active"/>
+    <springProperty scope="context" name="plumelog.redisDb" source="plumelog.redisDb"/>
+    <springProperty scope="context" name="plumelog.env" source="spring.profiles.active"/>
 
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>${plumelog.appName}</appName>
         <redisHost>${plumelog.redisHost}</redisHost>
+        <redisPort>${plumelog.redisPort}</redisPort>
         <redisAuth>${plumelog.redisAuth}</redisAuth>
-        <redisDB>0</redisDB>
-        <env>env</env>
+        <redisDb>${plumelog.redisDb}</redisDb>
+        <env>${plumelog.env}</env>
     </appender>
     <!-- 日志输出级别 -->
     <root level="info">
