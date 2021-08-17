@@ -38,7 +38,7 @@ public class LogMessageUtil {
         String traceId = null;
         if (!logEvent.getContextData().isEmpty()) {
             traceId = logEvent.getContextData().toMap().get(LogMessageConstant.TRACE_ID);
-            if(traceId!=null) {
+            if (traceId != null) {
                 TraceId.logTraceID.set(traceId);
             }
         }
@@ -77,9 +77,13 @@ public class LogMessageUtil {
         logMessage.setSeq(SEQ_BUILDER.getAndIncrement());
 
         StackTraceElement stackTraceElement = logEvent.getSource();
-        String method = stackTraceElement.getMethodName();
-        String line = String.valueOf(stackTraceElement.getLineNumber());
-        logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
+        if (stackTraceElement != null) {
+            String method = stackTraceElement.getMethodName();
+            String line = String.valueOf(stackTraceElement.getLineNumber());
+            logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
+        } else {
+            logMessage.setMethod(logEvent.getThreadName());
+        }
         // dateTime字段用来保存当前服务器的时间戳字符串
         logMessage.setDateTime(DateUtil.getDatetimeNormalStrWithMills(logEvent.getTimeMillis()));
 
