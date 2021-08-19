@@ -35,9 +35,12 @@ public class ClientConfig implements InitializingBean {
     public int interval = 100;
     @Value("${plumelog.kafka.kafkaGroupName:logConsumer}")
     public String kafkaGroupName = "logConsumer";
+
     @Value("${plumelog.model:redis}")
     private String model;
     @Value("${plumelog.kafka.kafkaHosts:}")
+
+
     private String kafkaHosts;
     /**
      * 支持携带协议，如：http、https
@@ -58,6 +61,7 @@ public class ClientConfig implements InitializingBean {
     private boolean hostnameVerification = false;
     @Value("${plumelog.es.indexType:}")
     private String indexType;
+
     @Value("${plumelog.es.userName:}")
     private String esUserName;
     @Value("${plumelog.es.passWord:}")
@@ -72,12 +76,17 @@ public class ClientConfig implements InitializingBean {
     private String indexTypeModel;
     @Value("${plumelog.es.indexType.zoneId:GMT+8}")
     private String indexTypeZoneId;
-    @Value("${plumelog.redis.redisHost:127.0.0.1:6379}")
+
+
+    @Value("${plumelog.redis.redisHost:}")
     private String redisHost;
     @Value("${plumelog.redis.redisPassWord:}")
     private String redisPassWord;
     @Value("${plumelog.redis.redisDb:0}")
     private int redisDb = 0;
+    @Value("${plumelog.redis.sentinel.masterName:}")
+    private String redisSentinelMasterName;
+
     @Value("${plumelog.rest.restUrl:}")
     private String restUrl;
     @Value("${plumelog.rest.restUserName:}")
@@ -85,11 +94,13 @@ public class ClientConfig implements InitializingBean {
     @Value("${plumelog.rest.restPassWord:}")
     private String restPassWord;
     @Value("${login.username:}")
+
+
     private String loginUsername;
     @Value("${login.password:}")
     private String loginPassword;
 
-    @Value("${plumelog.queue.redis.redisHost:''}")
+    @Value("${plumelog.queue.redis.redisHost:}")
     private String queueRedisHost;
     @Value("${plumelog.queue.redis.sentinel.masterName:''}")
     private String queueRedisSentinelMasterName;
@@ -105,68 +116,83 @@ public class ClientConfig implements InitializingBean {
 
     @Bean(name = "redisClient")
     public AbstractClient initRedisClient() {
-        if (InitConfig.REDIS_CLUSTER_MODE_NAME.equals(model)) {
-            if (StringUtils.isEmpty(queueRedisHost)) {
-                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.cluster.nodes) ");
-                return null;
-            }
-            logger.info("manger redis  hosts:{}", queueRedisHost);
-            return new RedisClusterClient(queueRedisHost, queueRedisPassWord);
-        } else if (InitConfig.REDIS_SENTINEL_MODE_NAME.equals(model)) {
-            if (StringUtils.isEmpty(queueRedisHost)) {
-                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.sentinel.nodes) ");
-                return null;
-            }
-            logger.info("manger redis hosts:{}", queueRedisHost);
-            return new RedisSentinelClient(queueRedisHost, queueRedisSentinelMasterName, queueRedisPassWord, queueRedisDb);
+
+        String mgRedisHost = "";
+        String mgRedisPassWord = "";
+        String mgMasterName = "";
+        int mgRedisDb = 0;
+        if (!StringUtils.isEmpty(this.redisHost)) {
+            mgRedisHost = this.redisHost;
+            mgRedisPassWord = this.redisPassWord;
+            mgRedisDb = this.redisDb;
+            mgMasterName = this.redisSentinelMasterName;
         } else {
-            String[] hs = redisHost.split(":");
-            int port = 6379;
-            String ip = "127.0.0.1";
-            if (hs.length == 2) {
-                ip = hs[0];
-                port = Integer.parseInt(hs[1]);
-            } else {
-                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
-                return null;
-            }
-            logger.info("queue redis host:{},port:{}", ip, port);
-            return new RedisClient(ip, port, redisPassWord, redisDb);
+            mgRedisHost = this.queueRedisHost;
+            mgRedisPassWord = this.queueRedisPassWord;
+            mgRedisDb = this.queueRedisDb;
+            mgMasterName = this.queueRedisSentinelMasterName;
         }
+        logger.info("管理 redis host:{}", mgRedisHost);
+        if (!StringUtils.isEmpty(mgRedisHost)) {
+            if (mgRedisHost.split(",").length > 1) {
+                if (!StringUtils.isEmpty(mgMasterName)) {
+                    return new RedisSentinelClient(mgRedisHost, mgMasterName, mgRedisPassWord, mgRedisDb);
+                } else {
+                    return new RedisClusterClient(mgRedisHost, mgRedisPassWord);
+                }
+            } else {
+                String[] hs = mgRedisHost.split(":");
+                int port = 6379;
+                String ip = "127.0.0.1";
+                if (hs.length == 2) {
+                    ip = hs[0];
+                    port = Integer.parseInt(hs[1]);
+                } else {
+                    logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
+                    return null;
+                }
+                return new RedisClient(ip, port, mgRedisPassWord, mgRedisDb);
+            }
+        }
+        logger.error("找不到redis配置项！请检查配置！");
+        return null;
     }
 
     @Bean(name = "redisQueueClient")
     public AbstractClient initRedisQueueClient() {
-        if (InitConfig.REDIS_CLUSTER_MODE_NAME.equals(model)) {
-            if (StringUtils.isEmpty(queueRedisHost)) {
-                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.cluster.nodes) ");
-                return null;
-            }
-            logger.info("queue ClusterRedis hosts:{}", queueRedisHost);
-            return new RedisClusterClient(queueRedisHost, queueRedisPassWord);
-        }
-        if (InitConfig.REDIS_SENTINEL_MODE_NAME.equals(model)) {
-            if (StringUtils.isEmpty(queueRedisHost)) {
-                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.sentinel.nodes) ");
-                return null;
-            }
-            logger.info("queue redisSentinelNodes hosts:{}", queueRedisHost);
-            return new RedisSentinelClient(queueRedisHost, queueRedisSentinelMasterName, queueRedisPassWord, queueRedisDb);
-        }
-        if (InitConfig.REDIS_MODE_NAME.equals(model)) {
-            String[] hs = queueRedisHost.split(":");
-            int port = 6379;
-            String ip = "127.0.0.1";
-            if (hs.length == 2) {
-                ip = hs[0];
-                port = Integer.parseInt(hs[1]);
+
+        String mgRedisHost = "";
+        String mgRedisPassWord = "";
+        String mgMasterName = "";
+        int mgRedisDb = 0;
+
+        mgRedisHost = this.queueRedisHost;
+        mgRedisPassWord = this.queueRedisPassWord;
+        mgRedisDb = this.queueRedisDb;
+        mgMasterName = this.queueRedisSentinelMasterName;
+        logger.info("队列 redis host:{}", mgRedisHost);
+        if (!StringUtils.isEmpty(mgRedisHost)) {
+            if (mgRedisHost.split(",").length > 1) {
+                if (!StringUtils.isEmpty(mgMasterName)) {
+                    return new RedisSentinelClient(mgRedisHost, mgMasterName, mgRedisPassWord, mgRedisDb);
+                } else {
+                    return new RedisClusterClient(mgRedisHost, mgRedisPassWord);
+                }
             } else {
-                logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
-                return null;
+                String[] hs = mgRedisHost.split(":");
+                int port = 6379;
+                String ip = "127.0.0.1";
+                if (hs.length == 2) {
+                    ip = hs[0];
+                    port = Integer.parseInt(hs[1]);
+                } else {
+                    logger.error("redis config error! please check the application.properties(plumelog.queue.redis.redisHost) ");
+                    return null;
+                }
+                return new RedisClient(ip, port, mgRedisPassWord, mgRedisDb);
             }
-            logger.info("queue redis host:{},port:{}", ip, port);
-            return new RedisClient(ip, port, queueRedisPassWord, queueRedisDb);
         }
+        logger.error("找不到redis配置项！请检查配置！");
         return null;
     }
 
@@ -176,7 +202,14 @@ public class ClientConfig implements InitializingBean {
             logger.error("can not find esHosts config ! please check the application.properties(plumelog.es.esHosts) ");
             return null;
         }
-        return ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord, trustSelfSigned, hostnameVerification);
+        ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord, trustSelfSigned, hostnameVerification);
+        String esVersion = elasticLowerClient.getVersion();
+        logger.info("es 初始化成功！Elastic 版本：{}", esVersion);
+        if (esVersion != null && Integer.parseInt(esVersion.split("\\.")[0]) < 7) {
+            logger.info("set index type=plumelog");
+            this.indexType = "plumelog";
+        }
+        return elasticLowerClient;
     }
 
     @Bean

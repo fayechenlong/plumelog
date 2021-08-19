@@ -1,6 +1,7 @@
 package com.beeplay;
 
 
+import com.plumelog.server.client.ElasticLowerClient;
 import org.junit.Test;
 
 /**
@@ -15,8 +16,8 @@ public class AppTest
     public void shouldAnswerWithTrue(){
 
 
+        ElasticLowerClient elasticLowerClient=ElasticLowerClient.getInstance("47.103.115.94:9200","elastic","MoKa1234MOk",false,false);
 
-        System.out.println(String.format("%02d",1));
-        System.out.println(String.format("%02d",10));
+        System.out.println(elasticLowerClient.getVersion());
     }
 }

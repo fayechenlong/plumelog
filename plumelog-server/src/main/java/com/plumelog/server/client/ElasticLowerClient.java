@@ -1,5 +1,7 @@
 package com.plumelog.server.client;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.server.InitConfig;
@@ -142,6 +144,25 @@ public class ElasticLowerClient {
             logger.error("", e);
         }
         return false;
+    }
+
+    public String getVersion() {
+        try {
+            Request request = new Request(
+                    "GET",
+                    "/");
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+
+                String jsonStr = EntityUtils.toString(res.getEntity(), "utf-8");
+
+                JSONObject jsonObject = JSON.parseObject(jsonStr);
+                return JSON.parseObject(jsonObject.getString("version")).getString("number");
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return null;
     }
 
     public boolean creatIndice(String indice, String type) {
