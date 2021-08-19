@@ -134,12 +134,11 @@ public class ClientConfig implements InitializingBean {
         }
         logger.info("管理 redis host:{}", mgRedisHost);
         if (!StringUtils.isEmpty(mgRedisHost)) {
+            if (!StringUtils.isEmpty(mgMasterName)) {
+                return new RedisSentinelClient(mgRedisHost, mgMasterName, mgRedisPassWord, mgRedisDb);
+            }
             if (mgRedisHost.split(",").length > 1) {
-                if (!StringUtils.isEmpty(mgMasterName)) {
-                    return new RedisSentinelClient(mgRedisHost, mgMasterName, mgRedisPassWord, mgRedisDb);
-                } else {
-                    return new RedisClusterClient(mgRedisHost, mgRedisPassWord);
-                }
+                return new RedisClusterClient(mgRedisHost, mgRedisPassWord);
             } else {
                 String[] hs = mgRedisHost.split(":");
                 int port = 6379;
@@ -172,12 +171,11 @@ public class ClientConfig implements InitializingBean {
         mgMasterName = this.queueRedisSentinelMasterName;
         logger.info("队列 redis host:{}", mgRedisHost);
         if (!StringUtils.isEmpty(mgRedisHost)) {
+            if (!StringUtils.isEmpty(mgMasterName)) {
+                return new RedisSentinelClient(mgRedisHost, mgMasterName, mgRedisPassWord, mgRedisDb);
+            }
             if (mgRedisHost.split(",").length > 1) {
-                if (!StringUtils.isEmpty(mgMasterName)) {
-                    return new RedisSentinelClient(mgRedisHost, mgMasterName, mgRedisPassWord, mgRedisDb);
-                } else {
-                    return new RedisClusterClient(mgRedisHost, mgRedisPassWord);
-                }
+                return new RedisClusterClient(mgRedisHost, mgRedisPassWord);
             } else {
                 String[] hs = mgRedisHost.split(":");
                 int port = 6379;

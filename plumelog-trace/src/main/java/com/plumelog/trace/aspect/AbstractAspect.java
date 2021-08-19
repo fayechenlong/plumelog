@@ -5,9 +5,9 @@ import com.plumelog.core.TraceId;
 import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.GfJsonUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.slf4j.LoggerFactory;
 
 /**
  * className：AbstractAspect
@@ -17,9 +17,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
  * @author Tank
  * @version 1.0.0
  */
-@Slf4j
 public abstract class AbstractAspect {
-
+    private final static org.slf4j.Logger log= LoggerFactory.getLogger(AbstractAspect.class);
     public Object aroundExecute(JoinPoint joinPoint) throws Throwable {
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String traceId = TraceId.logTraceID.get();
