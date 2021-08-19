@@ -19,10 +19,6 @@
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.plumelog</groupId>
-            <artifactId>plumelog-trace</artifactId>
-        </dependency>
     </dependencies>
     <build>
         <plugins>

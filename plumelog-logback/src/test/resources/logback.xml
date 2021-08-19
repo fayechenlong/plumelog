@@ -37,6 +37,7 @@
         <logQueueSize>100000</logQueueSize>
         <runModel>2</runModel>
         <expand>sleuth</expand>
+        <model>sentinel</model>
     </appender>
 <!--    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">-->
 <!--        <appName>plumelog-test</appName>-->

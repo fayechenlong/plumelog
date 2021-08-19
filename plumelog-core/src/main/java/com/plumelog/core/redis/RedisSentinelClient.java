@@ -39,9 +39,9 @@ public class RedisSentinelClient extends AbstractClient {
         config.setMaxWaitMillis(MAX_WAIT);
         config.setTestOnBorrow(TEST_ON_BORROW);
         if (pass != null && !"".equals(pass)) {
-            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config, db, pass);
+            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config,Protocol.DEFAULT_TIMEOUT,pass,db);
         } else {
-            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config, db);
+            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config,Protocol.DEFAULT_TIMEOUT);
         }
     }
 

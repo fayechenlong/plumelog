@@ -100,9 +100,7 @@ public class RedisAppender extends AbstractAppender {
         if (model == null) {
             model = "standalone";
         }
-        if ("cluster".equals(model)) {
-            redisClient = RedisClusterClient.getInstance(redisHost, redisAuth);
-        } else if ("sentinel".equals(model)) {
+        if ("sentinel".equals(model)) {
             redisClient = RedisSentinelClient.getInstance(redisHost, masterName, redisAuth, redisDb);
         } else {
             int port = 6379;
