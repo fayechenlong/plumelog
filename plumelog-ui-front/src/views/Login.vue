@@ -9,10 +9,10 @@
             <a class="nav-link" target="_blank"  href="http://www.plumelog.com">官网</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" target="_blank"  href="https://gitee.com/frankchenlong/plumelog/blob/master/FASTSTART.md">文档</a>
+            <a class="nav-link" target="_blank"  href="https://gitee.com/plumeorg/plumelog/blob/master/FASTSTART.md">文档</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" target="_blank"  href="https://gitee.com/frankchenlong/plumelog">社区</a>
+            <a class="nav-link" target="_blank"  href="https://gitee.com/plumeorg/plumelog">社区</a>
           </li>
         </ul>
       </nav>
