@@ -24,11 +24,11 @@
                 <a class="nav-link" href="./#/size"><Icon type="md-settings" />管理</a>
             </li>
           <li class="nav-item">
-            <a class="nav-link" target="_blank" href="https://gitee.com/frankchenlong/plumelog/blob/master/HELP.md"><Icon style="font-size: 16px" type="md-help-circle" /></a>
+            <a class="nav-link" target="_blank" href="https://gitee.com/plumeorg/plumelog/blob/master/HELP.md"><Icon style="font-size: 16px" type="md-help-circle" /></a>
           </li>
         </ul>
         <span class="quit"><a href="./#/login"><Icon style="font-size: 16px" type="md-exit" />退出</a></span>
-        <span class="version"><a target="_blank" href="https://gitee.com/frankchenlong/plumelog">Version 3.4.2</a></span>
+        <span class="version"><a target="_blank" href="https://gitee.com/plumeorg/plumelog">Version 3.4.2</a></span>
     </nav>
 </template>
 <script>

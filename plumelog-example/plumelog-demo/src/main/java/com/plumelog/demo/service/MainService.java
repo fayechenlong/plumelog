@@ -6,6 +6,7 @@ import com.plumelog.core.LogMessage;
 import com.plumelog.core.util.LogExceptionStackTrace;
 import com.plumelog.trace.annotation.Trace;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +55,10 @@ public class MainService {
         executorService.execute(() -> {
             logger.info("子线程日志展示");
         });
+
+        MDC.put("orderNum","12345678");
+        logger.info("订单编号：{}","12345678");
+
         try {
             LogMessage lo=null;
             lo.setMethod("");
