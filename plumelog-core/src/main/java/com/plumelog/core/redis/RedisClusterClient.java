@@ -96,7 +96,7 @@ public class RedisClusterClient extends AbstractClient {
             return false;
         }
         try {
-            Long result = (Long) jedisCluster.evalsha(jedisCluster.scriptLoad(script, "luakey"), Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
+            Long result = (Long) jedisCluster.eval(script, Arrays.asList(key), Arrays.asList(key, String.valueOf(expire)));
             if (result == 1) {
                 return true;
             }
