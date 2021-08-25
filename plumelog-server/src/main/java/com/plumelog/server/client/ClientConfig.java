@@ -102,7 +102,7 @@ public class ClientConfig implements InitializingBean {
 
     @Value("${plumelog.queue.redis.redisHost:}")
     private String queueRedisHost;
-    @Value("${plumelog.queue.redis.sentinel.masterName:''}")
+    @Value("${plumelog.queue.redis.sentinel.masterName:}")
     private String queueRedisSentinelMasterName;
     @Value("${plumelog.queue.redis.redisPassWord:}")
     private String queueRedisPassWord;
@@ -169,6 +169,7 @@ public class ClientConfig implements InitializingBean {
         mgRedisPassWord = this.queueRedisPassWord;
         mgRedisDb = this.queueRedisDb;
         mgMasterName = this.queueRedisSentinelMasterName;
+
         logger.info("队列 redis host:{}", mgRedisHost);
         if (!StringUtils.isEmpty(mgRedisHost)) {
             if (!StringUtils.isEmpty(mgMasterName)) {
