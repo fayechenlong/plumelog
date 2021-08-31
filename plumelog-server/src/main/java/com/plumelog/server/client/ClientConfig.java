@@ -14,6 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
 import java.time.ZoneId;
@@ -27,6 +28,7 @@ import java.time.ZoneId;
  * @version 1.0.0
  */
 @Configuration
+@Order(1)
 public class ClientConfig implements InitializingBean {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
     @Value("${plumelog.maxSendSize:5000}")
@@ -207,6 +209,7 @@ public class ClientConfig implements InitializingBean {
         if (esVersion != null && Integer.parseInt(esVersion.split("\\.")[0]) < 7) {
             logger.info("set index type=plumelog");
             this.indexType = "plumelog";
+            LogMessageConstant.ES_TYPE= "plumelog";
         }
         return elasticLowerClient;
     }
