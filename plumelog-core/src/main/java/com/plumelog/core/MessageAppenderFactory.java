@@ -4,8 +4,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.disruptor.LogMessageProducer;
-import com.plumelog.core.disruptor.LogRingBuffer;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.exception.LogQueueConnectException;
@@ -52,10 +50,7 @@ public class MessageAppenderFactory {
         }
     }
 
-    public static void push(BaseLogMessage baseLogMessage) {
-        LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
-        producer.send(baseLogMessage);
-    }
+
 
     public static void pushRundataQueue(String message) {
         if (message != null) {
