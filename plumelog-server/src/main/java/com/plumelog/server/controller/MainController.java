@@ -48,9 +48,9 @@ public class MainController {
 
     private final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    @Autowired
+    @Autowired(required = false)
     private AbstractClient redisClient;
-    @Autowired
+    @Autowired(required = false)
     private AbstractClient redisQueueClient;
 
     @Autowired

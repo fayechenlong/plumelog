@@ -2,6 +2,8 @@ package com.plumelog.server.collect;
 
 
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.client.LuceneClient;
@@ -29,9 +31,6 @@ public class LocalLogCollect {
     /**
      * lite模式使用
      */
-
-
-
     protected ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
 
     public LocalLogCollect(LuceneClient luceneClient) {
@@ -66,7 +65,7 @@ public class LocalLogCollect {
             }
         }, 10, 30, TimeUnit.SECONDS);
 
-        logger.info("RestLogCollect is starting!");
+        logger.info("LocalCollect is starting!");
     }
 
     private Thread startRunLogThread() {
@@ -83,7 +82,7 @@ public class LocalLogCollect {
 
     private void collectRuningLog() {
         while (true) {
-            List<String> logs = new ArrayList<>();
+            List<RunLogMessage> logs = new ArrayList<>();
 
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
@@ -93,7 +92,7 @@ public class LocalLogCollect {
             LocalLogQueue.rundataQueue.drainTo(logs, InitConfig.MAX_SEND_SIZE);
 
             try {
-                luceneClient.insertListLog(logs, getRunLogIndex(), null);
+                luceneClient.insertListLog(logs, getRunLogIndex());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -103,7 +102,7 @@ public class LocalLogCollect {
 
     private void collectTraceLog() {
         while (true) {
-            List<String> logs = new ArrayList<>();
+            List<TraceLogMessage> logs = new ArrayList<>();
             try {
                 Thread.sleep(InitConfig.MAX_INTERVAL);
             } catch (InterruptedException e) {
@@ -111,7 +110,7 @@ public class LocalLogCollect {
             }
             LocalLogQueue.tracedataQueue.drainTo(logs, InitConfig.MAX_SEND_SIZE);
             try {
-                luceneClient.insertListTrace(logs, getTraceLogIndex(), null);
+                luceneClient.insertListTrace(logs, getTraceLogIndex());
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,6 +1,7 @@
 package com.plumelog.server.client;
 
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.server.util.GfJsonUtil;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
@@ -22,9 +23,14 @@ import java.util.UUID;
 
 public class LuceneClient extends AbstractServerClient {
 
+    private  String localpath;
+
+    LuceneClient(){
+        this.localpath=System.getProperty("user.dir")+"/";
+    }
 
     public void create(Collection<Document> docs, String index) throws Exception {
-        Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(index));
+        Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath+index));
         NRTCachingDirectory nrtCachingDirectory = new NRTCachingDirectory(directory, 5, 60);
         SmartChineseAnalyzer smartChineseAnalyzer = new SmartChineseAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(smartChineseAnalyzer);
@@ -59,29 +65,57 @@ public class LuceneClient extends AbstractServerClient {
         return docs;
     }
 
+    private Collection<Document> loadTraceDocs(List<TraceLogMessage> list) {
+        Collection<Document> docs = new ArrayList<>();
+        for (TraceLogMessage rm : list) {
+            Document document = new Document();
+            document.add(new StringField("id", UUID.randomUUID().toString(), Field.Store.YES));
+            document.add(new StringField("appName", (rm.getAppName() == null) ? "" : rm.getAppName(), Field.Store.YES));
+            document.add(new StringField("env", (rm.getEnv() == null) ? "" : rm.getEnv(), Field.Store.YES));
+            document.add(new StringField("position", (rm.getPosition() == null) ? "" : rm.getPosition(), Field.Store.YES));
+            document.add(new StringField("method", (rm.getMethod() == null) ? "" : rm.getMethod(), Field.Store.YES));
+            document.add(new StringField("serverName", (rm.getServerName() == null) ? "" : rm.getServerName(), Field.Store.YES));
+            document.add(new SortedNumericDocValuesField("positionNum", (rm.getPositionNum() == null) ? 1L : rm.getPositionNum()));
+            document.add(new StoredField("positionNum", (rm.getPositionNum() == null) ? 1L : rm.getPositionNum()));
+            document.add(new SortedNumericDocValuesField("time", rm.getTime()));
+            document.add(new StoredField("time", rm.getTime()));
+            document.add(new StringField("appNameWithEnv", (rm.getAppNameWithEnv() == null) ? "" : rm.getAppNameWithEnv(), Field.Store.YES));
+            document.add(new StringField("traceId", (rm.getTraceId() == null) ? "" : rm.getTraceId(), Field.Store.YES));
+            docs.add(document);
+        }
+        return docs;
+    }
 
     @Override
     public void insertListLog(List<String> list, String baseIndex, String type) throws Exception {
-        List<RunLogMessage> messageList = GfJsonUtil.parseList(list, RunLogMessage.class);
-        create(loadDocs(messageList), baseIndex);
+
+    }
+
+    public void insertListLog(List<RunLogMessage> list, String baseIndex) throws Exception {
+        create(loadDocs(list), baseIndex);
     }
 
     @Override
     public void insertListTrace(List<String> list, String baseIndex, String type) throws Exception {
-        List<RunLogMessage> messageList = GfJsonUtil.parseList(list, RunLogMessage.class);
-        create(loadDocs(messageList), baseIndex);
+
+    }
+
+    public void insertListTrace(List<TraceLogMessage> list, String baseIndex) throws Exception {
+
+
+        create(loadTraceDocs(list), baseIndex);
+
     }
 
     @Override
     public void insertListComm(List<String> list, String baseIndex, String type) throws Exception {
-        List<RunLogMessage> messageList = GfJsonUtil.parseList(list, RunLogMessage.class);
-        create(loadDocs(messageList), baseIndex);
+
     }
 
     @Override
     public boolean deleteIndex(String index) {
         try {
-            Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(index));
+            Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath+index));
             Analyzer analyzer = new StandardAnalyzer();// 官方推荐
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter indexWriter = new IndexWriter(directory, config);

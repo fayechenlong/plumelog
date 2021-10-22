@@ -118,7 +118,9 @@ public class ClientConfig implements InitializingBean {
 
     @Bean(name = "redisClient")
     public AbstractClient initRedisClient() {
-
+        if (InitConfig.LITE_MODE_NAME.equals(this.model)) {
+            return null;
+        }
         String mgRedisHost = "";
         String mgRedisPassWord = "";
         String mgMasterName = "";
@@ -161,7 +163,9 @@ public class ClientConfig implements InitializingBean {
 
     @Bean(name = "redisQueueClient")
     public AbstractClient initRedisQueueClient() {
-
+        if (InitConfig.LITE_MODE_NAME.equals(this.model)) {
+            return null;
+        }
         String mgRedisHost = "";
         String mgRedisPassWord = "";
         String mgMasterName = "";
@@ -220,6 +224,9 @@ public class ClientConfig implements InitializingBean {
 
     @Bean
     public KafkaConsumer initKafkaConsumer() {
+        if (InitConfig.LITE_MODE_NAME.equals(this.model)) {
+            return null;
+        }
         if (InitConfig.KAFKA_MODE_NAME.equals(model)) {
             if (StringUtils.isEmpty(kafkaHosts)) {
                 logger.error("can not find kafkaHosts config! please check the application.properties(plumelog.kafka.kafkaHosts) ");

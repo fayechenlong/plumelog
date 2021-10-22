@@ -70,7 +70,7 @@ public class CollectStartBean implements InitializingBean {
             restLogCollect.restStart();
         }
         if (InitConfig.LITE_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            LocalLogCollect localLogCollect=new LocalLogCollect((LuceneClient) abstractServerClient);
+            LocalLogCollect localLogCollect = new LocalLogCollect((LuceneClient) abstractServerClient);
             localLogCollect.start();
         }
     }
@@ -79,7 +79,9 @@ public class CollectStartBean implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         try {
-            autoCreatIndice();
+            if (!InitConfig.LITE_MODE_NAME.equals(InitConfig.START_MODEL)) {
+                autoCreatIndice();
+            }
             serverStart();
         } catch (Exception e) {
             logger.error("plumelog server starting failed!", e);
