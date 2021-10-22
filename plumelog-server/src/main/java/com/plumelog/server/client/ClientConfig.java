@@ -198,10 +198,14 @@ public class ClientConfig implements InitializingBean {
     }
 
     @Bean
-    public ElasticLowerClient initElasticLowerClient() {
+    public AbstractServerClient initAbstractServerClient() {
         if (StringUtils.isEmpty(esHosts)) {
             logger.error("can not find esHosts config ! please check the application.properties(plumelog.es.esHosts) ");
             return null;
+        }
+        if(InitConfig.LITE_MODE_NAME.equals(model)){
+            logger.info("当前启动模式为单机简易版！");
+            return new LuceneClient();
         }
         ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord, trustSelfSigned, hostnameVerification);
         String esVersion = elasticLowerClient.getVersion();

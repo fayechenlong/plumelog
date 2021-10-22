@@ -11,7 +11,7 @@ import com.plumelog.core.dto.WarningRuleDto;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
-import com.plumelog.server.client.ElasticLowerClient;
+import com.plumelog.server.client.AbstractServerClient;
 import com.plumelog.server.controller.vo.LoginVO;
 import com.plumelog.server.util.IndexUtil;
 import org.elasticsearch.client.ResponseException;
@@ -54,7 +54,7 @@ public class MainController {
     private AbstractClient redisQueueClient;
 
     @Autowired
-    private ElasticLowerClient elasticLowerClient;
+    private AbstractServerClient abstractServerClient;
 
     @Value("${admin.password}")
     private String adminPassWord;
@@ -137,7 +137,7 @@ public class MainController {
         }
 
         // 检查ES索引是否存在
-        List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
+        List<String> reindexs = abstractServerClient.getExistIndices(indexs);
         String indexStr = String.join(",", reindexs);
         if ("".equals(indexStr)) {
             return "";
@@ -147,7 +147,7 @@ public class MainController {
         logger.info("queryStr:" + queryStr);
 
         try {
-            return elasticLowerClient.get(url, queryStr);
+            return abstractServerClient.get(url, queryStr);
         } catch (Exception e) {
             // 为兼容旧的索引如果按照appNameWithEnv查询失败则重新按照appName查询
             if (e instanceof ResponseException && queryStr.contains("appNameWithEnv")) {
@@ -156,7 +156,7 @@ public class MainController {
                 logger.info("queryStr:" + queryStr);
 
                 try {
-                    return elasticLowerClient.get(url, queryStr);
+                    return abstractServerClient.get(url, queryStr);
                 } catch (Exception ex) {
                     logger.error("queryAppName fail!", ex);
                     return "";
@@ -178,7 +178,7 @@ public class MainController {
         }
         
         // 检查ES索引是否存在
-        List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
+        List<String> reindexs = abstractServerClient.getExistIndices(indexs);
         String indexStr = String.join(",", reindexs);
         if ("".equals(indexStr)) {
             return Collections.emptySet();
@@ -237,7 +237,7 @@ public class MainController {
                 IndexUtil.getTraceLogIndex(clientEndDateTime) : IndexUtil.getRunLogIndex(clientEndDateTime)) + "*");
 
         //检查ES索引是否存在
-        List<String> existIndices = elasticLowerClient.getExistIndices(indexSet.toArray(new String[0]));
+        List<String> existIndices = abstractServerClient.getExistIndices(indexSet.toArray(new String[0]));
         String indexStr = String.join(",", existIndices);
         if ("".equals(indexStr)) {
             return "";
@@ -247,7 +247,7 @@ public class MainController {
         logger.info("queryStr:" + queryStr);
 
         try {
-            return elasticLowerClient.get(url, queryStr);
+            return abstractServerClient.get(url, queryStr);
         } catch (Exception e) {
             // 为兼容旧的索引如果排序使用seq查询失败则重新按照去掉seq查询
             if (e instanceof ResponseException
@@ -258,7 +258,7 @@ public class MainController {
                 logger.info("queryStr:" + queryStr);
 
                 try {
-                    return elasticLowerClient.get(url, queryStr);
+                    return abstractServerClient.get(url, queryStr);
                 } catch (Exception ex) {
                     logger.error("clientQuery fail!", ex);
                     return "";
@@ -301,7 +301,7 @@ public class MainController {
                     indexSet.add(IndexUtil.getRunLogIndex(System.currentTimeMillis() - i * InitConfig.MILLS_ONE_DAY) + "*");
                 }
             }
-            List<String> reindexs = elasticLowerClient.getExistIndices(indexSet.toArray(new String[0]));
+            List<String> reindexs = abstractServerClient.getExistIndices(indexSet.toArray(new String[0]));
             indexStr = reindexs.stream().filter(s -> !StringUtils.isEmpty(s)).collect(Collectors.joining(","));
             if ("".equals(indexStr)) {
                 return message;
@@ -309,7 +309,7 @@ public class MainController {
             String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
             logger.info("queryURL:" + url);
             logger.info("queryStr:" + queryStr);
-            return elasticLowerClient.get(url, queryStr);
+            return abstractServerClient.get(url, queryStr);
         } catch (Exception e) {
             logger.error("query fail!", e);
             return "";
@@ -333,7 +333,7 @@ public class MainController {
         try {
             //检查ES索引是否存在
             String[] indexs = Stream.of(index.split(",")).map(String::trim).filter(s -> !StringUtils.isEmpty(s)).toArray(String[]::new);
-            List<String> reindexs = elasticLowerClient.getExistIndices(indexs);
+            List<String> reindexs = abstractServerClient.getExistIndices(indexs);
             indexStr = String.join(",", reindexs);
             if ("".equals(indexStr)) {
                 return message;
@@ -341,7 +341,7 @@ public class MainController {
             String url = "/" + indexStr + "/_delete_by_query?from=" + from + "&size=" + size;
             logger.info("queryURL:" + url);
             logger.info("queryStr:" + queryStr);
-            return elasticLowerClient.get(url, queryStr);
+            return abstractServerClient.get(url, queryStr);
         } catch (Exception e) {
             logger.error("deleteByQuery fail!", e);
             return "";
@@ -350,7 +350,7 @@ public class MainController {
 
     @RequestMapping({"/getServerInfo", "/plumelog/getServerInfo"})
     public String query(String index) {
-        String res = elasticLowerClient.cat(index);
+        String res = abstractServerClient.cat(index);
         BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(res.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
         List<String> list = new ArrayList<>();
         try {
@@ -414,7 +414,7 @@ public class MainController {
     public Map<String, Object> deleteIndex(String index, String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
-            boolean re = elasticLowerClient.deleteIndex(index);
+            boolean re = abstractServerClient.deleteIndex(index);
             if (index.startsWith(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN)) {
                 creatIndiceLog(index);
             }
@@ -430,14 +430,14 @@ public class MainController {
     }
 
     private void creatIndiceLog(String index) {
-        if (!elasticLowerClient.existIndice(index)) {
-            elasticLowerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
+        if (!abstractServerClient.existIndice(index)) {
+            abstractServerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
         }
     }
 
     private void creatIndiceTrace(String index) {
-        if (!elasticLowerClient.existIndice(index)) {
-            elasticLowerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
+        if (!abstractServerClient.existIndice(index)) {
+            abstractServerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
         }
     }
 
@@ -511,7 +511,7 @@ public class MainController {
     
     private Set<String> queryAppNameWithEnvSet(String url, String queryStr, Set<String> appNameSet, boolean isQueryWithEnv) {
         try {
-            String result = elasticLowerClient.get(url, queryStr);
+            String result = abstractServerClient.get(url, queryStr);
             if (!"".equals(result)) {
                 Set<String> appNameWithEnvSet = new HashSet<>();
                 JSONObject jsonObject = JSON.parseObject(result);

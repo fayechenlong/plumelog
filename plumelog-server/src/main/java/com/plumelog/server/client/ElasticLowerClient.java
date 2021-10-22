@@ -39,9 +39,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author Frank.chen
  * @version 1.0.0
  */
-public class ElasticLowerClient {
+public class ElasticLowerClient extends AbstractServerClient {
     private static ElasticLowerClient instance;
-    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5, 5, 100);
+    private static final ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5, 5, 100);
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
     private RestClient client;
 
@@ -131,6 +131,7 @@ public class ElasticLowerClient {
         return instance;
     }
 
+    @Override
     public boolean existIndice(String indice) {
         try {
             Request request = new Request(
@@ -146,6 +147,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public String getVersion() {
         try {
             Request request = new Request(
@@ -165,6 +167,7 @@ public class ElasticLowerClient {
         return null;
     }
 
+    @Override
     public boolean creatIndice(String indice, String type) {
         try {
             Request request = new Request(
@@ -198,6 +201,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public boolean creatIndiceTrace(String indice, String type) {
         try {
             Request request = new Request(
@@ -226,6 +230,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public boolean creatIndiceNomal(String indice, String type) {
         try {
             Request request = new Request(
@@ -243,6 +248,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
 
         if (!existIndice(baseIndex)) {
@@ -256,10 +262,12 @@ public class ElasticLowerClient {
         insertListV1(list, baseIndex, type);
     }
 
+    @Override
     public void insertListTrace(List<String> list, String baseIndex, String type) throws IOException {
         insertListV1(list, baseIndex, type);
     }
 
+    @Override
     public void insertListComm(List<String> list, String baseIndex, String type) throws IOException {
         insertListV1(list, baseIndex, type);
     }
@@ -354,6 +362,7 @@ public class ElasticLowerClient {
         });
     }
 
+    @Override
     public String cat(String index) {
         String reStr = "";
         Request request = new Request(
@@ -375,6 +384,7 @@ public class ElasticLowerClient {
         return reStr;
     }
 
+    @Override
     public String get(String url, String queryStr) throws Exception {
         StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
         stringEntity.setContentType("application/json");
@@ -386,6 +396,7 @@ public class ElasticLowerClient {
         return EntityUtils.toString(res.getEntity(), "utf-8");
     }
 
+    @Override
     public List<String> getExistIndices(String[] indices) {
         List<String> existIndexList = new ArrayList<String>();
         for (String index : indices) {
@@ -404,6 +415,7 @@ public class ElasticLowerClient {
         return existIndexList;
     }
 
+    @Override
     public boolean deleteIndex(String index) {
         try {
             Request request = new Request(
@@ -425,6 +437,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public void close() {
         try {
             client.close();
