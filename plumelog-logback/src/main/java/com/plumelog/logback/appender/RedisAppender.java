@@ -151,7 +151,9 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        send(event);
+        if (event != null) {
+            send(event);
+        }
     }
 
     protected void send(ILoggingEvent event) {

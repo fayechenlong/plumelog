@@ -148,7 +148,9 @@ public class RedisAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent logEvent) {
-        send(logEvent);
+        if (logEvent != null) {
+            send(logEvent);
+        }
     }
 
     protected void send(LogEvent logEvent) {
@@ -160,59 +162,59 @@ public class RedisAppender extends AbstractAppender {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
-    
+
     public String getAppName() {
         return appName;
     }
-    
+
     public String getModel() {
         return model;
     }
-    
+
     public String getRunModel() {
         return runModel;
     }
-    
+
     public String getMasterName() {
         return masterName;
     }
-    
+
     public String getRedisHost() {
         return redisHost;
     }
-    
+
     public String getRedisPort() {
         return redisPort;
     }
-    
+
     public int getRedisDb() {
         return redisDb;
     }
-    
+
     public String getRedisAuth() {
         return redisAuth;
     }
-    
+
     public String getExpand() {
         return expand;
     }
-    
+
     public String getEnv() {
         return env;
     }
-    
+
     public int getMaxCount() {
         return maxCount;
     }
-    
+
     public int getThreadPoolSize() {
         return threadPoolSize;
     }
-    
+
     public int getLogQueueSize() {
         return logQueueSize;
     }
-    
+
     public boolean isCompressor() {
         return compressor;
     }
