@@ -12,6 +12,8 @@ public abstract class AbstractServerClient {
 
     public abstract String get(String url, String queryStr) throws Exception;
 
+    public abstract String get(String indexStr, String queryStr,String from,String size) throws Exception;
+
     public abstract String cat(String index);
 
     public abstract boolean creatIndice(String indice, String type);

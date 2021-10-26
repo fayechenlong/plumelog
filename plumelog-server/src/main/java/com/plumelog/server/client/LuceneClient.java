@@ -1,5 +1,8 @@
 package com.plumelog.server.client;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.server.util.GfJsonUtil;
@@ -8,29 +11,27 @@ import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NRTCachingDirectory;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class LuceneClient extends AbstractServerClient {
 
-    private  String localpath;
+    private String localpath;
 
-    LuceneClient(){
-        this.localpath=System.getProperty("user.dir")+"/";
+    LuceneClient() {
+        this.localpath = System.getProperty("user.dir") + "/";
     }
 
     public void create(Collection<Document> docs, String index) throws Exception {
-        Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath+index));
+        Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + index));
         NRTCachingDirectory nrtCachingDirectory = new NRTCachingDirectory(directory, 5, 60);
         SmartChineseAnalyzer smartChineseAnalyzer = new SmartChineseAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(smartChineseAnalyzer);
@@ -115,7 +116,7 @@ public class LuceneClient extends AbstractServerClient {
     @Override
     public boolean deleteIndex(String index) {
         try {
-            Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath+index));
+            Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + index));
             Analyzer analyzer = new StandardAnalyzer();// 官方推荐
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter indexWriter = new IndexWriter(directory, config);
@@ -129,6 +130,69 @@ public class LuceneClient extends AbstractServerClient {
 
     @Override
     public String get(String url, String queryStr) throws Exception {
+
+
+
+        /**
+         * 组装返回数据格式
+         */
+        return null;
+    }
+
+    @Override
+    public String get(String indexStr, String queryStr, String from, String size) throws Exception {
+
+        JSONObject queryJson = JSON.parseObject(queryStr);
+        JSONArray query = queryJson.getJSONObject("query").getJSONObject("bool").getJSONArray("must");
+
+        String[] indexs=indexStr.split(",");
+
+        IndexReader[] indexReaders = new IndexReader[indexs.length];
+        for (int i = 0; i < indexs.length; i++) {
+            Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(indexs[i]));
+            IndexReader reader = DirectoryReader.open(directory);
+            indexReaders[i] = reader;
+        }
+        MultiReader multiReader = new MultiReader(indexReaders);
+        IndexSearcher searcher = new IndexSearcher(multiReader);
+        BooleanQuery.Builder builder = new BooleanQuery.Builder();
+        /**
+         * 组装查询条件
+         */
+        for (int a = 0; a < query.size(); a++) {
+            JSONObject js = query.getJSONObject(a);
+            if (js.containsKey("match_phrase")) {
+                String[] matchSet = new String[1];
+                js.getJSONObject("match_phrase").keySet().toArray(matchSet);
+                String matchKey = matchSet[0];
+                String matchValue = js.getJSONObject("match_phrase").getJSONObject(matchKey).getString("query");
+                QueryParser parser = new QueryParser(matchKey, new SmartChineseAnalyzer());
+                Query filedQuery = parser.parse(matchValue);
+                builder.add(filedQuery, BooleanClause.Occur.MUST);
+            }
+            if (js.containsKey("query_string")) {
+                String qStr = js.getJSONObject("query_string").getString("query");
+                QueryParser parser = new QueryParser("content", new SmartChineseAnalyzer());
+                // 创建查询对象
+                Query content = parser.parse(qStr);
+                builder.add(content, BooleanClause.Occur.MUST);
+            }
+            if (js.containsKey("range")) {
+                Long gte = js.getJSONObject("range").getJSONObject("dtTime").getLong("gte");
+                Long lt = js.getJSONObject("range").getJSONObject("dtTime").getLong("lt");
+                Query range = NumericDocValuesField.newSlowRangeQuery("dtTime", gte, lt);
+                builder.add(range, BooleanClause.Occur.MUST);
+            }
+        }
+        Sort sort = new Sort();
+        SortField sortField = new SortField("dtTime", SortField.Type.LONG,true);
+        sort.setSort(sortField);
+        TopDocs topDocs = searcher.search(builder.build(), 10000);
+        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+
+
+
+
         return null;
     }
 
@@ -164,7 +228,7 @@ public class LuceneClient extends AbstractServerClient {
 
     @Override
     public List<String> getExistIndices(String[] indices) {
-        return null;
+        return Arrays.asList(indices.clone());
     }
 
     @Override

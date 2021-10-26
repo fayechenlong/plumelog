@@ -397,6 +397,19 @@ public class ElasticLowerClient extends AbstractServerClient {
     }
 
     @Override
+    public String get(String indexStr, String queryStr,String from,String size) throws Exception {
+        String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
+        StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
+        stringEntity.setContentType("application/json");
+        Request request = new Request(
+                "GET",
+                url);
+        request.setEntity(stringEntity);
+        Response res = client.performRequest(request);
+        return EntityUtils.toString(res.getEntity(), "utf-8");
+    }
+
+    @Override
     public List<String> getExistIndices(String[] indices) {
         List<String> existIndexList = new ArrayList<String>();
         for (String index : indices) {

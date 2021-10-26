@@ -142,21 +142,18 @@ public class MainController {
         if ("".equals(indexStr)) {
             return "";
         }
-        String url = "/" + indexStr + "/_search?from=0&size=0";
-        logger.info("queryURL:" + url);
         logger.info("queryStr:" + queryStr);
 
         try {
-            return abstractServerClient.get(url, queryStr);
+            return abstractServerClient.get(indexStr, queryStr,null,null);
         } catch (Exception e) {
             // 为兼容旧的索引如果按照appNameWithEnv查询失败则重新按照appName查询
             if (e instanceof ResponseException && queryStr.contains("appNameWithEnv")) {
                 queryStr = queryStr.replaceAll("appNameWithEnv", "appName");
-                logger.info("queryURL:" + url);
                 logger.info("queryStr:" + queryStr);
 
                 try {
-                    return abstractServerClient.get(url, queryStr);
+                    return abstractServerClient.get(indexStr, queryStr,null,null);
                 } catch (Exception ex) {
                     logger.error("queryAppName fail!", ex);
                     return "";
@@ -242,23 +239,20 @@ public class MainController {
         if ("".equals(indexStr)) {
             return "";
         }
-        String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
-        logger.info("queryURL:" + url);
         logger.info("queryStr:" + queryStr);
 
         try {
-            return abstractServerClient.get(url, queryStr);
+            return abstractServerClient.get(indexStr, queryStr,from,size);
         } catch (Exception e) {
             // 为兼容旧的索引如果排序使用seq查询失败则重新按照去掉seq查询
             if (e instanceof ResponseException
                     && (queryStr.contains(",{\"seq\":\"desc\"}") || queryStr.contains(",{\"seq\":\"asc\"}"))) {
                 queryStr = queryStr.replace(",{\"seq\":\"desc\"}", "");
                 queryStr = queryStr.replace(",{\"seq\":\"asc\"}", "");
-                logger.info("queryURL:" + url);
                 logger.info("queryStr:" + queryStr);
 
                 try {
-                    return abstractServerClient.get(url, queryStr);
+                    return abstractServerClient.get(indexStr, queryStr,from,size);
                 } catch (Exception ex) {
                     logger.error("clientQuery fail!", ex);
                     return "";
@@ -306,10 +300,8 @@ public class MainController {
             if ("".equals(indexStr)) {
                 return message;
             }
-            String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
-            logger.info("queryURL:" + url);
             logger.info("queryStr:" + queryStr);
-            return abstractServerClient.get(url, queryStr);
+            return abstractServerClient.get(indexStr, queryStr,from,size);
         } catch (Exception e) {
             logger.error("query fail!", e);
             return "";
