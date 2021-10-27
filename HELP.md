@@ -84,6 +84,11 @@
   这种情况大概率是server中 plumelog.queue.redis.redisHost 没有配置正确，redis只是充当队列的作用，如果里面能看到数据说明没有server没有消费，正常情况应该是redis是不会积压的
 
 
+* 为什么我切换redisdb，不起作用？
+
+  切换redisdb为了安全考虑，必须设置redis密码，因为日志系统redis推荐独立redis,如果切换了DB代表你的和混合其他redis,plumelog作为日志查询系统，本身不具备高安全，防止redis被攻击，需要设置密码
+
+
 * 为什么我配置了，之后后台无法查到日志？
 
   排查方法：第一步：停止server,启动日志采集项目，观察redis中有没有数据，如果有说明从项目进入队列是通的，如果没有检查项目端redis配置是否正确；第二步：如果在redis有数据情况，启动server，如果server日志里有ElasticSearch commit! success；表示链路成功

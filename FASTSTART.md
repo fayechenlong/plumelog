@@ -328,7 +328,7 @@ RedisAppender
 | redisHost  | redis地址 |
 | redisPort  | redis端口号 3.4版本后可以不用配置可以配置在host上用冒号结尾|
 | redisAuth  | redis密码 |
-| redisDb  | redis db |
+| redisDb  | redis db 切换DB必须要设置redis密码|
 | model  | （3.4）redis三种模式（standalone,cluster,sentinel） 不配置默认standalone|
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | maxCount  | （3.1）批量提交日志数量，默认100 |
