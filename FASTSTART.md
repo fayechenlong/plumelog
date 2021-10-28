@@ -27,10 +27,7 @@
         spring.mvc.view.suffix=.html
         spring.mvc.static-path-pattern=/plumelog/**
 
-        #值为6种 redis,kafka,rest,restServer,redisCluster,redisSentinel
         #redis 表示用redis当队列
-        #redisCluster 表示用redisCluster当队列
-        #redisSentinel 表示用redisSentinel当队列
         #kafka 表示用kafka当队列
         #rest 表示从rest接口取日志
         #restServer 表示作为rest接口服务器启动
@@ -45,18 +42,25 @@
         #解压缩模式，开启后不消费非压缩的队列，如果开启压缩，客户端也要配置开启压缩否则不消费
         #plumelog.redis.compressor=true
         #队列redis，3.3版本把队列redis独立出来，方便不用的应用用不通的队列,如果是集群模式用逗号隔开
+        #这边注意：如果不需要分布式部署，只需要配置quequeredis即可，下面的管理redis可以不用配置
         plumelog.queue.redis.redisHost=127.0.0.1:6379
         #如果使用redis有密码,启用下面配置
         #plumelog.queue.redis.redisPassWord=plumelog
+        #出于安全考虑如果要切换DB必须要设置redis密码
         #plumelog.queue.redis.redisDb=0
         #哨兵模式需要填写masterName
         #plumelog.queue.redis.sentinel.masterName=plumelog
         
-        #redis单机模式和kafka模式必须配置管理redis地址，redis集群模式不需要配置管理redis地址配置了也不起作用
+        #管理redis地址，用于报警配置和报警管理，可以不用配置，但是如果是kafka模式必须要配置
+        #redis单机模式和kafka模式必须配置管理redis地址
         plumelog.redis.redisHost=127.0.0.1:6379
         #如果使用redis有密码,启用下面配置
         #plumelog.redis.redisPassWord=plumelog
-        
+        #出于安全考虑如果要切换DB必须要设置redis密码
+        #plumelog.redis.redisDb=0
+        #哨兵模式需要填写masterName
+        #plumelog.redis.sentinel.masterName=plumelog
+
         #如果使用rest,启用下面配置
         #plumelog.rest.restUrl=http://127.0.0.1:8891/getlog
         #plumelog.rest.restUserName=plumelog
@@ -64,8 +68,6 @@
         
         #elasticsearch相关配置，host多个用逗号隔开
         plumelog.es.esHosts=127.0.0.1:9200
-        #ES7.*已经去除了索引type字段，所以如果是es7不用配置这个，7.*以下不配置这个会报错
-        #plumelog.es.indexType=plumelog
         plumelog.es.shards=5
         plumelog.es.replicas=1
         plumelog.es.refresh.interval=30s
@@ -210,7 +212,7 @@
 * 配置
 ```xml
  <appenders>
-    <!--使用redis启用下面配置-->
+    <!--使用redis启用下面配置，更多字段看下面表格-->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plumelog</appName>
         <redisHost>172.16.249.72:6379</redisHost>
@@ -318,18 +320,19 @@ spring.profiles.active=dev
 ```    
 2. 示例(所有的列子都在plumelog-demo里面)
 
-### 客户端配置详解
+### 客户端配置字段详解
 
 RedisAppender
 
 |  字段值   | 用途  |
 |  ----  | ----  |
 | appName  | 自定义应用名称 |
-| redisHost  | redis地址 |
+| redisHost  | redis地址，集群及哨兵地址用逗号隔开 |
 | redisPort  | redis端口号 3.4版本后可以不用配置可以配置在host上用冒号结尾|
 | redisAuth  | redis密码 |
-| redisDb  | redis db 切换DB必须要设置redis密码|
-| model  | （3.4）redis三种模式（standalone,cluster,sentinel） 不配置默认standalone|
+| masterName  | 哨兵mastername,哨兵模式必须配置 |masterName
+| redisDb  | redis db 切换DB必须要设置redis密码，redisAuth不能为空|
+| model  | （3.4）redis三种模式（standalone,cluster,sentinel） 不配置默认standalone，3.4.2后不用配置自动识别，并且去除对cluster模式支持|
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | maxCount  | （3.1）批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
