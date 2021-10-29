@@ -199,7 +199,7 @@
 ```
    同理如果使用logback,和log4j2配置如下,示例如下：
     
-#### logback
+#### logback(推荐使用)
 
 * 引入
 ```xml
@@ -232,6 +232,16 @@
 ```   
 #### logback整合配置中心案例，推荐使用
 
+* 小贴士： 
+  
+         logback和logback-spring.xml都可以用来配置logback，但是2者的加载顺序是不一样的。
+
+         logback.xml--->application.properties--->logback-spring.xml.
+
+         logback.xml加载早于application.properties，所以如果你在logback.xml使用了变量时，而恰好这个变量是写在application.properties时，那么就会获取不到，只要改成logback-spring.xml就可以解决
+
+         也可以使用自定义的名称，比如logback-config.xml，只需要在application.properties文件中使用logging.config=classpath:logback-config.xml指定即可。
+  
 * application.properties
 
 ```properties
@@ -240,7 +250,7 @@ plumelog.redisHost=127.0.0.1:6379
 plumelog.redisAuth=plumelogredis
 spring.profiles.active=dev
 ```  
-* logback.xml
+* logback-spring.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -405,7 +415,7 @@ web.xml配置示例
         </filter-mapping>   
 ``` 
 
-spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceId
+spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceId，只需要pom加入下面引入即可
 
 ```xml
         <dependency>
