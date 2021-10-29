@@ -132,7 +132,6 @@ public class LuceneClient extends AbstractServerClient {
     public String get(String url, String queryStr) throws Exception {
 
 
-
         /**
          * 组装返回数据格式
          */
@@ -145,7 +144,7 @@ public class LuceneClient extends AbstractServerClient {
         JSONObject queryJson = JSON.parseObject(queryStr);
         JSONArray query = queryJson.getJSONObject("query").getJSONObject("bool").getJSONArray("must");
 
-        String[] indexs=indexStr.split(",");
+        String[] indexs = indexStr.split(",");
 
         IndexReader[] indexReaders = new IndexReader[indexs.length];
         for (int i = 0; i < indexs.length; i++) {
@@ -185,15 +184,31 @@ public class LuceneClient extends AbstractServerClient {
             }
         }
         Sort sort = new Sort();
-        SortField sortField = new SortField("dtTime", SortField.Type.LONG,true);
+        SortField sortField = new SortField("dtTime", SortField.Type.LONG, true);
         sort.setSort(sortField);
         TopDocs topDocs = searcher.search(builder.build(), 10000);
         ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+        List<Map<String, Object>> logs = new ArrayList<>();
+        for (ScoreDoc scoreDoc : scoreDocs) {
+            int docID = scoreDoc.doc;
+            Document doc = multiReader.document(docID);
+            logs.add(mapCopy(doc));
 
-
+        }
 
 
         return null;
+    }
+
+    private Map<String, Object> mapCopy(Document paramsMap) {
+
+        Map<String, Object> resultMap = new HashMap<>();
+        Iterator<IndexableField> it = paramsMap.iterator();
+        while (it.hasNext()) {
+            IndexableField entry = it.next();
+            resultMap.put(entry.name(), entry.stringValue());
+        }
+        return resultMap;
     }
 
     @Override
