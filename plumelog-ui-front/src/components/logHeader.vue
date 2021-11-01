@@ -28,7 +28,7 @@
           </li>
         </ul>
         <span class="quit"><a href="./#/login"><Icon style="font-size: 16px" type="md-exit" />退出</a></span>
-        <span class="version"><a target="_blank" href="https://gitee.com/plumeorg/plumelog">Version 3.4.2</a></span>
+        <span class="version"><a target="_blank" href="https://gitee.com/plumeorg/plumelog">Version 3.5</a></span>
     </nav>
 </template>
 <script>
