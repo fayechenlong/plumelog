@@ -35,6 +35,7 @@
         #rest 表示从rest接口取日志
         #restServer 表示作为rest接口服务器启动
         #ui 表示单独作为ui启动
+        #lite 表示以单机模式开启，此时不需要配置redis和es，lite模式下，扩展字段，错误统计，错误报警都不能使用
         plumelog.model=redis
         
         #如果使用kafka,启用下面配置
@@ -186,14 +187,20 @@
     log4j.appender.L.appName=plumelog
     log4j.appender.L.env=${spring.profiles.active}
     log4j.appender.L.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
-    #redis做为中间件
 
+    #redis做为中间件
     log4j.appender.L=com.plumelog.log4j.appender.RedisAppender
     log4j.appender.L.appName=plumelog
     log4j.appender.L.env=${spring.profiles.active}
     log4j.appender.L.redisHost=172.16.249.72:6379
     #redis没有密码这一项为空或者不需要
     #log4j.appender.L.redisAuth=123456
+
+    #lite模式
+    log4j.appender.L=com.plumelog.log4j.appender.LiteAppender
+    log4j.appender.L.appName=plumelog
+    log4j.appender.L.env=${spring.profiles.active}
+    log4j.appender.L.plumelogHost=localhost:8891
 ```
    同理如果使用logback,和log4j2配置如下,示例如下：
     
@@ -220,6 +227,11 @@
     <appender name="plumelog" class="com.plumelog.logback.appender.KafkaAppender">
         <appName>plumelog</appName>
         <kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>
+    </appender>
+    <!-- 使用lite模式启用下面配置 -->
+    <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">
+        <appName>worker</appName>
+        <plumelogHost>localhost:8891</plumelogHost>
     </appender>
  </appenders>
     <!-- 上面两个配置二选一 -->
@@ -300,16 +312,18 @@ spring.profiles.active=dev
 ```xml
  <appenders>
    <!-- 使用kafka启用下面配置 -->
-
   <KafkaAppender name="kafkaAppender" appName="plumelog" kafkaHosts="172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092" >
-      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
   </KafkaAppender>
+    
      <!--使用redis启用下面配置-->
   <RedisAppender name="redisAppender" appName="plumelog" redisHost="172.16.249.72:6379" redisAuth="123456">
-      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%-5p] {%F:%L} - %m%n" />
   </RedisAppender>
+    
+    <!--使用lite启用下面配置-->
+    <LiteAppender name="liteAppender" appName="plumelog" plumelogHost="localhost:8891">
+    </LiteAppender>
   </appenders>
-  <!-- 上面两个配置二选一 -->
+
   <loggers>
       <root level="INFO">
           <appender-ref ref="redisAppender"/>
@@ -335,6 +349,7 @@ RedisAppender
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）是否开启日志压缩，默认false |
 | env  | （3.4.2）环境 默认是default|
+| plumelogHost  | 3.5|
 
 KafkaAppender
 
@@ -347,6 +362,16 @@ KafkaAppender
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）压缩方式配置，默认false（true：开启lz4压缩） |
 | env  | （3.4.2）环境 默认是default|
+
+LiteAppender
+|  字段值   | 用途  |
+|  ----  | ----  |
+| appName  | 自定义应用名称 |
+| runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
+| maxCount  | （3.1）批量提交日志数量，默认100 |
+| logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
+| env  | （3.4.2）环境 默认是default|
+| plumelogHost  | 3.5 plumelogserver端地址|
 
 3. traceID生成配置
   
