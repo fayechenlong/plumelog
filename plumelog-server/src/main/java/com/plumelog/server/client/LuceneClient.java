@@ -8,6 +8,7 @@ import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.server.util.GfJsonUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
@@ -18,6 +19,8 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.search.grouping.GroupDocs;
 import org.apache.lucene.search.grouping.GroupingSearch;
 import org.apache.lucene.search.grouping.TopGroups;
+import org.apache.lucene.search.highlight.*;
+import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NRTCachingDirectory;
@@ -25,6 +28,7 @@ import org.apache.lucene.util.BytesRef;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -34,7 +38,7 @@ public class LuceneClient extends AbstractServerClient {
     private String localpath;
 
     LuceneClient() {
-        this.localpath = System.getProperty("user.dir")+"/";
+        this.localpath = System.getProperty("user.dir") + "/";
     }
 
     public void create(Collection<Document> docs, String index) throws Exception {
@@ -65,7 +69,7 @@ public class LuceneClient extends AbstractServerClient {
             document.add(new SortedDocValuesField("logLevel", new BytesRef((rm.getLogLevel() == null) ? "" : rm.getLogLevel())));
             document.add(new TextField("content", (rm.getContent() == null) ? "" : rm.getContent(), Field.Store.YES));
             document.add(new StringField("dateTime", (rm.getDateTime() == null) ? "" : rm.getDateTime(), Field.Store.YES));
-            document.add(new SortedNumericDocValuesField("dtTime", rm.getDtTime()));
+            document.add(new NumericDocValuesField("dtTime", rm.getDtTime()));
             document.add(new StoredField("dtTime", rm.getDtTime()));
             document.add(new StringField("logType", (rm.getLogType() == null) ? "" : rm.getLogType(), Field.Store.YES));
             document.add(new StringField("appNameWithEnv", (rm.getAppNameWithEnv() == null) ? "" : rm.getAppNameWithEnv(), Field.Store.YES));
@@ -87,9 +91,9 @@ public class LuceneClient extends AbstractServerClient {
             document.add(new StringField("position", (rm.getPosition() == null) ? "" : rm.getPosition(), Field.Store.YES));
             document.add(new StringField("method", (rm.getMethod() == null) ? "" : rm.getMethod(), Field.Store.YES));
             document.add(new StringField("serverName", (rm.getServerName() == null) ? "" : rm.getServerName(), Field.Store.YES));
-            document.add(new SortedNumericDocValuesField("positionNum", (rm.getPositionNum() == null) ? 1L : rm.getPositionNum()));
+            document.add(new NumericDocValuesField("positionNum", (rm.getPositionNum() == null) ? 1L : rm.getPositionNum()));
             document.add(new StoredField("positionNum", (rm.getPositionNum() == null) ? 1L : rm.getPositionNum()));
-            document.add(new SortedNumericDocValuesField("time", rm.getTime()));
+            document.add(new NumericDocValuesField("time", rm.getTime()));
             document.add(new StoredField("time", rm.getTime()));
             document.add(new StringField("appNameWithEnv", (rm.getAppNameWithEnv() == null) ? "" : rm.getAppNameWithEnv(), Field.Store.YES));
             document.add(new SortedDocValuesField("appNameWithEnv", new BytesRef((rm.getAppNameWithEnv() == null) ? "" : rm.getAppNameWithEnv())));
@@ -184,7 +188,7 @@ public class LuceneClient extends AbstractServerClient {
             MultiReader multiReader = new MultiReader(indexReaders);
             IndexSearcher searcher = new IndexSearcher(multiReader);
             BooleanQuery.Builder builder = new BooleanQuery.Builder();
-
+            SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
             for (int a = 0; a < query.size(); a++) {
                 JSONObject js = query.getJSONObject(a);
                 if (js.containsKey("match_phrase")) {
@@ -197,7 +201,7 @@ public class LuceneClient extends AbstractServerClient {
                 }
                 if (js.containsKey("query_string")) {
                     String qStr = js.getJSONObject("query_string").getString("query");
-                    QueryParser parser = new QueryParser("content", new SmartChineseAnalyzer());
+                    QueryParser parser = new QueryParser("content", analyzer);
                     // 创建查询对象
                     Query content = parser.parse(qStr);
                     builder.add(content, BooleanClause.Occur.MUST);
@@ -205,7 +209,7 @@ public class LuceneClient extends AbstractServerClient {
                 if (js.containsKey("range")) {
                     Long gte = js.getJSONObject("range").getJSONObject("dtTime").getLong("gte");
                     Long lt = js.getJSONObject("range").getJSONObject("dtTime").getLong("lt");
-                    Query range = SortedNumericDocValuesField.newSlowRangeQuery("dtTime", gte, lt);
+                    Query range = NumericDocValuesField.newSlowRangeQuery("dtTime", gte, lt);
                     builder.add(range, BooleanClause.Occur.MUST);
                 }
             }
@@ -222,11 +226,32 @@ public class LuceneClient extends AbstractServerClient {
             if (max == 0) {
                 max = 10000;
             }
-            TopDocs topDocs = searcher.search(builder.build(), max);
+            TopDocs topDocs = searcher.search(builder.build(), max, sort);
             ScoreDoc[] scoreDocs = topDocs.scoreDocs;
             QueryRs qr = new QueryRs();
             qr.setTotal(topDocs.totalHits);
             List<Map<String, Object>> hits = new ArrayList<>();
+
+
+            /**
+             * 高亮显示
+             */
+
+            QueryScorer scorer = new QueryScorer(builder.build());
+
+            //显示得分高的片段
+            Fragmenter fragmenter = new SimpleSpanFragmenter(scorer);
+
+            //设置标签内部关键字的颜色
+            //第一个参数：标签的前半部分；第二个参数：标签的后半部分。
+            SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<em>", "</em>");
+
+            //第一个参数是对查到的结果进行实例化；第二个是片段得分（显示得分高的片段，即摘要）
+            Highlighter highlighter = new Highlighter(simpleHTMLFormatter, scorer);
+
+            //设置片段
+            highlighter.setTextFragmenter(fragmenter);
+
 
             for (int i = min; i < scoreDocs.length; i++) {
                 ScoreDoc scoreDoc = scoreDocs[i];
@@ -235,6 +260,7 @@ public class LuceneClient extends AbstractServerClient {
                 Map<String, Object> hit = new HashMap<>();
                 hit.put("_id", docID);
                 hit.put("_source", mapCopy(doc));
+                hit.put("highlight", highlighterMapCopy(doc, builder.build(),analyzer));
                 hits.add(hit);
             }
             qr.setHits(hits);
@@ -244,6 +270,28 @@ public class LuceneClient extends AbstractServerClient {
             return JSONObject.toJSONString(rs);
         }
         return null;
+    }
+
+    private Map<String, Object> highlighterMapCopy(Document paramsMap, BooleanQuery booleanQuery, SmartChineseAnalyzer analyzer) {
+
+        QueryScorer scorer = new QueryScorer(booleanQuery);
+        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer);
+        SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<em>", "</em>");
+        Highlighter highlighter = new Highlighter(simpleHTMLFormatter, scorer);
+        highlighter.setTextFragmenter(fragmenter);
+        Map<String, Object> resultMap = new HashMap<>();
+        Iterator<IndexableField> it = paramsMap.iterator();
+        while (it.hasNext()) {
+            IndexableField entry = it.next();
+            TokenStream tokenStream = analyzer.tokenStream(entry.name(), new StringReader(entry.stringValue()));
+            //获取最高的片段
+            try {
+                resultMap.put(entry.name(), highlighter.getBestFragments(tokenStream, entry.stringValue(), 10));
+            } catch (Exception e) {
+                resultMap.put(entry.name(), entry.stringValue());
+            }
+        }
+        return resultMap;
     }
 
     @Override

@@ -37,13 +37,9 @@
     <springProperty scope="context" name="plumelog.masterName" source="plumelog.masterName"/>
     <springProperty scope="context" name="plumelog.env" source="spring.profiles.active"/>
 
-    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
-        <appName>${plumelog.appName}</appName>
-        <redisHost>${plumelog.redisHost}</redisHost>
-        <redisAuth>${plumelog.redisAuth}</redisAuth>
-        <env>${plumelog.env}</env>
-        <masterName>${plumelog.masterName}</masterName>
-        <model>sentinel</model>
+    <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">
+        <appName>worker</appName>
+        <plumelogHost>localhost:8891</plumelogHost>
     </appender>
     <!-- 日志输出级别 -->
     <root level="info">
