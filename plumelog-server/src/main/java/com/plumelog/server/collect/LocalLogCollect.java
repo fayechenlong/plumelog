@@ -1,20 +1,14 @@
 package com.plumelog.server.collect;
 
 
-import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.server.InitConfig;
-import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.client.LuceneClient;
-import com.plumelog.server.client.PlumeRestClient;
 import com.plumelog.server.util.IndexUtil;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -92,7 +86,10 @@ public class LocalLogCollect {
             LocalLogQueue.rundataQueue.drainTo(logs, InitConfig.MAX_SEND_SIZE);
 
             try {
-                luceneClient.insertListLog(logs, getRunLogIndex());
+                if (logs.size() > 0) {
+                    luceneClient.insertListLog(logs, getRunLogIndex());
+                    logger.info("runLog messages insert success! count:{}",logs.size());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -110,7 +107,10 @@ public class LocalLogCollect {
             }
             LocalLogQueue.tracedataQueue.drainTo(logs, InitConfig.MAX_SEND_SIZE);
             try {
-                luceneClient.insertListTrace(logs, getTraceLogIndex());
+                if (logs.size() > 0) {
+                    luceneClient.insertListTrace(logs, getTraceLogIndex());
+                    logger.info("traceLog messages insert success! count:{}",logs.size());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

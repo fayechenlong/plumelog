@@ -2,6 +2,7 @@ package com.plumelog.server.controller;
 
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
+import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.AbstractServerClient;
 import com.plumelog.server.collect.LocalLogQueue;
@@ -31,12 +32,13 @@ public class CollectController {
     private AbstractServerClient abstractServerClient;
 
     @RequestMapping({"/sendRunLog", "/plumelogServer/sendRunLog"})
-    public Result sendRunLog(@RequestBody List<RunLogMessage> logs) {
+    public Result sendRunLog(@RequestBody String logs) {
         Result result = new Result();
-        if ("redis".equals(InitConfig.START_MODEL)) {
+        if ("lite".equals(InitConfig.START_MODEL)) {
             try {
-                LocalLogQueue.rundataQueue.addAll(logs);
-                logger.info("receive runLog messages! count:{}",logs.size());
+                List<RunLogMessage> list= GfJsonUtil.parseArray(logs,RunLogMessage.class);
+                LocalLogQueue.rundataQueue.addAll(list);
+                logger.info("receive runLog messages! count:{}",list.size());
             } catch (Exception e) {
                 result.setCode(500);
                 result.setMessage("send logs error! :" + e.getMessage());
@@ -51,12 +53,13 @@ public class CollectController {
     }
 
     @RequestMapping({"/sendTraceLog", "/plumelogServer/sendTraceLog"})
-    public Result sendTraceLog(@RequestBody List<TraceLogMessage> logs) {
+    public Result sendTraceLog(@RequestBody String logs) {
         Result result = new Result();
-        if ("redis".equals(InitConfig.START_MODEL)) {
+        if ("lite".equals(InitConfig.START_MODEL)) {
             try {
-                LocalLogQueue.tracedataQueue.addAll(logs);
-                logger.info("receive traceLog messages! count:{}",logs.size());
+                List<TraceLogMessage> list=GfJsonUtil.parseArray(logs,TraceLogMessage.class);
+                LocalLogQueue.tracedataQueue.addAll(list);
+                logger.info("receive traceLog messages! count:{}",list.size());
             } catch (Exception e) {
                 result.setCode(500);
                 result.setMessage("send logs error! :" + e.getMessage());

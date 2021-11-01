@@ -14,6 +14,8 @@ public abstract class AbstractServerClient {
 
     public abstract String get(String indexStr, String queryStr,String from,String size) throws Exception;
 
+    public abstract String group(String indexStr, String queryStr) throws Exception;
+
     public abstract String cat(String index);
 
     public abstract boolean creatIndice(String indice, String type);

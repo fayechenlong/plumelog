@@ -82,7 +82,6 @@ public class LogMessageUtil {
         logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
         // dateTime字段用来保存当前服务器的时间戳字符串
         logMessage.setDateTime(DateUtil.getDatetimeNormalStrWithMills(iLoggingEvent.getTimeStamp()));
-
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;
     }

@@ -3,6 +3,7 @@ package com.plumelog.server.client;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.http.SkipHostnameVerifier;
@@ -22,14 +23,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.net.ssl.SSLContext;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -370,7 +373,6 @@ public class ElasticLowerClient extends AbstractServerClient {
                 "/_cat/indices/" + index + "?v");
         try {
             Response res = client.performRequest(request);
-
             InputStream inputStream = res.getEntity().getContent();
             byte[] bytes = new byte[0];
             bytes = new byte[inputStream.available()];
@@ -381,7 +383,34 @@ public class ElasticLowerClient extends AbstractServerClient {
             e.printStackTrace();
             reStr = "";
         }
-        return reStr;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(reStr.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
+        List<String> list = new ArrayList<>();
+        try {
+            while (true) {
+                String aa = br.readLine();
+                if (StringUtils.isEmpty(aa)) {
+                    break;
+                }
+                list.add(aa);
+            }
+            List<Map<String, String>> listMap = new ArrayList<>();
+            if (list.size() > 0) {
+                String[] title = list.get(0).split("\\s+");
+                for (int i = 1; i < list.size(); i++) {
+                    String[] values = list.get(i).split("\\s+");
+                    Map<String, String> map = new HashMap<>();
+                    for (int j = 0; j < title.length; j++) {
+                        map.put(title[j], values[j]);
+                    }
+                    listMap.add(map);
+                }
+            }
+            return GfJsonUtil.toJSONString(listMap);
+        } catch (IOException e) {
+            logger.error("", e);
+        }
+        return "";
     }
 
     @Override
@@ -397,8 +426,21 @@ public class ElasticLowerClient extends AbstractServerClient {
     }
 
     @Override
-    public String get(String indexStr, String queryStr,String from,String size) throws Exception {
+    public String get(String indexStr, String queryStr, String from, String size) throws Exception {
         String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
+        StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
+        stringEntity.setContentType("application/json");
+        Request request = new Request(
+                "GET",
+                url);
+        request.setEntity(stringEntity);
+        Response res = client.performRequest(request);
+        return EntityUtils.toString(res.getEntity(), "utf-8");
+    }
+
+    @Override
+    public String group(String indexStr, String queryStr) throws Exception {
+        String url = "/" + indexStr + "/_search";
         StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
         stringEntity.setContentType("application/json");
         Request request = new Request(

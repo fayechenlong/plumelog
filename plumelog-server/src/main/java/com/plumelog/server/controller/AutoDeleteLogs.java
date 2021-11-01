@@ -68,7 +68,7 @@ public class AutoDeleteLogs {
      * 由于无法确定指定的是哪个时区，因此每个小时都执行一次
      */
     @Scheduled(cron = "0 30 * * * ?")
-    public void creatIndice() {
+    public void createIndice() {
         long time = System.currentTimeMillis() + InitConfig.MILLS_ONE_DAY;
         String runLogIndex = IndexUtil.getRunLogIndex(time);
         String traceLogIndex = IndexUtil.getTraceLogIndex(time);
