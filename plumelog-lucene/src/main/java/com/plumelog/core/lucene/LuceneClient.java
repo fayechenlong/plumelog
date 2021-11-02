@@ -113,7 +113,6 @@ public class LuceneClient extends AbstractServerClient {
     public void insertListLog(List<String> list, String baseIndex, String type) throws Exception {
 
 
-
     }
 
     public void insertListLog(List<RunLogMessage> list, String baseIndex) throws Exception {
@@ -137,12 +136,15 @@ public class LuceneClient extends AbstractServerClient {
     @Override
     public boolean deleteIndex(String index) {
         try {
-            Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + index));
-            Analyzer analyzer = new StandardAnalyzer();// 官方推荐
-            IndexWriterConfig config = new IndexWriterConfig(analyzer);
-            IndexWriter indexWriter = new IndexWriter(directory, config);
-            indexWriter.deleteAll();
-            indexWriter.close();
+            List<String> list = getIndex(index);
+            for (String in : list) {
+                Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + in));
+                Analyzer analyzer = new StandardAnalyzer();// 官方推荐
+                IndexWriterConfig config = new IndexWriterConfig(analyzer);
+                IndexWriter indexWriter = new IndexWriter(directory, config);
+                indexWriter.deleteAll();
+                indexWriter.close();
+            }
         } catch (IOException e) {
             return false;
         }

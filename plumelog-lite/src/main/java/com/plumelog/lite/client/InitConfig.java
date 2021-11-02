@@ -20,6 +20,6 @@ public class InitConfig {
     public static String restUrl = "";
     public static String loginUsername = "";
     public static String loginPassword = "";
-    public static int keepDays = 0;
+    public static int keepDays = 30;
     public static int traceKeepDays = 0;
 }

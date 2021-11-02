@@ -8,6 +8,7 @@ import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
+import com.plumelog.lite.client.InitConfig;
 import com.plumelog.lite.client.LogSave;
 import com.plumelog.lite.logback.util.LogMessageUtil;
 
@@ -31,7 +32,16 @@ public class LiteAppender extends AppenderBase<ILoggingEvent> {
     private int maxCount = 100;
     private int logQueueSize = 10000;
     private int threadPoolSize = 1;
+    private int keepDay=30;
     private boolean compressor = false;
+
+    public int getKeepDay() {
+        return keepDay;
+    }
+
+    public void setKeepDay(int keepDay) {
+        this.keepDay = keepDay;
+    }
 
     public int getMaxCount() {
         return maxCount;
@@ -128,6 +138,7 @@ public class LiteAppender extends AppenderBase<ILoggingEvent> {
         if (this.runModel != null) {
             LogMessageConstant.RUN_MODEL = Integer.parseInt(this.runModel);
         }
+        InitConfig.keepDays =this.keepDay;
         if (this.expand != null && LogMessageConstant.EXPANDS.contains(this.expand)) {
             LogMessageConstant.EXPAND = this.expand;
         }
