@@ -37,6 +37,7 @@
     <appender name="plumelog" class="com.plumelog.lite.logback.appender.LiteAppender">
         <appName>plumelog</appName>
         <logPath>/Users/chenlongfei/lucene/lite</logPath>
+        <keepDay>30</keepDay>
     </appender>
     <!-- 日志输出级别 -->
     <root level="info">

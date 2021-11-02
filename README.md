@@ -47,6 +47,8 @@ Star趋势图
 
 #### 3. [版本升级注意事项](/update.md)
 
+#### 4. [lite版本使用文档](/plumelog-lite/README.md)
+
 ### 四.重要版本
  
    |  版本   | 内容  |

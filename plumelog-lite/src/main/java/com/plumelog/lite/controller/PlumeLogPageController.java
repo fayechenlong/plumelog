@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class PlumeLogPageController {
-    @RequestMapping("plumelog")
+    @RequestMapping("/plumelog")
     public String index() {
         return "plumelog";
     }
