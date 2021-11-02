@@ -1,7 +1,7 @@
 package com.plumelog.server.collect;
 
 import com.alibaba.fastjson.JSON;
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.exception.LogQueueConnectException;

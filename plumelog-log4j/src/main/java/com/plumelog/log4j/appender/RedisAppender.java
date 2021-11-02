@@ -1,12 +1,11 @@
 package com.plumelog.log4j.appender;
 
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.redis.RedisClient;
-import com.plumelog.core.redis.RedisClusterClient;
 import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;

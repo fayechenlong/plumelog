@@ -2,6 +2,7 @@ package com.plumelog.server.client;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;

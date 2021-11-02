@@ -27,6 +27,8 @@
         <module>plumelog-trace</module>
         <module>plumelog-http</module>
         <module>plumelog-example</module>
+        <module>plumelog-lite</module>
+        <module>plumelog-lucene</module>
     </modules>
     <dependencyManagement>
         <dependencies>

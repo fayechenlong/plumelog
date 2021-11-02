@@ -1,10 +1,10 @@
 package com.plumelog.server;
 
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.server.client.AbstractServerClient;
+import com.plumelog.core.client.AbstractServerClient;
+import com.plumelog.core.lucene.LuceneClient;
 import com.plumelog.server.client.ElasticLowerClient;
-import com.plumelog.server.client.LuceneClient;
 import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.LocalLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
@@ -19,9 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * className：CollectStartBean

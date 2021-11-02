@@ -1,13 +1,10 @@
 package com.plumelog.core.redis;
 
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
-import com.plumelog.core.util.StringUtils;
 import redis.clients.jedis.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * className：RedisClusterClient

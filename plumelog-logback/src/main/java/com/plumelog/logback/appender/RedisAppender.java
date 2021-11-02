@@ -2,7 +2,7 @@ package com.plumelog.logback.appender;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;

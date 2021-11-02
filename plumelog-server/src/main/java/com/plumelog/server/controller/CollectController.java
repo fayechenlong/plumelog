@@ -4,7 +4,7 @@ import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
-import com.plumelog.server.client.AbstractServerClient;
+import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.server.collect.LocalLogQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

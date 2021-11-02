@@ -1,7 +1,7 @@
 package com.plumelog.core.redis;
 
 
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
 import redis.clients.jedis.*;
 

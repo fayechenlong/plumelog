@@ -1,8 +1,10 @@
 package com.plumelog.server.client;
 
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
+import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.kafka.KafkaConsumerClient;
+import com.plumelog.core.lucene.LuceneClient;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisClusterClient;
 import com.plumelog.core.redis.RedisSentinelClient;
@@ -212,7 +214,7 @@ public class ClientConfig implements InitializingBean {
         }
         if(InitConfig.LITE_MODE_NAME.equals(model)){
             logger.info("当前启动模式为单机简易版！");
-            return new LuceneClient();
+            return new LuceneClient(InitConfig.LITE_MODE_LOG_PATH);
         }
         ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord, trustSelfSigned, hostnameVerification);
         String esVersion = elasticLowerClient.getVersion();

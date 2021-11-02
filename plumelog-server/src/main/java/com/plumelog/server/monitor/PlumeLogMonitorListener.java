@@ -1,12 +1,11 @@
 package com.plumelog.server.monitor;
 
 import com.alibaba.fastjson.JSONObject;
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
-import com.plumelog.server.client.AbstractServerClient;
-import com.plumelog.server.client.ElasticLowerClient;
+import com.plumelog.core.client.AbstractServerClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
