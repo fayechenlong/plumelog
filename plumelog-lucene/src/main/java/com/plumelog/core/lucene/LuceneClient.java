@@ -428,12 +428,12 @@ public class LuceneClient extends AbstractServerClient {
 
     @Override
     public boolean creatIndice(String indice, String type) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean creatIndiceTrace(String indice, String type) {
-        return false;
+        return true;
     }
 
     @Override
@@ -448,7 +448,7 @@ public class LuceneClient extends AbstractServerClient {
 
     @Override
     public boolean creatIndiceNomal(String indice, String type) {
-        return false;
+        return true;
     }
 
     @Override
