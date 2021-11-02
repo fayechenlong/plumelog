@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
+import com.plumelog.server.InitConfig;
 import com.plumelog.server.util.GfJsonUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -20,7 +21,6 @@ import org.apache.lucene.search.grouping.GroupDocs;
 import org.apache.lucene.search.grouping.GroupingSearch;
 import org.apache.lucene.search.grouping.TopGroups;
 import org.apache.lucene.search.highlight.*;
-import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NRTCachingDirectory;
@@ -33,12 +33,18 @@ import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.regex.Pattern;
 
+/**
+ * @author chenlongfei
+ * @version 1.0.0
+ * time:2021-11-01
+ * description:lucene作为日志检索存储引擎
+ */
 public class LuceneClient extends AbstractServerClient {
 
     private String localpath;
 
     LuceneClient() {
-        this.localpath = System.getProperty("user.dir") + "/";
+        this.localpath = InitConfig.LITE_MODE_LOG_PATH + "/data/";
     }
 
     public void create(Collection<Document> docs, String index) throws Exception {
@@ -154,7 +160,6 @@ public class LuceneClient extends AbstractServerClient {
             if (indexs[i].contains("*")) {
                 File dir = new File(this.localpath);
                 if (dir.isDirectory()) {
-                    //获取当前目录下的所有子项
                     File[] subs = dir.listFiles();
                     for (File sub : subs) {
                         String name = sub.getName();
@@ -171,7 +176,6 @@ public class LuceneClient extends AbstractServerClient {
     }
 
     private String queryData(String indexStr, String queryStr, String from, String size) throws Exception {
-
 
         JSONObject queryJson = JSON.parseObject(queryStr);
         if (queryJson.containsKey("query")) {
@@ -199,6 +203,14 @@ public class LuceneClient extends AbstractServerClient {
                     TermQuery termQuery = new TermQuery(new Term(matchKey, matchValue));
                     builder.add(termQuery, BooleanClause.Occur.MUST);
                 }
+                if (js.containsKey("match")) {
+                    String[] matchSet = new String[1];
+                    js.getJSONObject("match").keySet().toArray(matchSet);
+                    String matchKey = matchSet[0];
+                    String matchValue = js.getJSONObject("match").getJSONObject(matchKey).getString("query");
+                    TermQuery termQuery = new TermQuery(new Term(matchKey, matchValue));
+                    builder.add(termQuery, BooleanClause.Occur.MUST);
+                }
                 if (js.containsKey("query_string")) {
                     String qStr = js.getJSONObject("query_string").getString("query");
                     QueryParser parser = new QueryParser("content", analyzer);
@@ -217,8 +229,27 @@ public class LuceneClient extends AbstractServerClient {
                 builder.add(new WildcardQuery(new Term("appName", "*")), BooleanClause.Occur.SHOULD);
             }
             Sort sort = new Sort();
-            SortField sortField = new SortField("dtTime", SortField.Type.LONG, true);
-            sort.setSort(sortField);
+            if (queryJson.containsKey("sort")) {
+                List<SortField> sortFieldList = new ArrayList<>();
+                JSONArray sortJsons = queryJson.getJSONArray("sort");
+                for (int i = 0; i < sortJsons.size(); i++) {
+                    JSONObject sortJson = sortJsons.getJSONObject(i);
+                    String[] keys = new String[sortJson.keySet().size()];
+                    sortJson.keySet().toArray(keys);
+                    for (int j = 0; j < keys.length; j++) {
+                        String key = keys[j];
+                        String value = sortJson.getString(key);
+                        boolean reverse = true;
+                        if (value.equals("asc")) {
+                            reverse = false;
+                        }
+                        sortFieldList.add(new SortField(key, SortField.Type.LONG, reverse));
+                    }
+                }
+                SortField[] sortFields = new SortField[sortFieldList.size()];
+                sortFieldList.toArray(sortFields);
+                sort.setSort(sortFields);
+            }
 
             int min = Integer.parseInt(from);
             int count = Integer.parseInt(size);
@@ -232,26 +263,11 @@ public class LuceneClient extends AbstractServerClient {
             qr.setTotal(topDocs.totalHits);
             List<Map<String, Object>> hits = new ArrayList<>();
 
-
-            /**
-             * 高亮显示
-             */
-
             QueryScorer scorer = new QueryScorer(builder.build());
-
-            //显示得分高的片段
             Fragmenter fragmenter = new SimpleSpanFragmenter(scorer);
-
-            //设置标签内部关键字的颜色
-            //第一个参数：标签的前半部分；第二个参数：标签的后半部分。
             SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<em>", "</em>");
-
-            //第一个参数是对查到的结果进行实例化；第二个是片段得分（显示得分高的片段，即摘要）
             Highlighter highlighter = new Highlighter(simpleHTMLFormatter, scorer);
-
-            //设置片段
             highlighter.setTextFragmenter(fragmenter);
-
 
             for (int i = min; i < scoreDocs.length; i++) {
                 ScoreDoc scoreDoc = scoreDocs[i];
@@ -260,7 +276,7 @@ public class LuceneClient extends AbstractServerClient {
                 Map<String, Object> hit = new HashMap<>();
                 hit.put("_id", docID);
                 hit.put("_source", mapCopy(doc));
-                hit.put("highlight", highlighterMapCopy(doc, builder.build(),analyzer));
+                hit.put("highlight", highlighterMapCopy(doc, builder.build(), analyzer));
                 hits.add(hit);
             }
             qr.setHits(hits);

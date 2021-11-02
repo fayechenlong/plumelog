@@ -52,9 +52,9 @@ public class MainService {
                 "                </div>\n" +
                 "            </div>");
 
-        executorService.execute(() -> {
-            logger.info("子线程日志展示");
-        });
+//        executorService.execute(() -> {
+//            logger.info("子线程日志展示");
+//        });
 
         MDC.put("orderNum","12345678");
         logger.info("订单编号：{}","12345678");

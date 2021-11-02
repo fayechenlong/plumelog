@@ -38,7 +38,7 @@ public class LogMessageUtil {
         String traceId = null;
         if (!logEvent.getMDCPropertyMap().isEmpty()) {
             traceId = logEvent.getMDCPropertyMap().get(LogMessageConstant.TRACE_ID);
-            if(traceId!=null) {
+            if(traceId!=null&&TraceId.logTraceID.get()!=null) {
                 TraceId.logTraceID.set(traceId);
             }
         }

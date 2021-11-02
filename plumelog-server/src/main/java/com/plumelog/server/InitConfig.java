@@ -6,6 +6,7 @@ public class InitConfig {
     public final static String REDIS_MODE_NAME = "redis";
     public final static String REST_MODE_NAME = "rest";
     public final static String LITE_MODE_NAME = "lite";
+    public static String LITE_MODE_LOG_PATH = ".";
     public final static String REDIS_CLUSTER_MODE_NAME = "redisCluster";
     public final static String REDIS_SENTINEL_MODE_NAME = "redisSentinel";
     public static final long MILLS_ONE_DAY = 24 * 60 * 60 * 1000;

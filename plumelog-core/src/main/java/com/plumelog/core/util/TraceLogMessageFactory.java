@@ -25,6 +25,7 @@ public class TraceLogMessageFactory<T> {
         traceLogMessage.setPosition(traceMessage.getPosition());
         traceLogMessage.setPositionNum(traceMessage.getPositionNum().get());
         traceLogMessage.setServerName(IpGetter.CURRENT_IP);
+        traceLogMessage.setTraceId(TraceId.logTraceID.get());
         return traceLogMessage;
     }
 

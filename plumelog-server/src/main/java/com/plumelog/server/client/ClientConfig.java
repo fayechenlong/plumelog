@@ -116,6 +116,9 @@ public class ClientConfig implements InitializingBean {
     @Value("${admin.log.trace.keepDays:0}")
     private int traceKeepDays;
 
+    @Value("${plumelog.lite.log.path:}")
+    private String liteLogPath;
+
     @Bean(name = "redisClient")
     public AbstractClient initRedisClient() {
         if (InitConfig.LITE_MODE_NAME.equals(this.model)) {
@@ -250,6 +253,11 @@ public class ClientConfig implements InitializingBean {
         InitConfig.ES_INDEX_REPLICAS = this.replicas;
         InitConfig.ES_REFRESH_INTERVAL = this.refreshInterval;
         InitConfig.ES_INDEX_MODEL = this.indexTypeModel;
+        if(this.liteLogPath!=null&&!"".equals(this.liteLogPath)){
+            InitConfig.LITE_MODE_LOG_PATH=this.liteLogPath;
+        }else {
+            InitConfig.LITE_MODE_LOG_PATH=System.getProperty("user.dir");
+        }
 
         try {
             ZoneId.of(this.indexTypeZoneId);
