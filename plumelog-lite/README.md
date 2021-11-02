@@ -16,7 +16,7 @@
 
 ```
 
-3. 配置
+2. 配置logback.xml
 
 ```xml
 <appender name="plumelog" class="com.plumelog.lite.logback.appender.LiteAppender">
@@ -37,6 +37,6 @@
         spring.mvc.static-path-pattern=/**
 ```
 
-4. 访问
+3. 访问
 
 启动你的项目：输入你的项目地址+plumelog/#/访问，例如：http://localhost:8083/plumelog/#/ 一定要加这个/#/后缀
