@@ -19,6 +19,7 @@
 2. 配置logback.xml
 
 ```xml
+
 <appender name="plumelog" class="com.plumelog.lite.logback.appender.LiteAppender">
     <appName>plumelog</appName>
     <!-- 日志存储位置 -->
@@ -28,15 +29,21 @@
 </appender>
 ```
 
+3. 在springboot启动类里添加扫描路径
+
+```java
+@ComponentScan(basePackages = {"你的项目扫描目录","com.plumelog"})
+```
+
 ##### 注意：如果你的项目没有配置可以访问静态文件请做如下配置 在application.properties配置：
 
 ```properties
         spring.thymeleaf.mode=LEGACYHTML5
-        spring.mvc.view.prefix=classpath:/templates
-        spring.mvc.view.suffix=.html
-        spring.mvc.static-path-pattern=/**
+spring.mvc.view.prefix=classpath:/templates
+spring.mvc.view.suffix=.html
+spring.mvc.static-path-pattern=/**
 ```
 
-3. 访问
+4. 访问
 
 启动你的项目：输入你的项目地址+plumelog/#/访问，例如：http://localhost:8083/plumelog/#/ 一定要加这个/#/后缀
