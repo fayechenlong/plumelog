@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/plumelogServer")
+@RequestMapping("/plumelog")
 public class PlumeLogMainController {
     @Autowired
     private AbstractServerClient abstractServerClient;

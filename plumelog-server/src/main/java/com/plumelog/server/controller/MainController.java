@@ -55,7 +55,7 @@ public class MainController {
     @Autowired
     private SystemConfig systemConfig;
 
-    @GetMapping({"/getConfig", "/plumelogServer/getConfig"})
+    @GetMapping({"/getConfig", "/plumelog/getConfig"})
     public Result getConfig() {
        Result r = new Result(200);
        r.setData(systemConfig);
@@ -63,7 +63,7 @@ public class MainController {
     }
 
 
-    @RequestMapping({"/login", "/plumelogServer/login"})
+    @RequestMapping({"/login", "/plumelog/login"})
     public Result login(@RequestBody LoginVO login, HttpServletRequest request) {
         if (StringUtils.isEmpty(InitConfig.loginUsername)) {
             request.getSession().setAttribute("token", new Object());
@@ -78,12 +78,12 @@ public class MainController {
         }
     }
 
-    @RequestMapping({"/logout", "/plumelogServer/logout"})
+    @RequestMapping({"/logout", "/plumelog/logout"})
     public void login(HttpServletRequest request) {
         request.getSession().removeAttribute("token");
     }
 
-    @RequestMapping({"/getlog", "/plumelogServer/getlog"})
+    @RequestMapping({"/getlog", "/plumelog/getlog"})
     public Result getlog(Integer maxSendSize, String logKey) {
         if (maxSendSize == null) {
             maxSendSize = 500;
@@ -108,7 +108,7 @@ public class MainController {
         return result;
     }
 
-    @RequestMapping({"/sendLog", "/plumelogServer/sendLog"})
+    @RequestMapping({"/sendLog", "/plumelog/sendLog"})
     public Result sendLog(@RequestBody List<LogMessage> logs, String logKey) {
         Result result = new Result();
         if ("redis".equals(InitConfig.START_MODEL)) {
