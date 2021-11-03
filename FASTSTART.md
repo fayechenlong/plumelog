@@ -2,8 +2,9 @@
 
 [TOC]
 
-## 一、服务端安装
-1. 服务端安装
+## 一、服务端安装配置
+
+### （1）服务端安装
     
    第一步：安装 redis 或者 kafka（一般公司redis足够） redis 官网:https://redis.io   kafka：http://kafka.apache.org
      
@@ -17,7 +18,9 @@
    
    第五步：后台查询语法详见[plumelog使用指南](/HELP.md)
    
-2. 服务端配置文件 plumelog-server/application.properties 详解：
+###（2）服务端配置
+
+* 文件 plumelog-server/application.properties 详解：
 
 ```properties
         spring.application.name=plumelog_server
@@ -103,9 +106,9 @@
         login.password=admin
 ```       
 
-3. 提升性能推荐参考配置方法
+### （3）提升性能推荐参考配置方法
    
- #### 单日日志体量在50G以内，并使用的SSD硬盘
+ * 单日日志体量在50G以内，并使用的SSD硬盘
    
    plumelog.es.shards=5
    
@@ -115,7 +118,7 @@
    
    plumelog.es.indexType.model=day
    
- #### 单日日志体量在50G以上，并使用的机械硬盘
+ * 单日日志体量在50G以上，并使用的机械硬盘
    
    plumelog.es.shards=5
    
@@ -125,7 +128,7 @@
    
    plumelog.es.indexType.model=hour
    
- #### 单日日志体量在100G以上，并使用的机械硬盘
+ * 单日日志体量在100G以上，并使用的机械硬盘
    
    plumelog.es.shards=10
    
@@ -135,7 +138,7 @@
    
    plumelog.es.indexType.model=hour
    
- #### 单日日志体量在1000G以上，并使用的SSD硬盘，这个配置可以跑到10T一天以上都没问题
+ * 单日日志体量在1000G以上，并使用的SSD硬盘，这个配置可以跑到10T一天以上都没问题
    
    plumelog.es.shards=10
    
@@ -145,7 +148,7 @@
    
    plumelog.es.indexType.model=hour
    
- #### plumelog.es.shards的增加和hour模式下需要调整ES集群的最大分片数
+ * plumelog.es.shards的增加和hour模式下需要调整ES集群的最大分片数
    
     PUT /_cluster/settings
     {
@@ -158,10 +161,17 @@
 
 ## 二、客户端使用
 
-1. 客户端在项目使用，非maven项目下载依赖包（ https://gitee.com/frankchenlong/plumelog/releases ）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
+### （1）注意事项
 
-#### 推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
-#### 示例中仅仅是基本配置，更多配置请看文章下面配置详解
+客户端在项目使用，非maven项目下载依赖包（ https://gitee.com/frankchenlong/plumelog/releases ）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
+ 
+推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
+
+示例中仅仅是基本配置，更多配置请看文章下面配置详解
+
+### （2）客户端配置
+
+#### 1.log4j
 
 （1）如果项目使用的log4j，引入
 
@@ -204,7 +214,7 @@
 ```
    同理如果使用logback,和log4j2配置如下,示例如下：
     
-#### logback
+#### 2.logback
 
 * 引入
 ```xml
@@ -240,7 +250,7 @@
         <appender-ref ref="plumelog" />
     </root>
 ```   
-#### logback整合配置中心案例，推荐使用
+#### 3.logback整合配置中心案例，推荐使用
 
 * application.properties
 
@@ -298,7 +308,7 @@ spring.profiles.active=dev
 </configuration>
 ```   
 
-#### log4j2
+#### 4.log4j2
 
 * 引入
 ```xml
@@ -330,9 +340,8 @@ spring.profiles.active=dev
       </root>
   </loggers>
 ```    
-2. 示例(所有的列子都在plumelog-demo里面)
 
-### 客户端配置详解
+### （2）客户端配置详解
 
 RedisAppender
 
@@ -349,7 +358,6 @@ RedisAppender
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）是否开启日志压缩，默认false |
 | env  | （3.4.2）环境 默认是default|
-| plumelogHost  | 3.5|
 
 KafkaAppender
 
@@ -371,11 +379,12 @@ LiteAppender
 | maxCount  | （3.1）批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | env  | （3.4.2）环境 默认是default|
-| plumelogHost  | 3.5 plumelogserver端地址|
+| plumelogHost  | 3.5 lite模式下plumelogserver的地址|
+| keepDay  | 3.5 plumelog-lite 日志本地保留天数|
 
-3. traceID生成配置
+### （3）traceID生成配置
   
-非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里（com.plumelog.core.TraceIdFilter），如果是定时任务,监听类的放在定时任务的最前端)
+* 非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里（com.plumelog.core.TraceIdFilter），如果是定时任务,监听类的放在定时任务的最前端)
 
 servlet
 ```java
@@ -406,7 +415,8 @@ servlet
         }
 ```   
 
-webflux
+* webflux
+
 ```java
         @Bean
         public WebFluxTraceIdFilter initCustomFilter() {
@@ -427,7 +437,7 @@ web.xml配置示例
         </filter-mapping>   
 ``` 
 
-spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceId
+* spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceId
 
 ```xml
         <dependency>
@@ -472,16 +482,26 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
         }
     }
 ``` 
-4. [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
+### （4）开启链路追踪
 
-5. 扩展字段功能，MDC用法，例如，详细用法参照[plumelog使用指南](/HELP.md)
+[链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
+
+### （5）扩展字段功能
+   
+* MDC用法，例如，详细用法参照[plumelog使用指南](/HELP.md)
 
 ```java
             MDC.put("orderid", "1");
             MDC.put("userid", "4");
             logger.info("扩展字段");
 ``` 
-6. 错误报警说明
+
+
+    1.在系统扩展字段里添加扩展字段，字段值为 orderid 显示值为 订单编号
+    
+    2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
+
+### （6）错误报警说明
 
    在ui的报警管理里配置报警规则：
    
@@ -492,20 +512,21 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
   | 应用名称 | 需要错误报警的应用名称（appName）|
   | 模块名称 | 需要错误报警的className |
   | 接收人 | 填手机号码，所有人填写ALL |
-  | 钩子地址 | 群机器人webhook地址 |
+  | 平台 | 企微，钉钉，飞书，其他 其他表示自定义webhook |
+  | 钩子地址 | 群机器人webhook地址,或者自定义webhhok地址 |
   | 错误数量 | 错误累计超过多少条报警 |
   | 时间间隔 | 错误在多少秒内累计到上面错误数量开始报警 |
   
-   报警记录里为报警历史记录，点击可以直接连接到错误内容
-   1.在系统扩展字段里添加扩展字段，字段值为 orderid 显示值为 订单编号
-   2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
+   1.报警记录里为报警历史记录，点击可以直接连接到错误内容
+
+   2.请求webhook会带message（报警内容）和mobile（接收人手机号）两个参数，例如：http://你的webhook地址？message=报警内容&&mobile=接收人手机号
 
 
-7. TraceId跨线程传递
+### （7）TraceId跨线程传递
 
     如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog-demo也有）
 
-    #### 修饰线程池
+   * 修饰线程池
 
 ```java
         private static ExecutorService executorService = TtlExecutors.getTtlExecutorService(
@@ -515,7 +536,7 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
                       logger.info("子线程日志展示");
           });
 ```        
-   #### 修饰Runnable和Callable
+  * 修饰Runnable和Callable
    
 ```java
         private static ThreadPoolExecutor threadPoolExecutor= ThreadPoolUtil.getPool(4, 8, 5000);
@@ -524,11 +545,16 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
                    TraceId.logTraceID.get();
                    logger.info("tankSay =》我是子线程的日志！{}", TraceId.logTraceID.get());
          }));
-```       
-8. [docker版本安装点我](/docker-file/DOCKER.md)
+```
+
+## 三、docker安装
+
+[docker版本安装点我](/docker-file/DOCKER.md)
 
 
-9. 非java项目可以api方式接入，3.2后版本server支持，暂时只支持redis模式
+## 四、非java项目
+   
+  可以api方式接入，3.2后版本server支持，暂时只支持redis模式
   
   接口地址：http://plumelog-server地址/sendLog?logKey=plume_log_list
   
@@ -561,14 +587,14 @@ spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话�
   ]
 ``` 
 
-10. nginx日志搜集解决方案参考
+## 五、nginx日志搜集解决方案参考
 
   [nginx解决方案](/logstash/ng.md)
 
 
-## 三、自己编译安装如下
+## 六、自己编译安装如下
 
-### 前提:kafka或者redis  和 elasticsearch 自行安装完毕，版本兼容已经做了，理论不用考虑ES版本
+* 前提:kafka或者redis  和 elasticsearch 自行安装完毕，版本兼容已经做了，理论不用考虑ES版本
 
 * 打包
 
