@@ -31,4 +31,6 @@ public abstract class AbstractServerClient {
     public abstract List<String> getExistIndices(String[] indices);
 
     public abstract void close();
+
+    public abstract boolean addShards(Long shardCount);
 }

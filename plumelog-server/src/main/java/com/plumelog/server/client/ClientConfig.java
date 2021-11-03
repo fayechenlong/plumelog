@@ -80,6 +80,9 @@ public class ClientConfig implements InitializingBean {
     private int shards;
     @Value("${plumelog.es.replicas:1}")
     private int replicas;
+    @Value("${plumelog.es.maxShards:100000}")
+    private Long maxShards;
+
     @Value("${plumelog.es.refresh.interval:60s}")
     private String refreshInterval;
     @Value("${plumelog.es.indexType.model:day}")
@@ -226,6 +229,7 @@ public class ClientConfig implements InitializingBean {
         String esVersion = elasticLowerClient.getVersion();
         logger.info("es 初始化成功！Elastic 版本：{}", esVersion);
         if (esVersion != null && Integer.parseInt(esVersion.split("\\.")[0]) < 7) {
+            InitConfig.esVersion=Integer.parseInt(esVersion.split("\\.")[0]);
             logger.info("set index type=plumelog");
             this.indexType = "plumelog";
             LogMessageConstant.ES_TYPE= "plumelog";
@@ -286,6 +290,7 @@ public class ClientConfig implements InitializingBean {
 
         InitConfig.keepDays = this.keepDays;
         InitConfig.traceKeepDays = this.traceKeepDays;
+        InitConfig.maxShards=this.maxShards;
 
         logger.info("server run model:" + this.model);
         logger.info("maxSendSize:" + this.maxSendSize);
@@ -294,7 +299,6 @@ public class ClientConfig implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
         try {
             loadConfig();
             logger.info("load config success!");

@@ -30,4 +30,6 @@ public class InitConfig {
     public static String loginPassword = "";
     public static int keepDays = 0;
     public static int traceKeepDays = 0;
+    public static Long maxShards = 100000L;
+    public static int esVersion = 7;
 }

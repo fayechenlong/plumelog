@@ -460,5 +460,10 @@ public class LuceneClient extends AbstractServerClient {
     public void close() {
 
     }
+
+    @Override
+    public boolean addShards(Long shardCount) {
+        return false;
+    }
 }
 

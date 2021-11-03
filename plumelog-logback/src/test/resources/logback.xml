@@ -29,15 +29,15 @@
 <!--        <kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>-->
 <!--    </appender>-->
     <!-- easylog日志 -->
-<!--    <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">-->
-<!--        <appName>work</appName>-->
-<!--        <plumelogHost>localhost:8891</plumelogHost>-->
-<!--    </appender>-->
-    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
-        <appName>plumelog-test</appName>
-        <redisHost>172.18.71.26:6379</redisHost>
-        <redisAuth>Jch9shshl</redisAuth>
+    <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">
+        <appName>work</appName>
+        <plumelogHost>localhost:8891</plumelogHost>
     </appender>
+<!--    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">-->
+<!--        <appName>plumelog-test</appName>-->
+<!--        <redisHost>172.18.71.26:6379</redisHost>-->
+<!--        <redisAuth>Jch9shshl</redisAuth>-->
+<!--    </appender>-->
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />

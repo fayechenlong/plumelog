@@ -251,7 +251,23 @@ public class ElasticLowerClient extends AbstractServerClient {
         }
         return false;
     }
-
+    @Override
+    public boolean addShards(Long shardCount) {
+        try {
+            Request request = new Request(
+                    "PUT",
+                    "/_cluster/settings");
+            String ent = "{\"persistent\":{\"cluster\":{\"max_shards_per_node\":"+shardCount+"}}}";
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return false;
+    }
     @Override
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
 
