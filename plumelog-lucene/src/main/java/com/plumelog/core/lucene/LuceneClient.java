@@ -15,6 +15,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.grouping.GroupDocs;
@@ -47,7 +48,17 @@ public class LuceneClient extends AbstractServerClient {
         this.localpath = rootPath + "/data/";
     }
 
-    public void create(Collection<Document> docs, String index) throws Exception {
+
+    public void insertListTrace(List<TraceLogMessage> list, String baseIndex) throws Exception {
+        create(loadTraceDocs(list), baseIndex);
+    }
+
+
+    public void insertListLog(List<RunLogMessage> list, String baseIndex) throws Exception {
+        create(loadDocs(list), baseIndex);
+    }
+
+    private void create(Collection<Document> docs, String index) throws Exception {
         Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + index));
         NRTCachingDirectory nrtCachingDirectory = new NRTCachingDirectory(directory, 5, 60);
         SmartChineseAnalyzer smartChineseAnalyzer = new SmartChineseAnalyzer();
@@ -110,30 +121,6 @@ public class LuceneClient extends AbstractServerClient {
     }
 
     @Override
-    public void insertListLog(List<String> list, String baseIndex, String type) throws Exception {
-
-
-    }
-
-    public void insertListLog(List<RunLogMessage> list, String baseIndex) throws Exception {
-        create(loadDocs(list), baseIndex);
-    }
-
-    @Override
-    public void insertListTrace(List<String> list, String baseIndex, String type) throws Exception {
-
-    }
-
-    public void insertListTrace(List<TraceLogMessage> list, String baseIndex) throws Exception {
-        create(loadTraceDocs(list), baseIndex);
-    }
-
-    @Override
-    public void insertListComm(List<String> list, String baseIndex, String type) throws Exception {
-
-    }
-
-    @Override
     public boolean deleteIndex(String index) {
         try {
             List<String> list = getIndex(index);
@@ -184,9 +171,7 @@ public class LuceneClient extends AbstractServerClient {
         JSONObject queryJson = JSON.parseObject(queryStr);
         if (queryJson.containsKey("query")) {
             JSONArray query = queryJson.getJSONObject("query").getJSONObject("bool").getJSONArray("must");
-
             List<String> indexs = getIndex(indexStr);
-
             IndexReader[] indexReaders = new IndexReader[indexs.size()];
             for (int i = 0; i < indexs.size(); i++) {
                 Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(this.localpath + indexs.get(i)));
@@ -197,64 +182,20 @@ public class LuceneClient extends AbstractServerClient {
             IndexSearcher searcher = new IndexSearcher(multiReader);
             BooleanQuery.Builder builder = new BooleanQuery.Builder();
             SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
-            for (int a = 0; a < query.size(); a++) {
-                JSONObject js = query.getJSONObject(a);
-                if (js.containsKey("match_phrase")) {
-                    String[] matchSet = new String[1];
-                    js.getJSONObject("match_phrase").keySet().toArray(matchSet);
-                    String matchKey = matchSet[0];
-                    String matchValue = js.getJSONObject("match_phrase").getJSONObject(matchKey).getString("query");
-                    TermQuery termQuery = new TermQuery(new Term(matchKey, matchValue));
-                    builder.add(termQuery, BooleanClause.Occur.MUST);
-                }
-                if (js.containsKey("match")) {
-                    String[] matchSet = new String[1];
-                    js.getJSONObject("match").keySet().toArray(matchSet);
-                    String matchKey = matchSet[0];
-                    String matchValue = js.getJSONObject("match").getJSONObject(matchKey).getString("query");
-                    TermQuery termQuery = new TermQuery(new Term(matchKey, matchValue));
-                    builder.add(termQuery, BooleanClause.Occur.MUST);
-                }
-                if (js.containsKey("query_string")) {
-                    String qStr = js.getJSONObject("query_string").getString("query");
-                    QueryParser parser = new QueryParser("content", analyzer);
-                    // 创建查询对象
-                    Query content = parser.parse(qStr);
-                    builder.add(content, BooleanClause.Occur.MUST);
-                }
-                if (js.containsKey("range")) {
-                    Long gte = js.getJSONObject("range").getJSONObject("dtTime").getLong("gte");
-                    Long lt = js.getJSONObject("range").getJSONObject("dtTime").getLong("lt");
-                    Query range = NumericDocValuesField.newSlowRangeQuery("dtTime", gte, lt);
-                    builder.add(range, BooleanClause.Occur.MUST);
-                }
-            }
-            if (builder.build().clauses().isEmpty()) {
-                builder.add(new WildcardQuery(new Term("appName", "*")), BooleanClause.Occur.SHOULD);
-            }
+            /**
+             * 组装查询
+             */
+            buildQuery(query, builder, analyzer);
+            /**
+             * 组装排序
+             */
             Sort sort = new Sort();
             if (queryJson.containsKey("sort")) {
-                List<SortField> sortFieldList = new ArrayList<>();
-                JSONArray sortJsons = queryJson.getJSONArray("sort");
-                for (int i = 0; i < sortJsons.size(); i++) {
-                    JSONObject sortJson = sortJsons.getJSONObject(i);
-                    String[] keys = new String[sortJson.keySet().size()];
-                    sortJson.keySet().toArray(keys);
-                    for (int j = 0; j < keys.length; j++) {
-                        String key = keys[j];
-                        String value = sortJson.getString(key);
-                        boolean reverse = true;
-                        if (value.equals("asc")) {
-                            reverse = false;
-                        }
-                        sortFieldList.add(new SortField(key, SortField.Type.LONG, reverse));
-                    }
-                }
-                SortField[] sortFields = new SortField[sortFieldList.size()];
-                sortFieldList.toArray(sortFields);
-                sort.setSort(sortFields);
+                buildSort(sort, queryJson);
             }
-
+            /**
+             * 组装分页
+             */
             int min = Integer.parseInt(from);
             int count = Integer.parseInt(size);
             int max = min + count;
@@ -265,14 +206,10 @@ public class LuceneClient extends AbstractServerClient {
             ScoreDoc[] scoreDocs = topDocs.scoreDocs;
             QueryRs qr = new QueryRs();
             qr.setTotal(topDocs.totalHits);
+            /**
+             * 组装高亮显示
+             */
             List<Map<String, Object>> hits = new ArrayList<>();
-
-            QueryScorer scorer = new QueryScorer(builder.build());
-            Fragmenter fragmenter = new SimpleSpanFragmenter(scorer);
-            SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<em>", "</em>");
-            Highlighter highlighter = new Highlighter(simpleHTMLFormatter, scorer);
-            highlighter.setTextFragmenter(fragmenter);
-
             for (int i = min; i < scoreDocs.length; i++) {
                 ScoreDoc scoreDoc = scoreDocs[i];
                 int docID = scoreDoc.doc;
@@ -290,6 +227,66 @@ public class LuceneClient extends AbstractServerClient {
             return JSONObject.toJSONString(rs);
         }
         return null;
+    }
+
+    private void buildQuery(JSONArray query, BooleanQuery.Builder builder, SmartChineseAnalyzer analyzer) throws ParseException {
+        for (int a = 0; a < query.size(); a++) {
+            JSONObject js = query.getJSONObject(a);
+            if (js.containsKey("match_phrase")) {
+                String[] matchSet = new String[1];
+                js.getJSONObject("match_phrase").keySet().toArray(matchSet);
+                String matchKey = matchSet[0];
+                String matchValue = js.getJSONObject("match_phrase").getJSONObject(matchKey).getString("query");
+                TermQuery termQuery = new TermQuery(new Term(matchKey, matchValue));
+                builder.add(termQuery, BooleanClause.Occur.MUST);
+            }
+            if (js.containsKey("match")) {
+                String[] matchSet = new String[1];
+                js.getJSONObject("match").keySet().toArray(matchSet);
+                String matchKey = matchSet[0];
+                String matchValue = js.getJSONObject("match").getJSONObject(matchKey).getString("query");
+                TermQuery termQuery = new TermQuery(new Term(matchKey, matchValue));
+                builder.add(termQuery, BooleanClause.Occur.MUST);
+            }
+            if (js.containsKey("query_string")) {
+                String qStr = js.getJSONObject("query_string").getString("query");
+                QueryParser parser = new QueryParser("content", analyzer);
+                // 创建查询对象
+                Query content = parser.parse(qStr);
+                builder.add(content, BooleanClause.Occur.MUST);
+            }
+            if (js.containsKey("range")) {
+                Long gte = js.getJSONObject("range").getJSONObject("dtTime").getLong("gte");
+                Long lt = js.getJSONObject("range").getJSONObject("dtTime").getLong("lt");
+                Query range = NumericDocValuesField.newSlowRangeQuery("dtTime", gte, lt);
+                builder.add(range, BooleanClause.Occur.MUST);
+            }
+        }
+        if (builder.build().clauses().isEmpty()) {
+            builder.add(new WildcardQuery(new Term("appName", "*")), BooleanClause.Occur.SHOULD);
+        }
+    }
+
+    private void buildSort(Sort sort, JSONObject queryJson) {
+        List<SortField> sortFieldList = new ArrayList<>();
+        JSONArray sortJsons = queryJson.getJSONArray("sort");
+        for (int i = 0; i < sortJsons.size(); i++) {
+            JSONObject sortJson = sortJsons.getJSONObject(i);
+            String[] keys = new String[sortJson.keySet().size()];
+            sortJson.keySet().toArray(keys);
+            for (int j = 0; j < keys.length; j++) {
+                String key = keys[j];
+                String value = sortJson.getString(key);
+                boolean reverse = true;
+                if (value.equals("asc")) {
+                    reverse = false;
+                }
+                sortFieldList.add(new SortField(key, SortField.Type.LONG, reverse));
+            }
+        }
+        SortField[] sortFields = new SortField[sortFieldList.size()];
+        sortFieldList.toArray(sortFields);
+        sort.setSort(sortFields);
     }
 
     private Map<String, Object> highlighterMapCopy(Document paramsMap, BooleanQuery booleanQuery, SmartChineseAnalyzer analyzer) {
@@ -326,6 +323,14 @@ public class LuceneClient extends AbstractServerClient {
         return null;
     }
 
+    /**
+     * 分组查询
+     *
+     * @param indexStr
+     * @param queryStr
+     * @return
+     * @throws Exception
+     */
     private String queryGroup(String indexStr, String queryStr) throws Exception {
         JSONObject queryJson = JSON.parseObject(queryStr);
         String fieldName = queryJson.getJSONObject("aggregations").getJSONObject("dataCount").getJSONObject("terms").getString("field");
@@ -377,7 +382,6 @@ public class LuceneClient extends AbstractServerClient {
     }
 
     private Map<String, Object> mapCopy(Document paramsMap) {
-
         Map<String, Object> resultMap = new HashMap<>();
         Iterator<IndexableField> it = paramsMap.iterator();
         while (it.hasNext()) {
@@ -424,6 +428,23 @@ public class LuceneClient extends AbstractServerClient {
             e.printStackTrace();
         }
         return GfJsonUtil.toJSONString(infos);
+    }
+
+    @Override
+    public void insertListLog(List<String> list, String baseIndex, String type) throws Exception {
+
+
+    }
+
+    @Override
+    public void insertListTrace(List<String> list, String baseIndex, String type) throws Exception {
+
+    }
+
+
+    @Override
+    public void insertListComm(List<String> list, String baseIndex, String type) throws Exception {
+
     }
 
     @Override
