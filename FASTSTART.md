@@ -157,17 +157,17 @@ admin.log.trace.keepDays=30
 
 ### （1）注意事项
 
-客户端在项目使用，非maven项目下载依赖包（ https://gitee.com/frankchenlong/plumelog/releases ）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
+* 1.客户端在项目使用，非maven项目下载依赖包（ https://gitee.com/frankchenlong/plumelog/releases ）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了
 
-推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
+* 2.推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
 
-示例中仅仅是基本配置，更多配置请看文章下面配置详解
+* 3.示例中仅仅是基本配置，更多配置请看文章下面配置详解
 
 ### （2）客户端配置
 
 #### 1.log4j
 
-（1）如果项目使用的log4j，引入
+* 引入
 
 ```xml
 
@@ -178,7 +178,7 @@ admin.log.trace.keepDays=30
 </dependency>
 ```                       
 
-配置log4j配置文件，增加下面这个Appender,示例如下：
+* 配置log4j配置文件，增加下面这个Appender,示例如下：
 
 ```properties
 #三选一加入到root
@@ -379,15 +379,24 @@ KafkaAppender
 | compressor  | （3.4）压缩方式配置，默认false（true：开启lz4压缩） |
 | env  | （3.4.2）环境 默认是default|
 
-LiteAppender | 字段值 | 用途 | | ---- | ---- | | appName | 自定义应用名称 | | runModel | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 | |
-maxCount | （3.1）批量提交日志数量，默认100 | | logQueueSize | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
-| env | （3.4.2）环境 默认是default| | plumelogHost | 3.5 lite模式下plumelogserver的地址| | keepDay | 3.5 plumelog-lite 日志本地保留天数|
+
+LiteAppender 
+
+| 字段值 | 用途 |
+| ---- | ---- | 
+| appName | 自定义应用名称 |
+| runModel | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 | 
+| maxCount | （3.1）批量提交日志数量，默认100 | 
+| logQueueSize | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
+| env | （3.4.2）环境 默认是default| 
+| plumelogHost | 3.5 lite模式下plumelogserver的地址| 
+| keepDay | 3.5 plumelog-lite 日志本地保留天数|
 
 ### （3）traceID生成配置
 
 * 非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里（com.plumelog.core.TraceIdFilter），如果是定时任务,监听类的放在定时任务的最前端)
 
-servlet
+* servlet
 
 ```java
 
