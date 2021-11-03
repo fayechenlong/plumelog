@@ -8,6 +8,9 @@
             <li class="nav-item" :class="{'active':pageName=='Trace'}" >
                 <a class="nav-link" href="./#/trace"><Icon type="md-git-merge" />链路追踪</a>
             </li>
+          <li class="nav-item " :class="{'active':pageName=='Console'}">
+            <a class="nav-link"  href="./#/console"><Icon type="logo-buffer" />滚动日志</a>
+          </li>
             <!-- <li class="nav-item" :class="{'active':pageName=='Chart'}">
                 <a class="nav-link" href="./#/chart">数据统计</a>
             </li> -->
