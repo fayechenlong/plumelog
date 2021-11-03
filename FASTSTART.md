@@ -18,7 +18,7 @@
    
    第五步：后台查询语法详见[plumelog使用指南](/HELP.md)
    
-###（2）服务端配置
+### （2）服务端配置
 
 * 文件 plumelog-server/application.properties 详解：
 
