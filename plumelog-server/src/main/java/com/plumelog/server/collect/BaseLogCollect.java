@@ -9,6 +9,7 @@ import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.monitor.PlumelogMonitorEvent;
 import com.plumelog.server.util.IndexUtil;
+import com.plumelog.server.websocket.WebSocketSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -81,6 +82,9 @@ public class BaseLogCollect {
                     if ("ERROR".equalsIgnoreCase(runLogMessage.getLogLevel())) {
                         errorLogs.add(runLogMessage);
                     }
+
+                    //控制台事件
+                    WebSocketSession.sendToConsole(logString);
                 }
                 logs = null;
                 applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, errorLogs));

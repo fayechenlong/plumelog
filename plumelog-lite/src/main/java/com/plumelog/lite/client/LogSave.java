@@ -14,6 +14,7 @@ import com.plumelog.core.lucene.LuceneClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.LZ4Util;
 
+import javax.websocket.Session;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +89,13 @@ public class LogSave {
                 if (key.equals(LogMessageConstant.LOG_KEY)) {
                     luceneClient.insertListLog(baseLogMessage, getRunLogIndex());
                 }
+                if (WebSocketSession.sessions.size() > 0) {
+                    for (RunLogMessage runLogMessage : baseLogMessage) {
+                        for (Session session : WebSocketSession.sessions) {
+                            session.getBasicRemote().sendText(GfJsonUtil.toJSONString(runLogMessage));
+                        }
+                    }
+                }
                 cache.put(logOutPutKey, true);
             } catch (Exception e) {
                 cache.put(logOutPutKey, false);
@@ -95,6 +103,7 @@ public class LogSave {
             }
         }
     }
+
     private static void pushTrace(String key, List<TraceLogMessage> baseLogMessage, String logOutPutKey) {
         if (baseLogMessage.size() == 0) {
             return;
@@ -112,6 +121,7 @@ public class LogSave {
             }
         }
     }
+
     private static List<String> compress(List<String> baseLogMessage, boolean compress) {
 
         if (!compress) {

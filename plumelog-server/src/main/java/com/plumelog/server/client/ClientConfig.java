@@ -17,8 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.StringUtils;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
+import java.security.PublicKey;
 import java.time.ZoneId;
 
 /**
@@ -31,6 +36,7 @@ import java.time.ZoneId;
  */
 @Configuration
 @Order(1)
+@EnableWebSocket
 public class ClientConfig implements InitializingBean {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
     @Value("${plumelog.maxSendSize:5000}")
@@ -295,5 +301,16 @@ public class ClientConfig implements InitializingBean {
         } catch (Exception e) {
             logger.error("plumelog load config success failed!", e);
         }
+    }
+    @Bean
+    public ServerEndpointExporter serverEndpointExporter() {
+        return new ServerEndpointExporter();
+    }
+    @Bean
+    public TaskScheduler taskScheduler(){
+        ThreadPoolTaskScheduler taskScheduler=new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(10);
+        taskScheduler.initialize();;
+        return taskScheduler;
     }
 }

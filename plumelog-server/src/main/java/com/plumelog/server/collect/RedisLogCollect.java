@@ -142,7 +142,6 @@ public class RedisLogCollect extends BaseLogCollect {
     }
 
     private List<String> decompressor(List<String> logs) {
-
         if (!compressor) {
             return logs;
         }

@@ -438,7 +438,7 @@ public class LuceneClient extends AbstractServerClient {
 
     @Override
     public boolean existIndice(String indice) {
-        return false;
+        return true;
     }
 
     @Override

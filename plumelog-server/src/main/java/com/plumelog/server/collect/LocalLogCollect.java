@@ -6,6 +6,7 @@ import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.lucene.LuceneClient;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.util.IndexUtil;
+import com.plumelog.server.websocket.WebSocketSession;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +90,10 @@ public class LocalLogCollect {
                 if (logs.size() > 0) {
                     luceneClient.insertListLog(logs, getRunLogIndex());
                     logger.info("runLog messages insert success! count:{}",logs.size());
+                    //发送到控制台
+                    for(RunLogMessage runLogMessage:logs){
+                        WebSocketSession.sendToConsole(runLogMessage);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

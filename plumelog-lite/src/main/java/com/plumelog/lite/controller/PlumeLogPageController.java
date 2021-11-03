@@ -9,4 +9,8 @@ public class PlumeLogPageController {
     public String index() {
         return "plumelog";
     }
+    @RequestMapping("/webConsole")
+    public String webConsole() {
+        return "webConsole";
+    }
 }
