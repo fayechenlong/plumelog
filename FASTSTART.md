@@ -535,7 +535,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
 
 1.报警记录里为报警历史记录，点击可以直接连接到错误内容
 
-2.请求webhook会带message（报警内容）和mobile（接收人手机号）两个参数，例如：http://你的webhook地址？message=报警内容&&mobile=接收人手机号
+2.请求webhook会带message（报警内容）和mobile（接收人手机号）两个参数，例如：http://你的webhook地址？message=报警内容&mobile=接收人手机号
 
 ### （7）TraceId跨线程传递
 
