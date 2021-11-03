@@ -776,7 +776,7 @@ export default {
         ...this.allColumns
       ];
       if (this.filter.appName) {
-        axios.post(process.env.VUE_APP_API + '/plumelogServer/getExtendfieldList?appName=' + this.filter.appName).then(data => {
+        axios.post(process.env.VUE_APP_API + '/getExtendfieldList?appName=' + this.filter.appName).then(data => {
           let _data = _.get(data, 'data', {});
           let list = [];
           for (let item in _data) {
@@ -810,7 +810,7 @@ export default {
           this.analysisAppNameWithEnv();
         } else {
           this.completeFilterLoading = true;
-          axios.post(process.env.VUE_APP_API + '/plumelogServer/queryAppNames?appNameWithEnv', {
+          axios.post(process.env.VUE_APP_API + '/queryAppNames?appNameWithEnv', {
             "size": 0,
             "aggregations": {
               "dataCount": {
@@ -1196,7 +1196,7 @@ export default {
       //列出范围内的日期
       let shouldFilter = this.getShouldFilter();
 
-      let url = process.env.VUE_APP_API + '/plumelogServer/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+      let url = process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
 
       let query = {
@@ -1287,7 +1287,7 @@ export default {
         }
       };
 
-      axios.post(process.env.VUE_APP_API + '/plumelogServer/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+      axios.post(process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&chartData', chartFilter).then(data => {
         this.chartData = _.get(data, 'data.aggregations.2.buckets', []);
         this.drawLine();
@@ -1358,7 +1358,7 @@ export default {
         ...aggs
       };
 
-      let url = process.env.VUE_APP_API + '/plumelogServer/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+      let url = process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&errChat';
       _promise.push(axios.post(url, _errorQuery).then(data => {
         return _.get(data, 'data.aggregations.dataCount.buckets', [])

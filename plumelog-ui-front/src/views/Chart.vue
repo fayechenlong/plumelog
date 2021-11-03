@@ -137,7 +137,7 @@ export default {
           }
       }
 
-      let url = process.env.VUE_APP_API + '/plumelogServer/clientQuery?size=1000&from=0&clientStartDate=' + Date.parse(this.dateTimeRange[0])
+      let url = process.env.VUE_APP_API + '/clientQuery?size=1000&from=0&clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
       return axios.post(url,query).then(data=>{
         let _data = _.get(data,'data.aggregations.dataCount.buckets',[])
@@ -207,7 +207,7 @@ export default {
       }
 
 
-      let url = process.env.VUE_APP_API + '/plumelogServer/clientQuery?size=1000&from=0&clientStartDate=' + Date.parse(this.dateTimeRange[0])
+      let url = process.env.VUE_APP_API + '/clientQuery?size=1000&from=0&clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
 
       _promise.push(axios.post(url,query).then(data=>{

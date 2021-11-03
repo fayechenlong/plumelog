@@ -110,7 +110,7 @@ export default {
       this.traces=[];
       sessionStorage['cache_traceId'] = this.traceId;
 
-      let url= process.env.VUE_APP_API+'/plumelogServer/clientQuery?size=1000&from=0&trace=true&clientStartDate=' + Date.parse(this.timeRange[0])
+      let url= process.env.VUE_APP_API+'/clientQuery?size=1000&from=0&trace=true&clientStartDate=' + Date.parse(this.timeRange[0])
               + '&clientEndDate=' + Date.parse(this.timeRange[1]);
 
       let filter = {

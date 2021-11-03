@@ -304,7 +304,7 @@ export default {
       }
 
 
-      let url = process.env.VUE_APP_API + '/plumelogServer/query?index=' + dataList.join(",") + '&range=' + localRange + '&size=0&from=0&classErrChat'
+      let url = process.env.VUE_APP_API + '/query?index=' + dataList.join(",") + '&range=' + localRange + '&size=0&from=0&classErrChat'
 
       _promise.push(axios.post(url, query).then(data => {
         return _.get(data, 'data.aggregations.dataCount.buckets', [])
@@ -387,7 +387,7 @@ export default {
       }
 
 
-      let url = process.env.VUE_APP_API + '/plumelogServer/query?index=' + dataList.join(",") + '&range=' + localRange + '&size=0&from=0&errChat'
+      let url = process.env.VUE_APP_API + '/query?index=' + dataList.join(",") + '&range=' + localRange + '&size=0&from=0&errChat'
 
       _promise.push(axios.post(url, query).then(data => {
         return _.get(data, 'data.aggregations.dataCount.buckets', [])
@@ -457,7 +457,7 @@ export default {
               && sessionStorage['cache_appNames_time'] > new Date().getTime() - 1800000) {
         this.appNames = JSON.parse(sessionStorage['cache_appNames'])
       } else {
-        axios.post(process.env.VUE_APP_API + '/plumelogServer/queryAppName?from=0&size=0', {
+        axios.post(process.env.VUE_APP_API + '/queryAppName?from=0&size=0', {
           "size": 0,
           "aggregations": {
             "dataCount": {

@@ -11,7 +11,7 @@
             <!-- <li class="nav-item" :class="{'active':pageName=='Chart'}">
                 <a class="nav-link" href="./#/chart">数据统计</a>
             </li> -->
-            <li class="nav-item" :class="{'active':pageName=='Expand'}">
+            <li class="nav-item" :class="{'active':pageName=='Expand'}" v-if="config.modeName !== 'lite'">
                 <a class="nav-link" href="./#/expand"><Icon type="md-barcode" />扩展字段</a>
             </li>
           <li class="nav-item" :class="{'active':pageName=='Errors'}" v-if="config.modeName !== 'lite'">
@@ -27,7 +27,7 @@
             <a class="nav-link" target="_blank" href="https://gitee.com/plumeorg/plumelog/blob/master/HELP.md"><Icon style="font-size: 16px" type="md-help-circle" /></a>
           </li>
           <li class="nav-item">
-            <span class="nav-link" v-if="config.modeName === 'lite'"><Tag color="geekblue">LITE</Tag> </span>
+            <span class="nav-link" v-if="config.modeName === 'lite'">Lite</span>
           </li>
         </ul>
         <span class="quit"><a href="./#/login"><Icon style="font-size: 16px" type="md-exit" />退出</a></span>

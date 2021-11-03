@@ -266,7 +266,7 @@ export default {
     },
     delIndex(_info) {
       return new Promise((res, rej) => {
-        axios.post(process.env.VUE_APP_API + '/plumelogServer/deleteWarningRule?id=' + _info.id).then(data => {
+        axios.post(process.env.VUE_APP_API + '/deleteWarningRule?id=' + _info.id).then(data => {
           if (data.data.success) {
             res();
           } else {
@@ -318,7 +318,7 @@ export default {
               && sessionStorage['cache_appNames_time'] > new Date().getTime() - 1800000){
         this.appNames = JSON.parse(sessionStorage['cache_appNames'])
       } else {
-        axios.post(process.env.VUE_APP_API+'/plumelogServer/queryAppName?from=0&size=0',{
+        axios.post(process.env.VUE_APP_API+'/queryAppName?from=0&size=0',{
           "size": 0,
           "aggregations": {
             "dataCount": {
@@ -357,7 +357,7 @@ export default {
       let id = _info.id || Date.now();
 
       _info.status = _info.status ? 1 : 0;
-      axios.post(process.env.VUE_APP_API + '/plumelogServer/saveWarningRuleList?id=' + id, _info).then(data => {
+      axios.post(process.env.VUE_APP_API + '/saveWarningRuleList?id=' + id, _info).then(data => {
         if (data.data.success) {
           this.$Message.success('保存成功');
           this.showDialog = false;
@@ -367,7 +367,7 @@ export default {
     },
     getData() {
       this.$Loading.start();
-      axios.post(process.env.VUE_APP_API + '/plumelogServer/getWarningRuleList').then(data => {
+      axios.post(process.env.VUE_APP_API + '/getWarningRuleList').then(data => {
         this.$Loading.finish();
         let rows = _.get(data, 'data', []).map(item => {
           return {
@@ -386,7 +386,7 @@ export default {
       return ''
     },
     getLog() {
-      axios.post(process.env.VUE_APP_API + '/plumelogServer/query?index=plumelog_monitor_message_key' + '&from=' + this.from + '&size=' + this.pageSize, {
+      axios.post(process.env.VUE_APP_API + '/query?index=plumelog_monitor_message_key' + '&from=' + this.from + '&size=' + this.pageSize, {
         "query": {
           "match_all": {}
         },
@@ -428,7 +428,7 @@ export default {
       this.showConfirm = true;
     },
     confirmPassword(pwd) {
-      axios.post(process.env.VUE_APP_API + '/plumelogServer/deleteIndex?index=plumelog_monitor_message_key&adminPassWord=' + pwd).then(result => {
+      axios.post(process.env.VUE_APP_API + '/deleteIndex?index=plumelog_monitor_message_key&adminPassWord=' + pwd).then(result => {
         console.log(result)
         if (result.data.acknowledged) {
           alert('删除成功');

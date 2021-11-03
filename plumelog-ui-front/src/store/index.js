@@ -19,10 +19,8 @@ export default new Vuex.Store({
   },
   actions: {
     async getConfig({ commit ,state }) {
-      axios.get(process.env.VUE_APP_API+ '/plumelogServer/getConfig').then(res=> {
-        if(res.data.code === 200) {
-          commit('setConfig', res.data.data)
-        }
+      axios.get(process.env.VUE_APP_API+ '/getRunModel').then(res=> {
+          commit('setConfig', {modeName:res.data})
       })
     }
   },

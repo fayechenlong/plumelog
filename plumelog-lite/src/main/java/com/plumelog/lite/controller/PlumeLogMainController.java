@@ -277,12 +277,8 @@ public class PlumeLogMainController {
         return Collections.emptySet();
     }
 
-    @GetMapping({"/getConfig"})
+    @GetMapping({"/getRunModel"})
     public Object getRunModel() {
-        ImmutableMap<String, String> config = ImmutableMap.of("modeName", InitConfig.START_MODEL);
-        return ImmutableMap.of(
-               "code", 200,
-               "data", config
-       );
+       return InitConfig.START_MODEL;
     }
 }

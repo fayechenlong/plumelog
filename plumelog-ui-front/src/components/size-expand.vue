@@ -57,7 +57,7 @@
                         }
                     }
                 }
-                let url= process.env.VUE_APP_API+'/plumelogServer/query?size=0&from=0&index='+index;
+                let url= process.env.VUE_APP_API+'/query?size=0&from=0&index='+index;
                 axios.post(url,query).then(data=>{
                     this.list = _.get(data,'data.aggregations.dataCount.buckets',[])
                 })

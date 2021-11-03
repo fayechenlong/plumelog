@@ -12,5 +12,5 @@ echo '--copy file to ui resource--'
 cp ./dist/index.html ../plumelog-server/src/main/resources/templates/
 cp -R ./dist/. ../plumelog-server/src/main/resources/static
 
-cp ./dist/index.html ../plumelog-lite/src/main/resources/templates/
-cp -R ./dist/. ../plumelog-lite/src/main/resources/static
+cp ./dist/index.html ../plumelog-lite/src/main/resources/templates/plumelog.html
+cp -R ./dist/. ../plumelog-lite/src/main/resources/static/plumelog

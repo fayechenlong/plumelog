@@ -103,7 +103,7 @@ export default {
     //   },
       confirmModal(){
           if(this.formItem.field && this.formItem.fieldName){
-            axios.post(process.env.VUE_APP_API+'/plumelogServer/addExtendfield?appName='+this.currentAppName+'&field='+this.formItem.field+'&fieldName='+this.formItem.fieldName).then(data=>{
+            axios.post(process.env.VUE_APP_API+'/addExtendfield?appName='+this.currentAppName+'&field='+this.formItem.field+'&fieldName='+this.formItem.fieldName).then(data=>{
                 if(_.get(data,'data',false)){
                     this.$Message.success(`添加成功`);
                     this.getExtendList(this.currentAppName);
@@ -132,7 +132,7 @@ export default {
       },
       removeExtend(field){
           if(confirm("确认要删除应用 "+this.currentAppName+" 下的扩展字段 "+field+" 吗?")){
-              axios.post(process.env.VUE_APP_API+'/plumelogServer/delExtendfield?appName='+this.currentAppName+"&field="+field).then(data=>{
+              axios.post(process.env.VUE_APP_API+'/delExtendfield?appName='+this.currentAppName+"&field="+field).then(data=>{
                 if(_.get(data,'data',false)){
                     this.$Message.success(`删除成功`);
                     this.getExtendList(this.currentAppName);
@@ -147,7 +147,7 @@ export default {
       getExtendList(appName){
           if(appName){
             this.$Loading.start();
-            axios.post(process.env.VUE_APP_API+'/plumelogServer/getExtendfieldList?appName='+appName).then(data=>{
+            axios.post(process.env.VUE_APP_API+'/getExtendfieldList?appName='+appName).then(data=>{
                 let _data = _.get(data,'data',{});
                 let list = [];
                 for(var item in _data){
@@ -167,7 +167,7 @@ export default {
             && sessionStorage['cache_appNames_time'] > new Date().getTime() - 1800000){
             this.appNames = JSON.parse(sessionStorage['cache_appNames'])
         } else {
-            axios.post(process.env.VUE_APP_API+'/plumelogServer/queryAppName?from=0&size=0',{
+            axios.post(process.env.VUE_APP_API+'/queryAppName?from=0&size=0',{
                 "size": 0,
                 "aggregations": {
                     "dataCount": {

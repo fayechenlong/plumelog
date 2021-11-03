@@ -12,7 +12,6 @@ import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.core.client.AbstractServerClient;
-import com.plumelog.server.config.SystemConfig;
 import com.plumelog.server.controller.vo.LoginVO;
 import com.plumelog.server.util.IndexUtil;
 import org.elasticsearch.client.ResponseException;
@@ -51,16 +50,6 @@ public class MainController {
 
     @Value("${admin.password}")
     private String adminPassWord;
-
-    @Autowired
-    private SystemConfig systemConfig;
-
-    @GetMapping({"/getConfig", "/plumelog/getConfig"})
-    public Result getConfig() {
-       Result r = new Result(200);
-       r.setData(systemConfig);
-       return r;
-    }
 
 
     @RequestMapping({"/login", "/plumelog/login"})

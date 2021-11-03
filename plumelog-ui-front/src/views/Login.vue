@@ -51,13 +51,13 @@ import router from "@/router";
       },
       mounted() {
         particlesJS('login', config)
-        axios.post(process.env.VUE_APP_API+ '/plumelogServer/logout').then(res=> {
+        axios.post(process.env.VUE_APP_API+ '/logout').then(res=> {
           console.log(res.data)
         })
       },
       methods: {
           submit() {
-            axios.post(process.env.VUE_APP_API+ '/plumelogServer/login', this.formData).then(res=> {
+            axios.post(process.env.VUE_APP_API+ '/login', this.formData).then(res=> {
               if(res.data.code === 402) {
                 alert("用户名或密码错误！")
               } else {
