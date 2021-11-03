@@ -28,7 +28,7 @@
 import axios from '@/services/http'
 import _ from 'lodash'
 import moment from 'moment'
-import '@/assets/prism.js' 
+import '@/assets/prism.js'
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
 import tree from '@/components/tree.vue'
@@ -64,7 +64,7 @@ export default {
         for(var i=0;i<zIndex;i++){
             _arrary = _arrary[_arrary.length-1].children;
         }
-        
+
         //方法开始
         if(isStart){
           _arrary.push({
@@ -110,7 +110,7 @@ export default {
       this.traces=[];
       sessionStorage['cache_traceId'] = this.traceId;
 
-      let url= process.env.VUE_APP_API+'/clientQuery?size=1000&from=0&trace=true&clientStartDate=' + Date.parse(this.timeRange[0])
+      let url= process.env.VUE_APP_API+'/plumelogServer/clientQuery?size=1000&from=0&trace=true&clientStartDate=' + Date.parse(this.timeRange[0])
               + '&clientEndDate=' + Date.parse(this.timeRange[1]);
 
       let filter = {

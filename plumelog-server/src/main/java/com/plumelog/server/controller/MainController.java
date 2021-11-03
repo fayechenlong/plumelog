@@ -12,6 +12,7 @@ import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.core.client.AbstractServerClient;
+import com.plumelog.server.config.SystemConfig;
 import com.plumelog.server.controller.vo.LoginVO;
 import com.plumelog.server.util.IndexUtil;
 import org.elasticsearch.client.ResponseException;
@@ -20,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -53,6 +51,16 @@ public class MainController {
 
     @Value("${admin.password}")
     private String adminPassWord;
+
+    @Autowired
+    private SystemConfig systemConfig;
+
+    @GetMapping({"/getConfig", "/plumelogServer/getConfig"})
+    public Result getConfig() {
+       Result r = new Result(200);
+       r.setData(systemConfig);
+       return r;
+    }
 
 
     @RequestMapping({"/login", "/plumelogServer/login"})

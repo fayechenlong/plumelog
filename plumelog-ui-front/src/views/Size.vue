@@ -53,7 +53,7 @@
         </div>
       </div>
     </div>
-    <Row style="margin-top:20px" type="flex" justify="start">
+    <Row v-if="config.modeName !== 'lite'" style="margin-top:20px" type="flex" justify="start">
       <Col :span="8">
         <span style="padding: 10px;">当前redis队列大小 日志队列：{{runSize}} 追踪队列： {{traceSize}}</span>
         <Button type="error" style="margin-left: 10px" icon="ios-trash" @click="clearRedisQueue">清空队列</Button>
@@ -67,6 +67,7 @@
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
 import axios from '@/services/http'
+import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import moment from 'moment'
 import '@/assets/prism.js'
@@ -157,6 +158,7 @@ export default {
    }
   },
   computed:{
+    ...mapGetters(['config']),
     isDisabled(){
       let isDisabled = true;
       if(this.currentTab=='run' && this.size_selection.length>0){
@@ -201,7 +203,7 @@ export default {
     },
     clearQueueHandler() {
       this.clearQueue= false
-      axios.post(process.env.VUE_APP_API+'/deleteQueue?adminPassWord='+this.password).then(res=> {
+      axios.post(process.env.VUE_APP_API+'/plumelogServer/deleteQueue?adminPassWord='+this.password).then(res=> {
         if(res.data.acknowledged) {
           alert('删除成功');
           this.password = '';
@@ -209,7 +211,7 @@ export default {
       })
     },
     getQueueSize() {
-      axios.post(process.env.VUE_APP_API+'/getQueueCounts').then(res=> {
+      axios.post(process.env.VUE_APP_API+'/plumelogServer/getQueueCounts').then(res=> {
         if(res.data.runSize > -1) {
             this.runSize = res.data.runSize
             this.traceSize = res.data.traceSize
@@ -223,7 +225,7 @@ export default {
       let deletePromise=[];
       for(var item of selected)
       {
-        deletePromise.push(axios.post(process.env.VUE_APP_API+'/deleteIndex?index='+item.index+'&adminPassWord='+this.password))
+        deletePromise.push(axios.post(process.env.VUE_APP_API+'/plumelogServer/deleteIndex?index='+item.index+'&adminPassWord='+this.password))
       }
       Promise.all(deletePromise).then(results=>{
         let successResults=[];
@@ -259,12 +261,12 @@ export default {
          this.currentDate = new Date()
        }
 
-       axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_run_' + moment(this.currentDate).format('YYYYMMDD') + "*").then(data=>{
+       axios.post(process.env.VUE_APP_API+'/plumelogServer/getServerInfo?index=plume_log_run_' + moment(this.currentDate).format('YYYYMMDD') + "*").then(data=>{
          this.$Loading.finish();
          this.sizeInfo = _.get(data,'data',[]);
        })
 
-        axios.post(process.env.VUE_APP_API+'/getServerInfo?index=plume_log_trace_' + moment(this.currentDate).format('YYYYMMDD') + "*").then(data=>{
+        axios.post(process.env.VUE_APP_API+'/plumelogServer/getServerInfo?index=plume_log_trace_' + moment(this.currentDate).format('YYYYMMDD') + "*").then(data=>{
          this.$Loading.finish();
          this.traceInfo = _.get(data,'data',[]);
        })
@@ -272,10 +274,12 @@ export default {
   },
   mounted(){
     this.getTraceInfo();
-    this.getQueueSize();
-    this.timer = setInterval(() => {
-      this.getQueueSize()
-    }, 1000)
+    if (this.config.modeName !== 'lite') {
+      this.getQueueSize();
+      this.timer = setInterval(() => {
+        this.getQueueSize()
+      }, 1000)
+    }
   },
   beforeDestroy () {
     clearInterval(this.timer)
