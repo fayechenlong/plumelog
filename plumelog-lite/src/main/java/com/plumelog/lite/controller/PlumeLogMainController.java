@@ -3,6 +3,7 @@ package com.plumelog.lite.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.ImmutableMap;
 import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.lite.client.AppNameCache;
@@ -10,17 +11,15 @@ import com.plumelog.lite.client.IndexUtil;
 import com.plumelog.lite.client.InitConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/plumelog")
+@RequestMapping("/plumelogServer")
 public class PlumeLogMainController {
     @Autowired
     private AbstractServerClient abstractServerClient;
@@ -278,8 +277,12 @@ public class PlumeLogMainController {
         return Collections.emptySet();
     }
 
-    @RequestMapping({"/getRunModel"})
+    @GetMapping({"/getConfig"})
     public Object getRunModel() {
-        return InitConfig.START_MODEL;
+        ImmutableMap<String, String> config = ImmutableMap.of("modeName", InitConfig.START_MODEL);
+        return ImmutableMap.of(
+               "code", 200,
+               "data", config
+       );
     }
 }
