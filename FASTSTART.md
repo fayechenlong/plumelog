@@ -141,10 +141,17 @@ admin.log.trace.keepDays=30
 
 * plumelog.es.shards的增加和hour模式下需要调整ES集群的最大分片数
 
-  PUT /_cluster/settings {
-  "persistent": {
-  "cluster": {
-  "max_shards_per_node":100000 } } }
+```
+      PUT /_cluster/settings
+          {
+          "persistent": {
+              "cluster": {
+                  "max_shards_per_node":100000
+                  }
+              }
+          }
+
+```
 
 ## 二、客户端使用
 
