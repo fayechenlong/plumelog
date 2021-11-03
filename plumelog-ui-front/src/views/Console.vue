@@ -146,7 +146,7 @@ export default {
     },
 
     doSearch() {
-      this.ws.push(this.appName)
+      this.ws.send(this.appName)
     },
     appNameChange() {
 
@@ -159,7 +159,6 @@ export default {
             && sessionStorage['cache_appNameWithEnvs_time'] > new Date().getTime() - 1800000) {
           this.analysisAppNameWithEnv();
         } else {
-          this.completeFilterLoading = true;
           axios.post(process.env.VUE_APP_API + '/queryAppNames?appNameWithEnv', {
             "size": 0,
             "aggregations": {
@@ -171,7 +170,6 @@ export default {
               }
             }
           }).then(data => {
-            this.completeFilterLoading = false;
             sessionStorage['cache_appNameWithEnvs'] = JSON.stringify(data.data);
             sessionStorage['cache_appNameWithEnvs_time'] = new Date().getTime();
             this.analysisAppNameWithEnv();
@@ -229,6 +227,7 @@ export default {
           if (this.list.length > 200) {
             this.list = this.list.slice(100)
           }
+          this.list.push(JSON.parse(ev.data))
           this.$nextTick(() => {
             const message = document.getElementById('plume-console');
             !this.stop && ( message.scrollTop = message.scrollHeight)

@@ -1,6 +1,7 @@
 package com.plumelog.server.websocket;
 
 import com.plumelog.core.dto.RunLogMessage;
+import com.plumelog.core.util.StringUtils;
 import com.plumelog.server.util.GfJsonUtil;
 
 import javax.websocket.Session;
@@ -18,12 +19,11 @@ public class WebSocketSession {
             }
             for (Session session : sessions) {
                 String appName = sessionAppName.get(session);
-                if (appName != null) {
+                if (appName != null && !"".equals(appName)) {
                     RunLogMessage runLogMessage = GfJsonUtil.parseObject(message, RunLogMessage.class);
                     if (appName.equals(runLogMessage.getAppName())) {
                         session.getBasicRemote().sendText(message);
                     }
-
                 } else {
                     session.getBasicRemote().sendText(message);
                 }
@@ -39,7 +39,7 @@ public class WebSocketSession {
             }
             for (Session session : sessions) {
                 String appName = sessionAppName.get(session);
-                if (appName != null) {
+                if (appName != null && !"".equals(appName)) {
                     if (appName.equals(runLogMessage.getAppName())) {
                         session.getBasicRemote().sendText(GfJsonUtil.toJSONString(runLogMessage));
                     }else if("all".equalsIgnoreCase(appName)) {
