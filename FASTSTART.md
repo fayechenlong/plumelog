@@ -12,7 +12,7 @@
 
 备注：3.1版本以后UI和server合并，plumelog-ui这个项目可以不用部署
 
-第四步：配置plumelog-server，并启动
+第四步：配置plumelog-server，并启动，redis和kafka作为队列模式下可以部署多个plumelog-server达到高可用，配置一样即可
 
 第五步：后台查询语法详见[plumelog使用指南](/HELP.md)
 
@@ -37,6 +37,7 @@ plumelog.model=redis
 #plumelog.kafka.kafkaGroupName=logConsumer
 
 #队列redis地址，model配置redis集群模式，哨兵模式用逗号隔开，队列redis不支持集群模式，lite模式可以全部注释掉下面配置
+#当redis队列性能不够的时候，可以不同的项目单独配置单独的redis队列，用单独的plumelog-server去采集，公用一个管理redis
 plumelog.queue.redis.redisHost=127.0.0.1:6379
 #如果使用redis有密码,启用下面配置
 #plumelog.queue.redis.redisPassWord=123456
