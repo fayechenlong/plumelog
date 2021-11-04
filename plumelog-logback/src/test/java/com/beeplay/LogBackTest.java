@@ -13,6 +13,7 @@ public class LogBackTest {
 
         for(int i=0;i<100;i++) {
             logger.info("info");
+            logger.error("eee");
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
