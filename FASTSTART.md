@@ -568,7 +568,25 @@ public class Interceptor extends HandlerInterceptorAdapter {
 
 [docker版本安装点我](/docker-file/DOCKER.md)
 
-## 四、非java项目
+## 四、几种常见的部署模型
+
+* 单redis小集群模式，大部分中小规模项目
+
+![avatar](/pic/redis单点模式.png)
+
+* 多redis大型集群模式,如果你的项目量大而且个别服务量特别大，建议用此方案
+
+![avatar](/pic/redis队列大型集群模式.png)
+
+* kafka集群模式，每个项目量都很大
+
+![avatar](/pic/kafka集群模式.png)
+
+* redis和kafka混合部署模式，每个项目量都很大，有个别服务量更大
+
+![avatar](/pic/混合模式.png)
+
+## 五、非java项目
 
 可以api方式接入，3.2后版本server支持，暂时只支持redis模式
 
@@ -604,11 +622,11 @@ public class Interceptor extends HandlerInterceptorAdapter {
   ]
 ``` 
 
-## 五、nginx日志搜集解决方案参考
+## 六、nginx日志搜集解决方案参考
 
 [nginx解决方案](/logstash/ng.md)
 
-## 六、自己编译安装如下
+## 七、自己编译安装如下
 
 * 前提:kafka或者redis 和 elasticsearch 自行安装完毕，版本兼容已经做了，理论不用考虑ES版本
 
