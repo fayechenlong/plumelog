@@ -5,16 +5,15 @@ import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
-import com.plumelog.core.util.DateUtil;
-import com.plumelog.core.util.GfJsonUtil;
-import com.plumelog.core.util.LogExceptionStackTrace;
-import com.plumelog.core.util.TraceLogMessageFactory;
+import com.plumelog.core.util.*;
 import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -67,13 +66,12 @@ public class LogMessageUtil {
     @SuppressWarnings("unchecked")
     public static String getLogMessage(BaseLogMessage baseLogMessage, final LoggingEvent logEvent) {
         Map<String, String> mdc = logEvent.getProperties();
-        Map<String, Object> map = GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage), Map.class);
+        Map<String, Object> map = StringUtils.entityToMap(baseLogMessage);
         if (mdc != null) {
             map.putAll(mdc);
         }
         return GfJsonUtil.toJSONString(map);
     }
-
     private static String getMessage(LoggingEvent logEvent) {
         if (logEvent.getLevel().toInt() == Priority.ERROR_INT) {
             String msg = "";

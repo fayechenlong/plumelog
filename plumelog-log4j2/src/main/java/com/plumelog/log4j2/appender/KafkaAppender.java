@@ -114,7 +114,7 @@ public class KafkaAppender extends AbstractAppender {
     protected void send(LogEvent logEvent) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
         if (logMessage instanceof RunLogMessage) {
-            final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
+            final String message = LogMessageUtil.getLogMessage((RunLogMessage)logMessage, logEvent);
             MessageAppenderFactory.pushRundataQueue(message);
         } else {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
