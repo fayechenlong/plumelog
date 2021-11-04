@@ -107,8 +107,6 @@ public class MessageAppenderFactory {
         if (logOutPut == null || logOutPut) {
             try {
 
-
-
                 String url = "http://" + plumelogHost;
                 String root = "";
                 if (key.equals(LogMessageConstant.LOG_KEY)) {
