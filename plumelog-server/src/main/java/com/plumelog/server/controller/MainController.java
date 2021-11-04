@@ -137,7 +137,7 @@ public class MainController {
         logger.info("queryStr:" + queryStr);
 
         try {
-            return abstractServerClient.get(indexStr, queryStr, null, null);
+            return abstractServerClient.get(indexStr, queryStr, "0", "0");
         } catch (Exception e) {
             // 为兼容旧的索引如果按照appNameWithEnv查询失败则重新按照appName查询
             if (e instanceof ResponseException && queryStr.contains("appNameWithEnv")) {
@@ -145,13 +145,13 @@ public class MainController {
                 logger.info("queryStr:" + queryStr);
 
                 try {
-                    return abstractServerClient.get(indexStr, queryStr, null, null);
+                    return abstractServerClient.get(indexStr, queryStr, "0", "0");
                 } catch (Exception ex) {
                     logger.error("queryAppName fail!", ex);
                     return "";
                 }
             }
-            logger.error("queryAppName fail!", e);
+            logger.warn("queryAppName fail!", e);
             return "";
         }
     }
