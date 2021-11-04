@@ -175,7 +175,7 @@ admin.log.trace.keepDays=30
 <dependency>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog-log4j</artifactId>
-    <version>3.4.2</version>
+    <version>3.5</version>
 </dependency>
 ```                       
 
@@ -219,7 +219,7 @@ log4j.appender.L.plumelogHost=localhost:8891
 <dependency>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog-logback</artifactId>
-    <version>3.4.2</version>
+    <version>3.5</version>
 </dependency>
 ```  
 
@@ -319,7 +319,7 @@ spring.profiles.active=dev
 <dependency>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog-log4j2</artifactId>
-    <version>3.4.2</version>
+    <version>3.5</version>
 </dependency>       
 ```   
 
@@ -366,7 +366,7 @@ RedisAppender
 | maxCount  | （3.1）批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）是否开启日志压缩，默认false |
-| env  | （3.4.2）环境 默认是default|
+| env  | （3.5）环境 默认是default|
 
 KafkaAppender
 
@@ -378,7 +378,7 @@ KafkaAppender
 | maxCount  | 批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
 | compressor  | （3.4）压缩方式配置，默认false（true：开启lz4压缩） |
-| env  | （3.4.2）环境 默认是default|
+| env  | （3.5）环境 默认是default|
 
 
 LiteAppender 
@@ -389,7 +389,7 @@ LiteAppender
 | runModel | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 | 
 | maxCount | （3.1）批量提交日志数量，默认100 | 
 | logQueueSize | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
-| env | （3.4.2）环境 默认是default| 
+| env | （3.5）环境 默认是default| 
 | plumelogHost | 3.5 lite模式下plumelogserver的地址| 
 | keepDay | 3.5 plumelog-lite 日志本地保留天数|
 
