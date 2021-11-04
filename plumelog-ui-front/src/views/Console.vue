@@ -14,11 +14,20 @@
                     v-model="appName"
                     :data="appNameComplete"
                     class="txt"
-                    placeholder="搜索多个请用逗号或空格隔开"
+                    placeholder="应用名称，可搜索"
                     :clearable="true"
                     :filter-method="completeFilter"
                     @on-change="appNameChange">
                 </AutoComplete>
+              </td>
+              <td class="key">显示行数</td>
+              <td style="width: 245px">
+                <RadioGroup v-model="rowLen" type="button" button-style="solid">
+                  <Radio :label="300"></Radio>
+                  <Radio :label="500"></Radio>
+                  <Radio :label="800"></Radio>
+                  <Radio :label="1000"></Radio>
+                </RadioGroup>
               </td>
             </tr>
             </tbody>
@@ -102,14 +111,12 @@
 
 <script>
 import axios from '@/services/http'
-import _ from 'lodash'
 import moment from 'moment'
 import '@/assets/prism.js'
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
 import logHeader from '@/components/logHeader.vue'
 import "@/assets/less/base.less";
-import dateOption from './dateOption';
 import $ from 'jquery'
 import expandRow from '@/components/table-expand.vue';
 
@@ -118,9 +125,11 @@ export default {
   name: "Home",
   data() {
     return {
+      rowLen: 300,
       appNameComplete: [],
       appName: '',
       list: [],
+      messageList: [],
       ws: null,
       allAppNames:[],
       appNameWithEnvMap:{},
@@ -213,10 +222,15 @@ export default {
     },
     init() {
       this.searchAppName()
+      const rowDiv = document.getElementById('plume-console');
+
       if ('WebSocket' in window) {
-        const ws = new WebSocket("ws:localhost:8891/plumelog/websocket")
-        ws.onerror = () => {
-          this.list.push({dtTime: new Date().getTime(),content: '链接异常', logLevel:'ERROR', appName: '', className:'', method:''})
+        const apiUrl = process.env.VUE_APP_API;
+        let url = apiUrl.replace("http://", "")
+        url = url.replace("https://", "")
+        const ws = new WebSocket(`ws:${url}/plumelog/websocket`)
+        ws.onerror = (e) => {
+          this.list.push({dtTime: new Date().getTime(),content: `链接异常 ${JSON.stringify(e)}`, logLevel:'ERROR', appName: '', className:'', method:''})
         }
         // 连接成功的回调方法
         ws.onopen = () =>  {
@@ -224,18 +238,30 @@ export default {
         }
         // 收到消息的回调方法
         ws.onmessage = (ev) =>  {
-          if (this.list.length > 200) {
-            this.list = this.list.slice(100)
+          if (this.list.length > this.rowLen) {
+            this.list = this.list.slice(this.list.length - 20)
           }
-          this.list.push(JSON.parse(ev.data))
+          this.messageList.push(JSON.parse(ev.data))
           this.$nextTick(() => {
-            const message = document.getElementById('plume-console');
-            !this.stop && ( message.scrollTop = message.scrollHeight)
+            if (this.messageList.length > 20) {
+              this.list.push(...this.messageList)
+              this.messageList = []
+            } else {
+              setTimeout(() => {
+                if (this.messageList.length < 20) {
+                  this.list.push(...this.messageList)
+                  this.messageList = []
+                }
+              },1000);
+            }
+
+            !this.stop && ( rowDiv.scrollTop = rowDiv.scrollHeight)
           })
         }
         // 连接关闭的回调方法
         ws.onclose = () =>  {
-          this.list.push({dtTime: new Date().getTime(),content: '链接关闭', logLevel:'INFO', appName: '', className:'',method:''})
+          this.list.push({dtTime: new Date().getTime(),content: '链接关闭,尝试链接...', logLevel:'INFO', appName: '', className:'',method:''})
+          setTimeout(this.init,1000);
         }
         this.ws = ws;
       } else {

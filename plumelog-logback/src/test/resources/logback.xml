@@ -33,6 +33,14 @@
         <appName>work</appName>
         <plumelogHost>localhost:8891</plumelogHost>
     </appender>
+    <appender name="plumelog2" class="com.plumelog.logback.appender.LiteAppender">
+        <appName>plumeLog</appName>
+        <plumelogHost>localhost:8891</plumelogHost>
+    </appender>
+    <appender name="plumelog3" class="com.plumelog.logback.appender.LiteAppender">
+        <appName>sso</appName>
+        <plumelogHost>localhost:8891</plumelogHost>
+    </appender>
 <!--    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">-->
 <!--        <appName>plumelog-test</appName>-->
 <!--        <redisHost>172.18.71.26:6379</redisHost>-->
@@ -42,5 +50,7 @@
     <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="plumelog" />
+        <appender-ref ref="plumelog2" />
+        <appender-ref ref="plumelog3" />
     </root>
 </configuration>
