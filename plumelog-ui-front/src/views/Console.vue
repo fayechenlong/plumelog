@@ -225,9 +225,7 @@ export default {
       const rowDiv = document.getElementById('plume-console');
 
       if ('WebSocket' in window) {
-        const apiUrl = process.env.VUE_APP_API;
-        let url = apiUrl.replace("http://", "")
-        url = url.replace("https://", "")
+        let url = window.location.host;
         const ws = new WebSocket(`ws:${url}/plumelog/websocket`)
         ws.onerror = (e) => {
           this.list.push({dtTime: new Date().getTime(),content: `链接异常 ${JSON.stringify(e)}`, logLevel:'ERROR', appName: '', className:'', method:''})
