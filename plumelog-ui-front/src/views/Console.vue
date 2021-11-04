@@ -243,12 +243,12 @@ export default {
           }
           this.messageList.push(JSON.parse(ev.data))
           this.$nextTick(() => {
-            if (this.messageList.length > 20) {
+            if (this.messageList.length > 10) {
               this.list.push(...this.messageList)
               this.messageList = []
             } else {
               setTimeout(() => {
-                if (this.messageList.length < 20) {
+                if (this.messageList.length < 10) {
                   this.list.push(...this.messageList)
                   this.messageList = []
                 }
