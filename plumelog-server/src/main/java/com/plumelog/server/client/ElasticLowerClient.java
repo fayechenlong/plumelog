@@ -2,7 +2,9 @@ package com.plumelog.server.client;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.server.InitConfig;
 import com.plumelog.server.client.http.SkipHostnameVerifier;
@@ -22,14 +24,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import javax.net.ssl.SSLContext;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -39,9 +43,9 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author Frank.chen
  * @version 1.0.0
  */
-public class ElasticLowerClient {
+public class ElasticLowerClient extends AbstractServerClient {
     private static ElasticLowerClient instance;
-    private static ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5, 5, 100);
+    private static final ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5, 5, 100);
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
     private RestClient client;
 
@@ -131,6 +135,7 @@ public class ElasticLowerClient {
         return instance;
     }
 
+    @Override
     public boolean existIndice(String indice) {
         try {
             Request request = new Request(
@@ -146,6 +151,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public String getVersion() {
         try {
             Request request = new Request(
@@ -165,6 +171,7 @@ public class ElasticLowerClient {
         return null;
     }
 
+    @Override
     public boolean creatIndice(String indice, String type) {
         try {
             Request request = new Request(
@@ -198,6 +205,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public boolean creatIndiceTrace(String indice, String type) {
         try {
             Request request = new Request(
@@ -226,6 +234,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public boolean creatIndiceNomal(String indice, String type) {
         try {
             Request request = new Request(
@@ -242,7 +251,24 @@ public class ElasticLowerClient {
         }
         return false;
     }
-
+    @Override
+    public boolean addShards(Long shardCount) {
+        try {
+            Request request = new Request(
+                    "PUT",
+                    "/_cluster/settings");
+            String ent = "{\"persistent\":{\"cluster\":{\"max_shards_per_node\":"+shardCount+"}}}";
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return false;
+    }
+    @Override
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
 
         if (!existIndice(baseIndex)) {
@@ -256,10 +282,12 @@ public class ElasticLowerClient {
         insertListV1(list, baseIndex, type);
     }
 
+    @Override
     public void insertListTrace(List<String> list, String baseIndex, String type) throws IOException {
         insertListV1(list, baseIndex, type);
     }
 
+    @Override
     public void insertListComm(List<String> list, String baseIndex, String type) throws IOException {
         insertListV1(list, baseIndex, type);
     }
@@ -354,6 +382,7 @@ public class ElasticLowerClient {
         });
     }
 
+    @Override
     public String cat(String index) {
         String reStr = "";
         Request request = new Request(
@@ -361,7 +390,6 @@ public class ElasticLowerClient {
                 "/_cat/indices/" + index + "?v");
         try {
             Response res = client.performRequest(request);
-
             InputStream inputStream = res.getEntity().getContent();
             byte[] bytes = new byte[0];
             bytes = new byte[inputStream.available()];
@@ -372,9 +400,37 @@ public class ElasticLowerClient {
             e.printStackTrace();
             reStr = "";
         }
-        return reStr;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(reStr.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
+        List<String> list = new ArrayList<>();
+        try {
+            while (true) {
+                String aa = br.readLine();
+                if (StringUtils.isEmpty(aa)) {
+                    break;
+                }
+                list.add(aa);
+            }
+            List<Map<String, String>> listMap = new ArrayList<>();
+            if (list.size() > 0) {
+                String[] title = list.get(0).split("\\s+");
+                for (int i = 1; i < list.size(); i++) {
+                    String[] values = list.get(i).split("\\s+");
+                    Map<String, String> map = new HashMap<>();
+                    for (int j = 0; j < title.length; j++) {
+                        map.put(title[j], values[j]);
+                    }
+                    listMap.add(map);
+                }
+            }
+            return GfJsonUtil.toJSONString(listMap);
+        } catch (IOException e) {
+            logger.error("", e);
+        }
+        return "";
     }
 
+    @Override
     public String get(String url, String queryStr) throws Exception {
         StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
         stringEntity.setContentType("application/json");
@@ -386,6 +442,33 @@ public class ElasticLowerClient {
         return EntityUtils.toString(res.getEntity(), "utf-8");
     }
 
+    @Override
+    public String get(String indexStr, String queryStr, String from, String size) throws Exception {
+        String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
+        StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
+        stringEntity.setContentType("application/json");
+        Request request = new Request(
+                "GET",
+                url);
+        request.setEntity(stringEntity);
+        Response res = client.performRequest(request);
+        return EntityUtils.toString(res.getEntity(), "utf-8");
+    }
+
+    @Override
+    public String group(String indexStr, String queryStr) throws Exception {
+        String url = "/" + indexStr + "/_search";
+        StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
+        stringEntity.setContentType("application/json");
+        Request request = new Request(
+                "GET",
+                url);
+        request.setEntity(stringEntity);
+        Response res = client.performRequest(request);
+        return EntityUtils.toString(res.getEntity(), "utf-8");
+    }
+
+    @Override
     public List<String> getExistIndices(String[] indices) {
         List<String> existIndexList = new ArrayList<String>();
         for (String index : indices) {
@@ -404,6 +487,7 @@ public class ElasticLowerClient {
         return existIndexList;
     }
 
+    @Override
     public boolean deleteIndex(String index) {
         try {
             Request request = new Request(
@@ -425,6 +509,7 @@ public class ElasticLowerClient {
         return false;
     }
 
+    @Override
     public void close() {
         try {
             client.close();

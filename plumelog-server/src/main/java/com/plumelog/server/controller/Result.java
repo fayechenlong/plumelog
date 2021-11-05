@@ -17,6 +17,7 @@ public class Result {
     private Integer code;
     private String message;
     private List<String> logs = new ArrayList<>();
+    private Object data;
 
     public Result() {
     }
@@ -47,5 +48,13 @@ public class Result {
 
     public void setLogs(List<String> logs) {
         this.logs = logs;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }

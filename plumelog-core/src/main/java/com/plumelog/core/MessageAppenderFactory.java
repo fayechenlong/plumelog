@@ -3,18 +3,18 @@ package com.plumelog.core;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.disruptor.LogMessageProducer;
-import com.plumelog.core.disruptor.LogRingBuffer;
-import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.HttpClient;
 import com.plumelog.core.util.LZ4Util;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -52,10 +52,6 @@ public class MessageAppenderFactory {
         }
     }
 
-    public static void push(BaseLogMessage baseLogMessage) {
-        LogMessageProducer producer = new LogMessageProducer(LogRingBuffer.ringBuffer);
-        producer.send(baseLogMessage);
-    }
 
     public static void pushRundataQueue(String message) {
         if (message != null) {
@@ -98,6 +94,38 @@ public class MessageAppenderFactory {
         }
     }
 
+    private static void push(String plumelogHost, String key, List<String> baseLogMessage, String logOutPutKey) {
+        if (baseLogMessage.size() == 0) {
+            return;
+        }
+        List<Map<String,Object>> logs=new ArrayList<>();
+        for(String str:baseLogMessage){
+            Map<String, Object> map = GfJsonUtil.parseObject(str, Map.class);
+            logs.add(map);
+        }
+        logOutPut = cache.getIfPresent(logOutPutKey);
+        if (logOutPut == null || logOutPut) {
+            try {
+
+                String url = "http://" + plumelogHost;
+                String root = "";
+                if (key.equals(LogMessageConstant.LOG_KEY)) {
+                    root = "sendRunLog";
+                }
+                if (key.equals(LogMessageConstant.LOG_KEY_TRACE)) {
+                    root = "sendTraceLog";
+                }
+                url = url + "/" + root;
+                String param = GfJsonUtil.toJSONString(logs);
+                HttpClient.doPostBody(url, param);
+                cache.put(logOutPutKey, true);
+            } catch (Exception e) {
+                cache.put(logOutPutKey, false);
+                e.printStackTrace();
+            }
+        }
+    }
+
     private static List<String> compress(List<String> baseLogMessage, boolean compress) {
 
         if (!compress) {
@@ -134,6 +162,20 @@ public class MessageAppenderFactory {
         }
     }
 
+    public static void startRunLog(String plumelogHost, int maxCount, String key, boolean compress) {
+        while (true) {
+            try {
+                doStartLog(plumelogHost, maxCount, rundataQueue, key, "plume.log.ack", lastRunPushTime);
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException interruptedException) {
+                }
+            }
+        }
+    }
+
     public static void startTraceLog(AbstractClient client, int maxCount) {
         startTraceLog(client, maxCount, LogMessageConstant.LOG_KEY_TRACE);
     }
@@ -157,6 +199,22 @@ public class MessageAppenderFactory {
         }
     }
 
+    public static void startTraceLog(String plumelogHost, int maxCount, String key, boolean compress) {
+        while (true) {
+            try {
+                doStartLog(plumelogHost, maxCount, tracedataQueue, key, "plume.log.ack", lastTracePushTime);
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException interruptedException) {
+
+                }
+            }
+        }
+    }
+
+
     private static void doStartLog(AbstractClient client, int maxCount, BlockingQueue<String> queue, String key, String lock, AtomicLong pushTime, boolean compress) throws InterruptedException {
 
         List<String> logs = new ArrayList<>();
@@ -173,6 +231,32 @@ public class MessageAppenderFactory {
             String log = queue.take();
             logs.add(log);
             push(key, logs, client, lock, compress);
+            pushTime.set(currentTimeMillis);
+        } else {
+            Thread.sleep(100);
+        }
+    }
+
+    private static void doStartLog(String plumelogHost, int maxCount, BlockingQueue<String> queue, String key, String lock, AtomicLong pushTime) throws InterruptedException {
+
+        List<String> logs = new ArrayList<>();
+
+        int size = queue.size();
+        long currentTimeMillis = System.currentTimeMillis();
+        long time = currentTimeMillis - pushTime.get();
+
+        if (size >= maxCount || time > 500) {
+            queue.drainTo(logs, maxCount);
+
+            push(plumelogHost, key, logs, lock);
+
+            pushTime.set(currentTimeMillis);
+        } else if (size == 0) {
+            String log = queue.take();
+            logs.add(log);
+
+            push(plumelogHost, key, logs, lock);
+
             pushTime.set(currentTimeMillis);
         } else {
             Thread.sleep(100);

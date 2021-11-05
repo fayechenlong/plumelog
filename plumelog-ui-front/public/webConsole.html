@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button id="connBtn">连接</button>
+<input type="text" id="msg">
+<button id="sendBtn" onclick="send()">发送</button>
+<button id="closeBtn" onclick="closeWebsocket()">关闭</button>
+<div id="message">
+</div>
+</body>
+
+<script>
+    var ws = null;
+    if ('WebSocket' in window){
+        ws = new WebSocket("ws:localhost:8891/plumelog/websocket")
+    }else {
+        alert("浏览器不支持");
+    }
+    var connBtn = document.getElementById("connBtn");
+    var sendBtn = document.getElementById("sendBtn");
+    var closeBtn = document.getElementById("closeBtn");
+    // 连接安生错误的回调方法
+    ws.onerror = function () {
+        setMessageInnerHTML("WEBSOCKET发生链接错误");
+    }
+    // 连接成功的回调方法
+    ws.onopen = function (ev) {
+        setMessageInnerHTML("WebSocket连接成功！");
+    }
+    // 收到消息的回调方法
+    ws.onmessage = function (ev) {
+        console.log(1)
+        setMessageInnerHTML(ev.data);
+    }
+    // 连接关闭的回调方法
+    ws.onclose = function () {
+        setMessageInnerHTML("WebSocket连接关闭");
+    }
+    // 监听窗口关闭事件，防止连接没断关闭窗口。
+    window.onbeforeunload = function () {
+        closeWebSocket();
+    }
+
+    // 将消息显示在网页上
+    function setMessageInnerHTML(innerHtml){
+        document.getElementById("message").innerHTML += innerHtml + '<br />'
+    }
+    // 关闭websocket连接
+    function closeWebsocket(){
+        ws.close();
+    }
+    // 发送消息
+    function send(){
+        var message = document.getElementById("msg").value;
+        ws.send(message);
+    }
+</script>
+</html>

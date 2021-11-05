@@ -106,47 +106,49 @@ public class KafkaAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent logEvent) {
-        send(logEvent);
+        if (logEvent != null) {
+            send(logEvent);
+        }
     }
 
     protected void send(LogEvent logEvent) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
         if (logMessage instanceof RunLogMessage) {
-            final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
+            final String message = LogMessageUtil.getLogMessage((RunLogMessage)logMessage, logEvent);
             MessageAppenderFactory.pushRundataQueue(message);
         } else {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
-    
+
     public String getAppName() {
         return appName;
     }
-    
+
     public String getEnv() {
         return env;
     }
-    
+
     public String getKafkaHosts() {
         return kafkaHosts;
     }
-    
+
     public String getRunModel() {
         return runModel;
     }
-    
+
     public String getExpand() {
         return expand;
     }
-    
+
     public int getMaxCount() {
         return maxCount;
     }
-    
+
     public int getLogQueueSize() {
         return logQueueSize;
     }
-    
+
     public int getThreadPoolSize() {
         return threadPoolSize;
     }

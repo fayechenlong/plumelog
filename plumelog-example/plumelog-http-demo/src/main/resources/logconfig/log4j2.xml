@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="info" packages="com.plumelog.log4j2.appender">
+<Configuration status="info" packages="com.plumelog.com.plumelog.lite.log4j2.appender">
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
             <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->

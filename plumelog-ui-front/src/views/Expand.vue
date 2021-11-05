@@ -81,7 +81,7 @@ export default {
    }
   },
   computed:{
-    
+
   },
   components: {
     logHeader
@@ -123,9 +123,9 @@ export default {
               this.$Message.warning('请把扩展字段数据填写完整');
               setTimeout(()=>{
                   this.showDialog = true
-              },10)           
+              },10)
           }
-          
+
       },
       addField(){
           this.showDialog = true;
@@ -186,13 +186,13 @@ export default {
                 this.appNames = buckets;
             })
         }
-        
+
     }
   },
   mounted(){
     //this.getExtendList("plumelog_demo");
     this.getAppNames();
-    
+
   }
 }
 </script>
@@ -211,9 +211,9 @@ export default {
           margin-bottom:10px;
           .btn_delField
           {
-           margin-left: 10px;   
+           margin-left: 10px;
           }
       }
   }
-  
+
 </style>

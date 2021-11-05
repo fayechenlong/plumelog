@@ -1,7 +1,58 @@
 <template>
   <div class="pnl_wraper">
     <log-header></log-header>
-
+    <Modal
+        v-model="showDialog"
+        title="报警设置"
+        @on-ok="showDialog=false"
+        @on-cancel="showDialog=false">
+      <Form :model="dataInfo" ref="dataForm" :label-width="80">
+        <FormItem label="应用名称" required>
+          <Input v-model="dataInfo.appName" placeholder="输入应用名称"/>
+        </FormItem>
+        <FormItem label="应用环境" >
+          <Input v-model="dataInfo.env" placeholder="输入应用环境"/>
+        </FormItem>
+        <FormItem label="应用分类">
+          <Input v-model="dataInfo.appCategory" placeholder="输入应用分类"/>
+        </FormItem>
+        <FormItem label="模块名称(类路径)">
+          <Input v-model="dataInfo.className" placeholder="输入模块名称(类路径)"/>
+        </FormItem>
+        <FormItem label="接收者" required>
+          <Input type="textarea" :rows="4" v-model="dataInfo.receiver"
+                 placeholder="输入接收者（逗号分隔）; 如果包含all表示@所有人"/>
+        </FormItem>
+        <FormItem label="平台" required>
+          <Select v-model="dataInfo.hookServe" placeholder="请选择报警平台">
+            <Option v-for="item in hookServeList" :value="item.value" :key="item.value">{{
+                item.label
+              }}
+            </Option>
+          </Select>
+        </FormItem>
+        <FormItem label="钩子" required>
+          <Input v-model="dataInfo.webhookUrl" placeholder="输入钩子地址"/>
+        </FormItem>
+        <FormItem label="错误数量" required>
+          <Input v-model="dataInfo.errorCount" type="number" placeholder="输入错误数量"/>
+        </FormItem>
+        <FormItem label="时间间隔" required>
+          <Input v-model="dataInfo.time" type="number" placeholder="输入时间间隔(s)"/>
+        </FormItem>
+        <FormItem label="状态">
+          <i-switch v-model="dataInfo.status" size="large">
+            <span slot="open">开启</span>
+            <span slot="close">关闭</span>
+          </i-switch>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="showDialog=false">关闭
+        </button>
+        <button type="button" class="btn btn-primary" @click="save">{{ isEdit ? '保存' : '添加' }}</button>
+      </div>
+    </Modal>
     <Tabs active-key="报警设置">
       <Tab-pane icon="md-settings" label="报警设置" key="报警设置">
         <Row>
@@ -23,66 +74,6 @@
         <Row style="text-align: right;margin-top:5px;margin-right: 10px;">
           <Page :total="warnData.length" @on-change="handlePageChange" show-total :page-size="15" />
         </Row>
-        <div class="modal" style="display:block" v-if="showDialog" role="dialog">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">{{ isEdit ? '修改' : '添加' }}报警设置</h5>
-                <button type="button" class="close" data-dismiss="modal" @click="showDialog=false" aria-label="关闭">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <Form :model="dataInfo" ref="dataForm" :label-width="80">
-                  <FormItem label="应用名称" required>
-                    <Input v-model="dataInfo.appName" placeholder="输入应用名称"/>
-                  </FormItem>
-                  <FormItem label="应用环境" >
-                    <Input v-model="dataInfo.env" placeholder="输入应用环境"/>
-                  </FormItem>
-                  <FormItem label="应用分类">
-                    <Input v-model="dataInfo.appCategory" placeholder="输入应用分类"/>
-                  </FormItem>
-                  <FormItem label="模块名称(类路径)">
-                    <Input v-model="dataInfo.className" placeholder="输入模块名称(类路径)"/>
-                  </FormItem>
-                  <FormItem label="接收者" required>
-                    <Input type="textarea" :rows="4" v-model="dataInfo.receiver"
-                           placeholder="输入接收者（逗号分隔）; 如果包含all表示@所有人"/>
-                  </FormItem>
-                  <FormItem label="平台" required>
-                    <Select v-model="dataInfo.hookServe" placeholder="请选择报警平台">
-                      <Option v-for="item in hookServeList" :value="item.value" :key="item.value">{{
-                          item.label
-                        }}
-                      </Option>
-                    </Select>
-                  </FormItem>
-                  <FormItem label="钩子" required>
-                    <Input v-model="dataInfo.webhookUrl" placeholder="输入钩子地址"/>
-                  </FormItem>
-                  <FormItem label="错误数量" required>
-                    <Input v-model="dataInfo.errorCount" type="number" placeholder="输入错误数量"/>
-                  </FormItem>
-                  <FormItem label="时间间隔" required>
-                    <Input v-model="dataInfo.time" type="number" placeholder="输入时间间隔(s)"/>
-                  </FormItem>
-                  <FormItem label="状态">
-                    <i-switch v-model="dataInfo.status" size="large">
-                      <span slot="open">开启</span>
-                      <span slot="close">关闭</span>
-                    </i-switch>
-                  </FormItem>
-                </Form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="showDialog=false">关闭
-                </button>
-                <button type="button" class="btn btn-primary" @click="save">{{ isEdit ? '保存' : '添加' }}</button>
-              </div>
-            </div>
-          </div>
-        </div>
       </Tab-pane>
       <Tab-pane icon="md-alert" label="报警记录" key="报警记录">
         <div v-if="logs.length>0">

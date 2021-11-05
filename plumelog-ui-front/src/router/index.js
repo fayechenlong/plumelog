@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import Console from "../views/Console.vue";
 import Trace from "../views/Trace.vue";
 import Size from "../views/Size.vue";
 import Chart from "../views/Chart.vue";
@@ -8,6 +9,7 @@ import Warn from "../views/Warn.vue";
 import Expand from "../views/Expand.vue";
 import Errors from "../views/Errors.vue";
 import Login from "../views/Login.vue";
+import Console2 from "../views/Console2";
 
 Vue.use(VueRouter);
 
@@ -26,6 +28,11 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home
+  },
+  {
+    path: "/console",
+    name: "Console",
+    component: Console2
   },
   {
     path: "/top",

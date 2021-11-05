@@ -1,9 +1,12 @@
 package com.plumelog.server;
 
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
+import com.plumelog.core.client.AbstractServerClient;
+import com.plumelog.core.lucene.LuceneClient;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.collect.KafkaLogCollect;
+import com.plumelog.server.collect.LocalLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
 import com.plumelog.server.util.IndexUtil;
@@ -32,7 +35,7 @@ public class CollectStartBean implements InitializingBean {
     private static final Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
 
     @Autowired
-    private ElasticLowerClient elasticLowerClient;
+    private AbstractServerClient abstractServerClient;
 
     @Autowired(required = false)
     private AbstractClient redisQueueClient;
@@ -46,28 +49,40 @@ public class CollectStartBean implements InitializingBean {
     @Value("${plumelog.redis.compressor:false}")
     private Boolean compressor;
 
+
     private void serverStart() {
         if (InitConfig.KAFKA_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            KafkaLogCollect kafkaLogCollect = new KafkaLogCollect(elasticLowerClient, kafkaConsumer,
+            KafkaLogCollect kafkaLogCollect = new KafkaLogCollect((ElasticLowerClient) abstractServerClient, kafkaConsumer,
                     applicationEventPublisher);
             kafkaLogCollect.kafkaStart();
         }
         if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL) || InitConfig.REDIS_SENTINEL_MODE_NAME
                 .equals(InitConfig.START_MODEL) || InitConfig.REDIS_CLUSTER_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            RedisLogCollect redisLogCollect = new RedisLogCollect(elasticLowerClient, redisQueueClient,
+            RedisLogCollect redisLogCollect = new RedisLogCollect((ElasticLowerClient) abstractServerClient, redisQueueClient,
                     applicationEventPublisher, compressor);
             redisLogCollect.redisStart();
         }
         if (InitConfig.REST_MODE_NAME.equals(InitConfig.START_MODEL)) {
-            RestLogCollect restLogCollect = new RestLogCollect(elasticLowerClient, applicationEventPublisher);
+            RestLogCollect restLogCollect = new RestLogCollect((ElasticLowerClient) abstractServerClient, applicationEventPublisher);
             restLogCollect.restStart();
         }
+        if (InitConfig.LITE_MODE_NAME.equals(InitConfig.START_MODEL)) {
+            LocalLogCollect localLogCollect = new LocalLogCollect((LuceneClient) abstractServerClient);
+            localLogCollect.start();
+        }
     }
+
 
     @Override
     public void afterPropertiesSet() {
         try {
-            autoCreatIndice();
+            if (InitConfig.ES_INDEX_MODEL.equals("hour") && !InitConfig.START_MODEL.equals(InitConfig.LITE_MODE_NAME)) {
+                abstractServerClient.addShards(InitConfig.maxShards);
+                logger.info("set es max_shards_per_node of :" + InitConfig.maxShards);
+            }
+            if(!InitConfig.START_MODEL.equals(InitConfig.LITE_MODE_NAME)) {
+                autoCreatIndice();
+            }
             serverStart();
         } catch (Exception e) {
             logger.error("plumelog server starting failed!", e);
@@ -91,14 +106,14 @@ public class CollectStartBean implements InitializingBean {
     }
 
     private void creatIndiceLog(String index) {
-        if (!elasticLowerClient.existIndice(index)) {
-            elasticLowerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
+        if (!abstractServerClient.existIndice(index)) {
+            abstractServerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
         }
     }
 
     private void creatIndiceTrace(String index) {
-        if (!elasticLowerClient.existIndice(index)) {
-            elasticLowerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
+        if (!abstractServerClient.existIndice(index)) {
+            abstractServerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
         }
     }
 }

@@ -28,7 +28,7 @@
 import axios from '@/services/http'
 import _ from 'lodash'
 import moment from 'moment'
-import '@/assets/prism.js' 
+import '@/assets/prism.js'
 import '@/assets/prism.css'
 import 'view-design/dist/styles/iview.css';
 import tree from '@/components/tree.vue'
@@ -64,7 +64,7 @@ export default {
         for(var i=0;i<zIndex;i++){
             _arrary = _arrary[_arrary.length-1].children;
         }
-        
+
         //方法开始
         if(isStart){
           _arrary.push({

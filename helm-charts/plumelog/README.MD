@@ -4,7 +4,7 @@
 
 Plumelog一个简单易用的java分布式日志组件
 
- 1. 无入侵的分布式日志系统，基于log4j、log4j2、logback搜集日志，设置链路ID，方便查询关联日志
+ 1. 无入侵的分布式日志系统，基于log4j、com.plumelog.lite.log4j2、logback搜集日志，设置链路ID，方便查询关联日志
  
  2. 基于elasticsearch作为查询引擎
  

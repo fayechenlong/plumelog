@@ -53,7 +53,7 @@
         </div>
       </div>
     </div>
-    <Row style="margin-top:20px" type="flex" justify="start">
+    <Row v-if="config.modeName === 'redis'" style="margin-top:20px" type="flex" justify="start">
       <Col :span="8">
         <span style="padding: 10px;">当前redis队列大小 日志队列：{{runSize}} 追踪队列： {{traceSize}}</span>
         <Button type="error" style="margin-left: 10px" icon="ios-trash" @click="clearRedisQueue">清空队列</Button>
@@ -67,6 +67,7 @@
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
 import axios from '@/services/http'
+import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import moment from 'moment'
 import '@/assets/prism.js'
@@ -157,6 +158,7 @@ export default {
    }
   },
   computed:{
+    ...mapGetters(['config']),
     isDisabled(){
       let isDisabled = true;
       if(this.currentTab=='run' && this.size_selection.length>0){
@@ -209,12 +211,16 @@ export default {
       })
     },
     getQueueSize() {
-      axios.post(process.env.VUE_APP_API+'/getQueueCounts').then(res=> {
-        if(res.data.runSize > -1) {
+      if (this.config.modeName === 'redis') {
+        axios.post(process.env.VUE_APP_API+'/getQueueCounts').then(res=> {
+          if(res.data.runSize > -1) {
             this.runSize = res.data.runSize
             this.traceSize = res.data.traceSize
-        }
-      })
+          }
+        })
+      } else {
+         this.timer && clearInterval(this.timer)
+      }
     },
     removeSelect(){
 

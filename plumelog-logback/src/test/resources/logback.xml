@@ -29,22 +29,15 @@
 <!--        <kafkaHosts>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</kafkaHosts>-->
 <!--    </appender>-->
     <!-- easylog日志 -->
-    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
-        <appName>feeder</appName>
-        <redisHost>127.0.0.1:6379</redisHost>
-        <redisAuth>123456</redisAuth>
-        <maxCount>100</maxCount>
-        <logQueueSize>100000</logQueueSize>
-        <runModel>2</runModel>
-        <expand>sleuth</expand>
-        <model>sentinel</model>
-    </appender>
-<!--    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">-->
-<!--        <appName>plumelog-test</appName>-->
-<!--        <redisHost>10.100.2.54:6379</redisHost>-->
-<!--        <redisAuth>devredis</redisAuth>-->
-<!--        <compressor>true</compressor>-->
+<!--    <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">-->
+<!--        <appName>work</appName>-->
+<!--        <plumelogHost>localhost:8891</plumelogHost>-->
 <!--    </appender>-->
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+        <appName>work</appName>
+        <redisHost>172.18.71.26:6379</redisHost>
+        <redisAuth>Jch9shshl</redisAuth>
+    </appender>
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />

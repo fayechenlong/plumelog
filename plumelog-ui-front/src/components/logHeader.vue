@@ -5,33 +5,40 @@
             <li class="nav-item " :class="{'active':pageName=='Home'}">
                 <a class="nav-link"  href="./#/"><Icon type="logo-buffer" />日志查询</a>
             </li>
-            <li class="nav-item" :class="{'active':pageName=='Trace'}">
+            <li class="nav-item" :class="{'active':pageName=='Trace'}" >
                 <a class="nav-link" href="./#/trace"><Icon type="md-git-merge" />链路追踪</a>
             </li>
+          <li class="nav-item " :class="{'active':pageName=='Console'}">
+            <a class="nav-link"  href="./#/console"><Icon type="logo-buffer" />滚动日志</a>
+          </li>
             <!-- <li class="nav-item" :class="{'active':pageName=='Chart'}">
                 <a class="nav-link" href="./#/chart">数据统计</a>
             </li> -->
-            <li class="nav-item" :class="{'active':pageName=='Expand'}">
+            <li class="nav-item" :class="{'active':pageName=='Expand'}" v-if="config.modeName !== 'lite'">
                 <a class="nav-link" href="./#/expand"><Icon type="md-barcode" />扩展字段</a>
             </li>
-          <li class="nav-item" :class="{'active':pageName=='Errors'}">
+          <li class="nav-item" :class="{'active':pageName=='Errors'}" v-if="config.modeName !== 'lite'">
             <a class="nav-link" href="./#/errors"><Icon type="md-pie" />错误统计</a>
           </li>
-            <li class="nav-item" :class="{'active':pageName=='Warn'}">
+            <li class="nav-item" :class="{'active':pageName=='Warn'}" v-if="config.modeName !== 'lite'">
                 <a class="nav-link" href="./#/warn"><Icon type="md-alert" />报警管理</a>
             </li>
-            <li class="nav-item" :class="{'active':pageName=='Size'}">
+            <li class="nav-item" :class="{'active':pageName=='Size'}" >
                 <a class="nav-link" href="./#/size"><Icon type="md-settings" />管理</a>
             </li>
           <li class="nav-item">
             <a class="nav-link" target="_blank" href="https://gitee.com/plumeorg/plumelog/blob/master/HELP.md"><Icon style="font-size: 16px" type="md-help-circle" /></a>
           </li>
+          <li class="nav-item">
+            <span class="nav-link" v-if="config.modeName === 'lite'">Lite</span>
+          </li>
         </ul>
         <span class="quit"><a href="./#/login"><Icon style="font-size: 16px" type="md-exit" />退出</a></span>
-        <span class="version"><a target="_blank" href="https://gitee.com/plumeorg/plumelog">Version 3.4.2</a></span>
+        <span class="version"><a target="_blank" href="https://gitee.com/plumeorg/plumelog">Version 3.5</a></span>
     </nav>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
     name: "Nav",
     data(){
@@ -42,7 +49,8 @@ export default {
     computed:{
         pageName(){
             return this.$route.name;
-        }
+        },
+        ...mapGetters(['config'])
     },
     mounted(){
 

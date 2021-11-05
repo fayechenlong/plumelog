@@ -111,7 +111,7 @@ export default {
       let query = {};
       let startDate=  _.clone(new Date(this.dateTimeRange[0]));
       let endDate = new Date(this.dateTimeRange[1]);
-     
+
       query = {
         "query": {
             "bool": {
@@ -150,10 +150,10 @@ export default {
       })
     },
     getErrorRate(){
-     
+
       let startDate=  _.clone(new Date(this.dateTimeRange[0]));
       let endDate=new Date(this.dateTimeRange[1]);
-     
+
       let _promise =[];
       //按时间查询日志数量
       let query = {};
@@ -166,7 +166,7 @@ export default {
           }
         }
       }
-      query = { 
+      query = {
         "query": {
             "bool": {
               "must": [{
@@ -205,7 +205,7 @@ export default {
         },
         aggs
       }
-  
+
 
       let url = process.env.VUE_APP_API + '/clientQuery?size=1000&from=0&clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
@@ -276,7 +276,7 @@ export default {
           },
           xAxis: {
               data: _.map(data,(d)=>{
-                return  moment(d.name).format(this.chartInterval.format) 
+                return  moment(d.name).format(this.chartInterval.format)
               }),
               axisLabel:{
                 fontSize:12,
@@ -324,7 +324,7 @@ export default {
             },
             xAxis: {
                 data: _.map(data,(d)=>{
-                  return  moment(d.name).format(this.chartInterval.format) 
+                  return  moment(d.name).format(this.chartInterval.format)
                 }),
                 axisLabel:{
                   fontSize:12,
@@ -395,5 +395,5 @@ export default {
       margin-right:2%
     }
   }
-  
+
 </style>

@@ -1,9 +1,10 @@
 package com.plumelog.server.monitor;
 
 import com.alibaba.fastjson.JSON;
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
+import com.plumelog.server.InitConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class PlumeLogMonitorRuleConfig {
     private static final Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
     private static ConcurrentHashMap<String, List<WarningRule>> configMap = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, List<WarningRule>> backConfigMap = new ConcurrentHashMap<>();
-    @Autowired
+    @Autowired(required = false)
     private AbstractClient redisClient;
 
     private static void parserConfig(String config) {
@@ -74,12 +75,14 @@ public class PlumeLogMonitorRuleConfig {
 
     @Scheduled(cron = "0 */1 * * * ?")
     private void configureTasks() {
-        try {
-            initMonitorRuleConfig();
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("更新规则配置失败 {}", e);
+        if (!InitConfig.LITE_MODE_NAME.equals(InitConfig.LITE_MODE_NAME)) {
+            try {
+                initMonitorRuleConfig();
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("更新规则配置失败 {}", e);
 
+            }
         }
     }
 }

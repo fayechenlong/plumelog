@@ -29,5 +29,8 @@ ViewUI.LoadingBar.config({
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  async mounted () {
+    await this.$store.dispatch('getConfig')
+  }
 }).$mount("#app");

@@ -2,7 +2,8 @@ package com.plumelog.logback.appender;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import com.plumelog.core.AbstractClient;
+import ch.qos.logback.core.spi.FilterReply;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
@@ -151,7 +152,9 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        send(event);
+        if (event != null) {
+            send(event);
+        }
     }
 
     protected void send(ILoggingEvent event) {

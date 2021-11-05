@@ -2,7 +2,7 @@ package com.plumelog.server.controller;
 
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.server.InitConfig;
-import com.plumelog.server.client.ElasticLowerClient;
+import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.server.util.IndexUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AutoDeleteLogs {
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(AutoDeleteLogs.class);
 
     @Autowired
-    private ElasticLowerClient elasticLowerClient;
+    private AbstractServerClient abstractServerClient;
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteLogs() {
@@ -32,10 +32,10 @@ public class AutoDeleteLogs {
                 logger.info("begin delete {} days ago run logs!", InitConfig.keepDays);
                 String runLogIndex = IndexUtil.getRunLogIndex(
                         System.currentTimeMillis() - InitConfig.keepDays * InitConfig.MILLS_ONE_DAY);
-                elasticLowerClient.deleteIndex(runLogIndex);
+                abstractServerClient.deleteIndex(runLogIndex);
                 for (int a = 0; a < 24; a++) {
                     String hour = String.format("%02d", a);
-                    elasticLowerClient.deleteIndex(runLogIndex + hour);
+                    abstractServerClient.deleteIndex(runLogIndex + hour);
                 }
                 logger.info("delete success! index:" + runLogIndex);
             } catch (Exception e) {
@@ -49,10 +49,10 @@ public class AutoDeleteLogs {
                 logger.info("begin delete {} days ago trace logs!", InitConfig.traceKeepDays);
                 String traceLogIndex = IndexUtil.getTraceLogIndex(
                         System.currentTimeMillis() - InitConfig.traceKeepDays * InitConfig.MILLS_ONE_DAY);
-                elasticLowerClient.deleteIndex(traceLogIndex);
+                abstractServerClient.deleteIndex(traceLogIndex);
                 for (int a = 0; a < 24; a++) {
                     String hour = String.format("%02d", a);
-                    elasticLowerClient.deleteIndex(traceLogIndex + hour);
+                    abstractServerClient.deleteIndex(traceLogIndex + hour);
                 }
                 logger.info("delete success! index:" + traceLogIndex);
             } catch (Exception e) {
@@ -68,7 +68,7 @@ public class AutoDeleteLogs {
      * 由于无法确定指定的是哪个时区，因此每个小时都执行一次
      */
     @Scheduled(cron = "0 30 * * * ?")
-    public void creatIndice() {
+    public void createIndice() {
         long time = System.currentTimeMillis() + InitConfig.MILLS_ONE_DAY;
         String runLogIndex = IndexUtil.getRunLogIndex(time);
         String traceLogIndex = IndexUtil.getTraceLogIndex(time);
@@ -85,14 +85,14 @@ public class AutoDeleteLogs {
     }
 
     private void creatIndiceLog(String index) {
-        if (!elasticLowerClient.existIndice(index)) {
-            elasticLowerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
+        if (!abstractServerClient.existIndice(index)) {
+            abstractServerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
         }
     }
 
     private void creatIndiceTrace(String index) {
-        if (!elasticLowerClient.existIndice(index)) {
-            elasticLowerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
+        if (!abstractServerClient.existIndice(index)) {
+            abstractServerClient.creatIndiceTrace(index, LogMessageConstant.ES_TYPE);
         }
     }
 }

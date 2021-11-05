@@ -1,8 +1,10 @@
 package com.plumelog.server.client;
 
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
+import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.kafka.KafkaConsumerClient;
+import com.plumelog.core.lucene.LuceneClient;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisClusterClient;
 import com.plumelog.core.redis.RedisSentinelClient;
@@ -15,8 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.StringUtils;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
+import java.security.PublicKey;
 import java.time.ZoneId;
 
 /**
@@ -29,6 +36,7 @@ import java.time.ZoneId;
  */
 @Configuration
 @Order(1)
+@EnableWebSocket
 public class ClientConfig implements InitializingBean {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
     @Value("${plumelog.maxSendSize:5000}")
@@ -72,6 +80,9 @@ public class ClientConfig implements InitializingBean {
     private int shards;
     @Value("${plumelog.es.replicas:1}")
     private int replicas;
+    @Value("${plumelog.es.maxShards:100000}")
+    private Long maxShards;
+
     @Value("${plumelog.es.refresh.interval:60s}")
     private String refreshInterval;
     @Value("${plumelog.es.indexType.model:day}")
@@ -116,9 +127,14 @@ public class ClientConfig implements InitializingBean {
     @Value("${admin.log.trace.keepDays:0}")
     private int traceKeepDays;
 
+    @Value("${plumelog.lite.log.path:}")
+    private String liteLogPath;
+
     @Bean(name = "redisClient")
     public AbstractClient initRedisClient() {
-
+        if (InitConfig.LITE_MODE_NAME.equals(this.model)) {
+            return null;
+        }
         String mgRedisHost = "";
         String mgRedisPassWord = "";
         String mgMasterName = "";
@@ -161,7 +177,9 @@ public class ClientConfig implements InitializingBean {
 
     @Bean(name = "redisQueueClient")
     public AbstractClient initRedisQueueClient() {
-
+        if (InitConfig.LITE_MODE_NAME.equals(this.model)) {
+            return null;
+        }
         String mgRedisHost = "";
         String mgRedisPassWord = "";
         String mgMasterName = "";
@@ -198,15 +216,20 @@ public class ClientConfig implements InitializingBean {
     }
 
     @Bean
-    public ElasticLowerClient initElasticLowerClient() {
+    public AbstractServerClient initAbstractServerClient() {
         if (StringUtils.isEmpty(esHosts)) {
             logger.error("can not find esHosts config ! please check the application.properties(plumelog.es.esHosts) ");
             return null;
+        }
+        if(InitConfig.LITE_MODE_NAME.equals(model)){
+            logger.info("当前启动模式为单机简易版！");
+            return new LuceneClient(InitConfig.LITE_MODE_LOG_PATH);
         }
         ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord, trustSelfSigned, hostnameVerification);
         String esVersion = elasticLowerClient.getVersion();
         logger.info("es 初始化成功！Elastic 版本：{}", esVersion);
         if (esVersion != null && Integer.parseInt(esVersion.split("\\.")[0]) < 7) {
+            InitConfig.esVersion=Integer.parseInt(esVersion.split("\\.")[0]);
             logger.info("set index type=plumelog");
             this.indexType = "plumelog";
             LogMessageConstant.ES_TYPE= "plumelog";
@@ -216,6 +239,9 @@ public class ClientConfig implements InitializingBean {
 
     @Bean
     public KafkaConsumer initKafkaConsumer() {
+        if (InitConfig.LITE_MODE_NAME.equals(this.model)) {
+            return null;
+        }
         if (InitConfig.KAFKA_MODE_NAME.equals(model)) {
             if (StringUtils.isEmpty(kafkaHosts)) {
                 logger.error("can not find kafkaHosts config! please check the application.properties(plumelog.kafka.kafkaHosts) ");
@@ -239,6 +265,11 @@ public class ClientConfig implements InitializingBean {
         InitConfig.ES_INDEX_REPLICAS = this.replicas;
         InitConfig.ES_REFRESH_INTERVAL = this.refreshInterval;
         InitConfig.ES_INDEX_MODEL = this.indexTypeModel;
+        if(this.liteLogPath!=null&&!"".equals(this.liteLogPath)){
+            InitConfig.LITE_MODE_LOG_PATH=this.liteLogPath;
+        }else {
+            InitConfig.LITE_MODE_LOG_PATH=System.getProperty("user.dir");
+        }
 
         try {
             ZoneId.of(this.indexTypeZoneId);
@@ -259,6 +290,7 @@ public class ClientConfig implements InitializingBean {
 
         InitConfig.keepDays = this.keepDays;
         InitConfig.traceKeepDays = this.traceKeepDays;
+        InitConfig.maxShards=this.maxShards;
 
         logger.info("server run model:" + this.model);
         logger.info("maxSendSize:" + this.maxSendSize);
@@ -267,12 +299,22 @@ public class ClientConfig implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
         try {
             loadConfig();
             logger.info("load config success!");
         } catch (Exception e) {
             logger.error("plumelog load config success failed!", e);
         }
+    }
+    @Bean
+    public ServerEndpointExporter serverEndpointExporter() {
+        return new ServerEndpointExporter();
+    }
+    @Bean
+    public TaskScheduler taskScheduler(){
+        ThreadPoolTaskScheduler taskScheduler=new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(10);
+        taskScheduler.initialize();;
+        return taskScheduler;
     }
 }

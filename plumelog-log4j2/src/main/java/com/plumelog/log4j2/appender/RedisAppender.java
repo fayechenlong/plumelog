@@ -1,12 +1,11 @@
 package com.plumelog.log4j2.appender;
 
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.MessageAppenderFactory;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.redis.RedisClient;
-import com.plumelog.core.redis.RedisClusterClient;
 import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
@@ -148,71 +147,73 @@ public class RedisAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent logEvent) {
-        send(logEvent);
+        if (logEvent != null) {
+            send(logEvent);
+        }
     }
 
     protected void send(LogEvent logEvent) {
         final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
         if (logMessage instanceof RunLogMessage) {
-            final String message = LogMessageUtil.getLogMessage(logMessage, logEvent);
+            final String message = LogMessageUtil.getLogMessage((RunLogMessage)logMessage, logEvent);
             MessageAppenderFactory.pushRundataQueue(message);
         } else {
             MessageAppenderFactory.pushTracedataQueue(GfJsonUtil.toJSONString(logMessage));
         }
     }
-    
+
     public String getAppName() {
         return appName;
     }
-    
+
     public String getModel() {
         return model;
     }
-    
+
     public String getRunModel() {
         return runModel;
     }
-    
+
     public String getMasterName() {
         return masterName;
     }
-    
+
     public String getRedisHost() {
         return redisHost;
     }
-    
+
     public String getRedisPort() {
         return redisPort;
     }
-    
+
     public int getRedisDb() {
         return redisDb;
     }
-    
+
     public String getRedisAuth() {
         return redisAuth;
     }
-    
+
     public String getExpand() {
         return expand;
     }
-    
+
     public String getEnv() {
         return env;
     }
-    
+
     public int getMaxCount() {
         return maxCount;
     }
-    
+
     public int getThreadPoolSize() {
         return threadPoolSize;
     }
-    
+
     public int getLogQueueSize() {
         return logQueueSize;
     }
-    
+
     public boolean isCompressor() {
         return compressor;
     }

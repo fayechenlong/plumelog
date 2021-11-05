@@ -1,11 +1,11 @@
 package com.plumelog.server.monitor;
 
 import com.alibaba.fastjson.JSONObject;
-import com.plumelog.core.AbstractClient;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
-import com.plumelog.server.client.ElasticLowerClient;
+import com.plumelog.core.client.AbstractServerClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +43,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
     @Value("${plumelog.ui.url:127.0.0.1:8989}")
     private String url;
     @Autowired
-    private ElasticLowerClient elasticLowerClient;
+    private AbstractServerClient abstractServerClient;
 
     /**
      * 组装key
@@ -217,11 +216,11 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             object.put("count", count);
             object.put("dataTime", System.currentTimeMillis());
             object.put("errorContent", errorContent);
-            elasticLowerClient.insertListComm(Arrays.asList(object.toJSONString()),
+            abstractServerClient.insertListComm(Arrays.asList(object.toJSONString()),
                     LogMessageConstant.PLUMELOG_MONITOR_MESSAGE_KEY,
                     LogMessageConstant.ES_TYPE);
             logger.info("monitor message insert es success");
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("monitor message insert es failed!", e);
         }
     }

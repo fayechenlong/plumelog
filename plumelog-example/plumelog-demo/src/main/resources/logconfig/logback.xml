@@ -10,9 +10,6 @@
               value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
     <!--输出到控制台-->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="com.plumelog.logback.util.FilterSyncLogger">
-            <level></level>
-        </filter>
         <encoder>
             <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
             <!-- 设置字符集 -->
@@ -37,18 +34,21 @@
     <springProperty scope="context" name="plumelog.masterName" source="plumelog.masterName"/>
     <springProperty scope="context" name="plumelog.env" source="spring.profiles.active"/>
 
+<!--    <appender name="plumelog" class="com.plumelog.lite.logback.appender.LiteAppender">-->
+<!--        <appName>plumelog</appName>-->
+<!--        <logPath>/Users/chenlongfei/lucene</logPath>-->
+<!--        <keepDay>30</keepDay>-->
+<!--    </appender>-->
+
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>${plumelog.appName}</appName>
         <redisHost>${plumelog.redisHost}</redisHost>
         <redisAuth>${plumelog.redisAuth}</redisAuth>
         <env>${plumelog.env}</env>
-        <masterName>${plumelog.masterName}</masterName>
-        <model>sentinel</model>
     </appender>
     <!-- 日志输出级别 -->
     <root level="info">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="plumelog"/>
-        <appender-ref ref="FILE"/>
     </root>
 </configuration>

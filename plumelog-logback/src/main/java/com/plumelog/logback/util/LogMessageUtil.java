@@ -9,12 +9,13 @@ import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
-import com.plumelog.core.util.DateUtil;
-import com.plumelog.core.util.GfJsonUtil;
-import com.plumelog.core.util.LogExceptionStackTrace;
-import com.plumelog.core.util.TraceLogMessageFactory;
+import com.plumelog.core.util.*;
 import org.slf4j.helpers.MessageFormatter;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -38,7 +39,7 @@ public class LogMessageUtil {
         String traceId = null;
         if (!logEvent.getMDCPropertyMap().isEmpty()) {
             traceId = logEvent.getMDCPropertyMap().get(LogMessageConstant.TRACE_ID);
-            if(traceId!=null) {
+            if(traceId!=null&&TraceId.logTraceID.get()!=null) {
                 TraceId.logTraceID.set(traceId);
             }
         }
@@ -55,7 +56,7 @@ public class LogMessageUtil {
     @SuppressWarnings("unchecked")
     public static String getLogMessage(BaseLogMessage baseLogMessage, final ILoggingEvent iLoggingEvent) {
         Map<String, String> mdc = iLoggingEvent.getMDCPropertyMap();
-        Map<String, Object> map = GfJsonUtil.parseObject(GfJsonUtil.toJSONString(baseLogMessage), Map.class);
+        Map<String, Object> map = StringUtils.entityToMap(baseLogMessage);
         if (mdc != null) {
             map.putAll(mdc);
         }
@@ -82,7 +83,6 @@ public class LogMessageUtil {
         logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
         // dateTime字段用来保存当前服务器的时间戳字符串
         logMessage.setDateTime(DateUtil.getDatetimeNormalStrWithMills(iLoggingEvent.getTimeStamp()));
-
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
         return logMessage;
     }

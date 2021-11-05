@@ -15,4 +15,8 @@ public class PageController {
     public String index1() {
         return "index";
     }
+    @RequestMapping("/webConsole")
+    public String webConsole() {
+        return "webConsole";
+    }
 }
