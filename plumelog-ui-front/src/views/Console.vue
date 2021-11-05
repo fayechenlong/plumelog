@@ -136,6 +136,7 @@ export default {
       envWithAppNameMap:{},
       allEnvs:[],
       stop:false,
+      inited: false
     }
   },
   components: {
@@ -143,7 +144,7 @@ export default {
     logHeader,
     expandRow
   },
-  beforeDestroy () {
+  destroyed  () {
     console.log("destory")
   },
   methods: {
@@ -226,6 +227,7 @@ export default {
 
       if ('WebSocket' in window) {
         let url = window.location.host;
+        // url = 'localhost:8891'
         const ws = new WebSocket(`ws:${url}/plumelog/websocket`)
         ws.onerror = (e) => {
           this.list.push({dtTime: new Date().getTime(),content: `链接异常 ${JSON.stringify(e)}`, logLevel:'ERROR', appName: '', className:'', method:''})
@@ -258,8 +260,7 @@ export default {
         }
         // 连接关闭的回调方法
         ws.onclose = () =>  {
-          this.list.push({dtTime: new Date().getTime(),content: '链接关闭,尝试链接...', logLevel:'INFO', appName: '', className:'',method:''})
-          setTimeout(this.init,1000);
+          this.list.push({dtTime: new Date().getTime(),content: '链接关闭', logLevel:'INFO', appName: '', className:'',method:''})
         }
         this.ws = ws;
       } else {
@@ -372,13 +373,17 @@ export default {
       })
     }
   },
-  activated() {
-    // console.log("activated")
-    // this.init();
+  deactivated() {
+    this.ws && this.ws.close()
+    this.list = []
+    this.messageList = []
   },
-  mounted() {
+  activated() {
     this.init()
-  }
+  },
+  // mounted() {
+  //   this.init()
+  // }
 };
 </script>
 <style lang="less">
