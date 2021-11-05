@@ -502,7 +502,9 @@ public class Interceptor extends HandlerInterceptorAdapter {
 
 ### （4）开启链路追踪
 
-[链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
+* 这边注意：先要完成上一步，页面有了traceId(追踪码)，这一步配置开启链路追踪才行，否则配置了也查询不了
+
+* [链路追踪使用点我](/plumelog-trace/README.md)  《==要想产生链路信息请看这边文档，否则没有链路信息展示
 
 ### （5）扩展字段功能
 
