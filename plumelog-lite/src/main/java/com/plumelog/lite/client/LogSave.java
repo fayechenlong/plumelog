@@ -3,22 +3,17 @@ package com.plumelog.lite.client;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-import com.plumelog.core.TraceMessage;
-import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.lucene.LuceneClient;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.LZ4Util;
-
 import javax.websocket.Session;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -90,9 +85,9 @@ public class LogSave {
                     luceneClient.insertListLog(baseLogMessage, getRunLogIndex());
                 }
                 if (WebSocketSession.sessions.size() > 0) {
-                    for (int i=0;i<100;i++) {
+                    for (RunLogMessage runLogMessage:baseLogMessage) {
                         for (Session session : WebSocketSession.sessions) {
-                            session.getBasicRemote().sendText(GfJsonUtil.toJSONString(baseLogMessage.get(i)));
+                            session.getBasicRemote().sendText(GfJsonUtil.toJSONString(runLogMessage));
                         }
                     }
                 }
