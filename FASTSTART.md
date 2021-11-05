@@ -163,6 +163,11 @@ admin.log.trace.keepDays=30
 * 2.推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本
 
 * 3.示例中仅仅是基本配置，更多配置请看文章下面配置详解
+  
+* 4.示例中plumelog相关版本号为示例，实际使用建议取最新的版本，最新的版如下
+  
+  [最新的版本号：![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
+
 
 ### （2）客户端配置
 
