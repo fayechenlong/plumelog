@@ -566,6 +566,12 @@ public class Interceptor extends HandlerInterceptorAdapter {
         }));
 ```
 
+### （7）滚动日志
+
+* 3.5版本支持查看滚动实时日志功能，点击滚动日志菜单，填入条件后，点击连接按钮，就可以实时滚动查看目标日志，三个查询条件，应用名称必填，否则没有日志输出
+
+![avatar](/pic/gundong.png)
+
 ## 三、docker安装
 
 [docker版本安装点我](/docker-file/DOCKER.md)
