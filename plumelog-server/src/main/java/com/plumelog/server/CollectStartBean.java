@@ -76,11 +76,11 @@ public class CollectStartBean implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         try {
-            if (InitConfig.ES_INDEX_MODEL.equals("hour")&&!InitConfig.START_MODEL.equals(InitConfig.LITE_MODE_NAME)) {
+            if (InitConfig.ES_INDEX_MODEL.equals("hour") && !InitConfig.START_MODEL.equals(InitConfig.LITE_MODE_NAME)) {
                 abstractServerClient.addShards(InitConfig.maxShards);
                 logger.info("set es max_shards_per_node of :" + InitConfig.maxShards);
             }
-            if (!InitConfig.LITE_MODE_NAME.equals(InitConfig.START_MODEL)) {
+            if(!InitConfig.START_MODEL.equals(InitConfig.LITE_MODE_NAME)) {
                 autoCreatIndice();
             }
             serverStart();

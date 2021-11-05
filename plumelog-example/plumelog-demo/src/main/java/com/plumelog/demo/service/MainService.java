@@ -8,6 +8,7 @@ import com.plumelog.trace.annotation.Trace;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
@@ -69,4 +70,11 @@ public class MainService {
         }
         logger.warn("警告日志展示！");
     }
+//    @Scheduled(cron = "0/1 * * * * ?")
+//    public void test(){
+//
+//        logger.info("正常");
+//        logger.warn("远程调用成功");
+//        logger.error("11");
+//    }
 }

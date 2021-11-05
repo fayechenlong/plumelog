@@ -40,9 +40,11 @@
 <!--        <keepDay>30</keepDay>-->
 <!--    </appender>-->
 
-    <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>plume</appName>
-        <plumelogHost>localhost:8891</plumelogHost>
+        <redisHost>${plumelog.redisHost}</redisHost>
+        <redisAuth>${plumelog.redisAuth}</redisAuth>
+        <env>${plumelog.env}</env>
     </appender>
     <!-- 日志输出级别 -->
     <root level="info">
