@@ -38,7 +38,7 @@
               </td>
               <td style="width: 180px">
 <!--                :disabled="!filter.appName"-->
-                <Button  @click="connect" type="primary" style="margin-left:10px;">链接</Button>
+                <Button  @click="connect" type="primary" style="margin-left:10px;">连接</Button>
                 <Button @click="closeHandler" style="margin-left:10px">停止</Button>
               </td>
             </tr>
@@ -225,9 +225,13 @@ export default {
       }
 
       if ('WebSocket' in window) {
-        let url = window.location.host;
-        // url = 'localhost:8891'
-        const ws = new WebSocket(`ws:${url}/plumelog/websocket`)
+       let host = window.location.host;
+        let ishttps = 'https:' == document.location.protocol ? true : false;
+        let url='ws://'+host+'/plumelog/websocket';
+         if(ishttps){
+           url='wss://'+host+'/plumelog/websocket';
+         }
+        const ws = new WebSocket(url);
         ws.onerror = (e) => {
           this.term.writeln(`${color['ERROR']} ${this.dateFormat(new Date().getTime())}  链接异常`)
         }

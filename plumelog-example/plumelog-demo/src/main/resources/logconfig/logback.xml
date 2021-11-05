@@ -41,7 +41,7 @@
 <!--    </appender>-->
 
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
-        <appName>plume</appName>
+        <appName>${plumelog.appName}</appName>
         <redisHost>${plumelog.redisHost}</redisHost>
         <redisAuth>${plumelog.redisAuth}</redisAuth>
         <env>${plumelog.env}</env>

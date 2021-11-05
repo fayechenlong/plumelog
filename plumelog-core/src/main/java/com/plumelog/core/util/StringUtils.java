@@ -8,11 +8,17 @@ import java.util.Map;
 
 public class StringUtils {
 
-    public static boolean isEmpty(String obj){
+    public static boolean isNotEmpty(String obj){
         if(obj==null||"".equals(obj)){
             return false;
         }
         return true;
+    }
+    public static boolean isEmpty(String obj){
+        if(obj==null||"".equals(obj)){
+            return true;
+        }
+        return false;
     }
 
     public static Map<String, Object> entityToMap(Object object) {

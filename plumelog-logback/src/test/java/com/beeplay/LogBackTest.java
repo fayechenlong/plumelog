@@ -17,7 +17,13 @@ public class LogBackTest {
         for(int i=0;i<Integer.MAX_VALUE;i++) {
             logger.info("远程调用成功！"+String.valueOf(i));
             logger.warn("警告日志展示！");
+            try {
+                String a=null;
+                a.equals("");
+            }catch (Exception e){
 
+                logger.error("错误:{}",LogExceptionStackTrace.erroStackTrace(e));
+            }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

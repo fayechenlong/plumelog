@@ -1,5 +1,6 @@
 package com.plumelog.server.websocket;
 
+import com.plumelog.server.util.GfJsonUtil;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -21,7 +22,8 @@ public class WebSocket {
 
     @OnMessage
     public void onMessage(String params, Session session){
-        WebSocketSession.sessionAppName.put(session,params);
+        Filter filter= GfJsonUtil.parseObject(params,Filter.class);
+        WebSocketSession.sessionAppName.put(session,filter);
     }
 
     @OnError
