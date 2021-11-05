@@ -226,9 +226,13 @@ export default {
       const rowDiv = document.getElementById('plume-console');
 
       if ('WebSocket' in window) {
-        let url = window.location.host;
-        // url = 'localhost:8891'
-        const ws = new WebSocket(`ws:${url}/plumelog/websocket`)
+        let host = window.location.host;
+        let ishttps = 'https:' == document.location.protocol ? true : false;
+        let url='ws://'+host+'/plumelog/websocket';
+         if(ishttps){
+           url='wss://'+host+'/plumelog/websocket';
+         }
+        const ws = new WebSocket(url);
         ws.onerror = (e) => {
           this.list.push({dtTime: new Date().getTime(),content: `链接异常 ${JSON.stringify(e)}`, logLevel:'ERROR', appName: '', className:'', method:''})
         }

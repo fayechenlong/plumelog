@@ -2,10 +2,7 @@ package com.plumelog.server.websocket;
 
 import org.springframework.stereotype.Component;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/plumelog/websocket")
@@ -19,10 +16,17 @@ public class WebSocket {
     @OnClose
     public void onClose(Session session) {
         WebSocketSession.sessions.remove(session);
+        WebSocketSession.sessionAppName.remove(session);
     }
 
     @OnMessage
-    public void onMessage(String params, Session session) throws Exception {
+    public void onMessage(String params, Session session){
         WebSocketSession.sessionAppName.put(session,params);
+    }
+
+    @OnError
+    public  void onError(Session session, Throwable error){
+        WebSocketSession.sessions.remove(session);
+        WebSocketSession.sessionAppName.remove(session);
     }
 }

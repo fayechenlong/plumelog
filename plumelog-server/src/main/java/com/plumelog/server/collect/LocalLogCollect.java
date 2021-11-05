@@ -85,13 +85,11 @@ public class LocalLogCollect {
                 logger.error("", e);
             }
             LocalLogQueue.rundataQueue.drainTo(logs, InitConfig.MAX_SEND_SIZE);
-
             try {
                 if (logs.size() > 0) {
                     luceneClient.insertListLog(logs, getRunLogIndex());
                     logger.info("runLog messages insert success! count:{}",logs.size());
-                    //发送到控制台,最多单次发送100条，防止前端卡顿
-                    for(int i=0;i<100;i++){
+                    for(int i=0;i<logs.size();i++){
                         WebSocketSession.sendToConsole(logs.get(i));
                     }
                 }

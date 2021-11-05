@@ -24,8 +24,6 @@ public class WebSocketSession {
                     if (appName.equals(runLogMessage.getAppName())) {
                         session.getBasicRemote().sendText(message);
                     }
-                } else {
-                    session.getBasicRemote().sendText(message);
                 }
             }
         } catch (Exception e) {
@@ -33,7 +31,7 @@ public class WebSocketSession {
         }
     }
     public static void sendToConsole(RunLogMessage runLogMessage) {
-        try {
+        try {https://www.jianshu.com/p/b895c22c85af
             if (sessions.size() == 0) {
                 return;
             }
@@ -42,11 +40,7 @@ public class WebSocketSession {
                 if (appName != null && !"".equals(appName)) {
                     if (appName.equals(runLogMessage.getAppName())) {
                         session.getBasicRemote().sendText(GfJsonUtil.toJSONString(runLogMessage));
-                    }else if("all".equalsIgnoreCase(appName)) {
-                        session.getBasicRemote().sendText(GfJsonUtil.toJSONString(runLogMessage));
                     }
-                } else {
-                    session.getBasicRemote().sendText(GfJsonUtil.toJSONString(runLogMessage));
                 }
             }
         } catch (Exception e) {
