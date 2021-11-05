@@ -90,9 +90,9 @@ public class LocalLogCollect {
                 if (logs.size() > 0) {
                     luceneClient.insertListLog(logs, getRunLogIndex());
                     logger.info("runLog messages insert success! count:{}",logs.size());
-                    //发送到控制台
-                    for(RunLogMessage runLogMessage:logs){
-                        WebSocketSession.sendToConsole(runLogMessage);
+                    //发送到控制台,最多单次发送100条，防止前端卡顿
+                    for(int i=0;i<100;i++){
+                        WebSocketSession.sendToConsole(logs.get(i));
                     }
                 }
             } catch (Exception e) {

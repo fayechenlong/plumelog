@@ -75,6 +75,7 @@ public class BaseLogCollect {
         if (size > 0) {
             try {
                 List<RunLogMessage> errorLogs = new ArrayList<>();
+                int i = 0;
                 for (String logString : logs) {
                     RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
                     AppNameCache.appName.computeIfAbsent(runLogMessage.getAppName(), k -> new HashSet<>())
@@ -82,10 +83,13 @@ public class BaseLogCollect {
                     if ("ERROR".equalsIgnoreCase(runLogMessage.getLogLevel())) {
                         errorLogs.add(runLogMessage);
                     }
-
-                    //控制台事件
-                    WebSocketSession.sendToConsole(logString);
+                    i++;
+                    if (i < 100) {
+                        //控制台事件,最多展示100条，多了也看不过来
+                        WebSocketSession.sendToConsole(logString);
+                    }
                 }
+
                 logs = null;
                 applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, errorLogs));
             } catch (Exception e) {

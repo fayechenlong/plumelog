@@ -90,9 +90,9 @@ public class LogSave {
                     luceneClient.insertListLog(baseLogMessage, getRunLogIndex());
                 }
                 if (WebSocketSession.sessions.size() > 0) {
-                    for (RunLogMessage runLogMessage : baseLogMessage) {
+                    for (int i=0;i<100;i++) {
                         for (Session session : WebSocketSession.sessions) {
-                            session.getBasicRemote().sendText(GfJsonUtil.toJSONString(runLogMessage));
+                            session.getBasicRemote().sendText(GfJsonUtil.toJSONString(baseLogMessage.get(i)));
                         }
                     }
                 }
