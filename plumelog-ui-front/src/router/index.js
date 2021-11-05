@@ -9,6 +9,7 @@ import Warn from "../views/Warn.vue";
 import Expand from "../views/Expand.vue";
 import Errors from "../views/Errors.vue";
 import Login from "../views/Login.vue";
+import Console2 from "../views/Console2";
 
 Vue.use(VueRouter);
 
@@ -31,7 +32,7 @@ const routes = [
   {
     path: "/console",
     name: "Console",
-    component: Console
+    component: Console2
   },
   {
     path: "/top",
