@@ -38,7 +38,7 @@
 ##### 注意：如果你的项目没有配置可以访问静态文件请做如下配置 在application.properties配置：
 
 ```properties
-        spring.thymeleaf.mode=LEGACYHTML5
+spring.thymeleaf.mode=LEGACYHTML5
 spring.mvc.view.prefix=classpath:/templates
 spring.mvc.view.suffix=.html
 spring.mvc.static-path-pattern=/**

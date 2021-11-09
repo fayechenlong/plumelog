@@ -217,13 +217,13 @@ public class ClientConfig implements InitializingBean {
 
     @Bean
     public AbstractServerClient initAbstractServerClient() {
-        if (StringUtils.isEmpty(esHosts)) {
-            logger.error("can not find esHosts config ! please check the application.properties(plumelog.es.esHosts) ");
-            return null;
-        }
         if(InitConfig.LITE_MODE_NAME.equals(model)){
             logger.info("当前启动模式为单机简易版！");
             return new LuceneClient(InitConfig.LITE_MODE_LOG_PATH);
+        }
+        if (StringUtils.isEmpty(esHosts)) {
+            logger.error("can not find esHosts config ! please check the application.properties(plumelog.es.esHosts) ");
+            return null;
         }
         ElasticLowerClient elasticLowerClient = ElasticLowerClient.getInstance(esHosts, esUserName, esPassWord, trustSelfSigned, hostnameVerification);
         String esVersion = elasticLowerClient.getVersion();
@@ -239,9 +239,6 @@ public class ClientConfig implements InitializingBean {
 
     @Bean
     public KafkaConsumer initKafkaConsumer() {
-        if (InitConfig.LITE_MODE_NAME.equals(this.model)) {
-            return null;
-        }
         if (InitConfig.KAFKA_MODE_NAME.equals(model)) {
             if (StringUtils.isEmpty(kafkaHosts)) {
                 logger.error("can not find kafkaHosts config! please check the application.properties(plumelog.kafka.kafkaHosts) ");

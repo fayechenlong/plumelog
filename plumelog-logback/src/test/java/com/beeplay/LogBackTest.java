@@ -16,6 +16,7 @@ public class LogBackTest {
 
         for(int i=0;i<Integer.MAX_VALUE;i++) {
             logger.info("远程调用成功！"+String.valueOf(i));
+            logger.error("错误！"+String.valueOf(i));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
