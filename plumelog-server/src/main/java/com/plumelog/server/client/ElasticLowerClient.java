@@ -144,9 +144,6 @@ public class ElasticLowerClient extends AbstractServerClient {
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
                 return true;
-            } else {
-                String responseStr = EntityUtils.toString(res.getEntity());
-                logger.error("ElasticSearch HEAD Failure! {}", responseStr);
             }
         } catch (Exception e) {
             logger.error("", e);
@@ -201,6 +198,41 @@ public class ElasticLowerClient extends AbstractServerClient {
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
                 logger.info("create index {} success", indice);
+                return true;
+            } else {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.error("ElasticSearch PUT Failure! {}", responseStr);
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean setMapping(String indice, String type) {
+        try {
+            String url = "/" + indice + "/_mapping?pretty";
+            if (!StringUtils.isEmpty(type)) {
+                url = "/" + indice + "/" + type + "/_mapping?pretty";
+            }
+            Request request = new Request(
+                    "PUT", url
+            );
+            String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+                    "\"env\":{\"type\":\"keyword\"}," +
+                    "\"appNameWithEnv\":{\"type\":\"keyword\"}," +
+                    "\"logLevel\":{\"type\":\"keyword\"}," +
+                    "\"serverName\":{\"type\":\"keyword\"}," +
+                    "\"traceId\":{\"type\":\"keyword\"}," +
+                    "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}," +
+                    "\"seq\":{\"type\":\"long\"}" +
+                    "}";
+            String ent = "{\"" + type + "\":{" + properties + "}}";
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                logger.info("reset index  {} mapping success", indice);
                 return true;
             } else {
                 String responseStr = EntityUtils.toString(res.getEntity());

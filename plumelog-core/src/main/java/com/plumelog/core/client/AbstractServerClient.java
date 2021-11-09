@@ -20,6 +20,8 @@ public abstract class AbstractServerClient {
 
     public abstract boolean creatIndice(String indice, String type);
 
+    public abstract boolean setMapping(String indice, String type);
+
     public abstract boolean creatIndiceTrace(String indice, String type);
 
     public abstract boolean existIndice(String indice);

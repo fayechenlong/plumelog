@@ -453,6 +453,11 @@ public class LuceneClient extends AbstractServerClient {
     }
 
     @Override
+    public boolean setMapping(String indice, String type) {
+        return false;
+    }
+
+    @Override
     public boolean creatIndiceTrace(String indice, String type) {
         return true;
     }
