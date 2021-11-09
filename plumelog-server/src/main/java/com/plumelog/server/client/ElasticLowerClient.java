@@ -159,11 +159,12 @@ public class ElasticLowerClient extends AbstractServerClient {
                     "/");
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
-
                 String jsonStr = EntityUtils.toString(res.getEntity(), "utf-8");
-
                 JSONObject jsonObject = JSON.parseObject(jsonStr);
                 return JSON.parseObject(jsonObject.getString("version")).getString("number");
+            } else {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.error("ElasticSearch GET Failure! {}", responseStr);
             }
         } catch (Exception e) {
             logger.error("", e);
@@ -196,8 +197,46 @@ public class ElasticLowerClient extends AbstractServerClient {
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
-                logger.info("creat indice {}", indice);
+                logger.info("create index {} success", indice);
                 return true;
+            } else {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.error("ElasticSearch PUT Failure! {}", responseStr);
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean setMapping(String indice, String type) {
+        try {
+            String url = "/" + indice + "/_mapping?pretty";
+            if (!StringUtils.isEmpty(type)) {
+                url = "/" + indice + "/" + type + "/_mapping?pretty";
+            }
+            Request request = new Request(
+                    "PUT", url
+            );
+            String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
+                    "\"env\":{\"type\":\"keyword\"}," +
+                    "\"appNameWithEnv\":{\"type\":\"keyword\"}," +
+                    "\"logLevel\":{\"type\":\"keyword\"}," +
+                    "\"serverName\":{\"type\":\"keyword\"}," +
+                    "\"traceId\":{\"type\":\"keyword\"}," +
+                    "\"dtTime\":{\"type\":\"date\",\"format\":\"strict_date_optional_time||epoch_millis\"}," +
+                    "\"seq\":{\"type\":\"long\"}" +
+                    "}";
+            String ent = "{\"" + type + "\":{" + properties + "}}";
+            request.setJsonEntity(ent);
+            Response res = client.performRequest(request);
+            if (res.getStatusLine().getStatusCode() == 200) {
+                logger.info("reset index  {} mapping success", indice);
+                return true;
+            } else {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.error("ElasticSearch PUT Failure! {}", responseStr);
             }
         } catch (Exception e) {
             logger.error("", e);
@@ -225,8 +264,11 @@ public class ElasticLowerClient extends AbstractServerClient {
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
-                logger.info("creat indice {}", indice);
+                logger.info("create index {} success", indice);
                 return true;
+            } else {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.error("ElasticSearch PUT Failure! {}", responseStr);
             }
         } catch (Exception e) {
             logger.error("", e);
@@ -245,39 +287,45 @@ public class ElasticLowerClient extends AbstractServerClient {
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
                 return true;
+            } else {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.error("ElasticSearch PUT Failure! {}", responseStr);
             }
         } catch (Exception e) {
             logger.error("", e);
         }
         return false;
     }
+
     @Override
     public boolean addShards(Long shardCount) {
         try {
             Request request = new Request(
                     "PUT",
                     "/_cluster/settings");
-            String ent = "{\"persistent\":{\"cluster\":{\"max_shards_per_node\":"+shardCount+"}}}";
+            String ent = "{\"persistent\":{\"cluster\":{\"max_shards_per_node\":" + shardCount + "}}}";
             request.setJsonEntity(ent);
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
                 return true;
+            } else {
+                String responseStr = EntityUtils.toString(res.getEntity());
+                logger.error("ElasticSearch PUT Failure! {}", responseStr);
             }
         } catch (Exception e) {
             logger.error("", e);
         }
         return false;
     }
+
     @Override
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
-
         if (!existIndice(baseIndex)) {
             if (baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
                 creatIndice(baseIndex, type);
             } else {
                 creatIndiceNomal(baseIndex, type);
             }
-            logger.info("creatIndex:{}", baseIndex);
         }
         insertListV1(list, baseIndex, type);
     }
@@ -293,7 +341,6 @@ public class ElasticLowerClient extends AbstractServerClient {
     }
 
     private void insertList(List<String> list, String baseIndex, String type) throws IOException {
-
         StringBuffer sendStr = new StringBuffer();
         int size = list.size();
         for (int a = 0; a < size; a++) {
@@ -439,6 +486,12 @@ public class ElasticLowerClient extends AbstractServerClient {
                 url);
         request.setEntity(stringEntity);
         Response res = client.performRequest(request);
+        if (res.getStatusLine().getStatusCode() == 200) {
+            logger.info("ElasticSearch query success!");
+        } else {
+            String responseStr = EntityUtils.toString(res.getEntity());
+            logger.error("ElasticSearch query Failure! {}", responseStr);
+        }
         return EntityUtils.toString(res.getEntity(), "utf-8");
     }
 
@@ -452,6 +505,12 @@ public class ElasticLowerClient extends AbstractServerClient {
                 url);
         request.setEntity(stringEntity);
         Response res = client.performRequest(request);
+        if (res.getStatusLine().getStatusCode() == 200) {
+            logger.info("ElasticSearch query success!");
+        } else {
+            String responseStr = EntityUtils.toString(res.getEntity());
+            logger.error("ElasticSearch query Failure! {}", responseStr);
+        }
         return EntityUtils.toString(res.getEntity(), "utf-8");
     }
 
@@ -465,6 +524,12 @@ public class ElasticLowerClient extends AbstractServerClient {
                 url);
         request.setEntity(stringEntity);
         Response res = client.performRequest(request);
+        if (res.getStatusLine().getStatusCode() == 200) {
+            logger.info("ElasticSearch query success!");
+        } else {
+            String responseStr = EntityUtils.toString(res.getEntity());
+            logger.error("ElasticSearch query Failure! {}", responseStr);
+        }
         return EntityUtils.toString(res.getEntity(), "utf-8");
     }
 

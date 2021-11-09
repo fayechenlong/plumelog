@@ -32,7 +32,8 @@
           </div>
         </Tab-pane>
       </Tabs>
-      <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="checkRemove" type="error">清空所选</Button>
+      <Button icon="ios-trash" :disabled="isDisabled" class="btn_delete" @click="checkRemove" type="error">清空日志</Button>
+        <Button icon="ios-redo" :disabled="isDisabled" class="btn_rest" @click="restSelect" type="info">重置索引</Button>
     </div>
     <div class="modal fade show model_pwd" style="display:block" v-if="showModal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -55,7 +56,7 @@
     </div>
     <Row v-if="config.modeName === 'redis'" style="margin-top:20px" type="flex" justify="start">
       <Col :span="8">
-        <span style="padding: 10px;">当前redis队列大小 日志队列：{{runSize}} 追踪队列： {{traceSize}}</span>
+        <span style="padding: 10px;">当前队列大小 日志队列：{{runSize}} 追踪队列： {{traceSize}}</span>
         <Button type="error" style="margin-left: 10px" icon="ios-trash" @click="clearRedisQueue">清空队列</Button>
       </Col>
     </Row>
@@ -251,6 +252,35 @@ export default {
         this.getTraceInfo();
       })
     },
+    restSelect(){
+
+      var selected = this.currentTab == 'run' ? this.size_selection : this.trace_selection;
+
+      let deletePromise=[];
+      for(var item of selected)
+      {
+        deletePromise.push(axios.post(process.env.VUE_APP_API+'/resetIndex?index='+item.index))
+      }
+      Promise.all(deletePromise).then(results=>{
+        let successResults=[];
+
+        for(var result of results){
+          if(result.data.acknowledged){
+            successResults.push(result);
+          }
+        }
+        if(successResults.length == results.length){
+          //全部删除成功
+          alert('重置成功');
+          this.password = '';
+        }
+        else
+        {
+          alert(results[0].data.message);
+        }
+        this.getTraceInfo();
+      })
+    },
     changeSizeSelect(selection){
       this.size_selection = selection;
     },
@@ -304,6 +334,12 @@ export default {
     {
       position: absolute;
       top:-5px;
+      right:120px;
+    }
+    .btn_rest
+    {
+      position: absolute;
+      top:5px;
       right:0;
     }
     .pnl_size

@@ -9,6 +9,7 @@ import com.plumelog.server.collect.KafkaLogCollect;
 import com.plumelog.server.collect.LocalLogCollect;
 import com.plumelog.server.collect.RedisLogCollect;
 import com.plumelog.server.collect.RestLogCollect;
+import com.plumelog.server.monitor.RedisMsgPubSubListener;
 import com.plumelog.server.util.IndexUtil;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
@@ -41,6 +42,9 @@ public class CollectStartBean implements InitializingBean {
     private AbstractClient redisQueueClient;
 
     @Autowired(required = false)
+    private AbstractClient redisClient;
+
+    @Autowired(required = false)
     private KafkaConsumer kafkaConsumer;
 
     @Autowired
@@ -53,13 +57,13 @@ public class CollectStartBean implements InitializingBean {
     private void serverStart() {
         if (InitConfig.KAFKA_MODE_NAME.equals(InitConfig.START_MODEL)) {
             KafkaLogCollect kafkaLogCollect = new KafkaLogCollect((ElasticLowerClient) abstractServerClient, kafkaConsumer,
-                    applicationEventPublisher);
+                    applicationEventPublisher, redisClient);
             kafkaLogCollect.kafkaStart();
         }
         if (InitConfig.REDIS_MODE_NAME.equals(InitConfig.START_MODEL) || InitConfig.REDIS_SENTINEL_MODE_NAME
                 .equals(InitConfig.START_MODEL) || InitConfig.REDIS_CLUSTER_MODE_NAME.equals(InitConfig.START_MODEL)) {
             RedisLogCollect redisLogCollect = new RedisLogCollect((ElasticLowerClient) abstractServerClient, redisQueueClient,
-                    applicationEventPublisher, compressor);
+                    applicationEventPublisher, compressor, redisClient);
             redisLogCollect.redisStart();
         }
         if (InitConfig.REST_MODE_NAME.equals(InitConfig.START_MODEL)) {
@@ -69,6 +73,17 @@ public class CollectStartBean implements InitializingBean {
         if (InitConfig.LITE_MODE_NAME.equals(InitConfig.START_MODEL)) {
             LocalLogCollect localLogCollect = new LocalLogCollect((LuceneClient) abstractServerClient);
             localLogCollect.start();
+        } else {
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        RedisMsgPubSubListener sp = new RedisMsgPubSubListener();
+                        redisClient.subscribe(sp, InitConfig.WEB_CONSOLE_CHANNEL);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 
@@ -80,7 +95,7 @@ public class CollectStartBean implements InitializingBean {
                 abstractServerClient.addShards(InitConfig.maxShards);
                 logger.info("set es max_shards_per_node of :" + InitConfig.maxShards);
             }
-            if(!InitConfig.START_MODEL.equals(InitConfig.LITE_MODE_NAME)) {
+            if (!InitConfig.START_MODEL.equals(InitConfig.LITE_MODE_NAME)) {
                 autoCreatIndice();
             }
             serverStart();

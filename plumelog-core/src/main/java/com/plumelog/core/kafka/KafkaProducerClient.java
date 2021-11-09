@@ -4,6 +4,7 @@ import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import redis.clients.jedis.JedisPubSub;
 
 import java.util.List;
 
@@ -68,5 +69,4 @@ public class KafkaProducerClient extends AbstractClient {
         }
 
     }
-
 }

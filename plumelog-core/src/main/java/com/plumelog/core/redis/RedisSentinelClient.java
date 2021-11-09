@@ -362,4 +362,34 @@ public class RedisSentinelClient extends AbstractClient {
         }
         return list;
     }
+
+    @Override
+    public void publish(String channel, String message) {
+        Jedis sj = jedisSentinelPool.getResource();
+        try {
+            sj.publish(channel, message);
+        } finally {
+            sj.close();
+        }
+    }
+    @Override
+    public void subscribe(JedisPubSub jedisPubSub, String... channel) {
+        Jedis sj = jedisSentinelPool.getResource();
+        try {
+            sj.subscribe(jedisPubSub, channel);
+        } finally {
+            sj.close();
+        }
+    }
+    @Override
+    public Long hlen(String key) {
+        Long re = 0L;
+        Jedis sj = jedisSentinelPool.getResource();
+        try {
+            re = sj.hlen(key);
+        } finally {
+            sj.close();
+        }
+        return re;
+    }
 }

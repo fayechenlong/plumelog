@@ -382,6 +382,16 @@ public class MainController {
         return map;
     }
 
+    @RequestMapping({"/resetIndex", "/plumelog/resetIndex"})
+    public Map<String, Object> resetIndex(String index, String adminPassWord) {
+        Map<String, Object> map = new HashMap<>();
+        if (index.startsWith(LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN)) {
+            abstractServerClient.setMapping(index, LogMessageConstant.ES_TYPE);
+        }
+        map.put("acknowledged", true);
+        return map;
+    }
+
     private void creatIndiceLog(String index) {
         if (!abstractServerClient.existIndice(index)) {
             abstractServerClient.creatIndice(index, LogMessageConstant.ES_TYPE);
