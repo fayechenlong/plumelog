@@ -1,5 +1,6 @@
 package com.plumelog.server.collect;
 
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.server.client.ElasticLowerClient;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -21,14 +22,15 @@ import java.util.List;
  */
 public class KafkaLogCollect extends BaseLogCollect {
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(KafkaLogCollect.class);
-
+    private AbstractClient redisClient;
     private KafkaConsumer<String, String> kafkaConsumer;
 
-    public KafkaLogCollect(ElasticLowerClient elasticLowerClient, KafkaConsumer kafkaConsumer, ApplicationEventPublisher applicationEventPublisher) {
+    public KafkaLogCollect(ElasticLowerClient elasticLowerClient, KafkaConsumer kafkaConsumer, ApplicationEventPublisher applicationEventPublisher,AbstractClient redisClient) {
         super.elasticLowerClient = elasticLowerClient;
         this.kafkaConsumer = kafkaConsumer;
         this.kafkaConsumer.subscribe(Arrays.asList(LogMessageConstant.LOG_KEY, LogMessageConstant.LOG_KEY_TRACE));
         super.applicationEventPublisher = applicationEventPublisher;
+        super.redisClient=redisClient;
         logger.info("kafkaConsumer subscribe ready!");
         logger.info("sending log ready!");
     }
@@ -62,6 +64,7 @@ public class KafkaLogCollect extends BaseLogCollect {
             }
             if (logList.size() > 0) {
                 super.sendLog(super.getRunLogIndex(), logList);
+
                 publisherMonitorEvent(logList);
             }
             if (sendlogList.size() > 0) {

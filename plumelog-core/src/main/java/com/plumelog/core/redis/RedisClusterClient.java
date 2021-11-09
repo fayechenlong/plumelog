@@ -2,9 +2,7 @@ package com.plumelog.core.redis;
 
 import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
 
 import java.util.*;
 
@@ -271,6 +269,30 @@ public class RedisClusterClient extends AbstractClient {
         Long re = 0L;
         try {
             re = jedisCluster.hincrBy(key, field, num);
+        } finally {
+        }
+        return re;
+    }
+
+    @Override
+    public void publish(String channel, String message) {
+        try {
+            jedisCluster.publish(channel, message);
+        } finally {
+        }
+    }
+    @Override
+    public void subscribe(JedisPubSub jedisPubSub, String... channel) {
+        try {
+            jedisCluster.subscribe(jedisPubSub, channel);
+        } finally {
+        }
+    }
+    @Override
+    public Long hlen(String key) {
+        Long re = 0L;
+        try {
+            re = jedisCluster.hlen(key);
         } finally {
         }
         return re;

@@ -19,8 +19,8 @@ public class InitConfig {
     //kafka消费组名称
     public static String START_MODEL = "redis";
     public static int ES_INDEX_SHARDS = 5;
-    public static int ES_INDEX_REPLICAS = 1;
-    public static String ES_REFRESH_INTERVAL = "30s";
+    public static int ES_INDEX_REPLICAS = 0;
+    public static String ES_REFRESH_INTERVAL = "10s";
     public static String ES_INDEX_MODEL = "day";
     public static String ES_INDEX_ZONE_ID = "GMT+8";
     public static String restUserName = "";
@@ -32,4 +32,6 @@ public class InitConfig {
     public static int traceKeepDays = 0;
     public static Long maxShards = 100000L;
     public static int esVersion = 7;
+    public final static String WEB_CONSOLE_KEY="plumelog:web_console";
+    public final static String WEB_CONSOLE_CHANNEL="plumelog_webConsole_Channel";
 }

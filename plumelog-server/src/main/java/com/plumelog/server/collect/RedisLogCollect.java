@@ -25,12 +25,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class RedisLogCollect extends BaseLogCollect {
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(RedisLogCollect.class);
-    private AbstractClient client;
+    private AbstractClient redisQueueClient;
     private boolean compressor;
 
-    public RedisLogCollect(ElasticLowerClient elasticLowerClient, AbstractClient client, ApplicationEventPublisher applicationEventPublisher, boolean compressor) {
+    public RedisLogCollect(ElasticLowerClient elasticLowerClient, AbstractClient redisQueueClient, ApplicationEventPublisher applicationEventPublisher, boolean compressor,AbstractClient redisClient) {
         super.elasticLowerClient = elasticLowerClient;
-        this.client = client;
+        this.redisQueueClient = redisQueueClient;
+        super.redisClient=redisClient;
         super.applicationEventPublisher = applicationEventPublisher;
         this.compressor = compressor;
     }
@@ -90,7 +91,7 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 long startTime = System.currentTimeMillis();
-                logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
+                logs = redisQueueClient.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 int size = logs.size();
                 long endTime = System.currentTimeMillis();
                 if (size > 0) {
@@ -104,6 +105,9 @@ public class RedisLogCollect extends BaseLogCollect {
                     super.sendLog(super.getRunLogIndex(), logs);
                     //发布一个事件
                     publisherMonitorEvent(logs);
+
+
+
                 }
             } catch (LogQueueConnectException e) {
                 logger.error("从redis队列拉取日志失败！", e);
@@ -122,7 +126,7 @@ public class RedisLogCollect extends BaseLogCollect {
             }
             try {
                 long startTime = System.currentTimeMillis();
-                logs = client.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
+                logs = redisQueueClient.getMessage(logKey, InitConfig.MAX_SEND_SIZE);
                 long endTime = System.currentTimeMillis();
                 int size = logs.size();
                 if (size > 0) {

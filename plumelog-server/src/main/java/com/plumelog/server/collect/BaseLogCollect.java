@@ -1,6 +1,7 @@
 package com.plumelog.server.collect;
 
 import com.alibaba.fastjson.JSON;
+import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.ThreadPoolUtil;
@@ -28,6 +29,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class BaseLogCollect {
 
+
+    public AbstractClient redisClient;
     public ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool();
     public ElasticLowerClient elasticLowerClient;
     protected ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
@@ -82,10 +85,12 @@ public class BaseLogCollect {
                     if ("ERROR".equalsIgnoreCase(runLogMessage.getLogLevel())) {
                         errorLogs.add(runLogMessage);
                     }
-                  //控制台事件,最多展示100条，多了也看不过来
-                    WebSocketSession.sendToConsole(logString);
                 }
-
+                if (redisClient.hlen(InitConfig.WEB_CONSOLE_KEY) > 0) {
+                    for (String logString : logs) {
+                        redisClient.publish(InitConfig.WEB_CONSOLE_CHANNEL, logString);
+                    }
+                }
                 logs = null;
                 applicationEventPublisher.publishEvent(new PlumelogMonitorEvent(this, errorLogs));
             } catch (Exception e) {

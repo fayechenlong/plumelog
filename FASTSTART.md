@@ -571,9 +571,10 @@ public class Interceptor extends HandlerInterceptorAdapter {
         }));
 ```
 
-### （7）滚动日志
+### （8）滚动日志
 
 * 3.5版本支持查看滚动实时日志功能，点击滚动日志菜单，填入条件后，点击连接按钮，就可以实时滚动查看目标日志，三个查询条件，应用名称必填，否则没有日志输出
+* 注意：因为实现原理问题，在多个server对应一个消息队列的情况下，不能使用，因为这边只展示这个server消费的日志
 
 ![avatar](/pic/gundong.png)
 

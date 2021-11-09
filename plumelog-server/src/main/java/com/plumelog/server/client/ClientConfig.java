@@ -78,12 +78,12 @@ public class ClientConfig implements InitializingBean {
     private String esPassWord;
     @Value("${plumelog.es.shards:5}")
     private int shards;
-    @Value("${plumelog.es.replicas:1}")
+    @Value("${plumelog.es.replicas:0}")
     private int replicas;
     @Value("${plumelog.es.maxShards:100000}")
     private Long maxShards;
 
-    @Value("${plumelog.es.refresh.interval:60s}")
+    @Value("${plumelog.es.refresh.interval:10s}")
     private String refreshInterval;
     @Value("${plumelog.es.indexType.model:day}")
     private String indexTypeModel;

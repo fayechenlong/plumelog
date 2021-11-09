@@ -1,6 +1,7 @@
 package com.plumelog.core.client;
 
 import com.plumelog.core.exception.LogQueueConnectException;
+import redis.clients.jedis.JedisPubSub;
 
 import java.util.*;
 
@@ -113,4 +114,15 @@ public abstract class AbstractClient {
     public Long hincrby(String key, String field, int num) {
         return null;
     }
+
+    public void publish(String channel, String message) {
+    }
+
+    public Long hlen(String key) {
+        return null;
+    }
+
+    public void subscribe(JedisPubSub jedisPubSub, String... channel) {
+    }
+
 }

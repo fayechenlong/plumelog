@@ -362,4 +362,37 @@ public class RedisClient extends AbstractClient {
         return re;
     }
 
+    @Override
+    public void publish(String channel, String message) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.publish(channel, message);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public void subscribe(JedisPubSub jedisPubSub, String... channel) {
+        Jedis sj = jedisPool.getResource();
+        try {
+            sj.subscribe(jedisPubSub, channel);
+        } finally {
+            sj.close();
+        }
+    }
+
+    @Override
+    public Long hlen(String key) {
+        Long re = 0L;
+        Jedis sj = jedisPool.getResource();
+        try {
+            re = sj.hlen(key);
+        } finally {
+            sj.close();
+        }
+        return re;
+    }
+
+
 }

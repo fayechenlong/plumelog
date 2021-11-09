@@ -35,9 +35,7 @@ Star趋势图
 
 * plumelog-demo 基于springboot的使用案例
 
-* 下面是全功能图，红色部分是4.0内容，目前开发中
-
- ![avatar](/pic/guihua.png)
+* plumelog-lite plumelog的嵌入式集成版本，免部署
    
 ### 三.使用方法
 
