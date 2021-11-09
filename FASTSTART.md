@@ -1,5 +1,7 @@
 # Plumelog使用方法
 
+* 使用前请耐心的按照步骤把文档看完，需要对logback,log4j两大日志框架基本配置有一定了解
+
 ## 一、服务端安装配置
 
 ### （1）服务端安装
@@ -9,8 +11,6 @@
 第二步：安装 elasticsearch 官网下载地址:https://www.elastic.co/cn/downloads/past-releases
 
 第三步：下载安装包，plumelog-server 下载地址：https://gitee.com/plumeorg/plumelog/releases
-
-备注：3.1版本以后UI和server合并，plumelog-ui这个项目可以不用部署
 
 第四步：配置plumelog-server，并启动，redis和kafka作为队列模式下可以部署多个plumelog-server达到高可用，配置一样即可
 
@@ -256,9 +256,9 @@ log4j.appender.L.plumelogHost=localhost:8891
 </root>
 ```   
 
-#### 3.logback整合配置中心案例，推荐使用
+#### 3.logback整合配置中心案例，推荐使用，不知道怎么配置的拷贝全部
 
-* application.properties
+* application.properties中添加
 
 ```properties
 plumelog.appName=plumelog_demo
@@ -267,7 +267,15 @@ plumelog.redisAuth=plumelogredis
 spring.profiles.active=dev
 ```  
 
-* logback.xml
+* logback-spring.xml 不知道怎么配置的拷贝全部
+
+* 为什么Spring Boot推荐使用logback-spring.xml来替代logback.xml来配置logback日志的问题分析
+
+  即，logback.xml加载早于application.properties，所以如果你在logback.xml使用了变量时，而恰好这个变量是写在application.properties时，那么就会获取不到，只要改成logback-spring.xml就可以解决。
+
+  这就是为什么有些人用了nacos等配置中心，不能加载远程配置的原因，是因为加载优先级的问题
+
+
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -292,13 +300,26 @@ spring.profiles.active=dev
             <charset>UTF-8</charset>
         </encoder>
     </appender>
+  <!-- 输出到文件 -->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <FileNamePattern>logs/plumelog-demo.log.%d{yyyy-MM-dd}.log</FileNamePattern>
+        <MaxHistory>3</MaxHistory>
+      </rollingPolicy>
+      <encoder>
+        <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+        <!-- 设置字符集 -->
+        <charset>UTF-8</charset>
+      </encoder>
+    </appender>
+  <!-- 环境配置 -->
     <springProperty scope="context" name="plumelog.appName" source="plumelog.appName"/>
     <springProperty scope="context" name="plumelog.redisHost" source="plumelog.redisHost"/>
     <springProperty scope="context" name="plumelog.redisPort" source="plumelog.redisPort"/>
     <springProperty scope="context" name="plumelog.redisAuth" source="plumelog.redisAuth"/>
     <springProperty scope="context" name="plumelog.redisDb" source="plumelog.redisDb"/>
     <springProperty scope="context" name="plumelog.env" source="spring.profiles.active"/>
-
+   <!-- 输出plumelog -->
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>${plumelog.appName}</appName>
         <redisHost>${plumelog.redisHost}</redisHost>
@@ -307,13 +328,42 @@ spring.profiles.active=dev
         <redisDb>${plumelog.redisDb}</redisDb>
         <env>${plumelog.env}</env>
     </appender>
-    <!-- 日志输出级别 -->
+    <!-- 配置日志输出，只输出info，只保留控制台和plumelog输出-->
+  <!-- 正常开发环境本地，只输出到控制台，测试环境只输出到plumelog,生产环境输出到本地文件plumelog,因为有plumelog加持本地文件就保留3天即可-->
+  <!-- 这些都可以根据环境配置不同加载不同的ref->
     <root level="info">
+      <!--输出到控制台-->
         <appender-ref ref="CONSOLE"/>
+      <!-- 输出到文件 -->
+        <appender-ref ref="file"/>
+      <!-- 输出plumelog -->
         <appender-ref ref="plumelog"/>
     </root>
+  
 </configuration>
 ```   
+
+* 结合环境配置案例
+
+```xml
+
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+    <springProfile name="test">
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+    <springProfile name="prod">
+    <root level="INFO">
+      <appender-ref ref="FILE" />
+    </root>
+    </springProfile>
+```
+
 
 #### 4.log4j2
 
@@ -516,7 +566,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
 * MDC用法，例如，详细用法参照[plumelog使用指南](/HELP.md)
 
 ```java
-            MDC.put("orderid","1");
+        MDC.put("orderid","1");
         MDC.put("userid","4");
         logger.info("扩展字段");
 ``` 
@@ -577,6 +627,18 @@ public class Interceptor extends HandlerInterceptorAdapter {
 * 注意：因为实现原理问题，在多个server对应一个消息队列的情况下，不能使用，因为这边只展示这个server消费的日志
 
 ![avatar](/pic/gundong.png)
+
+
+### （9）检查方法
+
+* 第一步：先不用启动plumelog-server,先启动你的项目，用redis客户端连接到redis查看，plume_log_list这个key是否有数据，如果有说明你的项目到redis是通的，如果没有数据，说明项目配置有问题
+
+* 第二步：上一步检查通过后，启动plumelog-server，继续观察plume_log_list这个key，如果数据没了，说明被消费了，说明下面这个链路是通了，如果没有，检查plume_log_list的plumelog.queue.redis的相关配置
+
+* 第三步: 上一步启动完成后，打开后台界面：http://localhost:8891,查看是否有数据，如果有说明整个plumelog安装配置成功，如果没有，大概率是ES安装的有问题，查看plumelog的运行日志看看哪里报错了，或者用三方工具往ES里写数据看看有没有问题
+
+* 遇到问题可以查看，下面第八章节，常见问题，后台查询语法详见[plumelog使用指南](/HELP.md)
+
 
 ## 三、docker安装
 
@@ -662,3 +724,72 @@ public class Interceptor extends HandlerInterceptorAdapter {
   jar冲突，需要自行排除
 
 * jdk1.6的项目下载源码，编译打包plumelog-client-jdk6，引入到自己的项目
+
+## 八、常见问题解答
+
+* redis在项目中充当什么角色？
+
+  redis在项目中两个角色，第一是在redis模式下充当消息队列，第二是项目本身的元数据存储和报警管理
+
+
+* 为什么我查看redis中有数据，但是后台却查不到呢？
+
+  这种情况大概率是server中 plumelog.queue.redis.redisHost 没有配置正确，redis只是充当队列的作用，如果里面能看到数据说明没有server没有消费，正常情况应该是redis是不会积压的
+
+
+* 为什么我配置了，之后后台无法查到日志？
+
+  排查方法：第一步：停止server,启动日志采集项目，观察redis中有没有数据，如果有说明从项目进入队列是通的，如果没有检查项目端redis配置是否正确；第二步：如果在redis有数据情况，启动server，如果server日志里有ElasticSearch commit! success；表示链路成功
+
+  很多小伙伴，配置了客户端，但是logback.xml或者log4j2.xml压根没生效，所以这时候需要停止plumelog-server,把第一步到Redis调通，到Redis调通了，启动plumelog-server看到日志在被消费掉说明成功了
+
+
+* 为什么我链路追踪里看不到数据？
+
+  链路追踪模块产生的日志量比较大，考虑到低需求玩家，默认不集成，需要单独配置，详细查看文档：[链路追踪配置](/plumelog-trace/README.md)  
+
+  如果配置下来还是没有链路数据，第一检查是否有traceID，第二你的AOP生效了吗？
+
+
+
+
+* plumelog客户端配置能结合配置文件中心使用吗？
+
+  肯定是可以的，plumelog配置是配置在三大日志框架的配置文件里面的，可以使用springProperty进行管理配置，具体怎么操作看每个项目自己的情况
+
+
+* plumelog目前生产环境已知的已经有多大体量
+
+  根据用户反馈，目前搜集到最大的用户每日日志量已经到达3TB，并稳定运行
+
+
+* 为什么我的项目继承了plumelog就启动就报错？
+
+  如果提示redis连接失败，那么说明redis配置错误，如果是其他错误，比如提示类找不到什么情况，应该数据日志配置文件错了，建议先熟练掌握log4j,logback配制文件里面的标签含义
+
+
+* plumelog会影响原来的日志配置么？
+
+  不会，plumelog只是增加了一种输出，不影响原来的配置
+
+
+* plumelog会影响项目性能么？
+
+  几乎不会，plumelog-lite在查询的时候可能会，必定是内嵌的
+
+
+* 应用名称下拉框展开无数据？怎么回事？
+
+  下拉框展开为了保证性能，只有也没首次加载的时候会加载，当天如果有日志但是就是展开没有值可能是索引创建的时候出错了，怎么验证呢？
+
+  进入管理页面，点开运行数据表格中当天日志前面的箭头展开，如果里面有数据，说明索引没问题，此时只要关闭浏览器重新进入即可
+
+  如果展开什么都没有说明索引创建的时候分组信息丢失，选中点击重置索引，关闭浏览器重新进入即可
+
+* 为啥使用统一配置中心nacos之类的，不能加载参数？
+
+  Spring Boot推荐使用logback-spring.xml来替代logback.xml来配置logback日志的问题分析
+
+  即，logback.xml加载早于application.properties，所以如果你在logback.xml使用了变量时，而恰好这个变量是写在application.properties时，那么就会获取不到，只要改成logback-spring.xml就可以解决。
+
+  这就是为什么有些人用了nacos等配置中心，不能加载远程配置的原因，是因为加载优先级的问题
