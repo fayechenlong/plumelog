@@ -62,7 +62,7 @@
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog-logback</artifactId>
+            <artifactId>plumelog-lite</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>

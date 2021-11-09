@@ -90,6 +90,7 @@ public class LocalLogCollect {
                     luceneClient.insertListLog(logs, getRunLogIndex());
                     logger.info("runLog messages insert success! count:{}",logs.size());
                     for(RunLogMessage log:logs){
+
                         WebSocketSession.sendToConsole(log);
                     }
                 }
