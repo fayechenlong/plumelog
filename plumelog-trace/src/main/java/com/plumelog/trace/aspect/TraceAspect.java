@@ -1,11 +1,9 @@
 package com.plumelog.trace.aspect;
 
-import com.plumelog.core.PlumeLogTraceIdInterceptor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,11 +21,5 @@ public class TraceAspect extends AbstractAspect {
     @Around("@annotation(com.plumelog.trace.annotation.Trace))")
     public Object around(JoinPoint joinPoint) throws Throwable {
         return aroundExecute(joinPoint);
-    }
-
-
-    @Bean
-    public PlumeLogTraceIdInterceptor initWebMvcConfigurerAdapter(){
-        return new PlumeLogTraceIdInterceptor();
     }
 }
