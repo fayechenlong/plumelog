@@ -28,7 +28,7 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    <springProperty scope="context" name="plumelog.appName" source="plumelog.appName"/>
+    <springProperty scope="context" name="plumelog.appName" source="spring.application.name"/>
     <springProperty scope="context" name="plumelog.redisHost" source="plumelog.redisHost"/>
     <springProperty scope="context" name="plumelog.redisAuth" source="plumelog.redisAuth"/>
     <springProperty scope="context" name="plumelog.masterName" source="plumelog.masterName"/>
