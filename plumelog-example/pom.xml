@@ -15,6 +15,7 @@
         <module>plumelog-dubbo-demo</module>
         <module>plumelog-demo</module>
         <module>plumelog-http-demo</module>
+        <module>spring-boot-admin</module>
     </modules>
 
     <properties>
