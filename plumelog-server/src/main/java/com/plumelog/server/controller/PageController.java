@@ -8,12 +8,12 @@ public class PageController {
 
     @RequestMapping("/")
     public String index() {
-        return "index";
+        return "plumelog";
     }
 
     @RequestMapping("/plumelog")
     public String index1() {
-        return "index";
+        return "plumelog";
     }
     @RequestMapping("/webConsole")
     public String webConsole() {

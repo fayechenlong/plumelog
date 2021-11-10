@@ -5,6 +5,7 @@ import com.plumelog.core.TraceId;
 import com.plumelog.core.TraceMessage;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.LoggerFactory;
