@@ -134,3 +134,4 @@
 * 修复已经已知的bug,其他优化
 * 老用户升级直接替换plumelog-server-3.5.jar，重启即可
 * lite模式，需要升级客户端到3.5
+* 内嵌springboot-admin，方便管理springboot项目，可以利用springbootadmin,动态调整日志输出级别
