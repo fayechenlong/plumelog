@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @SpringBootApplication
 @EnableDubbo
 @ServletComponentScan
-@ComponentScan("com.plumelog.lite")
 @ComponentScan("com.plumelog")
 @EnableScheduling
 public class AppStart {

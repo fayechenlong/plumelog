@@ -460,49 +460,81 @@ LiteAppender
 
 ### （3）traceID生成配置
 
-* 非springboot,cloud项目要想产生traceID，需要再拦截器里增加，如下：(也可以加载过滤器里（com.plumelog.core.TraceIdFilter），如果是定时任务,监听类的放在定时任务的最前端)
+* 非springboot,cloud
 
-* servlet
+
+* 方法一：添加拦截器
+
+TraceIdInterceptorsConfig.java
 
 ```java
+import com.plumelog.core.PlumeLogTraceIdInterceptor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@Component
-public class Interceptor extends HandlerInterceptorAdapter {
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        String traceid = uuid.substring(uuid.length() - 7);
-        TraceId.logTraceID.set(traceid);//设置TraceID值，不埋此点链路ID就没有
-        return true;
-    }
+
+@Configuration
+public class TraceIdInterceptorsConfig extends WebMvcConfigurerAdapter {
+
+  private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {"classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/"};
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+      //plumelog-lite的用户注意，拦截器会覆盖静态文件访问路径，导致不能访问查询页面，所以这边需要用addResourceLocations设置下静态文件访问路径，其他的用户可以不用管
+    registry.addResourceHandler("/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
+  }
+  
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new PlumeLogTraceIdInterceptor());
+    super.addInterceptors(registry);
+  }
+
 }
+```
 
-    //注解配置filter示例
-    @Bean
-    public FilterRegistrationBean filterRegistrationBean1() {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-        filterRegistrationBean.setFilter(initCustomFilter());
-        filterRegistrationBean.addUrlPatterns("/*");
-        filterRegistrationBean.setOrder(Integer.MIN_VALUE);
-        return filterRegistrationBean;
-    }
+* 方法二:添加过滤器filter,新建一个过滤器 
+  
+PlumeLogilterConfig.java
+```java
+import com.plumelog.core.TraceIdFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import javax.servlet.Filter;
 
-    @Bean
-    public Filter initCustomFilter() {
-        return new TraceIdFilter();
-    }
+@Configuration
+public class PlumeLogilterConfig {
+
+
+  @Bean
+  public FilterRegistrationBean filterRegistrationBean1() {
+    FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+    filterRegistrationBean.setFilter(initCustomFilter());
+    filterRegistrationBean.addUrlPatterns("/*");
+    filterRegistrationBean.setOrder(Integer.MIN_VALUE);
+    return filterRegistrationBean;
+  }
+
+  @Bean
+  public Filter initCustomFilter() {
+    return new TraceIdFilter();
+  }
+}
+    
 ```   
 
-* webflux
+* webflux,以此类推
 
 ```java
         @Bean
-public WebFluxTraceIdFilter initCustomFilter(){
-        return new WebFluxTraceIdFilter();
+        public WebFluxTraceIdFilter initCustomFilter(){
+            return new WebFluxTraceIdFilter();
         }
 ```
 
-web.xml配置示例
+* servlet web.xml配置示例
 
 ```xml
 
@@ -513,13 +545,13 @@ web.xml配置示例
 <filter-mapping>
 <filter-name>TraceIdFilter</filter-name>
 <url-pattern>/*</url-pattern>
-</filter-mapping>   
+</filter-mapping>
+
 ``` 
 
 * spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceId
 
 ```xml
-
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-sleuth</artifactId>
@@ -543,27 +575,27 @@ web.xml配置示例
 </dependency>
 ```
 
-2.方法调用示例
+2.skywalking整合方法调用示例
 
 ```java
-    import org.apache.skywalking.apm.toolkit.trace.TraceContext;
+import org.apache.skywalking.apm.toolkit.trace.TraceContext;
 
 @Component
 public class Interceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String traceId = TraceContext.traceId();//核心是此处获取skywalking的traceId
-        if (traceId != null) {
-            TraceId.logTraceID.set(traceId);
-        } else {
-            String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-            traceId = uuid.substring(uuid.length() - 7);
-            TraceId.logTraceID.set(traceId);
-        }
+        TraceId.logTraceID.set(traceId);
         return true;
     }
 }
 ``` 
+
+* 定时任务，非web项目,在代码的执行最开始端加上如下代码
+
+```java
+    TraceId.set();
+```
 
 ### （4）开启链路追踪
 
