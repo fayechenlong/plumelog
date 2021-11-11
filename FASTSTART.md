@@ -670,14 +670,39 @@ public class Interceptor extends HandlerInterceptorAdapter {
 
 ![avatar](/pic/gundong.png)
 
+### （9）springboot项目动态修改日志级别
 
-### （9）检查方法
+* 3.5版本内嵌了springboot-admin,可以当springboot-admin使用，接入只要在项目的配置文件中加入
+
+* pom.xml加入
+```xml
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+            <version>2.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+```
+* application.properties 加入
+```
+#plumelog的地址加后缀admin
+spring.boot.admin.client.url=http://localhost:8891/admin
+management.endpoints.web.exposure.include=*
+```
+
+* 使用在plumelog地址后缀改成http://localhost:8891/admin  即可访问
+
+
+### （10）检查方法
 
 * 第一步：先不用启动plumelog-server,先启动你的项目，用redis客户端连接到redis查看，plume_log_list这个key是否有数据，如果有说明你的项目到redis是通的，如果没有数据，说明项目配置有问题
 
 * 第二步：上一步检查通过后，启动plumelog-server，继续观察plume_log_list这个key，如果数据没了，说明被消费了，说明下面这个链路是通了，如果没有，检查plume_log_list的plumelog.queue.redis的相关配置
 
-* 第三步: 上一步启动完成后，打开后台界面：http://localhost:8891,查看是否有数据，如果有说明整个plumelog安装配置成功，如果没有，大概率是ES安装的有问题，查看plumelog的运行日志看看哪里报错了，或者用三方工具往ES里写数据看看有没有问题
+* 第三步: 上一步启动完成后，打开后台界面：http://localhost:8891  查看是否有数据，如果有说明整个plumelog安装配置成功，如果没有，大概率是ES安装的有问题，查看plumelog的运行日志看看哪里报错了，或者用三方工具往ES里写数据看看有没有问题
 
 * 遇到问题可以查看，下面第八章节，常见问题，后台查询语法详见[plumelog使用指南](/HELP.md)
 
