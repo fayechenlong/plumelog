@@ -7,8 +7,8 @@ import net.jpountz.lz4.LZ4FastDecompressor;
 /**
  * LZ4Util
  *
- * @Author caijian
- * @Date 2021/1/26 6:10 下午
+ * @author caijian
+ * time 2021/1/26 6:10 下午
  */
 public class LZ4Util {
 
@@ -25,7 +25,7 @@ public class LZ4Util {
     /**
      * @param compressorByte 压缩后的数据
      * @param srcLength      压缩前的数据长度
-     * @return
+     * @return byte[]
      */
     public static byte[] decompressorByte(byte[] compressorByte, int srcLength) {
         LZ4Factory factory = LZ4Factory.fastestInstance();
