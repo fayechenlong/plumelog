@@ -29,7 +29,7 @@
 </appender>
 ```
 
-3. 在springboot启动类里添加扫描路径
+3. 在springboot启动类里添加扫描路径，注意：如果原来你的项目没有扫描路径，不要只加这个，也要把你自己的项目的加了，不然只扫描plumelog的路径了
 
 ```java
 @ComponentScan("com.plumelog")
