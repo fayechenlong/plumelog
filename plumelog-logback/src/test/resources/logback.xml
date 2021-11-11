@@ -23,10 +23,17 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
-    <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">
-        <appName>work</appName>
-        <plumelogHost>localhost:8891</plumelogHost>
+
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+    <appName>plumelog-test</appName>
+    <redisHost>172.18.71.26:6379</redisHost>
+    <redisAuth>Jch9shshl</redisAuth>
     </appender>
+
+<!--    <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">-->
+<!--        <appName>work</appName>-->
+<!--        <plumelogHost>localhost:8891</plumelogHost>-->
+<!--    </appender>-->
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
