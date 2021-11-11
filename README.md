@@ -8,6 +8,7 @@
 [![star](https://gitee.com/plumeorg/plumelog/badge/star.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/stargazers)
 [![fork](https://gitee.com/plumeorg/plumelog/badge/fork.svg?theme=gvp)](https://gitee.com/frankchenlong/plumelog/members)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+![java version](https://img.shields.io/badge/JAVA-1.8+-green.svg)
 [![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
 
 Star趋势图
