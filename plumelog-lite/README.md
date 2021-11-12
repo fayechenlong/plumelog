@@ -4,6 +4,11 @@
 
 #### 功能包含，日志查询，链路追踪，日志管理，适合单机小规模项目使用,目前只支持springboot+logback，log4j2组合
 
+示例中plumelog相关版本号为示例，实际使用建议取最新的版本，最新的版如下
+
+[最新的版本号：![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
+
+
 1. 引入
 
 ```xml
