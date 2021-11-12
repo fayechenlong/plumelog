@@ -7,7 +7,7 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint(value = "/plumelog/websocket")
-@Component
+@Component("plumelogWebSocket")
 public class WebSocket {
     @OnOpen
     public void onOpen(Session session) {
