@@ -55,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog-lite</artifactId>
+            <artifactId>plumelog-logback</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
