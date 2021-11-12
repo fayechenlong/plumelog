@@ -382,6 +382,14 @@ public class MainController {
         return map;
     }
 
+    @RequestMapping({"/deleteIndex1", "/plumelog/deleteIndex1"})
+    public Map<String, Object> deleteIndex1(String index) {
+        Map<String, Object> map = new HashMap<>();
+        boolean re = abstractServerClient.deleteIndex(index);
+        map.put("acknowledged", re);
+        return map;
+    }
+
     @RequestMapping({"/resetIndex", "/plumelog/resetIndex"})
     public Map<String, Object> resetIndex(String index, String adminPassWord) {
         Map<String, Object> map = new HashMap<>();
