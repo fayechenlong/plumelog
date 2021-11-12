@@ -77,10 +77,16 @@ public class LogMessageUtil {
         logMessage.setThreadName(iLoggingEvent.getThreadName());
         logMessage.setSeq(SEQ_BUILDER.getAndIncrement());
 
-        StackTraceElement stackTraceElement = iLoggingEvent.getCallerData()[0];
-        String method = stackTraceElement.getMethodName();
-        String line = String.valueOf(stackTraceElement.getLineNumber());
-        logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
+
+        StackTraceElement[] stackTraceElements = iLoggingEvent.getCallerData();
+        if(stackTraceElements.length>0) {
+            StackTraceElement stackTraceElement=stackTraceElements[0];
+            String method = stackTraceElement.getMethodName();
+            String line = String.valueOf(stackTraceElement.getLineNumber());
+            logMessage.setMethod(method + "(" + stackTraceElement.getFileName() + ":" + line + ")");
+        } else {
+            logMessage.setMethod(iLoggingEvent.getThreadName());
+        }
         // dateTime字段用来保存当前服务器的时间戳字符串
         logMessage.setDateTime(DateUtil.getDatetimeNormalStrWithMills(iLoggingEvent.getTimeStamp()));
         logMessage.setLogLevel(iLoggingEvent.getLevel().toString());
