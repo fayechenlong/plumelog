@@ -34,6 +34,7 @@ public class LiteAppender extends AppenderBase<ILoggingEvent> {
     private int threadPoolSize = 1;
     private int keepDay=30;
     private boolean compressor = false;
+    private static boolean init=false;
 
     public int getKeepDay() {
         return keepDay;
@@ -142,15 +143,17 @@ public class LiteAppender extends AppenderBase<ILoggingEvent> {
         if (this.expand != null && LogMessageConstant.EXPANDS.contains(this.expand)) {
             LogMessageConstant.EXPAND = this.expand;
         }
-
-        LogSave.init(this.logQueueSize,this.logPath);
-        for (int a = 0; a < this.threadPoolSize; a++) {
-            threadPoolExecutor.execute(() -> LogSave.startRunLog(this.maxCount,
-                    this.compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY, this.compressor));
-        }
-        for (int a = 0; a < this.threadPoolSize; a++) {
-            threadPoolExecutor.execute(() -> LogSave.startTraceLog(this.maxCount,
-                    this.compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, this.compressor));
+        if(!this.init) {
+            LogSave.init(this.logQueueSize, this.logPath);
+            for (int a = 0; a < this.threadPoolSize; a++) {
+                threadPoolExecutor.execute(() -> LogSave.startRunLog(this.maxCount,
+                        this.compressor ? LogMessageConstant.LOG_KEY_COMPRESS : LogMessageConstant.LOG_KEY, this.compressor));
+            }
+            for (int a = 0; a < this.threadPoolSize; a++) {
+                threadPoolExecutor.execute(() -> LogSave.startTraceLog(this.maxCount,
+                        this.compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, this.compressor));
+            }
+            this.init=true;
         }
     }
 }

@@ -43,9 +43,11 @@ import java.util.regex.Pattern;
 public class LuceneClient extends AbstractServerClient {
 
     private String localpath;
+    private IndexWriter indexWriter = null;
 
     public LuceneClient(String rootPath) {
         this.localpath = rootPath + "/data/";
+
     }
 
 
@@ -59,7 +61,7 @@ public class LuceneClient extends AbstractServerClient {
     }
 
     private void create(Collection<Document> docs, String index) throws Exception {
-        IndexWriter indexWriter = null;
+
         try {
             Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + index));
             NRTCachingDirectory nrtCachingDirectory = new NRTCachingDirectory(directory, 5, 60);
@@ -68,15 +70,16 @@ public class LuceneClient extends AbstractServerClient {
             indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
             indexWriter = new IndexWriter(nrtCachingDirectory, indexWriterConfig);
             indexWriter.addDocuments(docs);
+            indexWriter.forceMerge(1);
             indexWriter.commit();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(indexWriter!=null){
+        } finally {
+            if (indexWriter != null) {
                 indexWriter.close();
             }
         }
-        
+
 
     }
 
@@ -131,7 +134,7 @@ public class LuceneClient extends AbstractServerClient {
 
     @Override
     public boolean deleteIndex(String index) throws IOException {
-        IndexWriter indexWriter =null;
+        IndexWriter indexWriter = null;
         try {
             List<String> list = getIndex(index);
             for (String in : list) {
@@ -144,8 +147,8 @@ public class LuceneClient extends AbstractServerClient {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        }finally {
-            if(indexWriter!=null) {
+        } finally {
+            if (indexWriter != null) {
                 indexWriter.close();
             }
         }
