@@ -1,4 +1,5 @@
 package com.plumelog.core.client;
+import java.io.IOException;
 import java.util.List;
 
 public abstract class AbstractServerClient {
@@ -8,7 +9,7 @@ public abstract class AbstractServerClient {
 
     public abstract void insertListComm(List<String> list, String baseIndex, String type) throws Exception;
 
-    public abstract boolean deleteIndex(String index);
+    public abstract boolean deleteIndex(String index) throws IOException;
 
     public abstract String get(String url, String queryStr) throws Exception;
 

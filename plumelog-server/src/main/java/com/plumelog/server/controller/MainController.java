@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -364,7 +365,7 @@ public class MainController {
     }
 
     @RequestMapping({"/deleteIndex", "/plumelog/deleteIndex"})
-    public Map<String, Object> deleteIndex(String index, String adminPassWord) {
+    public Map<String, Object> deleteIndex(String index, String adminPassWord) throws IOException {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
             boolean re = abstractServerClient.deleteIndex(index);
@@ -379,14 +380,6 @@ public class MainController {
             map.put("acknowledged", false);
             map.put("message", "管理密码错误！");
         }
-        return map;
-    }
-
-    @RequestMapping({"/deleteIndex1", "/plumelog/deleteIndex1"})
-    public Map<String, Object> deleteIndex1(String index) {
-        Map<String, Object> map = new HashMap<>();
-        boolean re = abstractServerClient.deleteIndex(index);
-        map.put("acknowledged", re);
         return map;
     }
 

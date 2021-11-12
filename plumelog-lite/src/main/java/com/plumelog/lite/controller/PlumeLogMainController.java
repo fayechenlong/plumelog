@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -206,7 +207,7 @@ public class PlumeLogMainController {
 
 
     @RequestMapping({"/deleteIndex"})
-    public Map<String, Object> deleteIndex(String index, String adminPassWord) {
+    public Map<String, Object> deleteIndex(String index, String adminPassWord) throws IOException {
         Map<String, Object> map = new HashMap<>();
         if (adminPassWord.equals(this.adminPassWord)) {
             boolean re = abstractServerClient.deleteIndex(index);

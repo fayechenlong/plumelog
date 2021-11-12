@@ -43,9 +43,11 @@ import java.util.regex.Pattern;
 public class LuceneClient extends AbstractServerClient {
 
     private String localpath;
+    private IndexWriter indexWriter = null;
 
     public LuceneClient(String rootPath) {
         this.localpath = rootPath + "/data/";
+
     }
 
 
@@ -59,15 +61,25 @@ public class LuceneClient extends AbstractServerClient {
     }
 
     private void create(Collection<Document> docs, String index) throws Exception {
-        Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + index));
-        NRTCachingDirectory nrtCachingDirectory = new NRTCachingDirectory(directory, 5, 60);
-        SmartChineseAnalyzer smartChineseAnalyzer = new SmartChineseAnalyzer();
-        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(smartChineseAnalyzer);
-        indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-        IndexWriter indexWriter = new IndexWriter(nrtCachingDirectory, indexWriterConfig);
-        indexWriter.addDocuments(docs);
-        indexWriter.commit();
-        indexWriter.close();
+
+        try {
+            Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + index));
+            NRTCachingDirectory nrtCachingDirectory = new NRTCachingDirectory(directory, 5, 60);
+            SmartChineseAnalyzer smartChineseAnalyzer = new SmartChineseAnalyzer();
+            IndexWriterConfig indexWriterConfig = new IndexWriterConfig(smartChineseAnalyzer);
+            indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+            indexWriter = new IndexWriter(nrtCachingDirectory, indexWriterConfig);
+            indexWriter.addDocuments(docs);
+            indexWriter.forceMerge(1);
+            indexWriter.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (indexWriter != null) {
+                indexWriter.close();
+            }
+        }
+
 
     }
 
@@ -121,19 +133,24 @@ public class LuceneClient extends AbstractServerClient {
     }
 
     @Override
-    public boolean deleteIndex(String index) {
+    public boolean deleteIndex(String index) throws IOException {
+        IndexWriter indexWriter = null;
         try {
             List<String> list = getIndex(index);
             for (String in : list) {
                 Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + in));
                 Analyzer analyzer = new StandardAnalyzer();// 官方推荐
                 IndexWriterConfig config = new IndexWriterConfig(analyzer);
-                IndexWriter indexWriter = new IndexWriter(directory, config);
+                indexWriter = new IndexWriter(directory, config);
                 indexWriter.deleteAll();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (indexWriter != null) {
                 indexWriter.close();
             }
-        } catch (IOException e) {
-            return false;
         }
         return true;
     }
