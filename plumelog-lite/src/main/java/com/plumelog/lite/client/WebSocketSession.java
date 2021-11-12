@@ -3,7 +3,6 @@ package com.plumelog.lite.client;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.StringUtils;
-
 import javax.websocket.Session;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
