@@ -4,6 +4,11 @@
 
 #### 功能包含，日志查询，链路追踪，日志管理，适合单机小规模项目使用,目前只支持springboot+logback，log4j2组合
 
+示例中plumelog相关版本号为示例，实际使用建议取最新的版本，最新的版如下
+
+[最新的版本号：![Maven Status](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog)
+
+
 1. 引入
 
 ```xml
@@ -49,7 +54,17 @@ spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/reso
 ```
 
 ##### 小提示，拦截器会覆盖spring.resources.static-locations，如果项目中有拦截器，需要在拦截器里配置静态文件访问
+##### spring-cloud-alibaba的用户有个特殊情况：用3.5版本会报错：org.apache.lucene.store.LockObtainFailedException: Lock held by this virtual machine,需要在你的启动类里面加：System.setProperty("spring.cloud.bootstrap.enabled", "false");
+##### 还不行的用3.5.1以后版本
 
+```java
+
+public static void main(String[] args) {
+        System.setProperty("spring.cloud.bootstrap.enabled", "false");
+        SpringApplication.run(LogServerStart.class, args);
+        }
+
+```
 ```java
 import com.plumelog.core.PlumeLogTraceIdInterceptor;
 import org.springframework.context.annotation.Configuration;
