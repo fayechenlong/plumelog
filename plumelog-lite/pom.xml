@@ -9,11 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>plumelog-lite</artifactId>
+    <version>3.5.1</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-core</artifactId>
+            <version>3.5</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

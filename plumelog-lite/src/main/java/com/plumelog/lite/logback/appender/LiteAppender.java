@@ -143,7 +143,7 @@ public class LiteAppender extends AppenderBase<ILoggingEvent> {
         if (this.expand != null && LogMessageConstant.EXPANDS.contains(this.expand)) {
             LogMessageConstant.EXPAND = this.expand;
         }
-        if(!this.init) {
+        if(!init) {
             LogSave.init(this.logQueueSize, this.logPath);
             for (int a = 0; a < this.threadPoolSize; a++) {
                 threadPoolExecutor.execute(() -> LogSave.startRunLog(this.maxCount,
@@ -153,7 +153,7 @@ public class LiteAppender extends AppenderBase<ILoggingEvent> {
                 threadPoolExecutor.execute(() -> LogSave.startTraceLog(this.maxCount,
                         this.compressor ? LogMessageConstant.LOG_KEY_TRACE_COMPRESS : LogMessageConstant.LOG_KEY_TRACE, this.compressor));
             }
-            this.init=true;
+            init=true;
         }
     }
 }
