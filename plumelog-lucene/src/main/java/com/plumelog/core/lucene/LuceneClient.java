@@ -70,7 +70,7 @@ public class LuceneClient extends AbstractServerClient {
             indexWriter.addDocuments(docs);
             indexWriter.commit();
         }catch (Exception e){
-            
+            e.printStackTrace();
         }finally {
             if(indexWriter!=null){
                 indexWriter.close();
@@ -142,6 +142,7 @@ public class LuceneClient extends AbstractServerClient {
                 indexWriter.deleteAll();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }finally {
             if(indexWriter!=null) {
