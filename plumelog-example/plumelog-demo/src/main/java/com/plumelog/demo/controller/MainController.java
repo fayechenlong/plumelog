@@ -14,7 +14,6 @@ public class MainController {
     private MainService mainService;
 
     @RequestMapping("/index")
-    @Trace
     public String index(String data) {
         logger.info("I am MainController" + System.getProperty("user.home"));
         if(data==null||"".equals(data)){

@@ -29,7 +29,6 @@ public class MainService {
    //@Reference
    //EasyLogDubboService easyLogDubboService;
 
-    @Trace
     public void testLog(String data) {
 //        logger.error("I am service! 下面调用EasyLogDubboService远程服务！");
         //easyLogDubboService.testLogDubbo();
