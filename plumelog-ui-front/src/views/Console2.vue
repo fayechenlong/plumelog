@@ -225,7 +225,17 @@ export default {
       }
 
       if ('WebSocket' in window) {
-       let host = window.location.host;
+
+      	var hostName=window.document.location.host;
+      	var pathName=window.document.location.pathname;
+      	var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+        let host=hostName;
+
+        if(projectName!='/plumelog'){
+      	host =hostName+projectName;
+         }
+        console.log(host);
+
         let ishttps = 'https:' == document.location.protocol ? true : false;
         let url='ws://'+host+'/plumelog/websocket';
          if(ishttps){
