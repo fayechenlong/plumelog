@@ -43,7 +43,6 @@ import java.util.regex.Pattern;
 public class LuceneClient extends AbstractServerClient {
 
     private String localpath;
-    private IndexWriter indexWriter = null;
 
     public LuceneClient(String rootPath) {
         this.localpath = rootPath + "/data/";
@@ -61,7 +60,7 @@ public class LuceneClient extends AbstractServerClient {
     }
 
     private void create(Collection<Document> docs, String index) throws Exception {
-
+        IndexWriter indexWriter=null;
         try {
             Directory directory = FSDirectory.open(FileSystems.getDefault().getPath(localpath + index));
             NRTCachingDirectory nrtCachingDirectory = new NRTCachingDirectory(directory, 5, 60);
