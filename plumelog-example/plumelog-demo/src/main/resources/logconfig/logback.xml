@@ -34,11 +34,11 @@
     <springProperty scope="context" name="plumelog.masterName" source="plumelog.masterName"/>
     <springProperty scope="context" name="plumelog.env" source="spring.profiles.active"/>
 
-<!--    <appender name="plumelog" class="com.plumelog.lite.logback.appender.LiteAppender">-->
-<!--        <appName>plumelog</appName>-->
-<!--        <logPath>/Users/chenlongfei/lucene</logPath>-->
-<!--        <keepDay>30</keepDay>-->
-<!--    </appender>-->
+    <appender name="plumelog" class="com.plumelog.lite.logback.appender.LiteAppender">
+        <appName>plumelog</appName>
+        <logPath>/Users/chenlongfei/lucene</logPath>
+        <keepDay>30</keepDay>
+    </appender>
 
 <!--    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">-->
 <!--        <appName>${plumelog.appName}</appName>-->
@@ -47,10 +47,10 @@
 <!--        <env>${plumelog.env}</env>-->
 <!--    </appender>-->
 
-        <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">
-            <appName>${plumelog.appName}</appName>
-            <plumelogHost>localhost:8891</plumelogHost>
-        </appender>
+<!--        <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">-->
+<!--            <appName>${plumelog.appName}</appName>-->
+<!--            <plumelogHost>localhost:8891</plumelogHost>-->
+<!--        </appender>-->
     <!-- 日志输出级别 -->
     <root level="info">
         <appender-ref ref="CONSOLE"/>
