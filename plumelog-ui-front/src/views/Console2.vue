@@ -49,7 +49,7 @@
       <div style="clear:both"></div>
     </div>
     <div class="pnl_content" id="plume-console">
-      <div style="width: 100%; height: 100%;" ref="terminal" id="terminal-container"></div>
+      <div style="width: 100%; position: absolute; bottom:0; top:0; right: 0; left: 0" ref="terminal" id="terminal-container"></div>
     </div>
   </div>
 </template>
