@@ -241,7 +241,7 @@ export default {
          if(ishttps){
            url='wss://'+host+'/plumelog/websocket';
          }
-        const ws = new WebSocket(url);
+        const ws = new WebSocket('ws://localhost:8891/plumelog/websocket');
         ws.onerror = (e) => {
           this.term.writeln(`${color['ERROR']} ${this.dateFormat(new Date().getTime())}  链接异常`)
         }
@@ -252,14 +252,20 @@ export default {
         }
         const color = {
           'ERROR' : '\x1b[1;31m',
-          'INFO' : '\x1b[0m',
+          'INFO' : '\x1b[2;37m',
           "WARN" : '\x1b[1;33m',
-          "DEBUG" : '\x1b[1;37m',
+          "DEBUG" : '\x1b[2;37m',
+        }
+        const level = {
+          'ERROR' : '[ERROR]',
+          'INFO' : '[INFO ]',
+          "WARN" : '[WARN ]',
+          "DEBUG" : '[DEBUG]',
         }
         // 收到消息的回调方法
         ws.onmessage = (ev) =>  {
           const data = JSON.parse(ev.data);
-          this.term.writeln(`${color[data.logLevel]} ${this.dateFormat(data.dtTime)} ${data.logLevel} ${data.appName} ${data.serverName} ${data.className}.${data.method}  ${data.content}`)
+          this.term.writeln(`\x1b[0m ${this.dateFormat(data.dtTime)} ${color[data.logLevel]}${level[data.logLevel]} \x1b[0m\x1b[2;34m${data.appName} \x1b[0m\x1b[2;33m${data.serverName} \x1b[0m\x1b[2;32m${data.className}.${data.method} \x1b[0m${color[data.logLevel]}${data.content}`)
         }
         // 连接关闭的回调方法
         ws.onclose = () =>  {
