@@ -250,7 +250,7 @@ export default {
          if(ishttps){
            url='wss://'+host+'/plumelog/websocket';
          }
-        const ws = new WebSocket('ws://localhost:8891/plumelog/websocket');
+        const ws = new WebSocket(url);
         ws.onerror = (e) => {
           this.term.writeln(` ${color['ERROR']} ${this.dateFormat(new Date().getTime())}  链接异常`)
         }
