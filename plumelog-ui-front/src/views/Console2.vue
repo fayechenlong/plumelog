@@ -250,13 +250,13 @@ export default {
          if(ishttps){
            url='wss://'+host+'/plumelog/websocket';
          }
-        const ws = new WebSocket(url);
+        const ws = new WebSocket('ws://localhost:8891/plumelog/websocket');
         ws.onerror = (e) => {
-          this.term.writeln(`${color['ERROR']} ${this.dateFormat(new Date().getTime())}  链接异常`)
+          this.term.writeln(` ${color['ERROR']} ${this.dateFormat(new Date().getTime())}  链接异常`)
         }
         // 连接成功的回调方法
         ws.onopen = () =>  {
-          this.term.writeln(`${this.dateFormat(new Date().getTime())} 链接成功`)
+          this.term.writeln(` ${this.dateFormat(new Date().getTime())} 链接成功`)
           this.ws.send(JSON.stringify(this.filter))
         }
         const color = {
@@ -280,11 +280,11 @@ export default {
         // 收到消息的回调方法
         ws.onmessage = (ev) =>  {
           const data = JSON.parse(ev.data);
-          this.term.writeln(`\x1b[0m\x1b[${colorBo[data.logLevel]};37m${this.dateFormat(data.dtTime)} ${color[data.logLevel]}${level[data.logLevel]} \x1b[0m\x1b[${colorBo[data.logLevel]};34m${data.appName} \x1b[0m\x1b[${colorBo[data.logLevel]};33m${data.serverName} \x1b[0m\x1b[${colorBo[data.logLevel]};32m${data.className}.${data.method} \x1b[0m${color[data.logLevel]}${data.content}`)
+          this.term.writeln(` \x1b[0m\x1b[${colorBo[data.logLevel]};37m${this.dateFormat(data.dtTime)} ${color[data.logLevel]}${level[data.logLevel]} \x1b[0m\x1b[${colorBo[data.logLevel]};34m${data.appName} \x1b[0m\x1b[${colorBo[data.logLevel]};33m${data.serverName} \x1b[0m\x1b[${colorBo[data.logLevel]};32m${data.className}.${data.method} \x1b[0m${color[data.logLevel]}${data.content}`)
         }
         // 连接关闭的回调方法
         ws.onclose = () =>  {
-          this.term.writeln(`${this.dateFormat(new Date().getTime())} 链接关闭`)
+          this.term.writeln(` ${this.dateFormat(new Date().getTime())} 链接关闭`)
         }
         this.ws = ws;
       } else {
@@ -556,6 +556,7 @@ export default {
   position: relative;
   height: calc(100vh - 140px);
   width: 100%;
+  left: 2px;
   overflow: auto;
 }
 
