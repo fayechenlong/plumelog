@@ -49,7 +49,7 @@
       <div style="clear:both"></div>
     </div>
     <div class="pnl_content" id="plume-console">
-      <div style="width: 100%; height: 100%;" ref="terminal" id="terminal-container"></div>
+      <div style="width: 100%; height: 100%" ref="terminal" id="terminal-container"></div>
     </div>
   </div>
 </template>
@@ -533,7 +533,7 @@ export default {
 }
 .pnl_content {
   position: relative;
-  min-height: calc(100vh - 140px);
+  height: calc(100vh - 140px);
   width: 100%;
   overflow: auto;
 }
