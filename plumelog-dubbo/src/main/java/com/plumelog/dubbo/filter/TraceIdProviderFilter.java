@@ -21,12 +21,11 @@ import static org.apache.dubbo.common.constants.CommonConstants.PROVIDER;
 @Activate(group = PROVIDER)
 public class TraceIdProviderFilter implements Filter {
     private static final String TRACE_ID = "trace_id";
-
+    private final IdWorker worker = new IdWorker(1, 1, 1);
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         String traceId = invocation.getAttachment(TRACE_ID);
         if (StringUtils.isEmpty(traceId)) {
-            IdWorker worker = new IdWorker(1, 1, 1);
             traceId = String.valueOf(worker.nextId());
         }
         TraceId.logTraceID.set(traceId);

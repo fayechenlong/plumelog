@@ -5,6 +5,7 @@ public class Filter {
     private String appName;
     private String env;
     private String serverName;
+    private String logLevel;
 
     public String getAppName() {
         return appName;
@@ -28,5 +29,13 @@ public class Filter {
 
     public void setServerName(String serverName) {
         this.serverName = serverName;
+    }
+
+    public String getLogLevel() {
+        return logLevel;
+    }
+
+    public void setLogLevel(String logLevel) {
+        this.logLevel = logLevel;
     }
 }

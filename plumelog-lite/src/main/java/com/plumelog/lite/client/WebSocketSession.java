@@ -45,23 +45,39 @@ public class WebSocketSession {
             String appName = filter.getAppName();
             String env = filter.getEnv();
             String serverName = filter.getServerName();
+            String level = filter.getLevel();
 
             if (StringUtils.isNotEmpty(appName)) {
-                if (StringUtils.isEmpty(env) && StringUtils.isEmpty(serverName)) {
+                if (StringUtils.isEmpty(env) && StringUtils.isEmpty(serverName) && StringUtils.isEmpty(level)) {
                     if (runLogMessage.getAppName().equals(appName)) {
                         session.getBasicRemote().sendText(message);
                     }
-                } else if (StringUtils.isNotEmpty(env) && StringUtils.isEmpty(serverName)) {
+                } else if (StringUtils.isNotEmpty(env) && StringUtils.isEmpty(serverName) && StringUtils.isEmpty(level)) {
                     if (runLogMessage.getAppName().equals(appName) && runLogMessage.getEnv().equals(env)) {
                         session.getBasicRemote().sendText(message);
                     }
-
-                } else if (StringUtils.isNotEmpty(env) && StringUtils.isNotEmpty(serverName)) {
+                } else if (StringUtils.isNotEmpty(env) && StringUtils.isNotEmpty(serverName) && StringUtils.isEmpty(level)) {
                     if (runLogMessage.getAppName().equals(appName) && runLogMessage.getEnv().equals(env) && runLogMessage.getServerName().equals(serverName)) {
                         session.getBasicRemote().sendText(message);
                     }
-                } else if (StringUtils.isEmpty(env) && StringUtils.isNotEmpty(serverName)) {
+                } else if (StringUtils.isEmpty(env) && StringUtils.isNotEmpty(serverName) && StringUtils.isEmpty(level)) {
                     if (runLogMessage.getAppName().equals(appName) && runLogMessage.getServerName().equals(serverName)) {
+                        session.getBasicRemote().sendText(message);
+                    }
+                } else if (StringUtils.isNotEmpty(env) && StringUtils.isNotEmpty(serverName) && StringUtils.isNotEmpty(level)) {
+                    if (runLogMessage.getAppName().equals(appName) && runLogMessage.getEnv().equals(env) && runLogMessage.getServerName().equals(serverName) && runLogMessage.getLogLevel().equals(level)) {
+                        session.getBasicRemote().sendText(message);
+                    }
+                } else if (StringUtils.isNotEmpty(env) && StringUtils.isEmpty(serverName) && StringUtils.isNotEmpty(level)) {
+                    if (runLogMessage.getAppName().equals(appName) && runLogMessage.getEnv().equals(env) && runLogMessage.getLogLevel().equals(level)) {
+                        session.getBasicRemote().sendText(message);
+                    }
+                } else if (StringUtils.isEmpty(env) && StringUtils.isNotEmpty(serverName) && StringUtils.isNotEmpty(level)) {
+                    if (runLogMessage.getAppName().equals(appName) && runLogMessage.getServerName().equals(serverName) && runLogMessage.getLogLevel().equals(level)) {
+                        session.getBasicRemote().sendText(message);
+                    }
+                } else if (StringUtils.isEmpty(env) && StringUtils.isEmpty(serverName) && StringUtils.isNotEmpty(level)) {
+                    if (runLogMessage.getAppName().equals(appName) && runLogMessage.getLogLevel().equals(level)) {
                         session.getBasicRemote().sendText(message);
                     }
                 }

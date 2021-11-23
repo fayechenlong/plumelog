@@ -21,13 +21,13 @@ public class LogBackTest {
             } catch (InterruptedException e) {
                 logger.error("", e);
             }
-            logger.info("用户开始下单！");
+            logger.debug("用户开始下单！");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 logger.error("", e);
             }
-            logger.info("开始支付！");
+            logger.warn("开始支付！");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

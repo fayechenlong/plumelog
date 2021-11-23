@@ -51,6 +51,7 @@ plumelog.model=redis
 plumelog.queue.redis.redisHost=127.0.0.1:6379
 #如果使用redis有密码,启用下面配置
 #plumelog.queue.redis.redisPassWord=123456
+#如果要切换db，redis必须要配置密码
 #plumelog.queue.redis.redisDb=0
 #哨兵模式需要配置的
 #plumelog.queue.redis.sentinel.masterName=myMaster
@@ -425,7 +426,7 @@ RedisAppender
 | redisHost  | redis地址 |
 | redisPort  | redis端口号 3.4版本后可以不用配置可以配置在host上用冒号结尾|
 | redisAuth  | redis密码 |
-| redisDb  | redis db |
+| redisDb  | redis db 如果要切换db，redis必须要配置密码|
 | model  | （3.4）redis三种模式（standalone,cluster,sentinel） 不配置默认standalone|
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | maxCount  | （3.1）批量提交日志数量，默认100 |
@@ -860,3 +861,7 @@ management.endpoints.web.exposure.include=*
   即，logback.xml加载早于application.properties，所以如果你在logback.xml使用了变量时，而恰好这个变量是写在application.properties时，那么就会获取不到，只要改成logback-spring.xml就可以解决。
 
   这就是为什么有些人用了nacos等配置中心，不能加载远程配置的原因，是因为加载优先级的问题
+
+* plumelog挂了日志丢失怎么办？
+
+  plumelog的设计定位就是日志查询工具类系统，不可能去为了日志高幂等性去牺牲性能，甚至影响客户端，所以如果你担心plumelog挂了查不到日志，那你可以在本地再配置一个滚动日志保留三天作为补充

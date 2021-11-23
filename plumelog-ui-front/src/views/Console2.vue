@@ -4,7 +4,7 @@
       <template>
         <log-header></log-header>
         <!--查询条件-->
-        <div style="width: 1000px">
+        <div style="width: 1300px">
           <table class='tbl_filters' style="width: 100%">
             <tbody>
             <tr>
@@ -31,6 +31,16 @@
                     :filter-method="completeFilter">
                 </AutoComplete>
               </td>
+              <td class="key">日志等级</td>
+              <td style="width: 180px">
+                <Select v-model="filter.logLevel"  placeholder="请选择日志等级" style="width: 162px">
+                  <Option value="" key="ALL">所有</Option>
+                  <Option value="INFO" key="INFO">INFO</Option>
+                  <Option value="ERROR" key="ERROR">ERROR</Option>
+                  <Option value="WARN" key="WARN">WARN</Option>
+                  <Option value="DEBUG" key="DEBUG">DEBUG</Option>
+                </Select>
+              </td>
               <td class="key">服务器</td>
               <td style="width: 180px">
                 <Input class="txt" style="width: 162px" name="serverName" v-model="filter.serverName" placeholder="服务器Ip或者host"
@@ -49,7 +59,7 @@
       <div style="clear:both"></div>
     </div>
     <div class="pnl_content" id="plume-console">
-      <div style="width: 100%; height: 100%;" ref="terminal" id="terminal-container"></div>
+      <div style="width: 100%; height: 100%" ref="terminal" id="terminal-container"></div>
     </div>
   </div>
 </template>
@@ -234,7 +244,6 @@ export default {
         if(projectName!='/plumelog'){
       	host =hostName+projectName;
          }
-        console.log(host);
 
         let ishttps = 'https:' == document.location.protocol ? true : false;
         let url='ws://'+host+'/plumelog/websocket';
@@ -243,27 +252,39 @@ export default {
          }
         const ws = new WebSocket(url);
         ws.onerror = (e) => {
-          this.term.writeln(`${color['ERROR']} ${this.dateFormat(new Date().getTime())}  链接异常`)
+          this.term.writeln(` ${color['ERROR']} ${this.dateFormat(new Date().getTime())}  链接异常`)
         }
         // 连接成功的回调方法
         ws.onopen = () =>  {
-          this.term.writeln(`${this.dateFormat(new Date().getTime())} 链接成功`)
+          this.term.writeln(` ${this.dateFormat(new Date().getTime())} 链接成功`)
           this.ws.send(JSON.stringify(this.filter))
         }
         const color = {
           'ERROR' : '\x1b[1;31m',
-          'INFO' : '\x1b[0m',
+          'INFO' : '\x1b[1;37m',
           "WARN" : '\x1b[1;33m',
-          "DEBUG" : '\x1b[1;37m',
+          "DEBUG" : '\x1b[2;37m',
+        }
+        const colorBo = {
+          'ERROR' : '1',
+          'INFO' : '1',
+          "WARN" : '1',
+          "DEBUG" : '2',
+        }
+        const level = {
+          'ERROR' : '[ERROR]',
+          'INFO' : '[INFO ]',
+          "WARN" : '[WARN ]',
+          "DEBUG" : '[DEBUG]',
         }
         // 收到消息的回调方法
         ws.onmessage = (ev) =>  {
           const data = JSON.parse(ev.data);
-          this.term.writeln(`${color[data.logLevel]} ${this.dateFormat(data.dtTime)} ${data.logLevel} ${data.appName} ${data.serverName} ${data.className}.${data.method}  ${data.content}`)
+          this.term.writeln(` \x1b[0m\x1b[${colorBo[data.logLevel]};37m${this.dateFormat(data.dtTime)} ${color[data.logLevel]}${level[data.logLevel]} \x1b[0m\x1b[${colorBo[data.logLevel]};34m${data.appName} \x1b[0m\x1b[${colorBo[data.logLevel]};33m${data.serverName} \x1b[0m\x1b[${colorBo[data.logLevel]};32m${data.className}.${data.method} \x1b[0m${color[data.logLevel]}${data.content}`)
         }
         // 连接关闭的回调方法
         ws.onclose = () =>  {
-          this.term.writeln(`${this.dateFormat(new Date().getTime())} 链接关闭`)
+          this.term.writeln(` ${this.dateFormat(new Date().getTime())} 链接关闭`)
         }
         this.ws = ws;
       } else {
@@ -533,8 +554,9 @@ export default {
 }
 .pnl_content {
   position: relative;
-  min-height: calc(100vh - 140px);
+  height: calc(100vh - 140px);
   width: 100%;
+  left: 2px;
   overflow: auto;
 }
 

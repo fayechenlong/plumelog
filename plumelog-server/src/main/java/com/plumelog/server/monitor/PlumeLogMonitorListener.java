@@ -236,7 +236,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
                 .append("&env=").append(rule.getEnv())
                 .append("&className=").append(className)
                 .append("&logLevel=ERROR")
-                .append("&time=").append(startTime).append(",").append(currentTime);
+                .append("&time=").append(startTime-1000).append(",").append(currentTime+1000);
         return builder.toString();
     }
 

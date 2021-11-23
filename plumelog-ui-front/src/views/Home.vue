@@ -306,7 +306,7 @@
         <Button @click="darkModeChange" v-if="!tableModel && !darkMode" style="font-size:12px">切换至夜间换行</Button>
       </div>
 
-      <ul v-if="totalCount && parseInt(totalCount/size) > 0" class="pagination justify-content-center"
+      <ul v-if="totalCount" class="pagination justify-content-center"
           style="float:right;margin-right:30px">
         <li class="page-item" :class="{'disabled': !isShowLastPage }">
           <a class="page-link" href="javascript:void(0)" @click="prevPage" tabindex="-1">上一页</a>
