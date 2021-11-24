@@ -75,7 +75,7 @@ public class PlumeLogMonitorRuleConfig {
 
     @Scheduled(cron = "0 */1 * * * ?")
     private void configureTasks() {
-        if (!InitConfig.LITE_MODE_NAME.equals(InitConfig.LITE_MODE_NAME)) {
+        if (!InitConfig.START_MODEL.equals(InitConfig.LITE_MODE_NAME)) {
             try {
                 initMonitorRuleConfig();
             } catch (Exception e) {
