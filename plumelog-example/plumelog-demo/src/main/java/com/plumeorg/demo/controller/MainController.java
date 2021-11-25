@@ -1,5 +1,6 @@
 package com.plumeorg.demo.controller;
 
+import com.plumelog.trace.annotation.Trace;
 import com.plumeorg.demo.service.MainService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ public class MainController {
     private MainService mainService;
 
     @RequestMapping("/index")
+    @Trace
     public String index(String data) {
         logger.info("I am MainController" + System.getProperty("user.home"));
         if(data==null||"".equals(data)){

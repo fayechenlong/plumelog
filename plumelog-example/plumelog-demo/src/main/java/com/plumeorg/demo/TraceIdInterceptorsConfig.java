@@ -16,7 +16,8 @@ public class TraceIdInterceptorsConfig extends WebMvcConfigurerAdapter{
     }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new PlumeLogTraceIdInterceptor());
+       // registry.addInterceptor(new PlumeLogTraceIdInterceptor());
+       // registry.addInterceptor(new PlumeLogTraceIdInterceptor());
         super.addInterceptors(registry);
     }
 
