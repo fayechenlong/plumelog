@@ -29,6 +29,7 @@
         <module>plumelog-example</module>
         <module>plumelog-lite</module>
         <module>plumelog-lucene</module>
+        <module>plumelog-lite-spring-boot-starter</module>
     </modules>
     <dependencyManagement>
         <dependencies>

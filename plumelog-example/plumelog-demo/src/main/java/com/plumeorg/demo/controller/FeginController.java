@@ -1,6 +1,6 @@
-package com.plumelog.demo.controller;
+package com.plumeorg.demo.controller;
 
-import com.plumelog.demo.service.MainService;
+import com.plumeorg.demo.service.MainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

@@ -34,7 +34,7 @@ public class MessageAppenderFactory {
      * 当下游异常的时候，状态缓存时间
      */
     private final static Cache<String, Boolean> cache = CacheBuilder.newBuilder()
-            .expireAfterWrite(10, TimeUnit.SECONDS).build();
+            .expireAfterWrite(30, TimeUnit.SECONDS).build();
     public static BlockingQueue<String> rundataQueue;
     public static BlockingQueue<String> tracedataQueue;
     public static int queueSize = 10000;
@@ -89,7 +89,7 @@ public class MessageAppenderFactory {
                 cache.put(logOutPutKey, true);
             } catch (LogQueueConnectException e) {
                 cache.put(logOutPutKey, false);
-                e.printStackTrace();
+                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
             }
         }
     }
@@ -121,7 +121,7 @@ public class MessageAppenderFactory {
                 cache.put(logOutPutKey, true);
             } catch (Exception e) {
                 cache.put(logOutPutKey, false);
-                e.printStackTrace();
+                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
             }
         }
     }
@@ -153,7 +153,7 @@ public class MessageAppenderFactory {
             try {
                 doStartLog(client, maxCount, rundataQueue, key, "plume.log.ack", lastRunPushTime, compress);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -167,7 +167,7 @@ public class MessageAppenderFactory {
             try {
                 doStartLog(plumelogHost, maxCount, rundataQueue, key, "plume.log.ack", lastRunPushTime);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -189,7 +189,7 @@ public class MessageAppenderFactory {
             try {
                 doStartLog(client, maxCount, tracedataQueue, key, "plume.log.ack", lastTracePushTime, compress);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -204,7 +204,7 @@ public class MessageAppenderFactory {
             try {
                 doStartLog(plumelogHost, maxCount, tracedataQueue, key, "plume.log.ack", lastTracePushTime);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {

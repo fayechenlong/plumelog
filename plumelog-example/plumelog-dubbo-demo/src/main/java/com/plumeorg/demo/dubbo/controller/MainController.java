@@ -1,7 +1,7 @@
-package com.plumelog.demo.dubbo.controller;
+package com.plumeorg.demo.dubbo.controller;
 
 
-import com.plumelog.demo.dubbo.service.EasyLogDubboService;
+import com.plumeorg.demo.dubbo.service.EasyLogDubboService;
 import com.plumelog.trace.annotation.Trace;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
