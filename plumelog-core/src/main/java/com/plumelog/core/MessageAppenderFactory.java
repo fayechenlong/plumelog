@@ -34,7 +34,7 @@ public class MessageAppenderFactory {
      * 当下游异常的时候，状态缓存时间
      */
     private final static Cache<String, Boolean> cache = CacheBuilder.newBuilder()
-            .expireAfterWrite(10, TimeUnit.SECONDS).build();
+            .expireAfterWrite(30, TimeUnit.SECONDS).build();
     public static BlockingQueue<String> rundataQueue;
     public static BlockingQueue<String> tracedataQueue;
     public static int queueSize = 10000;
