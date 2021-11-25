@@ -54,5 +54,6 @@
     <!-- 日志输出级别 -->
     <root level="info">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="plumelog"/>
     </root>
 </configuration>

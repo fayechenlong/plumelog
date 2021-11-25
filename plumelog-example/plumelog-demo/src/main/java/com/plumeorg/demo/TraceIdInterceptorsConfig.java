@@ -1,4 +1,4 @@
-package com.plumelog.demo;
+package com.plumeorg.demo;
 
 import com.plumelog.core.PlumeLogTraceIdInterceptor;
 import org.springframework.context.annotation.Configuration;

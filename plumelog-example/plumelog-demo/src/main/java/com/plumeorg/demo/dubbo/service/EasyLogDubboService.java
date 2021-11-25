@@ -1,4 +1,4 @@
-package com.plumelog.demo.dubbo.service;
+package com.plumeorg.demo.dubbo.service;
 
 public interface EasyLogDubboService {
 

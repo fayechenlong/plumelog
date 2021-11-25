@@ -1,4 +1,4 @@
-package com.plumelog.demo.dubbo.service;
+package com.plumeorg.demo.dubbo.service;
 
 import com.plumelog.trace.annotation.Trace;
 import org.apache.dubbo.config.annotation.Service;

@@ -1,4 +1,4 @@
-package com.plumelog.demo.service;
+package com.plumeorg.demo.service;
 
 
 /**

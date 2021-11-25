@@ -1,14 +1,12 @@
-package com.plumelog.demo.service;
+package com.plumeorg.demo.service;
 
 
 import com.alibaba.ttl.threadpool.TtlExecutors;
 import com.plumelog.core.LogMessage;
 import com.plumelog.core.util.LogExceptionStackTrace;
-import com.plumelog.trace.annotation.Trace;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
@@ -29,7 +27,6 @@ public class MainService {
    //@Reference
    //EasyLogDubboService easyLogDubboService;
 
-    @Trace
     public void testLog(String data) {
 //        logger.error("I am service! 下面调用EasyLogDubboService远程服务！");
         //easyLogDubboService.testLogDubbo();
@@ -61,10 +58,10 @@ public class MainService {
         logger.info("订单编号：{}","12345678");
 
         try {
+
+            tankService.tankSay(data);
             LogMessage lo=null;
             lo.setMethod("");
-            tankService.tankSay(data);
-
         }catch (Exception e){
             logger.error("异常日志展示", LogExceptionStackTrace.erroStackTrace(e));
         }
