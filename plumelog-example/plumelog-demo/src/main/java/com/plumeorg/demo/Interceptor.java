@@ -25,6 +25,7 @@ public class Interceptor extends HandlerInterceptorAdapter{
             TraceId.logTraceID.set(traceId);
         }
         logger.info("退：preHandle ++++++++++++++++++++"+TraceId.logTraceID.get());*/
+        logger.info("dasdasda");
         return true;
     }
 //    @Override
