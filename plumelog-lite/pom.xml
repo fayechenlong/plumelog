@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-core</artifactId>
-            <version>3.5.1</version>
+            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
