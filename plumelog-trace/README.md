@@ -13,7 +13,7 @@
             <dependency>
                <groupId>com.plumelog</groupId>
                <artifactId>plumelog-trace</artifactId>
-               <version>3.5</version>
+               <version>3.5.1</version>
            </dependency>
 ```
 

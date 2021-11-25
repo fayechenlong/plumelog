@@ -191,7 +191,7 @@ admin.log.trace.keepDays=30
 <dependency>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog-log4j</artifactId>
-    <version>3.5</version>
+    <version>3.5.1</version>
 </dependency>
 ```                       
 
@@ -235,7 +235,7 @@ log4j.appender.L.plumelogHost=localhost:8891
 <dependency>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog-logback</artifactId>
-    <version>3.5</version>
+    <version>3.5.1</version>
 </dependency>
 ```  
 
@@ -385,7 +385,7 @@ spring.profiles.active=dev
 <dependency>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog-log4j2</artifactId>
-    <version>3.5</version>
+    <version>3.5.1</version>
 </dependency>       
 ```   
 
