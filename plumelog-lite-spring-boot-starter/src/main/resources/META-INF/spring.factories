@@ -1,3 +1,3 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.plumelog.lite.autoconfigure.PluemlogLiteConfiguration
+  com.plumelog.lite.autoconfigure.PlumelogLiteConfiguration
