@@ -55,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog-logback</artifactId>
+            <artifactId>plumelog-lite-spring-boot-starter</artifactId>
             <version>3.5.1</version>
         </dependency>
         <dependency>
