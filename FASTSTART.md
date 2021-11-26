@@ -334,7 +334,6 @@ spring.profiles.active=dev
     <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
         <appName>${plumelog.appName}</appName>
         <redisHost>${plumelog.redisHost}</redisHost>
-        <redisPort>${plumelog.redisPort}</redisPort>
         <redisAuth>${plumelog.redisAuth}</redisAuth>
         <redisDb>${plumelog.redisDb}</redisDb>
         <env>${plumelog.env}</env>
@@ -423,11 +422,10 @@ RedisAppender
 |  字段值   | 用途  |
 |  ----  | ----  |
 | appName  | 自定义应用名称 |
-| redisHost  | redis地址 |
-| redisPort  | redis端口号 3.4版本后可以不用配置可以配置在host上用冒号结尾|
+| redisHost  | redis地址，哨兵模式多个用逗号隔开 |
 | redisAuth  | redis密码 |
 | redisDb  | redis db 如果要切换db，redis必须要配置密码|
-| model  | （3.4）redis三种模式（standalone,cluster,sentinel） 不配置默认standalone|
+| masterName  |哨兵模式需要配置哨兵的masterName|
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | maxCount  | （3.1）批量提交日志数量，默认100 |
 | logQueueSize  | （3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+ |
