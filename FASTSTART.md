@@ -58,7 +58,7 @@ plumelog.queue.redis.redisHost=127.0.0.1:6379
 #redis解压缩模式，开启后不消费非压缩的队列
 #plumelog.redis.compressor=true
 
-#管理端redis地址 ，集群用逗号隔开，不配置将和队列公用，lite模式可以全部注释掉下面配置
+#管理端redis地址 ，集群用逗号隔开，不配置将和队列公用，lite模式可以全部注释掉下面配置，管理redis单独使用的时候支持集群模式
 #plumelog.redis.redisHost=127.0.0.1:6379
 #如果使用redis有密码,启用下面配置
 #plumelog.redis.redisPassWord=123456
