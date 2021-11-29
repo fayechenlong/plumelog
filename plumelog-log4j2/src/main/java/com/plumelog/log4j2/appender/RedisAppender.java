@@ -8,6 +8,7 @@ import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.StringUtils;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j2.util.LogMessageUtil;
 import org.apache.logging.log4j.core.Filter;
@@ -99,7 +100,7 @@ public class RedisAppender extends AbstractAppender {
         if (model == null) {
             model = "standalone";
         }
-        if ("sentinel".equals(model)) {
+        if (StringUtils.isNotEmpty(masterName)) {
             redisClient = RedisSentinelClient.getInstance(redisHost, masterName, redisAuth, redisDb);
         } else {
             int port = 6379;
