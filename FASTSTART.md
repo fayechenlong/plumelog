@@ -425,6 +425,7 @@ RedisAppender
 | redisHost  | redis地址，哨兵模式多个用逗号隔开 |
 | redisAuth  | redis密码 |
 | redisDb  | redis db 如果要切换db，redis必须要配置密码|
+| model  |sentinel 哨兵模式,standalone 单机模式|
 | masterName  |哨兵模式需要配置哨兵的masterName|
 | runModel  | 1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1 |
 | maxCount  | （3.1）批量提交日志数量，默认100 |
