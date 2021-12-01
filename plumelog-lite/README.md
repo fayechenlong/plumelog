@@ -21,6 +21,20 @@
 
 ```
 
+* 或者引用plumelog-lite-spring-boot-starter，则不需要配置扫描路径和静态文件路径
+
+
+```xml
+
+<dependency>
+    <groupId>com.plumelog</groupId>
+    <artifactId>plumelog-lite-spring-boot-starter</artifactId>
+    <version>3.5.2</version>
+</dependency>
+
+```
+
+
 2. 配置logback.xml
 
 ```xml
