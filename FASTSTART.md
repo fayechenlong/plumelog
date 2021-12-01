@@ -280,14 +280,6 @@ spring.profiles.active=dev
 
 * logback-spring.xml 不知道怎么配置的拷贝全部
 
-* 为什么Spring Boot推荐使用logback-spring.xml来替代logback.xml来配置logback日志的问题分析
-
-  即，logback.xml加载早于application.properties，所以如果你在logback.xml使用了变量时，而恰好这个变量是写在application.properties时，那么就会获取不到，只要改成logback-spring.xml就可以解决。
-
-  这就是为什么有些人用了nacos等配置中心，不能加载远程配置的原因，是因为加载优先级的问题
-
-
-
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
@@ -373,6 +365,13 @@ spring.profiles.active=dev
     </root>
     </springProfile>
 ```
+
+* 小提示：为什么Spring Boot推荐使用logback-spring.xml来替代logback.xml来配置logback日志的问题分析
+
+  即，logback.xml加载早于application.properties，所以如果你在logback.xml使用了变量时，而恰好这个变量是写在application.properties时，那么就会获取不到，只要改成logback-spring.xml就可以解决。
+
+  这就是为什么有些人用了nacos等配置中心，不能加载远程配置的原因，是因为加载优先级的问题
+
 
 
 #### 4.log4j2
