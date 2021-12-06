@@ -7,7 +7,7 @@
                    <dependency>
                        <groupId>com.plumelog</groupId>
                        <artifactId>plumelog-dubbo</artifactId>
-                       <version>3.5.1</version>
+                       <version>3.5.2</version>
                    </dependency>
    ```                     
 2. dubbo依赖 scope是provided 所以需要自己引入依赖 当前filter是基于apache的版本。阿里版本需要自己写
