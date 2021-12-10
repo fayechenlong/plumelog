@@ -28,3 +28,4 @@ application-test-confidential.properties
 # Operating System Files
 # =========================
 target/
+node_modules/

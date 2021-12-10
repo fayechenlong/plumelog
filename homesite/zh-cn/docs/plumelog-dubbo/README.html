@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="keywords" content="README" />
+	<meta name="description" content="README" />
+	<!-- 网页标签标题 -->
+	<title>README</title>
+	<link rel="shortcut icon" href="/img/docsite.ico"/>
+	<link rel="stylesheet" href="/build/documentation.css" />
+</head>
+<body>
+	<div id="root"><div class="documentation-page" data-reactroot=""><header class="header-container header-container-normal"><div class="header-body"><a href="/zh-cn/index.html"><img class="logo" src="/pic/icon_name_black.png"/></a><div class="search search-normal"><span class="icon-search"></span></div><span class="language-switch language-switch-normal">En</span><div class="header-menu"><img class="header-menu-toggle" src="/img/system/menu_gray.png"/><ul><li class="menu-item menu-item-normal"><a href="/zh-cn/index.html" target="_self">首页</a></li><li class="menu-item menu-item-normal menu-item-normal-active"><a href="/zh-cn/docs/README.html" target="_self">文档</a></li></ul></div></div></header><div class="bar"><div class="bar-body"><img src="/img/system/docs.png" class="front-img"/><span>文档</span><img src="/img/system/docs.png" class="back-img"/></div></div><section class="content-section"><div class="sidemenu"><div class="sidemenu-toggle"><img src="https://img.alicdn.com/tfs/TB1E6apXHGYBuNjy0FoXXciBFXa-200-200.png"/></div><ul><li class="menu-item menu-item-level-1"><span>使用文档</span><ul><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/README.html" target="_self">介绍</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/update.html" target="_self">版本升级</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/HELP.html" target="_self">后台使用指南</a></li></ul></li></ul></div><div class="doc-content markdown-body"><h2 id="easylog-plumelog-dubbo-%E6%8F%90%E4%BE%9Bdubbo-%E8%B7%A8%E6%9C%8D%E5%8A%A1%E4%BC%A0%E9%80%92traceid">EasyLog  plumelog-dubbo 提供dubbo 跨服务传递traceID <a class="header-anchor" href="#easylog-plumelog-dubbo-%E6%8F%90%E4%BE%9Bdubbo-%E8%B7%A8%E6%9C%8D%E5%8A%A1%E4%BC%A0%E9%80%92traceid">#</a></h2>
+<h5 id="%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">使用注意事项 <a class="header-anchor" href="#%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">#</a></h5>
+<p>1.引入</p>
+<pre><code class="language-xml">                 <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+                     <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.plumelog<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+                     <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>plumelog-dubbo<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+                     <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+                 <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<ol start="2">
+<li>dubbo依赖 scope是provided 所以需要自己引入依赖 当前filter是基于apache的版本。阿里版本需要自己写</li>
+</ol>
+<pre><code class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.dubbo<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>dubbo<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.7.3<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+              <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>provided<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<ol start="3">
+<li>
+<p>引入模块后rpc调用时就会自动传traceId 但是请注意如果自己有自定义的filter，名字不能与当前filter名重复</p>
+<p>traceIdFilter=com.plumelog.dubbo.filter.TraceIdFilter</p>
+</li>
+</ol>
+</div></section><footer class="footer-container"><div class="footer-body"><img src="/pic/icon_name_black.png"/><div class="cols-container"><div class="col col-12"><h3>免责声明</h3><p>本软件为免费软件并开放源码，用于交流学习，使用中遇到任何问题和纠纷本社区概不负责</p></div><div class="col col-6"><dl><dt>文档</dt><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">概览</a></dd><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></dd><dd><a href="/zh-cn/docs/FASTSTARThtml" target="_self">开发者指南</a></dd></dl></div><div class="col col-6"><dl><dt>资源</dt><dd><a href="http://demo.plumelog.com" target="_self">演示地址</a></dd><dd><a href="https://gitee.com/plumeorg" target="_self">社区</a></dd></dl></div></div><div class="copyright"><span>Copyright © 2018 版权所有 plume开源社区</span></div></div></footer></div></div>
+	<script src="https://f.alicdn.com/react/15.4.1/react-with-addons.min.js"></script>
+	<script src="https://f.alicdn.com/react/15.4.1/react-dom.min.js"></script>
+	<script>
+		window.rootPath = '';
+  </script>
+	<script src="/build/documentation.js"></script>
+</body>
+</html>

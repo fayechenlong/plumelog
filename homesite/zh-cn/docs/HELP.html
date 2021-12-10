@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="keywords" content="HELP" />
+	<meta name="description" content="HELP" />
+	<!-- 网页标签标题 -->
+	<title>HELP</title>
+	<link rel="shortcut icon" href="/img/docsite.ico"/>
+	<link rel="stylesheet" href="/build/documentation.css" />
+</head>
+<body>
+	<div id="root"><div class="documentation-page" data-reactroot=""><header class="header-container header-container-normal"><div class="header-body"><a href="/zh-cn/index.html"><img class="logo" src="/pic/icon_name_black.png"/></a><div class="search search-normal"><span class="icon-search"></span></div><span class="language-switch language-switch-normal">En</span><div class="header-menu"><img class="header-menu-toggle" src="/img/system/menu_gray.png"/><ul><li class="menu-item menu-item-normal"><a href="/zh-cn/index.html" target="_self">首页</a></li><li class="menu-item menu-item-normal menu-item-normal-active"><a href="/zh-cn/docs/README.html" target="_self">文档</a></li></ul></div></div></header><div class="bar"><div class="bar-body"><img src="/img/system/docs.png" class="front-img"/><span>文档</span><img src="/img/system/docs.png" class="back-img"/></div></div><section class="content-section"><div class="sidemenu"><div class="sidemenu-toggle"><img src="https://img.alicdn.com/tfs/TB1E6apXHGYBuNjy0FoXXciBFXa-200-200.png"/></div><ul><li class="menu-item menu-item-level-1"><span>使用文档</span><ul><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/README.html" target="_self">介绍</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/update.html" target="_self">版本升级</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/HELP.html" target="_self">后台使用指南</a></li></ul></li></ul></div><div class="doc-content markdown-body"><h3 id="plumelog%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A2%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97">plumelog日志查询使用指南 <a class="header-anchor" href="#plumelog%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A2%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97">#</a></h3>
+<h4 id="%E4%B8%80%E3%80%81%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A2">一、日志查询 <a class="header-anchor" href="#%E4%B8%80%E3%80%81%E6%97%A5%E5%BF%97%E6%9F%A5%E8%AF%A2">#</a></h4>
+<ul>
+<li>
+<p>字段说明</p>
+<p><img src="/pic/zdsm.png" alt="avatar"></p>
+</li>
+<li>
+<p>内容语法</p>
+<p>1.中文需要用双引号包含 例如:&quot;异常&quot;,默认会被按照单字体分割检索</p>
+<p><img src="/pic/nr1.png" alt="avatar"></p>
+<p>2.多个检索条件可以用  AND OR NOT 来组合查询 例如 &quot;异常&quot; AND &quot;内容&quot;</p>
+<p>3.单个不可分割单词可以用*开头或者结尾进行模糊匹配 例如 *NullPointerException;查询到了java.lang.NullPointerException；</p>
+<p><img src="/pic/nr2.png" alt="avatar"></p>
+<p>4.注意：英文符号的 . :  等不是默认的分隔符；需要用上面的方式去匹配</p>
+</li>
+<li>
+<p>表格区域说明</p>
+<p>1.点击列内容帮旁边的放大镜按钮可以完成快速筛选</p>
+<p>2.左下角可以开启关闭显示字段，不关闭浏览器设置不会消失</p>
+<p>3.右下角可以自定义每页日志显示条数，方便不通人的阅读习惯</p>
+<p><img src="/pic/gr.png" alt="avatar"></p>
+</li>
+</ul>
+<h4 id="%E4%BA%8C%E3%80%81%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA">二、链路追踪 <a class="header-anchor" href="#%E4%BA%8C%E3%80%81%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA">#</a></h4>
+<ul>
+<li>如果配置了链路追踪，点击表格里的追踪码即可链接到链路追踪内容，如何配置链路追踪 =》<a href="/plumelog-trace/README.md">链路追踪使用点我</a></li>
+</ul>
+<p><img src="/pic/LL.png" alt="avatar"></p>
+<p><img src="/pic/LL2.png" alt="avatar"></p>
+<h4 id="%E4%B8%89%E3%80%81%E6%89%A9%E5%B1%95%E5%AD%97%E6%AE%B5">三、扩展字段 <a class="header-anchor" href="#%E4%B8%89%E3%80%81%E6%89%A9%E5%B1%95%E5%AD%97%E6%AE%B5">#</a></h4>
+<ul>
+<li>选择应用名称，点击添加，填入扩展字段 字段，和显示名；字段名用来代码里面设置值，显示名代表表格里的显示名</li>
+</ul>
+<p><img src="/pic/kzzd.png" alt="avatar"></p>
+<p><img src="/pic/kzzdxc.png" alt="avatar"></p>
+<ul>
+<li>
+<p>通过扩展字段查询的时候在扩展字段查询里面输入内容后点击填加，及可以通过扩展字段筛选日志内容</p>
+<p>1.应用场景，比如想通过订单号来串联日志，就可以设置一个订单号的扩展字段然后在代码开始的地方加上</p>
+</li>
+</ul>
+<pre><code class="language-java">            MDC.put(<span class="hljs-string">"orderid"</span>, <span class="hljs-string">"312312312312"</span>);
+            logger.info(<span class="hljs-string">"扩展字段"</span>);
+</code></pre>
+<p><img src="/pic/kzzdddh.png" alt="avatar"></p>
+<h4 id="%E5%9B%9B%E3%80%81%E6%8A%A5%E8%AD%A6%E7%AE%A1%E7%90%86">四、报警管理 <a class="header-anchor" href="#%E5%9B%9B%E3%80%81%E6%8A%A5%E8%AD%A6%E7%AE%A1%E7%90%86">#</a></h4>
+<ul>
+<li>报警管理配置</li>
+</ul>
+<p><img src="/pic/bjgl.png" alt="avatar"></p>
+<ul>
+<li>报警记录</li>
+</ul>
+<p><img src="/pic/5.png" alt="avatar"></p>
+<h4 id="%E4%BA%94%E3%80%81%E7%AE%A1%E7%90%86">五、管理 <a class="header-anchor" href="#%E4%BA%94%E3%80%81%E7%AE%A1%E7%90%86">#</a></h4>
+<ul>
+<li>
+<p>用于查看日志条数磁盘占用大小等，也可以手动删除某个分片的日志</p>
+</li>
+<li>
+<p>day模式按照天展示，hour模式按照小时展示</p>
+</li>
+</ul>
+</div></section><footer class="footer-container"><div class="footer-body"><img src="/pic/icon_name_black.png"/><div class="cols-container"><div class="col col-12"><h3>免责声明</h3><p>本软件为免费软件并开放源码，用于交流学习，使用中遇到任何问题和纠纷本社区概不负责</p></div><div class="col col-6"><dl><dt>文档</dt><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">概览</a></dd><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></dd><dd><a href="/zh-cn/docs/FASTSTARThtml" target="_self">开发者指南</a></dd></dl></div><div class="col col-6"><dl><dt>资源</dt><dd><a href="http://demo.plumelog.com" target="_self">演示地址</a></dd><dd><a href="https://gitee.com/plumeorg" target="_self">社区</a></dd></dl></div></div><div class="copyright"><span>Copyright © 2018 版权所有 plume开源社区</span></div></div></footer></div></div>
+	<script src="https://f.alicdn.com/react/15.4.1/react-with-addons.min.js"></script>
+	<script src="https://f.alicdn.com/react/15.4.1/react-dom.min.js"></script>
+	<script>
+		window.rootPath = '';
+  </script>
+	<script src="/build/documentation.js"></script>
+</body>
+</html>

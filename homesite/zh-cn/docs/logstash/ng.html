@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="keywords" content="ng" />
+	<meta name="description" content="ng" />
+	<!-- 网页标签标题 -->
+	<title>ng</title>
+	<link rel="shortcut icon" href="/img/docsite.ico"/>
+	<link rel="stylesheet" href="/build/documentation.css" />
+</head>
+<body>
+	<div id="root"><div class="documentation-page" data-reactroot=""><header class="header-container header-container-normal"><div class="header-body"><a href="/zh-cn/index.html"><img class="logo" src="/pic/icon_name_black.png"/></a><div class="search search-normal"><span class="icon-search"></span></div><span class="language-switch language-switch-normal">En</span><div class="header-menu"><img class="header-menu-toggle" src="/img/system/menu_gray.png"/><ul><li class="menu-item menu-item-normal"><a href="/zh-cn/index.html" target="_self">首页</a></li><li class="menu-item menu-item-normal menu-item-normal-active"><a href="/zh-cn/docs/README.html" target="_self">文档</a></li></ul></div></div></header><div class="bar"><div class="bar-body"><img src="/img/system/docs.png" class="front-img"/><span>文档</span><img src="/img/system/docs.png" class="back-img"/></div></div><section class="content-section"><div class="sidemenu"><div class="sidemenu-toggle"><img src="https://img.alicdn.com/tfs/TB1E6apXHGYBuNjy0FoXXciBFXa-200-200.png"/></div><ul><li class="menu-item menu-item-level-1"><span>使用文档</span><ul><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/README.html" target="_self">介绍</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/update.html" target="_self">版本升级</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/HELP.html" target="_self">后台使用指南</a></li></ul></li></ul></div><div class="doc-content markdown-body"><h2 id="nginx%E6%97%A5%E5%BF%97%E6%90%9C%E9%9B%86">nginx日志搜集 <a class="header-anchor" href="#nginx%E6%97%A5%E5%BF%97%E6%90%9C%E9%9B%86">#</a></h2>
+<h3 id="%E4%B8%80%E3%80%81%E9%85%8D%E7%BD%AEnginx">一、配置nginx <a class="header-anchor" href="#%E4%B8%80%E3%80%81%E9%85%8D%E7%BD%AEnginx">#</a></h3>
+<ul>
+<li>复制nginx.conf里面的配置到自己的nginx配置之下，在http{}中添加下面配置</li>
+</ul>
+<pre><code>       log_format json '{&quot;dtTime&quot;:&quot;$time_iso8601&quot;,'
+                   '&quot;logLevel&quot;:&quot;INFO&quot;,'
+                   '&quot;className&quot;:&quot;$uri&quot;,'
+                   '&quot;content&quot;:&quot;requestParam=&gt;$query_string \n status=&gt;$status \n size=&gt;$body_bytes_sent \n request_time=&gt;$request_time&quot;,'
+                   '&quot;serverName&quot;:&quot;$server_addr&quot;,'
+                   '&quot;traceId&quot;:&quot;$remote_addr&quot;,'
+                   '&quot;method&quot;:&quot;$http_user_agent&quot;,'
+                   '&quot;appName&quot;:&quot;nginx&quot;'
+                   '}';
+       access_log  /var/log/nginx/access.log  json;
+</code></pre>
+<ul>
+<li>nginx -t 后 nginx  -s reload</li>
+</ul>
+<h3 id="%E4%BA%8C%E3%80%81%E4%B8%8B%E8%BD%BD%E5%B9%B6%E9%85%8D%E7%BD%AElogstash">二、下载并配置logstash <a class="header-anchor" href="#%E4%BA%8C%E3%80%81%E4%B8%8B%E8%BD%BD%E5%B9%B6%E9%85%8D%E7%BD%AElogstash">#</a></h3>
+<ul>
+<li>下载logstash并安装</li>
+</ul>
+<p>1、下载logstash-6.6.0安装包，下载路径：logstash-6.6.0，然后解压之es的同级目录（方便管理）；或直接在服务器上下载：</p>
+<pre><code>    wget https://artifacts.elastic.co/downloads/logstash/logstash-6.6.0.tar.gz
+</code></pre>
+<p>2、将安装包上次到服务器，然后解压安装包，例如解压到：/usr/local/</p>
+<pre><code>    tar –zxvf logstash-6.6.0.tar.gz
+</code></pre>
+<p>3、重命名安装目录</p>
+<pre><code>    mv logstash-6.6.0 logstash
+</code></pre>
+<ul>
+<li>配置logstash</li>
+</ul>
+<p>1.进入logstash 安装目录</p>
+<pre><code>     mkdir nginx-log
+     cd nginx-log
+     vim logstash.conf
+</code></pre>
+<ul>
+<li>配置内容</li>
+</ul>
+<pre><code>     input {
+        file {
+                path =&gt; &quot;/var/log/nginx/access.log&quot; #这边和上面nginx的日志输出地址一致
+                type =&gt; &quot;nginx_log&quot;
+                start_position =&gt; &quot;beginning&quot;
+                stat_interval =&gt; &quot;2&quot;
+        }
+     filter {
+         json {
+               source=&gt; &quot;message&quot;
+           }
+         date {
+               match =&gt; [&quot;dtTime&quot;, &quot;ISO8601&quot;]
+              }
+         ruby{
+               code =&gt; &quot;event.set('dtTime',(event.get('@timestamp').to_f.round(3)*1000).to_i)&quot;
+             }
+         mutate {
+               remove_field =&gt; [&quot;message&quot;]
+             }
+       }
+      output {
+         if[type] ==&quot;nginx_log&quot;{
+                redis {
+                        data_type =&gt; &quot;list&quot; #这个不用改
+                        host =&gt; &quot;10.100.2.54&quot; #plumelog的queue.redis地址
+                        db =&gt; &quot;0&quot; #plumelog的queue.redis DB
+                        port =&gt; &quot;6379&quot; #plumelog.queue.redis的端口
+                        password =&gt; &quot;plumelogredis&quot; #plumelog.queue.redis的密码
+                        key =&gt; &quot;plume_log_list&quot; #这个不用改
+                }
+        }
+      }
+</code></pre>
+<p>复制logstash.conf内容进去，并保存；可以直接把logstash.conf放到这个目录下</p>
+<p>2.启动logstash</p>
+<p>进入logstash/bin目录，用下面命令启动</p>
+<pre><code>    ./logstash -f ../nginx-log/logstash.conf
+</code></pre>
+</div></section><footer class="footer-container"><div class="footer-body"><img src="/pic/icon_name_black.png"/><div class="cols-container"><div class="col col-12"><h3>免责声明</h3><p>本软件为免费软件并开放源码，用于交流学习，使用中遇到任何问题和纠纷本社区概不负责</p></div><div class="col col-6"><dl><dt>文档</dt><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">概览</a></dd><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></dd><dd><a href="/zh-cn/docs/FASTSTARThtml" target="_self">开发者指南</a></dd></dl></div><div class="col col-6"><dl><dt>资源</dt><dd><a href="http://demo.plumelog.com" target="_self">演示地址</a></dd><dd><a href="https://gitee.com/plumeorg" target="_self">社区</a></dd></dl></div></div><div class="copyright"><span>Copyright © 2018 版权所有 plume开源社区</span></div></div></footer></div></div>
+	<script src="https://f.alicdn.com/react/15.4.1/react-with-addons.min.js"></script>
+	<script src="https://f.alicdn.com/react/15.4.1/react-dom.min.js"></script>
+	<script>
+		window.rootPath = '';
+  </script>
+	<script src="/build/documentation.js"></script>
+</body>
+</html>
