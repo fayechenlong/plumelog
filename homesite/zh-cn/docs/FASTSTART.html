@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="keywords" content="FASTSTART" />
+	<meta name="description" content="FASTSTART" />
+	<!-- 网页标签标题 -->
+	<title>FASTSTART</title>
+	<link rel="shortcut icon" href="/img/docsite.ico"/>
+	<link rel="stylesheet" href="/build/documentation.css" />
+</head>
+<body>
+	<div id="root"><div class="documentation-page" data-reactroot=""><header class="header-container header-container-normal"><div class="header-body"><a href="/zh-cn/index.html"><img class="logo" src="/pic/icon_name_black.png"/></a><div class="search search-normal"><span class="icon-search"></span></div><span class="language-switch language-switch-normal">En</span><div class="header-menu"><img class="header-menu-toggle" src="/img/system/menu_gray.png"/><ul><li class="menu-item menu-item-normal"><a href="/zh-cn/index.html" target="_self">首页</a></li><li class="menu-item menu-item-normal menu-item-normal-active"><a href="/zh-cn/docs/README.html" target="_self">文档</a></li></ul></div></div></header><div class="bar"><div class="bar-body"><img src="/img/system/docs.png" class="front-img"/><span>文档</span><img src="/img/system/docs.png" class="back-img"/></div></div><section class="content-section"><div class="sidemenu"><div class="sidemenu-toggle"><img src="https://img.alicdn.com/tfs/TB1E6apXHGYBuNjy0FoXXciBFXa-200-200.png"/></div><ul><li class="menu-item menu-item-level-1"><span>使用文档</span><ul><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/README.html" target="_self">介绍</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/update.html" target="_self">版本升级</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/HELP.html" target="_self">后台使用指南</a></li></ul></li></ul></div><div class="doc-content markdown-body"><h1 id="plumelog%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">Plumelog使用方法 <a class="header-anchor" href="#plumelog%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95">#</a></h1>
+<ul>
+<li>使用前请耐心的按照步骤把文档看完，需要对logback,log4j两大日志框架基本配置有一定了解</li>
+</ul>
+<h2 id="%E4%BD%BF%E7%94%A8%E5%89%8D%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">使用前注意事项 <a class="header-anchor" href="#%E4%BD%BF%E7%94%A8%E5%89%8D%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">#</a></h2>
+<ul>
+<li>
+<p>plumelog分三种启动模式，分别为redis,kafka,lite，外加嵌入式版本plumelog-lite，大家根据自己的需求使用部署</p>
+</li>
+<li>
+<p>lite模式也就是单机版，不依赖任何外部中间件直接启动使用，部署极其方便，但是性能有限，一天10个G以内可以应付，最好是SSD硬盘，适合管理系统类的小玩家，一个公司有很多小系统需要日志集中管理</p>
+</li>
+<li>
+<p>redis,kafka模式可以集群分布式部署，适合大型玩家，互联网公司，具体是用redis还是kafka，看每个公司运维情况</p>
+</li>
+<li>
+<p>plumelog-lite plumelog的嵌入式集成版本，直接pom引用，嵌入在项目中，自带查询界面，适合单个独立小项目使用，外包软件的最佳伴侣</p>
+</li>
+</ul>
+<h2 id="%E4%B8%80%E3%80%81%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE">一、服务端安装配置 <a class="header-anchor" href="#%E4%B8%80%E3%80%81%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE">#</a></h2>
+<h3 id="%EF%BC%881%EF%BC%89%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%AE%89%E8%A3%85">（1）服务端安装 <a class="header-anchor" href="#%EF%BC%881%EF%BC%89%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%AE%89%E8%A3%85">#</a></h3>
+<p>第一步：安装 redis 或者 kafka（一般公司redis足够） redis 官网:<a href="https://redis.io">https://redis.io</a>   kafka：<a href="http://kafka.apache.org">http://kafka.apache.org</a></p>
+<p>第二步：安装 elasticsearch 官网下载地址:<a href="https://www.elastic.co/cn/downloads/past-releases">https://www.elastic.co/cn/downloads/past-releases</a></p>
+<p>第三步：下载安装包，plumelog-server 下载地址：<a href="https://gitee.com/plumeorg/plumelog/releases">https://gitee.com/plumeorg/plumelog/releases</a></p>
+<p>第四步：配置plumelog-server，并启动，redis和kafka作为队列模式下可以部署多个plumelog-server达到高可用，配置一样即可</p>
+<p>第五步：后台查询语法详见<a href="/HELP.md">plumelog使用指南</a></p>
+<h3 id="%EF%BC%882%EF%BC%89%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE">（2）服务端配置 <a class="header-anchor" href="#%EF%BC%882%EF%BC%89%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE">#</a></h3>
+<ul>
+<li>文件 plumelog-server/application.properties 详解：</li>
+</ul>
+<pre><code class="language-properties"><span class="hljs-comment">#值为4种 redis,kafka,rest,restServer,lite</span>
+<span class="hljs-comment">#redis 表示用redis当队列</span>
+<span class="hljs-comment">#kafka 表示用kafka当队列</span>
+<span class="hljs-comment">#rest 表示从rest接口取日志</span>
+<span class="hljs-comment">#restServer 表示作为rest接口服务器启动</span>
+<span class="hljs-comment">#ui 表示单独作为ui启动</span>
+<span class="hljs-comment">#lite 简易模式启动不需要配置redis，es等</span>
+<span class="hljs-meta">plumelog.model</span>=<span class="hljs-string">redis</span>
+<span class="hljs-comment">#lite模式下日志存储路径</span>
+<span class="hljs-comment">#plumelog.lite.log.path=/lucene</span>
+<span class="hljs-comment">
+#如果使用kafka,启用下面配置</span>
+<span class="hljs-comment">#plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</span>
+<span class="hljs-comment">#plumelog.kafka.kafkaGroupName=logConsumer</span>
+<span class="hljs-comment">
+#队列redis地址，model配置redis集群模式，哨兵模式用逗号隔开，队列redis不支持集群模式，lite模式可以全部注释掉下面配置</span>
+<span class="hljs-comment">#当redis队列性能不够的时候，可以不同的项目单独配置单独的redis队列，用单独的plumelog-server去采集，公用一个管理redis</span>
+<span class="hljs-meta">plumelog.queue.redis.redisHost</span>=<span class="hljs-string">127.0.0.1:6379</span>
+<span class="hljs-comment">#如果使用redis有密码,启用下面配置</span>
+<span class="hljs-comment">#plumelog.queue.redis.redisPassWord=123456</span>
+<span class="hljs-comment">#如果要切换db，redis必须要配置密码</span>
+<span class="hljs-comment">#plumelog.queue.redis.redisDb=0</span>
+<span class="hljs-comment">#哨兵模式需要配置的</span>
+<span class="hljs-comment">#plumelog.queue.redis.sentinel.masterName=myMaster</span>
+<span class="hljs-comment">#redis解压缩模式，开启后不消费非压缩的队列</span>
+<span class="hljs-comment">#plumelog.redis.compressor=true</span>
+<span class="hljs-comment">
+#管理端redis地址 ，集群用逗号隔开，不配置将和队列公用，lite模式可以全部注释掉下面配置，管理redis单独使用的时候支持集群模式</span>
+<span class="hljs-comment">#plumelog.redis.redisHost=127.0.0.1:6379</span>
+<span class="hljs-comment">#如果使用redis有密码,启用下面配置</span>
+<span class="hljs-comment">#plumelog.redis.redisPassWord=123456</span>
+<span class="hljs-comment">#plumelog.redis.redisDb=0</span>
+<span class="hljs-comment">#哨兵模式需要配置的</span>
+<span class="hljs-comment">#plumelog.redis.sentinel.masterName=myMaster</span>
+<span class="hljs-comment">
+#如果使用rest,启用下面配置</span>
+<span class="hljs-comment">#plumelog.rest.restUrl=http://127.0.0.1:8891/getlog</span>
+<span class="hljs-comment">#plumelog.rest.restUserName=plumelog</span>
+<span class="hljs-comment">#plumelog.rest.restPassWord=123456</span>
+<span class="hljs-comment">
+#elasticsearch相关配置，Hosts支持携带协议，如：http、https,集群逗号隔开，lite模式可以全部注释掉下面配置</span>
+<span class="hljs-meta">plumelog.es.esHosts</span>=<span class="hljs-string">127.0.0.1:9200</span>
+<span class="hljs-meta">plumelog.es.shards</span>=<span class="hljs-string">5</span>
+<span class="hljs-meta">plumelog.es.replicas</span>=<span class="hljs-string">1</span>
+<span class="hljs-meta">plumelog.es.refresh.interval</span>=<span class="hljs-string">30s</span>
+<span class="hljs-comment">#日志索引建立方式day表示按天、hour表示按照小时</span>
+<span class="hljs-meta">plumelog.es.indexType.model</span>=<span class="hljs-string">day</span>
+<span class="hljs-comment">#hour模式下需要配置这个</span>
+<span class="hljs-comment">#plumelog.es.maxShards=100000</span>
+<span class="hljs-comment">#ES设置密码,启用下面配置</span>
+<span class="hljs-comment">#plumelog.es.userName=elastic</span>
+<span class="hljs-comment">#plumelog.es.passWord=elastic</span>
+<span class="hljs-comment">#是否信任自签证书</span>
+<span class="hljs-comment">#plumelog.es.trustSelfSigned=true</span>
+<span class="hljs-comment">#是否hostname验证</span>
+<span class="hljs-comment">#plumelog.es.hostnameVerification=false</span>
+<span class="hljs-comment">
+#以下配置不管什么模式都要配置</span>
+<span class="hljs-comment">#单次拉取日志条数</span>
+<span class="hljs-meta">plumelog.maxSendSize</span>=<span class="hljs-string">100</span>
+<span class="hljs-comment">#拉取时间间隔，kafka不生效</span>
+<span class="hljs-meta">plumelog.interval</span>=<span class="hljs-string">100</span>
+<span class="hljs-comment">#plumelog-ui的地址 如果不配置，报警信息里不可以点连接</span>
+<span class="hljs-meta">plumelog.ui.url</span>=<span class="hljs-string">http://demo.plumelog.com</span>
+<span class="hljs-comment">
+
+#管理密码，手动删除日志的时候需要输入的密码</span>
+<span class="hljs-meta">admin.password</span>=<span class="hljs-string">123456</span>
+<span class="hljs-comment">#日志保留天数,配置0或者不配置默认永久保留</span>
+<span class="hljs-meta">admin.log.keepDays</span>=<span class="hljs-string">30</span>
+<span class="hljs-comment">#链路保留天数,配置0或者不配置默认永久保留</span>
+<span class="hljs-meta">admin.log.trace.keepDays</span>=<span class="hljs-string">30</span>
+<span class="hljs-comment">#登录配置，配置后会有登录界面</span>
+<span class="hljs-comment">#login.username=admin</span>
+<span class="hljs-comment">#login.password=admin</span>
+
+</code></pre>
+<h3 id="%EF%BC%883%EF%BC%89%E6%8F%90%E5%8D%87%E6%80%A7%E8%83%BD%E6%8E%A8%E8%8D%90%E5%8F%82%E8%80%83%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95">（3）提升性能推荐参考配置方法 <a class="header-anchor" href="#%EF%BC%883%EF%BC%89%E6%8F%90%E5%8D%87%E6%80%A7%E8%83%BD%E6%8E%A8%E8%8D%90%E5%8F%82%E8%80%83%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95">#</a></h3>
+<ul>
+<li>
+<p>单日日志体量在50G以内，并使用的SSD硬盘</p>
+<p>plumelog.es.shards=5</p>
+<p>plumelog.es.replicas=0</p>
+<p>plumelog.es.refresh.interval=30s</p>
+<p>plumelog.es.indexType.model=day</p>
+</li>
+<li>
+<p>单日日志体量在50G以上，并使用的机械硬盘</p>
+<p>plumelog.es.shards=5</p>
+<p>plumelog.es.replicas=0</p>
+<p>plumelog.es.refresh.interval=30s</p>
+<p>plumelog.es.indexType.model=hour</p>
+</li>
+<li>
+<p>单日日志体量在100G以上，并使用的机械硬盘</p>
+<p>plumelog.es.shards=10</p>
+<p>plumelog.es.replicas=0</p>
+<p>plumelog.es.refresh.interval=30s</p>
+<p>plumelog.es.indexType.model=hour</p>
+</li>
+<li>
+<p>单日日志体量在1000G以上，并使用的SSD硬盘，这个配置可以跑到10T一天以上都没问题</p>
+<p>plumelog.es.shards=10</p>
+<p>plumelog.es.replicas=1</p>
+<p>plumelog.es.refresh.interval=30s</p>
+<p>plumelog.es.indexType.model=hour</p>
+</li>
+<li>
+<p>plumelog.es.shards的增加和hour模式下需要调整ES集群的最大分片数</p>
+</li>
+</ul>
+<pre><code>      PUT /_cluster/settings
+          {
+          &quot;persistent&quot;: {
+              &quot;cluster&quot;: {
+                  &quot;max_shards_per_node&quot;:100000
+                  }
+              }
+          }
+
+</code></pre>
+<h2 id="%E4%BA%8C%E3%80%81%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BD%BF%E7%94%A8">二、客户端使用 <a class="header-anchor" href="#%E4%BA%8C%E3%80%81%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BD%BF%E7%94%A8">#</a></h2>
+<h3 id="%EF%BC%881%EF%BC%89%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">（1）注意事项 <a class="header-anchor" href="#%EF%BC%881%EF%BC%89%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">#</a></h3>
+<ul>
+<li>
+<p>1.客户端在项目使用，非maven项目下载依赖包（ <a href="https://gitee.com/frankchenlong/plumelog/releases">https://gitee.com/frankchenlong/plumelog/releases</a> ）放在自己的lib下面直接使用，去除重复的包即可使用，然后配置log4j就可以搜集日志了</p>
+</li>
+<li>
+<p>2.推荐使用logback,特别是springboot，springcloud项目;注意：3.2版本logback有bug，请使用3.2.1修复版本或者以上版本</p>
+</li>
+<li>
+<p>3.示例中仅仅是基本配置，更多配置请看文章下面配置详解</p>
+</li>
+<li>
+<p>4.示例中plumelog相关版本号为示例，实际使用建议取最新的版本，最新的版如下</p>
+<p><a href="https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog">最新的版本号：<img src="https://maven-badges.herokuapp.com/maven-central/com.plumelog/plumelog/badge.svg" alt="Maven Status"></a></p>
+</li>
+</ul>
+<h3 id="%EF%BC%882%EF%BC%89%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE">（2）客户端配置 <a class="header-anchor" href="#%EF%BC%882%EF%BC%89%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE">#</a></h3>
+<h4 id="1.log4j">1.log4j <a class="header-anchor" href="#1.log4j">#</a></h4>
+<ul>
+<li>引入</li>
+</ul>
+<pre><code class="language-xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.plumelog<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>plumelog-log4j<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<ul>
+<li>配置log4j配置文件，增加下面这个Appender,示例如下：</li>
+</ul>
+<pre><code class="language-properties"><span class="hljs-comment">#三选一加入到root</span>
+<span class="hljs-meta">log4j.rootLogger</span>=<span class="hljs-string">INFO,stdout,L</span>
+<span class="hljs-meta">log4j.appender.stdout</span>=<span class="hljs-string">org.apache.log4j.ConsoleAppender</span>
+<span class="hljs-meta">log4j.appender.stdout.Target</span>=<span class="hljs-string">System.out</span>
+<span class="hljs-meta">log4j.appender.stdout.layout</span>=<span class="hljs-string">org.apache.log4j.PatternLayout</span>
+<span class="hljs-meta">log4j.appender.stdout.layout.ConversionPattern</span>=<span class="hljs-string">[%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} [%c.%t]%n%m%n</span>
+<span class="hljs-comment">#kafka做为中间件</span>
+<span class="hljs-meta">log4j.appender.L</span>=<span class="hljs-string">com.plumelog.log4j.appender.KafkaAppender</span>
+<span class="hljs-comment">#appName系统的名称(自己定义就好)</span>
+<span class="hljs-meta">log4j.appender.L.appName</span>=<span class="hljs-string">plumelog</span>
+<span class="hljs-meta">log4j.appender.L.env</span>=<span class="hljs-string">${spring.profiles.active}</span>
+<span class="hljs-meta">log4j.appender.L.kafkaHosts</span>=<span class="hljs-string">172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092</span>
+<span class="hljs-comment">#redis做为中间件</span>
+<span class="hljs-meta">log4j.appender.L</span>=<span class="hljs-string">com.plumelog.log4j.appender.RedisAppender</span>
+<span class="hljs-meta">log4j.appender.L.appName</span>=<span class="hljs-string">plumelog</span>
+<span class="hljs-meta">log4j.appender.L.env</span>=<span class="hljs-string">${spring.profiles.active}</span>
+<span class="hljs-meta">log4j.appender.L.redisHost</span>=<span class="hljs-string">172.16.249.72:6379</span>
+<span class="hljs-comment">#redis没有密码这一项为空或者不需要</span>
+<span class="hljs-comment">#log4j.appender.L.redisAuth=123456</span>
+<span class="hljs-comment">#lite模式</span>
+<span class="hljs-meta">log4j.appender.L</span>=<span class="hljs-string">com.plumelog.log4j.appender.LiteAppender</span>
+<span class="hljs-meta">log4j.appender.L.appName</span>=<span class="hljs-string">plumelog</span>
+<span class="hljs-meta">log4j.appender.L.env</span>=<span class="hljs-string">${spring.profiles.active}</span>
+<span class="hljs-meta">log4j.appender.L.plumelogHost</span>=<span class="hljs-string">localhost:8891</span>
+</code></pre>
+<p>同理如果使用logback,和log4j2配置如下,示例如下：</p>
+<h4 id="2.logback">2.logback <a class="header-anchor" href="#2.logback">#</a></h4>
+<ul>
+<li>引入</li>
+</ul>
+<pre><code class="language-xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.plumelog<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>plumelog-logback<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<ul>
+<li>配置</li>
+</ul>
+<pre><code class="language-xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">appenders</span>&gt;</span>
+    <span class="hljs-comment">&lt;!--使用redis启用下面配置--&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"com.plumelog.logback.appender.RedisAppender"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">appName</span>&gt;</span>plumelog<span class="hljs-tag">&lt;/<span class="hljs-name">appName</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">redisHost</span>&gt;</span>172.16.249.72:6379<span class="hljs-tag">&lt;/<span class="hljs-name">redisHost</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">redisAuth</span>&gt;</span>123456<span class="hljs-tag">&lt;/<span class="hljs-name">redisAuth</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- 使用kafka启用下面配置 --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"com.plumelog.logback.appender.KafkaAppender"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">appName</span>&gt;</span>plumelog<span class="hljs-tag">&lt;/<span class="hljs-name">appName</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">kafkaHosts</span>&gt;</span>172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092<span class="hljs-tag">&lt;/<span class="hljs-name">kafkaHosts</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- 使用lite模式启用下面配置 --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"com.plumelog.logback.appender.LiteAppender"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">appName</span>&gt;</span>worker<span class="hljs-tag">&lt;/<span class="hljs-name">appName</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">plumelogHost</span>&gt;</span>localhost:8891<span class="hljs-tag">&lt;/<span class="hljs-name">plumelogHost</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">appenders</span>&gt;</span>
+        <span class="hljs-comment">&lt;!--使用上面三个三选一加入到root下面--&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">"INFO"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"plumelog"</span>/&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span>
+</code></pre>
+<h4 id="3.logback%E6%95%B4%E5%90%88%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E6%A1%88%E4%BE%8B%EF%BC%8C%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8%EF%BC%8C%E4%B8%8D%E7%9F%A5%E9%81%93%E6%80%8E%E4%B9%88%E9%85%8D%E7%BD%AE%E7%9A%84%E6%8B%B7%E8%B4%9D%E5%85%A8%E9%83%A8">3.logback整合配置中心案例，推荐使用，不知道怎么配置的拷贝全部 <a class="header-anchor" href="#3.logback%E6%95%B4%E5%90%88%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E6%A1%88%E4%BE%8B%EF%BC%8C%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8%EF%BC%8C%E4%B8%8D%E7%9F%A5%E9%81%93%E6%80%8E%E4%B9%88%E9%85%8D%E7%BD%AE%E7%9A%84%E6%8B%B7%E8%B4%9D%E5%85%A8%E9%83%A8">#</a></h4>
+<ul>
+<li>application.properties中添加</li>
+</ul>
+<pre><code class="language-properties"><span class="hljs-meta">plumelog.appName</span>=<span class="hljs-string">plumelog_demo</span>
+<span class="hljs-meta">plumelog.redisHost</span>=<span class="hljs-string">127.0.0.1:6379</span>
+<span class="hljs-meta">plumelog.redisAuth</span>=<span class="hljs-string">plumelogredis</span>
+<span class="hljs-meta">spring.profiles.active</span>=<span class="hljs-string">dev</span>
+</code></pre>
+<ul>
+<li>logback-spring.xml 不知道怎么配置的拷贝全部</li>
+</ul>
+<pre><code class="language-xml"><span class="hljs-meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">configuration</span> <span class="hljs-attr">debug</span>=<span class="hljs-string">"false"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">conversionRule</span> <span class="hljs-attr">conversionWord</span>=<span class="hljs-string">"clr"</span> <span class="hljs-attr">converterClass</span>=<span class="hljs-string">"org.springframework.boot.logging.logback.ColorConverter"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">conversionRule</span> <span class="hljs-attr">conversionWord</span>=<span class="hljs-string">"wex"</span>
+                    <span class="hljs-attr">converterClass</span>=<span class="hljs-string">"org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">conversionRule</span> <span class="hljs-attr">conversionWord</span>=<span class="hljs-string">"wEx"</span>
+                    <span class="hljs-attr">converterClass</span>=<span class="hljs-string">"org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"</span>/&gt;</span>
+    <span class="hljs-comment">&lt;!-- 彩色日志格式 --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"CONSOLE_LOG_PATTERN"</span>
+              <span class="hljs-attr">value</span>=<span class="hljs-string">"${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"</span>/&gt;</span>
+    <span class="hljs-comment">&lt;!--输出到控制台--&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"CONSOLE"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span>
+        <span class="hljs-comment">&lt;!--过滤trace日志到控制台--&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">filter</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"com.plumelog.logback.util.FilterSyncLogger"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">level</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">level</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">filter</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">encoder</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">Pattern</span>&gt;</span>${CONSOLE_LOG_PATTERN}<span class="hljs-tag">&lt;/<span class="hljs-name">Pattern</span>&gt;</span>
+            <span class="hljs-comment">&lt;!-- 设置字符集 --&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">charset</span>&gt;</span>UTF-8<span class="hljs-tag">&lt;/<span class="hljs-name">charset</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">encoder</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- 输出到文件 --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"file"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"ch.qos.logback.core.rolling.RollingFileAppender"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">rollingPolicy</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"ch.qos.logback.core.rolling.TimeBasedRollingPolicy"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">FileNamePattern</span>&gt;</span>logs/plumelog-demo.log.%d{yyyy-MM-dd}.log<span class="hljs-tag">&lt;/<span class="hljs-name">FileNamePattern</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">MaxHistory</span>&gt;</span>3<span class="hljs-tag">&lt;/<span class="hljs-name">MaxHistory</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">rollingPolicy</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">encoder</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Pattern</span>&gt;</span>${CONSOLE_LOG_PATTERN}<span class="hljs-tag">&lt;/<span class="hljs-name">Pattern</span>&gt;</span>
+        <span class="hljs-comment">&lt;!-- 设置字符集 --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">charset</span>&gt;</span>UTF-8<span class="hljs-tag">&lt;/<span class="hljs-name">charset</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">encoder</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- 环境配置 --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProperty</span> <span class="hljs-attr">scope</span>=<span class="hljs-string">"context"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog.appName"</span> <span class="hljs-attr">source</span>=<span class="hljs-string">"plumelog.appName"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProperty</span> <span class="hljs-attr">scope</span>=<span class="hljs-string">"context"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog.redisHost"</span> <span class="hljs-attr">source</span>=<span class="hljs-string">"plumelog.redisHost"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProperty</span> <span class="hljs-attr">scope</span>=<span class="hljs-string">"context"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog.redisPort"</span> <span class="hljs-attr">source</span>=<span class="hljs-string">"plumelog.redisPort"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProperty</span> <span class="hljs-attr">scope</span>=<span class="hljs-string">"context"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog.redisAuth"</span> <span class="hljs-attr">source</span>=<span class="hljs-string">"plumelog.redisAuth"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProperty</span> <span class="hljs-attr">scope</span>=<span class="hljs-string">"context"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog.redisDb"</span> <span class="hljs-attr">source</span>=<span class="hljs-string">"plumelog.redisDb"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProperty</span> <span class="hljs-attr">scope</span>=<span class="hljs-string">"context"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog.env"</span> <span class="hljs-attr">source</span>=<span class="hljs-string">"spring.profiles.active"</span>/&gt;</span>
+   <span class="hljs-comment">&lt;!-- 输出plumelog --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"plumelog"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"com.plumelog.logback.appender.RedisAppender"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">appName</span>&gt;</span>${plumelog.appName}<span class="hljs-tag">&lt;/<span class="hljs-name">appName</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">redisHost</span>&gt;</span>${plumelog.redisHost}<span class="hljs-tag">&lt;/<span class="hljs-name">redisHost</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">redisAuth</span>&gt;</span>${plumelog.redisAuth}<span class="hljs-tag">&lt;/<span class="hljs-name">redisAuth</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">redisDb</span>&gt;</span>${plumelog.redisDb}<span class="hljs-tag">&lt;/<span class="hljs-name">redisDb</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">env</span>&gt;</span>${plumelog.env}<span class="hljs-tag">&lt;/<span class="hljs-name">env</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- 配置日志输出，只输出info，只保留控制台和plumelog输出--&gt;</span>
+  <span class="hljs-comment">&lt;!-- 正常开发环境本地，只输出到控制台，测试环境只输出到plumelog,生产环境输出到本地文件plumelog,因为有plumelog加持本地文件就保留3天即可--&gt;</span>
+  <span class="hljs-comment">&lt;!-- 这些都可以根据环境配置不同加载不同的ref-&gt;
+    &lt;root level="info"&gt;
+      &lt;!--输出到控制台--&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"CONSOLE"</span>/&gt;</span>
+      <span class="hljs-comment">&lt;!-- 输出到文件 --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"file"</span>/&gt;</span>
+      <span class="hljs-comment">&lt;!-- 输出plumelog --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"plumelog"</span>/&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span>
+  
+<span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span>
+</code></pre>
+<ul>
+<li>结合环境配置案例</li>
+</ul>
+<pre><code class="language-xml">
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProfile</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"dev"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">"INFO"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"CONSOLE"</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">springProfile</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProfile</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"test"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">"INFO"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"FILE"</span> /&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">springProfile</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">springProfile</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"prod"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">"INFO"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"FILE"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">springProfile</span>&gt;</span>
+</code></pre>
+<ul>
+<li>
+<p>小提示：为什么Spring Boot推荐使用logback-spring.xml来替代logback.xml来配置logback日志的问题分析</p>
+<p>即，logback.xml加载早于application.properties，所以如果你在logback.xml使用了变量时，而恰好这个变量是写在application.properties时，那么就会获取不到，只要改成logback-spring.xml就可以解决。</p>
+<p>这就是为什么有些人用了nacos等配置中心，不能加载远程配置的原因，是因为加载优先级的问题</p>
+</li>
+</ul>
+<h4 id="4.log4j2">4.log4j2 <a class="header-anchor" href="#4.log4j2">#</a></h4>
+<ul>
+<li>引入</li>
+</ul>
+<pre><code class="language-xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.plumelog<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>plumelog-log4j2<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>       
+</code></pre>
+<ul>
+<li>配置,示例如下：</li>
+</ul>
+<pre><code class="language-xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">appenders</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- 使用kafka启用下面配置 --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">KafkaAppender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"kafkaAppender"</span> <span class="hljs-attr">appName</span>=<span class="hljs-string">"plumelog"</span>
+                   <span class="hljs-attr">kafkaHosts</span>=<span class="hljs-string">"172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092"</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">KafkaAppender</span>&gt;</span>
+
+    <span class="hljs-comment">&lt;!--使用redis启用下面配置--&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">RedisAppender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"redisAppender"</span> <span class="hljs-attr">appName</span>=<span class="hljs-string">"plumelog"</span> <span class="hljs-attr">redisHost</span>=<span class="hljs-string">"172.16.249.72:6379"</span> <span class="hljs-attr">redisAuth</span>=<span class="hljs-string">"123456"</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">RedisAppender</span>&gt;</span>
+
+    <span class="hljs-comment">&lt;!--使用lite启用下面配置--&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">LiteAppender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"liteAppender"</span> <span class="hljs-attr">appName</span>=<span class="hljs-string">"plumelog"</span> <span class="hljs-attr">plumelogHost</span>=<span class="hljs-string">"localhost:8891"</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">LiteAppender</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">appenders</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-name">loggers</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">"INFO"</span>&gt;</span>
+  <span class="hljs-comment">&lt;!--使用上面三个三选一加入到root下面--&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">"redisAppender"</span>/&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">loggers</span>&gt;</span>
+</code></pre>
+<h3 id="%EF%BC%882%EF%BC%89%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3">（2）客户端配置详解 <a class="header-anchor" href="#%EF%BC%882%EF%BC%89%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3">#</a></h3>
+<p>RedisAppender</p>
+<table>
+<thead>
+<tr>
+<th>字段值</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>appName</td>
+<td>自定义应用名称</td>
+</tr>
+<tr>
+<td>redisHost</td>
+<td>redis地址，哨兵模式多个用逗号隔开</td>
+</tr>
+<tr>
+<td>redisAuth</td>
+<td>redis密码</td>
+</tr>
+<tr>
+<td>redisDb</td>
+<td>redis db 如果要切换db，redis必须要配置密码</td>
+</tr>
+<tr>
+<td>model</td>
+<td>sentinel 哨兵模式,standalone 单机模式</td>
+</tr>
+<tr>
+<td>masterName</td>
+<td>哨兵模式需要配置哨兵的masterName</td>
+</tr>
+<tr>
+<td>runModel</td>
+<td>1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1</td>
+</tr>
+<tr>
+<td>maxCount</td>
+<td>（3.1）批量提交日志数量，默认100</td>
+</tr>
+<tr>
+<td>logQueueSize</td>
+<td>（3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+</td>
+</tr>
+<tr>
+<td>compressor</td>
+<td>（3.4）是否开启日志压缩，默认false</td>
+</tr>
+<tr>
+<td>env</td>
+<td>（3.5）环境 默认是default</td>
+</tr>
+</tbody>
+</table>
+<p>KafkaAppender</p>
+<table>
+<thead>
+<tr>
+<th>字段值</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>appName</td>
+<td>自定义应用名称</td>
+</tr>
+<tr>
+<td>kafkaHosts</td>
+<td>kafka集群地址，用逗号隔开</td>
+</tr>
+<tr>
+<td>runModel</td>
+<td>1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1</td>
+</tr>
+<tr>
+<td>maxCount</td>
+<td>批量提交日志数量，默认100</td>
+</tr>
+<tr>
+<td>logQueueSize</td>
+<td>（3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+</td>
+</tr>
+<tr>
+<td>compressor</td>
+<td>（3.4）压缩方式配置，默认false（true：开启lz4压缩）</td>
+</tr>
+<tr>
+<td>env</td>
+<td>（3.5）环境 默认是default</td>
+</tr>
+</tbody>
+</table>
+<p>LiteAppender</p>
+<table>
+<thead>
+<tr>
+<th>字段值</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>appName</td>
+<td>自定义应用名称</td>
+</tr>
+<tr>
+<td>runModel</td>
+<td>1表示最高性能模式，2表示低性能模式 但是2可以获取更多信息 不配置默认为1</td>
+</tr>
+<tr>
+<td>maxCount</td>
+<td>（3.1）批量提交日志数量，默认100</td>
+</tr>
+<tr>
+<td>logQueueSize</td>
+<td>（3.1.2）缓冲队列数量大小，默认10000，太小可能丢日志，太大容易内存溢出，根据实际情况，如果项目内存足够可以设置到100000+</td>
+</tr>
+<tr>
+<td>env</td>
+<td>（3.5）环境 默认是default</td>
+</tr>
+<tr>
+<td>plumelogHost</td>
+<td>3.5 lite模式下plumelogserver的地址</td>
+</tr>
+<tr>
+<td>keepDay</td>
+<td>3.5 plumelog-lite 日志本地保留天数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%EF%BC%883%EF%BC%89traceid%E7%94%9F%E6%88%90%E9%85%8D%E7%BD%AE">（3）traceID生成配置 <a class="header-anchor" href="#%EF%BC%883%EF%BC%89traceid%E7%94%9F%E6%88%90%E9%85%8D%E7%BD%AE">#</a></h3>
+<ul>
+<li>
+<p>非springboot,cloud</p>
+</li>
+<li>
+<p>方法一：添加拦截器</p>
+</li>
+</ul>
+<p>TraceIdInterceptorsConfig.java</p>
+<pre><code class="language-java"><span class="hljs-keyword">import</span> com.plumelog.core.PlumeLogTraceIdInterceptor;
+<span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;
+<span class="hljs-keyword">import</span> org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+<span class="hljs-keyword">import</span> org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+<span class="hljs-keyword">import</span> org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+
+<span class="hljs-meta">@Configuration</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TraceIdInterceptorsConfig</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">WebMvcConfigurerAdapter</span> </span>{
+
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String[] CLASSPATH_RESOURCE_LOCATIONS = {<span class="hljs-string">"classpath:/META-INF/resources/"</span>, <span class="hljs-string">"classpath:/resources/"</span>, <span class="hljs-string">"classpath:/static/"</span>, <span class="hljs-string">"classpath:/public/"</span>};
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">addResourceHandlers</span><span class="hljs-params">(ResourceHandlerRegistry registry)</span> </span>{
+      <span class="hljs-comment">//plumelog-lite的用户注意，拦截器会覆盖静态文件访问路径，导致不能访问查询页面，所以这边需要用addResourceLocations设置下静态文件访问路径，其他的用户可以不用管</span>
+    registry.addResourceHandler(<span class="hljs-string">"/**"</span>).addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
+  }
+  
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">addInterceptors</span><span class="hljs-params">(InterceptorRegistry registry)</span> </span>{
+    registry.addInterceptor(<span class="hljs-keyword">new</span> PlumeLogTraceIdInterceptor());
+    <span class="hljs-keyword">super</span>.addInterceptors(registry);
+  }
+
+}
+</code></pre>
+<ul>
+<li>方法二:添加过滤器filter,新建一个过滤器</li>
+</ul>
+<p>PlumeLogilterConfig.java</p>
+<pre><code class="language-java"><span class="hljs-keyword">import</span> com.plumelog.core.TraceIdFilter;
+<span class="hljs-keyword">import</span> org.springframework.boot.web.servlet.FilterRegistrationBean;
+<span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;
+<span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;
+<span class="hljs-keyword">import</span> javax.servlet.Filter;
+
+<span class="hljs-meta">@Configuration</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PlumeLogilterConfig</span> </span>{
+
+
+  <span class="hljs-meta">@Bean</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> FilterRegistrationBean <span class="hljs-title">filterRegistrationBean1</span><span class="hljs-params">()</span> </span>{
+    FilterRegistrationBean filterRegistrationBean = <span class="hljs-keyword">new</span> FilterRegistrationBean();
+    filterRegistrationBean.setFilter(initCustomFilter());
+    filterRegistrationBean.addUrlPatterns(<span class="hljs-string">"/*"</span>);
+    filterRegistrationBean.setOrder(Integer.MIN_VALUE);
+    <span class="hljs-keyword">return</span> filterRegistrationBean;
+  }
+
+  <span class="hljs-meta">@Bean</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> Filter <span class="hljs-title">initCustomFilter</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> TraceIdFilter();
+  }
+}
+    
+</code></pre>
+<ul>
+<li>webflux,以此类推</li>
+</ul>
+<pre><code class="language-java">        <span class="hljs-meta">@Bean</span>
+        <span class="hljs-function"><span class="hljs-keyword">public</span> WebFluxTraceIdFilter <span class="hljs-title">initCustomFilter</span><span class="hljs-params">()</span></span>{
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> WebFluxTraceIdFilter();
+        }
+</code></pre>
+<ul>
+<li>servlet web.xml配置示例</li>
+</ul>
+<pre><code class="language-xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">filter</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>TraceIdFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">filter-class</span>&gt;</span>com.plumelog.core.TraceIdFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-class</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">filter</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">filter-mapping</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>TraceIdFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/*<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">filter-mapping</span>&gt;</span>
+
+</code></pre>
+<ul>
+<li>spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceId</li>
+</ul>
+<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-sleuth<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.7.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<ul>
+<li>
+<p><a href="/plumelog-dubbo/README.md">Dubbo的分布式系统traceId传递点我 </a></p>
+</li>
+<li>
+<p>skywalking traceid获取方式</p>
+</li>
+</ul>
+<p>1.引入依赖jar包</p>
+<pre><code class="language-xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.skywalking<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>apm-toolkit-trace<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>6.5.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<p>2.skywalking整合方法调用示例</p>
+<pre><code class="language-java"><span class="hljs-keyword">import</span> org.apache.skywalking.apm.toolkit.trace.TraceContext;
+
+<span class="hljs-meta">@Component</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Interceptor</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">HandlerInterceptorAdapter</span> </span>{
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">preHandle</span><span class="hljs-params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="hljs-keyword">throws</span> Exception </span>{
+        String traceId = TraceContext.traceId();<span class="hljs-comment">//核心是此处获取skywalking的traceId</span>
+        TraceId.logTraceID.set(traceId);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+    }
+}
+</code></pre>
+<ul>
+<li>定时任务，非web项目,在代码的执行最开始端加上如下代码</li>
+</ul>
+<pre><code class="language-java">    TraceId.set();
+</code></pre>
+<h3 id="%EF%BC%884%EF%BC%89%E5%BC%80%E5%90%AF%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA">（4）开启链路追踪 <a class="header-anchor" href="#%EF%BC%884%EF%BC%89%E5%BC%80%E5%90%AF%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA">#</a></h3>
+<ul>
+<li>
+<p>这边注意：先要完成上一步，页面有了traceId(追踪码)，这一步配置开启链路追踪才行，否则配置了也查询不了</p>
+</li>
+<li>
+<p><a href="/plumelog-trace/README.md">链路追踪使用点我</a>  《==要想产生链路信息请看这边文档，否则没有链路信息展示</p>
+</li>
+</ul>
+<h3 id="%EF%BC%885%EF%BC%89%E6%89%A9%E5%B1%95%E5%AD%97%E6%AE%B5%E5%8A%9F%E8%83%BD">（5）扩展字段功能 <a class="header-anchor" href="#%EF%BC%885%EF%BC%89%E6%89%A9%E5%B1%95%E5%AD%97%E6%AE%B5%E5%8A%9F%E8%83%BD">#</a></h3>
+<ul>
+<li>MDC用法，例如，详细用法参照<a href="/HELP.md">plumelog使用指南</a></li>
+</ul>
+<pre><code class="language-java">        MDC.put(<span class="hljs-string">"orderid"</span>,<span class="hljs-string">"1"</span>);
+        MDC.put(<span class="hljs-string">"userid"</span>,<span class="hljs-string">"4"</span>);
+        logger.info(<span class="hljs-string">"扩展字段"</span>);
+</code></pre>
+<pre><code>1.在系统扩展字段里添加扩展字段，字段值为 orderid 显示值为 订单编号
+
+2.查询的时候选择应用名，下面会显示扩展字段，可以通过扩展字段查询
+</code></pre>
+<h3 id="%EF%BC%886%EF%BC%89%E9%94%99%E8%AF%AF%E6%8A%A5%E8%AD%A6%E8%AF%B4%E6%98%8E">（6）错误报警说明 <a class="header-anchor" href="#%EF%BC%886%EF%BC%89%E9%94%99%E8%AF%AF%E6%8A%A5%E8%AD%A6%E8%AF%B4%E6%98%8E">#</a></h3>
+<p>在ui的报警管理里配置报警规则：</p>
+<p>字段说明：</p>
+<table>
+<thead>
+<tr>
+<th>字段值</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>应用名称</td>
+<td>需要错误报警的应用名称（appName）</td>
+</tr>
+<tr>
+<td>模块名称</td>
+<td>需要错误报警的className</td>
+</tr>
+<tr>
+<td>接收人</td>
+<td>填手机号码，所有人填写ALL</td>
+</tr>
+<tr>
+<td>平台</td>
+<td>企微，钉钉，飞书，其他 其他表示自定义webhook</td>
+</tr>
+<tr>
+<td>钩子地址</td>
+<td>群机器人webhook地址,或者自定义webhhok地址</td>
+</tr>
+<tr>
+<td>错误数量</td>
+<td>错误累计超过多少条报警</td>
+</tr>
+<tr>
+<td>时间间隔</td>
+<td>错误在多少秒内累计到上面错误数量开始报警</td>
+</tr>
+</tbody>
+</table>
+<p>1.报警记录里为报警历史记录，点击可以直接连接到错误内容</p>
+<p>2.请求webhook会带message（报警内容）和mobile（接收人手机号）两个参数，例如：<a href="http://xn--webhook-l45k149cue9436a">http://你的webhook地址</a>？message=报警内容&amp;mobile=接收人手机号</p>
+<h3 id="%EF%BC%887%EF%BC%89traceid%E8%B7%A8%E7%BA%BF%E7%A8%8B%E4%BC%A0%E9%80%92">（7）TraceId跨线程传递 <a class="header-anchor" href="#%EF%BC%887%EF%BC%89traceid%E8%B7%A8%E7%BA%BF%E7%A8%8B%E4%BC%A0%E9%80%92">#</a></h3>
+<pre><code>如果不使用线程池，不用特殊处理，如果使用线程池，有两种使用方式，（plumelog-demo也有）
+</code></pre>
+<ul>
+<li>修饰线程池</li>
+</ul>
+<pre><code class="language-java">        <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> ExecutorService executorService=TtlExecutors.getTtlExecutorService(
+        <span class="hljs-keyword">new</span> ThreadPoolExecutor(<span class="hljs-number">8</span>,<span class="hljs-number">8</span>,<span class="hljs-number">0L</span>,TimeUnit.MILLISECONDS,<span class="hljs-keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));
+        <span class="hljs-comment">//省去每次Runnable和Callable传入线程池时的修饰，这个逻辑可以在线程池中完成      </span>
+        executorService.execute(()-&gt;{
+        logger.info(<span class="hljs-string">"子线程日志展示"</span>);
+        });
+</code></pre>
+<ul>
+<li>修饰Runnable和Callable</li>
+</ul>
+<pre><code class="language-java">        <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> ThreadPoolExecutor threadPoolExecutor=ThreadPoolUtil.getPool(<span class="hljs-number">4</span>,<span class="hljs-number">8</span>,<span class="hljs-number">5000</span>);
+
+        threadPoolExecutor.execute(TtlRunnable.get(()-&gt;{
+        TraceId.logTraceID.get();
+        logger.info(<span class="hljs-string">"tankSay =》我是子线程的日志！{}"</span>,TraceId.logTraceID.get());
+        }));
+</code></pre>
+<h3 id="%EF%BC%888%EF%BC%89%E6%BB%9A%E5%8A%A8%E6%97%A5%E5%BF%97">（8）滚动日志 <a class="header-anchor" href="#%EF%BC%888%EF%BC%89%E6%BB%9A%E5%8A%A8%E6%97%A5%E5%BF%97">#</a></h3>
+<ul>
+<li>3.5版本支持查看滚动实时日志功能，点击滚动日志菜单，填入条件后，点击连接按钮，就可以实时滚动查看目标日志，三个查询条件，应用名称必填，否则没有日志输出</li>
+<li>注意：因为实现原理问题，在查看滚动日志的时候肯定会影响server的性能的，用了nginx等做了反向代理的需要配置Nginx允许websocket</li>
+</ul>
+<p><img src="/pic/gundong.png" alt="avatar"></p>
+<h3 id="%EF%BC%889%EF%BC%89springboot%E9%A1%B9%E7%9B%AE%E5%8A%A8%E6%80%81%E4%BF%AE%E6%94%B9%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB">（9）springboot项目动态修改日志级别 <a class="header-anchor" href="#%EF%BC%889%EF%BC%89springboot%E9%A1%B9%E7%9B%AE%E5%8A%A8%E6%80%81%E4%BF%AE%E6%94%B9%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB">#</a></h3>
+<ul>
+<li>
+<p>3.5版本内嵌了springboot-admin,可以当springboot-admin使用，接入只要在项目的配置文件中加入</p>
+</li>
+<li>
+<p>pom.xml加入</p>
+</li>
+</ul>
+<pre><code class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>de.codecentric<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-admin-starter-client<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.1.6<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<ul>
+<li>application.properties 加入</li>
+</ul>
+<pre><code>#plumelog的地址加后缀admin
+spring.boot.admin.client.url=http://localhost:8891/admin
+management.endpoints.web.exposure.include=*
+</code></pre>
+<ul>
+<li>使用在plumelog地址后缀改成http://localhost:8891/admin  即可访问</li>
+</ul>
+<h3 id="%EF%BC%8810%EF%BC%89%E6%A3%80%E6%9F%A5%E6%96%B9%E6%B3%95">（10）检查方法 <a class="header-anchor" href="#%EF%BC%8810%EF%BC%89%E6%A3%80%E6%9F%A5%E6%96%B9%E6%B3%95">#</a></h3>
+<ul>
+<li>
+<p>第一步：先不用启动plumelog-server,先启动你的项目，用redis客户端连接到redis查看，plume_log_list这个key是否有数据，如果有说明你的项目到redis是通的，如果没有数据，说明项目配置有问题</p>
+</li>
+<li>
+<p>第二步：上一步检查通过后，启动plumelog-server，继续观察plume_log_list这个key，如果数据没了，说明被消费了，说明下面这个链路是通了，如果没有，检查plume_log_list的plumelog.queue.redis的相关配置</p>
+</li>
+<li>
+<p>第三步: 上一步启动完成后，打开后台界面：<a href="http://localhost:8891">http://localhost:8891</a>  查看是否有数据，如果有说明整个plumelog安装配置成功，如果没有，大概率是ES安装的有问题，查看plumelog的运行日志看看哪里报错了，或者用三方工具往ES里写数据看看有没有问题</p>
+</li>
+<li>
+<p>遇到问题可以查看，下面第八章节，常见问题，后台查询语法详见<a href="/HELP.md">plumelog使用指南</a></p>
+</li>
+</ul>
+<h2 id="%E4%B8%89%E3%80%81docker%E5%AE%89%E8%A3%85">三、docker安装 <a class="header-anchor" href="#%E4%B8%89%E3%80%81docker%E5%AE%89%E8%A3%85">#</a></h2>
+<p><a href="/docker-file/DOCKER.md">docker版本安装点我</a></p>
+<h2 id="%E5%9B%9B%E3%80%81%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E9%83%A8%E7%BD%B2%E6%A8%A1%E5%9E%8B">四、几种常见的部署模型 <a class="header-anchor" href="#%E5%9B%9B%E3%80%81%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E9%83%A8%E7%BD%B2%E6%A8%A1%E5%9E%8B">#</a></h2>
+<ul>
+<li>单redis小集群模式，大部分中小规模项目</li>
+</ul>
+<p><img src="/pic/redis%E5%8D%95%E7%82%B9%E6%A8%A1%E5%BC%8F.png" alt="avatar"></p>
+<ul>
+<li>多redis大型集群模式,如果你的项目量大而且个别服务量特别大，建议用此方案</li>
+</ul>
+<p><img src="/pic/redis%E9%98%9F%E5%88%97%E5%A4%A7%E5%9E%8B%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F.png" alt="avatar"></p>
+<ul>
+<li>kafka集群模式，每个项目量都很大</li>
+</ul>
+<p><img src="/pic/kafka%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F.png" alt="avatar"></p>
+<ul>
+<li>redis和kafka混合部署模式，每个项目量都很大，有个别服务量更大</li>
+</ul>
+<p><img src="/pic/%E6%B7%B7%E5%90%88%E6%A8%A1%E5%BC%8F.png" alt="avatar"></p>
+<h2 id="%E4%BA%94%E3%80%81%E9%9D%9Ejava%E9%A1%B9%E7%9B%AE">五、非java项目 <a class="header-anchor" href="#%E4%BA%94%E3%80%81%E9%9D%9Ejava%E9%A1%B9%E7%9B%AE">#</a></h2>
+<p>可以api方式接入，3.2后版本server支持，暂时只支持redis模式</p>
+<p>接口地址：<a href="http://xn--plumelog-server-m430a1h/sendLog?logKey=plume_log_list">http://plumelog-server地址/sendLog?logKey=plume_log_list</a></p>
+<p>参数：body json数组，可以传多条可以单条</p>
+<pre><code> [
+ {
+ 	&quot;appName&quot;:&quot;应用名称&quot;,
+ 	&quot;serverName&quot;:&quot;服务器IP地址&quot;,
+ 	&quot;dtTime&quot;:&quot;时间戳的时间格式&quot;,
+ 	&quot;traceId&quot;:&quot;自己生成的traceid&quot;,
+ 	&quot;content&quot;:&quot;日志内容&quot;,
+ 	&quot;logLevel&quot;:&quot;日志等级 INFO ERROR WARN ERROR大写&quot;,
+ 	&quot;className&quot;:&quot;产生日志的类名&quot;,
+ 	&quot;method&quot;:&quot;产生日志的方法&quot;,
+ 	&quot;logType&quot;:&quot;1&quot;,
+ 	&quot;dateTime&quot;:&quot;2020-12-25 10:10:10&quot;
+ },{
+ 	&quot;appName&quot;:&quot;应用名称&quot;,
+ 	&quot;serverName&quot;:&quot;服务器IP地址&quot;,
+ 	&quot;dtTime&quot;:&quot;时间戳的时间格式&quot;,
+ 	&quot;traceId&quot;:&quot;自己生成的traceid&quot;,
+ 	&quot;content&quot;:&quot;日志内容&quot;,
+ 	&quot;logLevel&quot;:&quot;日志等级 INFO ERROR WARN ERROR大写&quot;,
+ 	&quot;className&quot;:&quot;产生日志的类名&quot;,
+ 	&quot;method&quot;:&quot;产生日志的方法&quot;,
+ 	&quot;logType&quot;:&quot;1&quot;,
+ 	&quot;dateTime&quot;:&quot;2020-12-25 10:10:10&quot;
+ }....
+ ]
+</code></pre>
+<h2 id="%E5%85%AD%E3%80%81nginx%E6%97%A5%E5%BF%97%E6%90%9C%E9%9B%86%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%8F%82%E8%80%83">六、nginx日志搜集解决方案参考 <a class="header-anchor" href="#%E5%85%AD%E3%80%81nginx%E6%97%A5%E5%BF%97%E6%90%9C%E9%9B%86%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%8F%82%E8%80%83">#</a></h2>
+<p><a href="/logstash/ng.md">nginx解决方案</a></p>
+<h2 id="%E4%B8%83%E3%80%81%E8%87%AA%E5%B7%B1%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85%E5%A6%82%E4%B8%8B">七、自己编译安装如下 <a class="header-anchor" href="#%E4%B8%83%E3%80%81%E8%87%AA%E5%B7%B1%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85%E5%A6%82%E4%B8%8B">#</a></h2>
+<ul>
+<li>
+<p>前提:kafka或者redis 和 elasticsearch 自行安装完毕，版本兼容已经做了，理论不用考虑ES版本</p>
+</li>
+<li>
+<p>打包</p>
+</li>
+<li>
+<p>maven deploy -DskipTests 上传包到自己的私服</p>
+<p>私服地址到plumelog/pom.xml改</p>
+</li>
+</ul>
+<pre><code class="language-xml">
+<span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="hljs-tag">&lt;/<span class="hljs-name">project.build.sourceEncoding</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">distribution.repository.url</span>&gt;</span>http://172.16.249.94:4000<span class="hljs-tag">&lt;/<span class="hljs-name">distribution.repository.url</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span>
+</code></pre>
+<ul>
+<li>
+<p>非maven项目，到发行版中（<a href="https://gitee.com/frankchenlong/plumelog/releases">https://gitee.com/frankchenlong/plumelog/releases</a> ）下载lib.zip，解压放到自己的lib目录，目前只上传了log4j的版本 可能会涉及log4j
+jar冲突，需要自行排除</p>
+</li>
+<li>
+<p>jdk1.6的项目下载源码，编译打包plumelog-client-jdk6，引入到自己的项目</p>
+</li>
+</ul>
+<h2 id="%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E7%AD%94">八、常见问题解答 <a class="header-anchor" href="#%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E7%AD%94">#</a></h2>
+<ul>
+<li>
+<p>redis在项目中充当什么角色？</p>
+<p>redis在项目中两个角色，第一是在redis模式下充当消息队列，第二是项目本身的元数据存储和报警管理</p>
+</li>
+<li>
+<p>为什么我查看redis中有数据，但是后台却查不到呢？</p>
+<p>这种情况大概率是server中 plumelog.queue.redis.redisHost 没有配置正确，redis只是充当队列的作用，如果里面能看到数据说明没有server没有消费，正常情况应该是redis是不会积压的</p>
+</li>
+<li>
+<p>为什么我配置了，之后后台无法查到日志？</p>
+<p>排查方法：第一步：停止server,启动日志采集项目，观察redis中有没有数据，如果有说明从项目进入队列是通的，如果没有检查项目端redis配置是否正确；第二步：如果在redis有数据情况，启动server，如果server日志里有ElasticSearch commit! success；表示链路成功</p>
+<p>很多小伙伴，配置了客户端，但是logback.xml或者log4j2.xml压根没生效，所以这时候需要停止plumelog-server,把第一步到Redis调通，到Redis调通了，启动plumelog-server看到日志在被消费掉说明成功了</p>
+</li>
+<li>
+<p>为什么我链路追踪里看不到数据？</p>
+<p>链路追踪模块产生的日志量比较大，考虑到低需求玩家，默认不集成，需要单独配置，详细查看文档：<a href="/plumelog-trace/README.md">链路追踪配置</a></p>
+<p>如果配置下来还是没有链路数据，第一检查是否有traceID，第二你的AOP生效了吗？</p>
+</li>
+<li>
+<p>plumelog客户端配置能结合配置文件中心使用吗？</p>
+<p>肯定是可以的，plumelog配置是配置在三大日志框架的配置文件里面的，可以使用springProperty进行管理配置，具体怎么操作看每个项目自己的情况</p>
+</li>
+<li>
+<p>plumelog目前生产环境已知的已经有多大体量</p>
+<p>根据用户反馈，目前搜集到最大的用户每日日志量已经到达3TB，并稳定运行</p>
+</li>
+<li>
+<p>为什么我的项目继承了plumelog就启动就报错？</p>
+<p>如果提示redis连接失败，那么说明redis配置错误，如果是其他错误，比如提示类找不到什么情况，应该数据日志配置文件错了，建议先熟练掌握log4j,logback配制文件里面的标签含义</p>
+</li>
+<li>
+<p>plumelog会影响原来的日志配置么？</p>
+<p>不会，plumelog只是增加了一种输出，不影响原来的配置</p>
+</li>
+<li>
+<p>plumelog会影响项目性能么？</p>
+<p>几乎不会，plumelog-lite在查询的时候可能会，必定是内嵌的</p>
+</li>
+<li>
+<p>应用名称下拉框展开无数据？怎么回事？</p>
+<p>下拉框展开为了保证性能，只有也没首次加载的时候会加载，当天如果有日志但是就是展开没有值可能是索引创建的时候出错了，怎么验证呢？</p>
+<p>进入管理页面，点开运行数据表格中当天日志前面的箭头展开，如果里面有数据，说明索引没问题，此时只要关闭浏览器重新进入即可</p>
+<p>如果展开什么都没有说明索引创建的时候分组信息丢失，选中点击重置索引，关闭浏览器重新进入即可</p>
+</li>
+<li>
+<p>为啥使用统一配置中心nacos之类的，不能加载参数？</p>
+<p>Spring Boot推荐使用logback-spring.xml来替代logback.xml来配置logback日志的问题分析</p>
+<p>即，logback.xml加载早于application.properties，所以如果你在logback.xml使用了变量时，而恰好这个变量是写在application.properties时，那么就会获取不到，只要改成logback-spring.xml就可以解决。</p>
+<p>这就是为什么有些人用了nacos等配置中心，不能加载远程配置的原因，是因为加载优先级的问题</p>
+</li>
+<li>
+<p>plumelog挂了日志丢失怎么办？</p>
+<p>plumelog的设计定位就是日志查询工具类系统，不可能去为了日志高幂等性去牺牲性能，甚至影响客户端，所以如果你担心plumelog挂了查不到日志，那你可以在本地再配置一个滚动日志保留三天作为补充</p>
+</li>
+</ul>
+</div></section><footer class="footer-container"><div class="footer-body"><img src="/pic/icon_name_black.png"/><div class="cols-container"><div class="col col-12"><h3>免责声明</h3><p>本软件为免费软件并开放源码，用于交流学习，使用中遇到任何问题和纠纷本社区概不负责</p></div><div class="col col-6"><dl><dt>文档</dt><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">概览</a></dd><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></dd><dd><a href="/zh-cn/docs/FASTSTARThtml" target="_self">开发者指南</a></dd></dl></div><div class="col col-6"><dl><dt>资源</dt><dd><a href="http://demo.plumelog.com" target="_self">演示地址</a></dd><dd><a href="https://gitee.com/plumeorg" target="_self">社区</a></dd></dl></div></div><div class="copyright"><span>Copyright © 2018 版权所有 plume开源社区</span></div></div></footer></div></div>
+	<script src="https://f.alicdn.com/react/15.4.1/react-with-addons.min.js"></script>
+	<script src="https://f.alicdn.com/react/15.4.1/react-dom.min.js"></script>
+	<script>
+		window.rootPath = '';
+  </script>
+	<script src="/build/documentation.js"></script>
+</body>
+</html>

@@ -11,6 +11,7 @@ import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.StringUtils;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.logback.util.LogMessageUtil;
 
@@ -177,7 +178,7 @@ public class RedisAppender extends AppenderBase<ILoggingEvent> {
             LogMessageConstant.EXPAND = this.expand;
         }
         if (this.redisClient == null) {
-            if ("sentinel".equals(this.model)) {
+            if (StringUtils.isNotEmpty(this.masterName)) {
                 this.redisClient = RedisSentinelClient.getInstance(this.redisHost, this.masterName, this.redisAuth, this.redisDb);
             } else {
                 int port = 6379;

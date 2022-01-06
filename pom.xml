@@ -5,7 +5,7 @@
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog</artifactId>
     <packaging>pom</packaging>
-    <version>3.5.1</version>
+    <version>3.5.2</version>
     <name>plumelog</name>
     <description>The parent project of plumelog</description>
     <url>https://gitee.com/frankchenlong/plumelog</url>

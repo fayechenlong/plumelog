@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="keywords" content="update" />
+	<meta name="description" content="update" />
+	<!-- 网页标签标题 -->
+	<title>update</title>
+	<link rel="shortcut icon" href="/img/docsite.ico"/>
+	<link rel="stylesheet" href="/build/documentation.css" />
+</head>
+<body>
+	<div id="root"><div class="documentation-page" data-reactroot=""><header class="header-container header-container-normal"><div class="header-body"><a href="/zh-cn/index.html"><img class="logo" src="/pic/icon_name_black.png"/></a><div class="search search-normal"><span class="icon-search"></span></div><span class="language-switch language-switch-normal">En</span><div class="header-menu"><img class="header-menu-toggle" src="/img/system/menu_gray.png"/><ul><li class="menu-item menu-item-normal"><a href="/zh-cn/index.html" target="_self">首页</a></li><li class="menu-item menu-item-normal menu-item-normal-active"><a href="/zh-cn/docs/README.html" target="_self">文档</a></li></ul></div></div></header><div class="bar"><div class="bar-body"><img src="/img/system/docs.png" class="front-img"/><span>文档</span><img src="/img/system/docs.png" class="back-img"/></div></div><section class="content-section"><div class="sidemenu"><div class="sidemenu-toggle"><img src="https://img.alicdn.com/tfs/TB1E6apXHGYBuNjy0FoXXciBFXa-200-200.png"/></div><ul><li class="menu-item menu-item-level-1"><span>使用文档</span><ul><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/README.html" target="_self">介绍</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/update.html" target="_self">版本升级</a></li><li style="height:36px;overflow:hidden" class="menu-item menu-item-level-2"><a href="/zh-cn/docs/HELP.html" target="_self">后台使用指南</a></li></ul></li></ul></div><div class="doc-content markdown-body"><h2 id="%E7%89%88%E6%9C%AC%E5%8D%87%E7%BA%A7%E6%97%A5%E5%8E%86">版本升级日历 <a class="header-anchor" href="#%E7%89%88%E6%9C%AC%E5%8D%87%E7%BA%A7%E6%97%A5%E5%8E%86">#</a></h2>
+<h3 id="3.3%E7%89%88%E6%9C%AC">3.3版本 <a class="header-anchor" href="#3.3%E7%89%88%E6%9C%AC">#</a></h3>
+<h4 id="%E5%8D%87%E7%BA%A7%E5%88%B03.3%E7%89%88%E6%9C%AC%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%882020-12-17%EF%BC%89%E6%9C%AC%E7%89%88%E6%9C%AC%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%B8%8A%E5%81%9A%E4%BA%86%E5%BE%88%E5%A4%A7%E4%B8%8E%E4%BC%98%E5%8C%96">升级到3.3版本注意事项（2020-12-17）本版本查询性能上做了很大与优化 <a class="header-anchor" href="#%E5%8D%87%E7%BA%A7%E5%88%B03.3%E7%89%88%E6%9C%AC%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%882020-12-17%EF%BC%89%E6%9C%AC%E7%89%88%E6%9C%AC%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%B8%8A%E5%81%9A%E4%BA%86%E5%BE%88%E5%A4%A7%E4%B8%8E%E4%BC%98%E5%8C%96">#</a></h4>
+<ul>
+<li>
+<p>client没有变化可以不用升级</p>
+</li>
+<li>
+<p>版本内容</p>
+<ol>
+<li>
+<p>拆分redis队列和redis管理，支持不同的项目不同的队列</p>
+</li>
+<li>
+<p>报警支持类名模糊匹配</p>
+</li>
+<li>
+<p>报警信息输出部分详细日志</p>
+</li>
+<li>
+<p>开放了API接口方便非java项目，或者其他组件日志输入</p>
+</li>
+<li>
+<p>支持按小时分片日志，大大增加了性能，使得在机械硬盘上也能够跑出不错的效果</p>
+</li>
+<li>
+<p>其他内部优化</p>
+</li>
+</ol>
+</li>
+<li>
+<p>server配置进行了变化，增加了配置，原来的配置不变</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>增加配置</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>plumelog.queue.redis.redisHost</td>
+<td>队列redis独立开来，好处不同的项目可以用不通的redis当队列，提高性能</td>
+</tr>
+<tr>
+<td>plumelog.es.shards</td>
+<td>单个日志分片数，如果每个索引日志大小超过20个G这边要配置大小，默认5个</td>
+</tr>
+<tr>
+<td>plumelog.es.replicas</td>
+<td>副本数，日志大了要提升检索效率可以增加副本数，一般机械硬盘下面可以设置1，SSD设置0，设置副本增大成倍硬盘开销</td>
+</tr>
+<tr>
+<td>plumelog.es.refresh.interval</td>
+<td>日志缓冲区时间，默认30秒</td>
+</tr>
+<tr>
+<td>plumelog.es.indexType.model</td>
+<td>按天，还是按小时划分日志索引，单天超过200G，可以设置按小时，设置按小时要注意设置ES总分片数</td>
+</tr>
+<tr>
+<td>admin.log.trace.keepDays</td>
+<td>链路日志可以单独设置过期时间</td>
+</tr>
+<tr>
+<td>login.username</td>
+<td>登录用户名</td>
+</tr>
+<tr>
+<td>login.password</td>
+<td>登录密码</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>推荐配置</p>
+<h4 id="%E6%8F%90%E5%8D%87%E6%80%A7%E8%83%BD%E6%8E%A8%E8%8D%90%E5%8F%82%E8%80%83%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95">提升性能推荐参考配置方法 <a class="header-anchor" href="#%E6%8F%90%E5%8D%87%E6%80%A7%E8%83%BD%E6%8E%A8%E8%8D%90%E5%8F%82%E8%80%83%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95">#</a></h4>
+<h4 id="%E5%8D%95%E6%97%A5%E6%97%A5%E5%BF%97%E4%BD%93%E9%87%8F%E5%9C%A850g%E4%BB%A5%E5%86%85%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%9A%84ssd%E7%A1%AC%E7%9B%98">单日日志体量在50G以内，并使用的SSD硬盘 <a class="header-anchor" href="#%E5%8D%95%E6%97%A5%E6%97%A5%E5%BF%97%E4%BD%93%E9%87%8F%E5%9C%A850g%E4%BB%A5%E5%86%85%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%9A%84ssd%E7%A1%AC%E7%9B%98">#</a></h4>
+<pre><code>plumelog.es.shards=5
+
+plumelog.es.replicas=0
+
+plumelog.es.refresh.interval=30s
+
+plumelog.es.indexType.model=day
+</code></pre>
+<h4 id="%E5%8D%95%E6%97%A5%E6%97%A5%E5%BF%97%E4%BD%93%E9%87%8F%E5%9C%A850g%E4%BB%A5%E4%B8%8A%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%9A%84%E6%9C%BA%E6%A2%B0%E7%A1%AC%E7%9B%98">单日日志体量在50G以上，并使用的机械硬盘 <a class="header-anchor" href="#%E5%8D%95%E6%97%A5%E6%97%A5%E5%BF%97%E4%BD%93%E9%87%8F%E5%9C%A850g%E4%BB%A5%E4%B8%8A%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%9A%84%E6%9C%BA%E6%A2%B0%E7%A1%AC%E7%9B%98">#</a></h4>
+<pre><code>plumelog.es.shards=5
+
+plumelog.es.replicas=0
+
+plumelog.es.refresh.interval=30s
+
+plumelog.es.indexType.model=hour
+</code></pre>
+<h4 id="%E5%8D%95%E6%97%A5%E6%97%A5%E5%BF%97%E4%BD%93%E9%87%8F%E5%9C%A8100g%E4%BB%A5%E4%B8%8A%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%9A%84%E6%9C%BA%E6%A2%B0%E7%A1%AC%E7%9B%98">单日日志体量在100G以上，并使用的机械硬盘 <a class="header-anchor" href="#%E5%8D%95%E6%97%A5%E6%97%A5%E5%BF%97%E4%BD%93%E9%87%8F%E5%9C%A8100g%E4%BB%A5%E4%B8%8A%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%9A%84%E6%9C%BA%E6%A2%B0%E7%A1%AC%E7%9B%98">#</a></h4>
+<pre><code>plumelog.es.shards=10
+
+plumelog.es.replicas=0
+
+plumelog.es.refresh.interval=30s
+
+plumelog.es.indexType.model=hour
+</code></pre>
+<h4 id="%E5%8D%95%E6%97%A5%E6%97%A5%E5%BF%97%E4%BD%93%E9%87%8F%E5%9C%A81000g%E4%BB%A5%E4%B8%8A%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%9A%84ssd%E7%A1%AC%E7%9B%98%EF%BC%8C%E8%BF%99%E4%B8%AA%E9%85%8D%E7%BD%AE%E5%8F%AF%E4%BB%A5%E8%B7%91%E5%88%B010t%E4%B8%80%E5%A4%A9%E4%BB%A5%E4%B8%8A%E9%83%BD%E6%B2%A1%E9%97%AE%E9%A2%98">单日日志体量在1000G以上，并使用的SSD硬盘，这个配置可以跑到10T一天以上都没问题 <a class="header-anchor" href="#%E5%8D%95%E6%97%A5%E6%97%A5%E5%BF%97%E4%BD%93%E9%87%8F%E5%9C%A81000g%E4%BB%A5%E4%B8%8A%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%9A%84ssd%E7%A1%AC%E7%9B%98%EF%BC%8C%E8%BF%99%E4%B8%AA%E9%85%8D%E7%BD%AE%E5%8F%AF%E4%BB%A5%E8%B7%91%E5%88%B010t%E4%B8%80%E5%A4%A9%E4%BB%A5%E4%B8%8A%E9%83%BD%E6%B2%A1%E9%97%AE%E9%A2%98">#</a></h4>
+<pre><code>plumelog.es.shards=10
+
+plumelog.es.replicas=1
+
+plumelog.es.refresh.interval=30s
+
+plumelog.es.indexType.model=hour
+</code></pre>
+<h4 id="plumelog.es.shards%E7%9A%84%E5%A2%9E%E5%8A%A0%E5%92%8Chour%E6%A8%A1%E5%BC%8F%E4%B8%8B%E9%9C%80%E8%A6%81%E8%B0%83%E6%95%B4es%E9%9B%86%E7%BE%A4%E7%9A%84%E6%9C%80%E5%A4%A7%E5%88%86%E7%89%87%E6%95%B0">plumelog.es.shards的增加和hour模式下需要调整ES集群的最大分片数 <a class="header-anchor" href="#plumelog.es.shards%E7%9A%84%E5%A2%9E%E5%8A%A0%E5%92%8Chour%E6%A8%A1%E5%BC%8F%E4%B8%8B%E9%9C%80%E8%A6%81%E8%B0%83%E6%95%B4es%E9%9B%86%E7%BE%A4%E7%9A%84%E6%9C%80%E5%A4%A7%E5%88%86%E7%89%87%E6%95%B0">#</a></h4>
+<pre><code> PUT /_cluster/settings
+ {
+   &quot;persistent&quot;: {
+     &quot;cluster&quot;: {
+       &quot;max_shards_per_node&quot;:100000
+     }
+   }
+ }
+</code></pre>
+</li>
+</ul>
+<h3 id="3.4%E7%89%88%E6%9C%AC">3.4版本 <a class="header-anchor" href="#3.4%E7%89%88%E6%9C%AC">#</a></h3>
+<h4 id="%E5%8D%87%E7%BA%A7%E5%88%B03.4%E7%89%88%E6%9C%AC%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%882021-02-4%EF%BC%89%E6%9C%AC%E7%89%88%E6%9C%AC%E6%8F%90%E4%BE%9B%E4%BA%86%E6%97%A5%E5%BF%97%E5%8E%8B%E7%BC%A9%E5%8A%9F%E8%83%BD">升级到3.4版本注意事项（2021-02-4）本版本提供了日志压缩功能 <a class="header-anchor" href="#%E5%8D%87%E7%BA%A7%E5%88%B03.4%E7%89%88%E6%9C%AC%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%882021-02-4%EF%BC%89%E6%9C%AC%E7%89%88%E6%9C%AC%E6%8F%90%E4%BE%9B%E4%BA%86%E6%97%A5%E5%BF%97%E5%8E%8B%E7%BC%A9%E5%8A%9F%E8%83%BD">#</a></h4>
+<ul>
+<li>
+<p>client</p>
+<ol>
+<li>
+<p>kafka提供了'compressionType'字段配置kafka的压缩模式</p>
+</li>
+<li>
+<p>redis提供了'compressor'字段配置来开启日志压缩功能，开启后会使用新的队列</p>
+</li>
+</ol>
+</li>
+<li>
+<p>server</p>
+<ol>
+<li>
+<p>提供消费压缩队列的配置：plumelog.redis.compressor</p>
+</li>
+<li>
+<p>开启消费压缩队列后server端讲不再消费非压缩队列，版本升级时记得消费完相应队列数据</p>
+</li>
+</ol>
+</li>
+<li>
+<p>版本内容</p>
+<ol>
+<li>支持日志压缩</li>
+</ol>
+</li>
+<li>
+<p>实测压缩率，使用demo接口</p>
+</li>
+</ul>
+<p><img src="/pic/compress.png" alt="实测压缩率"></p>
+<h3 id="3.4.2%E7%89%88%E6%9C%AC">3.4.2版本 <a class="header-anchor" href="#3.4.2%E7%89%88%E6%9C%AC">#</a></h3>
+<ul>
+<li>client 增加了环境配置字段env</li>
+<li>server 增加了环境配置字段env,ui增加了控制台风格的显示模式,优化内存管理</li>
+</ul>
+<h3 id="3.5%E7%89%88%E6%9C%AC">3.5版本 <a class="header-anchor" href="#3.5%E7%89%88%E6%9C%AC">#</a></h3>
+<ul>
+<li>增加lite启动模式，此时不需要配置redis和es，lite模式下，扩展字段，错误统计，错误报警都不能使用，适合小规模项目使用</li>
+<li>增加了plumelog-lite模块，plumelog-lite作为plumelog依赖包的形式存在，直接引用直接使用，无需部署，嵌入到项目中</li>
+<li>增加日志控制台，查看实时输出情况，在部署和测试时候堪称神器，打开控制台的时候会影响性能，注意使用时机</li>
+<li>修复了链路追踪，有可能最外层不能显示的bug</li>
+<li>增加自动检测ES版本，不需要再配置</li>
+<li>增加自动配置ES最大分片数量，不需要去手动设置</li>
+<li>优化了界面，优化报警界面出界保存按钮显示一半的bug</li>
+<li>优化redis模式下配置，如果所有应用只用一个队列redis，管理用redis可以不用配置，会自动启用队列的redis作为管理redis</li>
+<li>修复已经已知的bug,其他优化</li>
+<li>老用户升级直接替换plumelog-server-3.5.jar，重启即可，application.properties配置文件需要加上：spring.boot.admin.context-path=admin，不然访问页面空白</li>
+<li>lite模式，需要升级客户端到3.5</li>
+<li>内嵌springboot-admin，方便管理springboot项目，可以利用springbootadmin,动态调整日志输出级别，</li>
+</ul>
+</div></section><footer class="footer-container"><div class="footer-body"><img src="/pic/icon_name_black.png"/><div class="cols-container"><div class="col col-12"><h3>免责声明</h3><p>本软件为免费软件并开放源码，用于交流学习，使用中遇到任何问题和纠纷本社区概不负责</p></div><div class="col col-6"><dl><dt>文档</dt><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">概览</a></dd><dd><a href="/zh-cn/docs/FASTSTART.html" target="_self">快速开始</a></dd><dd><a href="/zh-cn/docs/FASTSTARThtml" target="_self">开发者指南</a></dd></dl></div><div class="col col-6"><dl><dt>资源</dt><dd><a href="http://demo.plumelog.com" target="_self">演示地址</a></dd><dd><a href="https://gitee.com/plumeorg" target="_self">社区</a></dd></dl></div></div><div class="copyright"><span>Copyright © 2018 版权所有 plume开源社区</span></div></div></footer></div></div>
+	<script src="https://f.alicdn.com/react/15.4.1/react-with-addons.min.js"></script>
+	<script src="https://f.alicdn.com/react/15.4.1/react-dom.min.js"></script>
+	<script>
+		window.rootPath = '';
+  </script>
+	<script src="/build/documentation.js"></script>
+</body>
+</html>

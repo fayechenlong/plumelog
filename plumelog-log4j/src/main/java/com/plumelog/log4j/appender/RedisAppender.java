@@ -8,6 +8,7 @@ import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.redis.RedisClient;
 import com.plumelog.core.redis.RedisSentinelClient;
 import com.plumelog.core.util.GfJsonUtil;
+import com.plumelog.core.util.StringUtils;
 import com.plumelog.core.util.ThreadPoolUtil;
 import com.plumelog.log4j.util.LogMessageUtil;
 import org.apache.log4j.AppenderSkeleton;
@@ -148,7 +149,7 @@ public class RedisAppender extends AppenderSkeleton {
         }
         if (this.redisClient == null) {
             MessageAppenderFactory.initQueue(this.logQueueSize);
-            if ("sentinel".equals(this.model)) {
+            if (StringUtils.isNotEmpty(this.masterName)) {
                 this.redisClient = RedisSentinelClient
                         .getInstance(this.redisHost, this.masterName, this.redisAuth, this.redisDb);
             } else {

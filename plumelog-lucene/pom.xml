@@ -5,7 +5,7 @@
     <parent>
         <artifactId>plumelog</artifactId>
         <groupId>com.plumelog</groupId>
-        <version>3.5.1</version>
+        <version>3.5.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>plumelog-lucene</artifactId>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-core</artifactId>
-            <version>3.5.1</version>
+
         </dependency>
     </dependencies>
 </project>

@@ -1,0 +1,61 @@
+{
+  "en-us": [
+    {
+      "filename": "demo1.md",
+      "link": "/en-us/docs/demo1.html",
+      "meta": {}
+    },
+    {
+      "filename": "demo2.md",
+      "link": "/en-us/docs/demo2.html",
+      "meta": {}
+    },
+    {
+      "filename": "demo3.md",
+      "link": "/en-us/docs/dir/demo3.html",
+      "meta": {}
+    }
+  ],
+  "zh-cn": [
+    {
+      "filename": "FASTSTART.md",
+      "link": "/zh-cn/docs/FASTSTART.html",
+      "meta": {}
+    },
+    {
+      "filename": "HELP.md",
+      "link": "/zh-cn/docs/HELP.html",
+      "meta": {}
+    },
+    {
+      "filename": "README.md",
+      "link": "/zh-cn/docs/README.html",
+      "meta": {}
+    },
+    {
+      "filename": "ng.md",
+      "link": "/zh-cn/docs/logstash/ng.html",
+      "meta": {}
+    },
+    {
+      "filename": "README.md",
+      "link": "/zh-cn/docs/plumelog-dubbo/README.html",
+      "meta": {}
+    },
+    {
+      "filename": "README.md",
+      "link": "/zh-cn/docs/plumelog-lite/README.html",
+      "meta": {}
+    },
+    {
+      "filename": "README.md",
+      "link": "/zh-cn/docs/plumelog-trace/README.html",
+      "meta": {}
+    },
+    {
+      "filename": "update.md",
+      "link": "/zh-cn/docs/update.html",
+      "meta": {}
+    }
+  ]
+}
