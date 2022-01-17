@@ -19,7 +19,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         String url=request.getRequestURI();
-        if(url.contains("sendRunLog") || url.contains("sendTraceLog")){
+        if(url.contains("sendRunLog") || url.contains("sendTraceLog")|| url.contains("sendLog")){
             return true;
         }
         if (!Objects.equals(request.getMethod(), HttpMethod.POST.name())) {
