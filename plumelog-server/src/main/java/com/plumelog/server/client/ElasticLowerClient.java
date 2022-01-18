@@ -253,7 +253,8 @@ public class ElasticLowerClient extends AbstractServerClient {
             String properties = "\"properties\":{\"appName\":{\"type\":\"keyword\"}," +
                     "\"env\":{\"type\":\"keyword\"}," +
                     "\"appNameWithEnv\":{\"type\":\"keyword\"}," +
-                    "\"traceId\":{\"type\":\"keyword\"}" +
+                    "\"traceId\":{\"type\":\"keyword\"}," +
+					"\"time\":{\"type\":\"long\"}" +
                     "}";
             String ent = "{\"settings\":{\"number_of_shards\":" + InitConfig.ES_INDEX_SHARDS + ",\"number_of_replicas\":" + InitConfig.ES_INDEX_REPLICAS + ",\"refresh_interval\":\"" + InitConfig.ES_REFRESH_INTERVAL + "\"}";
             if (StringUtils.isEmpty(type)) {
