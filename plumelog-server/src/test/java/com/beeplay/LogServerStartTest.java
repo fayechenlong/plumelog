@@ -2,6 +2,7 @@ package com.beeplay;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import redis.embedded.RedisServer;
 
 /**
  * className：LogServerStart
@@ -11,10 +12,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Frank.chen
  * @version 1.0.0
  */
-@SpringBootApplication
 public class LogServerStartTest {
 
     public static void main( String[] args ){
-        SpringApplication.run(LogServerStartTest.class, args);
+        RedisServer redisServer;
+        redisServer = RedisServer.builder()
+                .port(6379) //端口
+                .setting("bind 127.0.0.1") //绑定ip
+                .build();
+        redisServer.start();
+
     }
 }

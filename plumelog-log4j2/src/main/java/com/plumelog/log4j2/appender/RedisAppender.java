@@ -154,7 +154,7 @@ public class RedisAppender extends AbstractAppender {
     }
 
     protected void send(LogEvent logEvent) {
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, logEvent,runModel);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage((RunLogMessage)logMessage, logEvent);
             MessageAppenderFactory.pushRundataQueue(message);

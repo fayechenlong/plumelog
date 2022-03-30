@@ -34,18 +34,18 @@
     <springProperty scope="context" name="plumelog.masterName" source="plumelog.masterName"/>
     <springProperty scope="context" name="plumelog.env" source="spring.profiles.active"/>
 
-    <appender name="plumelog" class="com.plumelog.lite.logback.appender.LiteAppender">
-        <appName>plumelog</appName>
-        <logPath>/Users/chenlongfei/lucene</logPath>
-        <keepDay>30</keepDay>
-    </appender>
-
-<!--    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">-->
-<!--        <appName>${plumelog.appName}</appName>-->
-<!--        <redisHost>${plumelog.redisHost}</redisHost>-->
-<!--        <redisAuth>${plumelog.redisAuth}</redisAuth>-->
-<!--        <env>${plumelog.env}</env>-->
+<!--    <appender name="plumelog" class="com.plumelog.lite.logback.appender.LiteAppender">-->
+<!--        <appName>plumelog</appName>-->
+<!--        <logPath>/Users/chenlongfei/lucene</logPath>-->
+<!--        <keepDay>30</keepDay>-->
 <!--    </appender>-->
+
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+        <appName>${plumelog.appName}</appName>
+        <redisHost>${plumelog.redisHost}</redisHost>
+<!--        <redisAuth>${plumelog.redisAuth}</redisAuth>-->
+        <env>${plumelog.env}</env>
+    </appender>
 
 <!--        <appender name="plumelog" class="com.plumelog.logback.appender.LiteAppender">-->
 <!--            <appName>${plumelog.appName}</appName>-->

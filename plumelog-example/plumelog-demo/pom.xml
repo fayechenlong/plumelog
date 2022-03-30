@@ -5,7 +5,7 @@
     <parent>
         <artifactId>plumelog-example</artifactId>
         <groupId>com.plumelog</groupId>
-        <version>3.5.2</version>
+        <version>3.5.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.plumelog.example</groupId>
@@ -55,8 +55,8 @@
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog-lite-spring-boot-starter</artifactId>
-            <version>3.5.2</version>
+            <artifactId>plumelog-logback</artifactId>
+            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
