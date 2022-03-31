@@ -46,6 +46,9 @@ plumelog.model=redis
 #plumelog.kafka.kafkaHosts=172.16.247.143:9092,172.16.247.60:9092,172.16.247.64:9092
 #plumelog.kafka.kafkaGroupName=logConsumer
 
+#如果启用内置redis，使用下面配置，这边填上本机的ip，和需要启动的端口号,如果你只启用内置的redis,下面关于redis的配置可以不用配置全部注释掉
+#plumelog.inside.redis.host=127.0.0.1:7979
+
 #队列redis地址，model配置redis集群模式，哨兵模式用逗号隔开，队列redis不支持集群模式，lite模式可以全部注释掉下面配置
 #当redis队列性能不够的时候，可以不同的项目单独配置单独的redis队列，用单独的plumelog-server去采集，公用一个管理redis
 plumelog.queue.redis.redisHost=127.0.0.1:6379
