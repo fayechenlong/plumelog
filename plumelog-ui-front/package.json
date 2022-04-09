@@ -19,7 +19,7 @@
     "jquery": "^3.5.1",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "particles.js": "^2.0.0",
     "superagent": "^1.4.0",
     "superagent-proxy": "^1.0.2",
