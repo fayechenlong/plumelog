@@ -198,7 +198,7 @@
           <template slot-scope="{ row }" slot="traceId">
             <a :href="'./#/trace?traceId='+row.traceId+'&timeRange='+JSON.stringify(dateTimeRange)"
                title="点击查看链路追踪">{{ row.traceId }}</a>
-            <Icon type="ios-search" v-if="row.traceId" @click="doSearch('traceId',row)"/>
+            <Icon type="ios-shuffle" v-if="row.traceId" @click="doSearchByTraceId(row)"/>
           </template>
           <template slot-scope="{ row }" slot="content">
             <div style="white-space: pre-wrap; max-height: 100px;">
@@ -269,7 +269,7 @@
                   <span v-if="showTheColumn('serverName')" class="row_server_name row_underline row_search"
                         @click="doSearch('serverName',row)" :title="'点击查询服务器名称: ' + row.serverName">{{ row.serverName }}</span>
                   <span v-if="row.traceId && showTheColumn('traceId')" class="row_trace_id row_underline row_search"
-                        @click="doSearch('traceId',row)" :title="'点击查询TraceId: ' + row.traceId">{{ row.traceId }}</span>
+                        @click="doSearchByTraceId(row)" :title="'点击查询TraceId: ' + row.traceId">{{ row.traceId }}</span>
                   <span v-if="showTheColumn('className')" class="row_class_name row_underline row_search"
                         @click="doSearch('className', row)" :title="'点击查询类名: ' + row.className">{{ row.className + "." + row.method }}</span>
                   <span>: {{ row.content }}<a class="row_pick_up_text">[点击收起]</a></span>
@@ -1176,6 +1176,114 @@ export default {
           this.$refs.datePicker.internalValue = _.clone(this.dateTimeRange);
         }
       }
+    },
+    doSearchByTraceId(item) {
+      this.localStorageChange('size', this.size);
+
+      if (this.isSearching) {
+        return false;
+      }
+      //列出范围内的日期
+      let shouldFilter = [{match_phrase: {traceId: {query: item.traceId}}}]
+
+      let url = process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+          + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
+
+      let query = {
+        "query": {
+          "bool": {
+            "must": [
+              ...shouldFilter
+            ]
+          }
+        }
+      };
+
+      if (this.isExclude && this.filter['appName']) {
+
+        let mustNotArr = [];
+        for (let appName of this.filter['appName'].split(',')) {
+          mustNotArr.push({
+            "match_phrase": {
+              'appName': {
+                "query": appName.replace(/,/g, ' ')
+              }
+            }
+          })
+        }
+
+        query.query.bool['must_not'] = mustNotArr;
+      }
+
+      // 如果指定了traceId，根据阅读习惯，把排序规则改为正序排序
+      let localSort = this.sort;
+      localSort = [{"dtTime": "asc"},{"seq": "asc"}];
+
+      let esFilter = {
+        ...query,
+        "highlight": {
+          "fields": {
+            "content": {
+              "fragment_size": 2147483647
+            }
+          }
+        },
+        "sort": localSort
+      };
+
+      this.$Loading.start();
+
+      let searchUrl = url + '&size=' + this.size + "&from=" + this.from;
+      this.isSearching = true;
+      axios.post(searchUrl, esFilter).then(data => {
+        this.isSearching = false;
+        this.$Loading.finish();
+        let _searchData = _.get(data, 'data.hits', {
+          total: 0,
+          hits: []
+        });
+
+        _searchData.hits = _.map(_searchData.hits, item => {
+          return {
+            id: item._id,
+            highlightCnt: _.get(item, "highlight.content[0]", ""),
+            ...item._source,
+          }
+        });
+
+        this.list = _searchData;
+
+      });
+
+
+      let chartFilter = {
+        "query": {
+          "bool": {
+            "must": [
+              ...shouldFilter,
+            ]
+          }
+        },
+        "aggregations": {
+          "2": {
+            "date_histogram": {
+              "field": "dtTime",
+              "interval": this.chartInterval.value,
+              "min_doc_count": 0
+            }
+          }
+        }
+      };
+
+      axios.post(process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+          + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&chartData', chartFilter).then(data => {
+        this.chartData = _.get(data, 'data.aggregations.2.buckets', []);
+        this.drawLine();
+      });
+
+      this.getErrorRate().then(data => {
+        this.drawErrorLine(data)
+      });
     },
     doSearch(keyName, item) {
       this.localStorageChange('size', this.size);
