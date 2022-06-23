@@ -29,20 +29,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>com.plumelog.lite.logback-classic</artifactId>
-                    <groupId>ch.qos.com.plumelog.lite.logback</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                    <groupId>org.springframework.boot</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j-to-slf4j</artifactId>
-                    <groupId>org.apache.logging.log4j</groupId>
-                </exclusion>
-            </exclusions>
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>com.plumelog.lite.logback-classic</artifactId>-->
+<!--                    <groupId>ch.qos.com.plumelog.lite.logback</groupId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>spring-boot-starter-logging</artifactId>-->
+<!--                    <groupId>org.springframework.boot</groupId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>log4j-to-slf4j</artifactId>-->
+<!--                    <groupId>org.apache.logging.log4j</groupId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -53,10 +53,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.plumelog</groupId>-->
+<!--            <artifactId>plumelog-logback</artifactId>-->
+<!--            <version>${version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.plumelog</groupId>
-            <artifactId>plumelog-logback</artifactId>
-            <version>${version}</version>
+            <artifactId>plumelog-lite-spring-boot-starter</artifactId>
+            <version>3.5.3</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
