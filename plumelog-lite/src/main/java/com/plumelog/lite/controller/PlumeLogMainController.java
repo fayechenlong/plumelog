@@ -1,14 +1,13 @@
 package com.plumelog.lite.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.ImmutableMap;
+
 import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.lite.client.AppNameCache;
 import com.plumelog.lite.client.IndexUtil;
 import com.plumelog.lite.client.InitConfig;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -249,10 +248,10 @@ public class PlumeLogMainController {
             String result = abstractServerClient.group(indexStr, queryStr);
             if (!"".equals(result)) {
                 Set<String> appNameWithEnvSet = new HashSet<>();
-                JSONObject jsonObject = JSON.parseObject(result);
+                JSONObject jsonObject = JSONObject.fromObject(result);
                 jsonObject = (JSONObject) jsonObject.get("aggregations");
                 jsonObject = (JSONObject) jsonObject.get("dataCount");
-                JSONArray jsonArray = (JSONArray) jsonObject.get("buckets");
+                JSONArray jsonArray =  jsonObject.getJSONArray("buckets");
                 if (isQueryWithEnv) {
                     jsonArray.forEach(key -> {
                         JSONObject keyJsonObject = (JSONObject) key;

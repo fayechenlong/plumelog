@@ -44,6 +44,10 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @version 1.0.0
  */
 public class ElasticLowerClient extends AbstractServerClient {
+
+    private static final String opensearch = "opensearch";
+    private static final String distribution = "distribution";
+
     private static ElasticLowerClient instance;
     private static final ThreadPoolExecutor threadPoolExecutor = ThreadPoolUtil.getPool(5, 5, 100);
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(ElasticLowerClient.class);
@@ -154,14 +158,18 @@ public class ElasticLowerClient extends AbstractServerClient {
     @Override
     public String getVersion() {
         try {
-            Request request = new Request(
-                    "GET",
-                    "/");
+            Request request = new Request("GET", "/");
             Response res = client.performRequest(request);
             if (res.getStatusLine().getStatusCode() == 200) {
                 String jsonStr = EntityUtils.toString(res.getEntity(), "utf-8");
                 JSONObject jsonObject = JSON.parseObject(jsonStr);
-                return JSON.parseObject(jsonObject.getString("version")).getString("number");
+                JSONObject version = jsonObject.getJSONObject("version");
+                if (opensearch.equals(version.getString(distribution))) {
+                    int lucene_version = Integer.parseInt(version.getString("lucene_version").split("\\.")[0]);
+                    return String.valueOf(lucene_version - 1);
+                }
+
+                return version.getString("number");
             } else {
                 String responseStr = EntityUtils.toString(res.getEntity());
                 logger.error("ElasticSearch GET Failure! {}", responseStr);

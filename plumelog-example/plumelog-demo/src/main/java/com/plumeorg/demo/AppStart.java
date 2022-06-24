@@ -10,9 +10,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 //@EnableDubbo
-//@ServletComponentScan
+////@ServletComponentScan
 //@EnableScheduling
-//@ComponentScan({"com.plumelog","com.plumeorg"})
+@ComponentScan({"com.plumelog","com.plumeorg"})
 public class AppStart {
     public static void main( String[] args ){
         SpringApplication.run(AppStart.class, args);

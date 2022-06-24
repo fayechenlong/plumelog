@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.plumelog</groupId>
         <artifactId>plumelog</artifactId>
-        <version>3.5.2</version>
+        <version>3.5.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>plumelog-core</artifactId>
@@ -22,10 +22,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba</groupId>-->
+<!--            <artifactId>fastjson</artifactId>-->
+<!--            <version>1.2.75</version>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.75</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.2</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

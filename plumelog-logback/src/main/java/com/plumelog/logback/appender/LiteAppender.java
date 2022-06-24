@@ -111,7 +111,7 @@ public class LiteAppender extends AppenderBase<ILoggingEvent> {
     }
 
     protected void send(ILoggingEvent event) {
-        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, event);
+        final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(appName, env, event,runModel);
         if (logMessage instanceof RunLogMessage) {
             final String message = LogMessageUtil.getLogMessage(logMessage, event);
 

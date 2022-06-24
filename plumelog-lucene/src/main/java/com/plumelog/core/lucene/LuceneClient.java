@@ -1,12 +1,12 @@
 package com.plumelog.core.lucene;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+
 import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.util.GfJsonUtil;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -184,7 +184,7 @@ public class LuceneClient extends AbstractServerClient {
 
     private String queryData(String indexStr, String queryStr, String from, String size) throws Exception {
 
-        JSONObject queryJson = JSON.parseObject(queryStr);
+        JSONObject queryJson = JSONObject.fromObject(queryStr);
         if (queryJson.containsKey("query")) {
             JSONArray query = queryJson.getJSONObject("query").getJSONObject("bool").getJSONArray("must");
             List<String> indexs = getIndex(indexStr);
@@ -240,7 +240,7 @@ public class LuceneClient extends AbstractServerClient {
             Map<String, Object> rs = new HashMap<>();
             rs.put("hits", qr);
             rs.put("timed_out", false);
-            return JSONObject.toJSONString(rs);
+            return JSONObject.fromObject(rs).toString();
         }
         return null;
     }
@@ -329,7 +329,7 @@ public class LuceneClient extends AbstractServerClient {
 
     @Override
     public String get(String indexStr, String queryStr, String from, String size) throws Exception {
-        JSONObject queryJson = JSON.parseObject(queryStr);
+        JSONObject queryJson = JSONObject.fromObject(queryStr);
         if (queryJson.containsKey("query")) {
             return queryData(indexStr, queryStr, from, size);
         }
@@ -348,7 +348,7 @@ public class LuceneClient extends AbstractServerClient {
      * @throws Exception
      */
     private String queryGroup(String indexStr, String queryStr) throws Exception {
-        JSONObject queryJson = JSON.parseObject(queryStr);
+        JSONObject queryJson = JSONObject.fromObject(queryStr);
         String fieldName = queryJson.getJSONObject("aggregations").getJSONObject("dataCount").getJSONObject("terms").getString("field");
         List<String> indexs = getIndex(indexStr);
 
@@ -389,7 +389,7 @@ public class LuceneClient extends AbstractServerClient {
         dataCount.put("dataCount", buckets);
         Map<String, Object> aggregations = new HashMap<>();
         aggregations.put("aggregations", dataCount);
-        return JSONObject.toJSONString(aggregations);
+        return JSONObject.fromObject(aggregations).toString();
     }
 
     @Override

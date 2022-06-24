@@ -27,6 +27,13 @@
 <!--        <appName>work</appName>-->
 <!--        <plumelogHost>localhost:8891</plumelogHost>-->
 <!--    </appender>-->
+
+    <appender name="plumelog" class="com.plumelog.logback.appender.RedisAppender">
+        <appName>plumelog-logback</appName>
+        <redisHost>127.0.0.1:7979</redisHost>
+        <!--        <redisAuth>${plumelog.redisAuth}</redisAuth>-->
+        <env>pro</env>
+    </appender>
     <!-- 日志输出级别 -->
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />

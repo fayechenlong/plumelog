@@ -11,6 +11,7 @@ import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.HttpClient;
 import com.plumelog.core.util.LZ4Util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -153,7 +154,11 @@ public class MessageAppenderFactory {
             try {
                 doStartLog(client, maxCount, rundataQueue, key, "plume.log.ack", lastRunPushTime, compress);
             } catch (Exception e) {
-                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
+                String exMsg=e.getMessage();
+                if(e instanceof InvocationTargetException&&exMsg==null){
+                    exMsg=((InvocationTargetException)e).getTargetException().getMessage();
+                }
+                System.out.println("plumelog error:--------doStartLog--------"+exMsg+"-------------------");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -167,7 +172,11 @@ public class MessageAppenderFactory {
             try {
                 doStartLog(plumelogHost, maxCount, rundataQueue, key, "plume.log.ack", lastRunPushTime);
             } catch (Exception e) {
-                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
+                String exMsg=e.getMessage();
+                if(e instanceof InvocationTargetException&&exMsg==null){
+                    exMsg=((InvocationTargetException)e).getTargetException().getMessage();
+                }
+                System.out.println("plumelog error:--------doStartLog--------"+exMsg+"-------------------");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -189,7 +198,11 @@ public class MessageAppenderFactory {
             try {
                 doStartLog(client, maxCount, tracedataQueue, key, "plume.log.ack", lastTracePushTime, compress);
             } catch (Exception e) {
-                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
+                String exMsg=e.getMessage();
+                if(e instanceof InvocationTargetException&&exMsg==null){
+                    exMsg=((InvocationTargetException)e).getTargetException().getMessage();
+                }
+                System.out.println("plumelog error:--------doStartLog--------"+exMsg+"-------------------");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -204,7 +217,11 @@ public class MessageAppenderFactory {
             try {
                 doStartLog(plumelogHost, maxCount, tracedataQueue, key, "plume.log.ack", lastTracePushTime);
             } catch (Exception e) {
-                System.out.println("plumelog error:----------------"+e.getMessage()+"-------------------");
+                String exMsg=e.getMessage();
+                if(e instanceof InvocationTargetException&&exMsg==null){
+                    exMsg=((InvocationTargetException)e).getTargetException().getMessage();
+                }
+                System.out.println("plumelog error:--------doStartLog--------"+exMsg+"-------------------");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {

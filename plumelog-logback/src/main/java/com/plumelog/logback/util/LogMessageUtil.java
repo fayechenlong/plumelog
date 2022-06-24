@@ -63,7 +63,7 @@ public class LogMessageUtil {
         return GfJsonUtil.toJSONString(map);
     }
 
-    public static BaseLogMessage getLogMessage(final String appName, final String env, final ILoggingEvent iLoggingEvent) {
+    public static BaseLogMessage getLogMessage(final String appName, final String env, final ILoggingEvent iLoggingEvent,String runModel) {
         isExpandRunLog(iLoggingEvent);
         TraceMessage traceMessage = LogMessageThreadLocal.logMessageThreadLocal.get();
         String formattedMessage = getMessage(iLoggingEvent);
@@ -77,9 +77,11 @@ public class LogMessageUtil {
         logMessage.setThreadName(iLoggingEvent.getThreadName());
         logMessage.setSeq(SEQ_BUILDER.getAndIncrement());
 
-
-        StackTraceElement[] stackTraceElements = iLoggingEvent.getCallerData();
-        if(stackTraceElements.length>0) {
+        StackTraceElement[] stackTraceElements=null;
+        if("2".equals(runModel)) {
+            stackTraceElements = iLoggingEvent.getCallerData();
+        }
+        if(stackTraceElements!=null&&stackTraceElements.length>0) {
             StackTraceElement stackTraceElement=stackTraceElements[0];
             String method = stackTraceElement.getMethodName();
             String line = String.valueOf(stackTraceElement.getLineNumber());

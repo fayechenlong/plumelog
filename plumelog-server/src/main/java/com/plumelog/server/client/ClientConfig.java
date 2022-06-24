@@ -22,8 +22,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
-
-import java.security.PublicKey;
 import java.time.ZoneId;
 
 /**
@@ -127,8 +125,11 @@ public class ClientConfig implements InitializingBean {
     @Value("${admin.log.trace.keepDays:0}")
     private int traceKeepDays;
 
-    @Value("${plumelog.lite.log.path:}")
+    @Value("${plumelog.local.path:}")
     private String liteLogPath;
+
+    @Value("${plumelog.inside.redis.host:}")
+    private String insideRedis;
 
     @Bean(name = "redisClient")
     public AbstractClient initRedisClient() {
@@ -149,6 +150,9 @@ public class ClientConfig implements InitializingBean {
             mgRedisPassWord = this.queueRedisPassWord;
             mgRedisDb = this.queueRedisDb;
             mgMasterName = this.queueRedisSentinelMasterName;
+        }
+        if (!StringUtils.isEmpty(insideRedis)&&StringUtils.isEmpty(mgRedisHost)) {
+            mgRedisHost=this.insideRedis;
         }
         logger.info("管理 redis host:{}", mgRedisHost);
         if (!StringUtils.isEmpty(mgRedisHost)) {
@@ -189,7 +193,9 @@ public class ClientConfig implements InitializingBean {
         mgRedisPassWord = this.queueRedisPassWord;
         mgRedisDb = this.queueRedisDb;
         mgMasterName = this.queueRedisSentinelMasterName;
-
+        if (!StringUtils.isEmpty(insideRedis)&&StringUtils.isEmpty(mgRedisHost)) {
+            mgRedisHost=this.insideRedis;
+        }
         logger.info("队列 redis host:{}", mgRedisHost);
         if (!StringUtils.isEmpty(mgRedisHost)) {
             if (!StringUtils.isEmpty(mgMasterName)) {
@@ -218,7 +224,7 @@ public class ClientConfig implements InitializingBean {
     @Bean
     public AbstractServerClient initAbstractServerClient() {
         if(InitConfig.LITE_MODE_NAME.equals(model)){
-            logger.info("当前启动模式为单机简易版！");
+            logger.info("当前日志将存储在本地！");
             return new LuceneClient(InitConfig.LITE_MODE_LOG_PATH);
         }
         if (StringUtils.isEmpty(esHosts)) {

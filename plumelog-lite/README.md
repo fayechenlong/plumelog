@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog-lite</artifactId>
-    <version>3.5.2</version>
+    <version>3.5.3</version>
 </dependency>
 
 ```
@@ -29,7 +29,7 @@
 <dependency>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog-lite-spring-boot-starter</artifactId>
-    <version>3.5.2</version>
+    <version>3.5.3</version>
 </dependency>
 
 ```
