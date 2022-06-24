@@ -12,10 +12,6 @@ import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.*;
 import org.slf4j.helpers.MessageFormatter;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -99,14 +95,14 @@ public class LogMessageUtil {
         if (logEvent.getLevel().equals(Level.ERROR)) {
             if (logEvent.getThrowableProxy() != null) {
                 ThrowableProxy throwableProxy = (ThrowableProxy) logEvent.getThrowableProxy();
-                String[] args = new String[]{logEvent.getFormattedMessage() + "\n" + LogExceptionStackTrace.erroStackTrace(throwableProxy.getThrowable()).toString()};
+                String[] args = new String[]{logEvent.getFormattedMessage() + "\n" + LogExceptionStackTrace.errorStackTrace(throwableProxy.getThrowable()).toString()};
                 return packageMessage("{}", args);
             } else {
                 Object[] args = logEvent.getArgumentArray();
                 if (args != null) {
                     for (int i = 0; i < args.length; i++) {
                         if (args[i] instanceof Throwable) {
-                            args[i] = LogExceptionStackTrace.erroStackTrace(args[i]);
+                            args[i] = LogExceptionStackTrace.errorStackTrace(args[i]);
                         }
                     }
                     return packageMessage(logEvent.getMessage(), args);

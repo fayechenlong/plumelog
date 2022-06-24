@@ -10,8 +10,6 @@ import com.plumelog.core.util.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -94,14 +92,14 @@ public class LogMessageUtil {
                 for (int i = 0, l = args.length; i < l; i++) {
                     // 当最后一个参数与thrown是同一个对象时,表示logEvent.getThrown()不为null,并且占位符个数与参数个数不相同,则将该thrown留后处理
                     if ((i != l - 1 || args[i] != thrown) && args[i] instanceof Throwable) {
-                        args[i] = LogExceptionStackTrace.erroStackTrace(args[i]);
+                        args[i] = LogExceptionStackTrace.errorStackTrace(args[i]);
                     }
                 }
                 formatMessage = packageMessage(formatMessage, args);
             }
             if (thrown != null) {
                 return packageMessage(formatMessage,
-                        new String[]{LogExceptionStackTrace.erroStackTrace(thrown).toString()});
+                        new String[]{LogExceptionStackTrace.errorStackTrace(thrown).toString()});
             }
             return formatMessage;
         }

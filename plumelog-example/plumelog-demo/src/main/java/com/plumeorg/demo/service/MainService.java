@@ -65,7 +65,7 @@ public class MainService {
             LogMessage lo=null;
             lo.setMethod("");
         }catch (Exception e){
-            logger.error("异常日志展示", LogExceptionStackTrace.erroStackTrace(e));
+            logger.error("异常日志展示", LogExceptionStackTrace.errorStackTrace(e));
         }
         logger.warn("警告日志展示！");
     }

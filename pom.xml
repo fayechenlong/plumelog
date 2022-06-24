@@ -26,10 +26,10 @@
         <module>plumelog-dubbo</module>
         <module>plumelog-trace</module>
         <module>plumelog-http</module>
-        <!--<module>plumelog-example</module>-->
-        <!--<module>plumelog-lite</module>-->
+        <module>plumelog-example</module>
+        <module>plumelog-lite</module>
         <module>plumelog-lucene</module>
-        <!--<module>plumelog-lite-spring-boot-starter</module>-->
+        <module>plumelog-lite-spring-boot-starter</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -60,7 +60,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <!-- <distributionManagement>
+     <distributionManagement>
          <repository>
              <id>releases</id>
              <url>${distribution.repository.url}/content/repositories/releases</url>
@@ -69,8 +69,8 @@
              <id>snapshots</id>
              <url>${distribution.repository.url}/content/repositories/snapshots</url>
          </snapshotRepository>
-     </distributionManagement>-->
-    <licenses>
+     </distributionManagement>
+    <!--<licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
@@ -108,7 +108,7 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement>-->
     <build>
         <plugins>
             <plugin>
@@ -120,19 +120,19 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>1.6.8</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <!-- 这里的id必须要和全局配置中的release id 一致 -->
+                    &lt;!&ndash; 这里的id必须要和全局配置中的release id 一致 &ndash;&gt;
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
-            <!--Source -->
+            &lt;!&ndash;Source &ndash;&gt;
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -146,7 +146,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Javadoc -->
+            &lt;!&ndash;Javadoc &ndash;&gt;
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -163,12 +163,12 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <skip>true</skip>
-                    <!--/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home-->
+                    &lt;!&ndash;/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home&ndash;&gt;
                     <javadocExecutable>/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home/bin/javadoc
                     </javadocExecutable>
                 </configuration>
             </plugin>
-            <!-- GPG -->
+            &lt;!&ndash; GPG &ndash;&gt;
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -181,7 +181,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 </project>

@@ -12,8 +12,6 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -76,7 +74,7 @@ public class LogMessageUtil {
         if (logEvent.getLevel().toInt() == Priority.ERROR_INT) {
             String msg = "";
             if (logEvent.getThrowableInformation() != null) {
-                msg = LogExceptionStackTrace.erroStackTrace(
+                msg = LogExceptionStackTrace.errorStackTrace(
                         logEvent.getThrowableInformation().getThrowable()).toString();
             }
             if (logEvent.getRenderedMessage() != null && logEvent.getRenderedMessage()

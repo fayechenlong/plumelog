@@ -13,7 +13,7 @@ import java.io.StringWriter;
  */
 public class LogExceptionStackTrace {
 
-    public static Object erroStackTrace(Object obj) {
+    public static Object errorStackTrace(Object obj) {
         if (obj instanceof Exception) {
             Exception eObj = (Exception) obj;
             StringWriter sw = null;
