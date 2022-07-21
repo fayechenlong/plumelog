@@ -36,7 +36,7 @@ import java.time.ZoneId;
 @Order(1)
 @EnableWebSocket
 public class ClientConfig implements InitializingBean {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CollectStartBean.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ClientConfig.class);
     @Value("${plumelog.maxSendSize:5000}")
     public int maxSendSize = 5000;
     @Value("${plumelog.interval:100}")
