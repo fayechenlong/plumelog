@@ -463,7 +463,7 @@ LiteAppender
 ### （3）traceID生成配置
 
 
-#### spring boot,spring cloud 项目引入sleuth,备注：如果项目之间采用feign调用的话，可以自己实现跨服务传递traceId
+#### spring boot,spring cloud 只需要项目引入sleuth就可以产生Traceid,备注：如果项目之间采用feign调用的话，可以自己实现跨服务传递traceId
 
 ```xml
 <dependency>
