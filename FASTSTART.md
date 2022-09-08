@@ -462,7 +462,18 @@ LiteAppender
 
 ### （3）traceID生成配置
 
-* 非springboot,cloud
+
+#### spring boot,spring cloud 项目引入sleuth,备注：如果项目之间采用feign调用的话，可以自己实现跨服务传递traceId
+
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-sleuth</artifactId>
+    <version>2.2.7.RELEASE</version>
+</dependency>
+``` 
+
+#### 非springboot,cloud，假如你是传统老掉牙的项目看下面配置
 
 
 * 方法一：添加拦截器
@@ -551,15 +562,7 @@ public class PlumeLogilterConfig {
 
 ``` 
 
-* spring boot,spring cloud 项目引入sleuth,项目之间采用feign调用的话，可以自己实现跨服务传递traceId
 
-```xml
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-sleuth</artifactId>
-    <version>2.2.7.RELEASE</version>
-</dependency>
-``` 
 
 * [Dubbo的分布式系统traceId传递点我 ](/plumelog-dubbo/README.md)
 
