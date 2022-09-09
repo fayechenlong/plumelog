@@ -241,9 +241,9 @@ export default {
       	var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
         let host=hostName;
 
-        if(projectName!='/plumelog'){
+       // if(projectName!='/plumelog'){
       	host =hostName+projectName;
-         }
+      //   }
 
         let ishttps = 'https:' == document.location.protocol ? true : false;
         let url='ws://'+host+'/plumelog/websocket';

@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-lite-spring-boot-starter</artifactId>
-            <version>3.5.3</version>
+            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
