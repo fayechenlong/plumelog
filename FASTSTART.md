@@ -714,7 +714,7 @@ management.endpoints.web.exposure.include=*
 
 ## 三、docker安装
 
-[docker版本安装点我](/plumelog-server/docker构建与部署.md)
+[docker版本安装点我](/plumelog-server/README.md)
 
 ## 四、几种常见的部署模型
 
