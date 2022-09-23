@@ -824,7 +824,6 @@ management.endpoints.web.exposure.include=*
 
 
 
-
 * plumelog客户端配置能结合配置文件中心使用吗？
 
   肯定是可以的，plumelog配置是配置在三大日志框架的配置文件里面的，可以使用springProperty进行管理配置，具体怎么操作看每个项目自己的情况
@@ -858,6 +857,7 @@ management.endpoints.web.exposure.include=*
 
   如果展开什么都没有说明索引创建的时候分组信息丢失，选中点击重置索引，关闭浏览器重新进入即可
 
+
 * 为啥使用统一配置中心nacos之类的，不能加载参数？
 
   Spring Boot推荐使用logback-spring.xml来替代logback.xml来配置logback日志的问题分析
@@ -866,6 +866,12 @@ management.endpoints.web.exposure.include=*
 
   这就是为什么有些人用了nacos等配置中心，不能加载远程配置的原因，是因为加载优先级的问题
 
+
 * plumelog挂了日志丢失怎么办？
 
   plumelog的设计定位就是日志查询工具类系统，不可能去为了日志高幂等性去牺牲性能，甚至影响客户端，所以如果你担心plumelog挂了查不到日志，那你可以在本地再配置一个滚动日志保留三天作为补充
+
+
+* plumelog全文检索、模糊查找、中文分词、ik分词
+
+  plumelog不需要为elasticsearch安装中文分词插件，plumelog UI中可以直接模糊搜索，使用教程见 [plumelog使用指南](/HELP.md)
