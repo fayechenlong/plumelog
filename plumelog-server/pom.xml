@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
@@ -10,13 +9,16 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>plumelog-server</artifactId>
     <name>plumelog-server</name>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <redis.version>3.1.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
         <elasticsearch.version>7.7.0</elasticsearch.version>
+        <dingtalk.version>2.0.0</dingtalk.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -28,13 +30,12 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
         <dependency>
-            <groupId>com.taobao.top</groupId>
-            <artifactId>lippi-oapi-encrpt</artifactId>
-            <version>dingtalk-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/taobao-sdk-java-auto_1479188381469-20200701.jar</systemPath>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibaba-dingtalk-service-sdk</artifactId>
+            <version>${dingtalk.version}</version>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
@@ -123,6 +124,7 @@
             <type>pom</type>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -189,17 +191,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <finalName>plumelog-server</finalName>
-                    <excludes>
-                        <exclude>*.properties</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>

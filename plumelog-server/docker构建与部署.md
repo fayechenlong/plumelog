@@ -1,26 +1,13 @@
-#!/bin/sh
-#create by 2020-06-19 xiaobai021sdo
-#update by 2020-08-10 xiaobai021sdo
-#update by 2020-08-20 xiaobai021sdo
-#update by 2021-07-16 xiaobai021sdo
-#update by 2021-11-11 xiaobai021sdo 更新3.5版本配置
-#获取当前路径
-basedir=$(cd "$(dirname "$0")"; pwd)
+# docker构建与部署
+## 快速开始（使用官方镜像）
+### 运行命令
+`docker run -d -p8891:8891 -e plumelog.model=redis --name=plumelog ylyue/plumelog`
 
-#创建配置文件目录
-mkdir -p $basedir/plumelog-server/config/
+### 环境变量说明
+支持 `-e` 环境变量注入，具体变量值参考 [application.properties](https://gitee.com/plumeorg/plumelog/blob/v3.5/plumelog-server/src/main/resources/application.properties) 文件
 
-#plumelog-server配置文件写入
-cat << EOF >$basedir/plumelog-server/config/application.properties
-
-spring.application.name=plumelog-server
-server.port=8891
-spring.thymeleaf.mode=LEGACYHTML5
-spring.mvc.view.prefix=classpath:/templates/
-spring.mvc.view.suffix=.html
-spring.mvc.static-path-pattern=/plumelog/**
-spring.boot.admin.context-path=admin
-
+v3.5版本变量值如下：
+```yml
 #值为4种 redis,kafka,rest,restServer,lite
 #redis 表示用redis当队列
 #kafka 表示用kafka当队列
@@ -94,10 +81,24 @@ admin.log.trace.keepDays=30
 #登录配置，配置后会有登录界面
 #login.username=admin
 #login.password=admin
+```
 
-EOF
+## 自行构建镜像
+### 镜像构建与发布
+1. 在`plumelog-server`目录下运行打包maven命令
+```bash
+mvn clean package
+```
 
+2. 在`plumelog-server`目录下构建docker镜像
+```bash
+docker build --tag ylyue/plumelog:v3.5.1 .
+```
 
-echo "请修改$basedir/plumelog-server/config/application.properties 配置文件"
+3. 发布docker镜像
+```bash
+docker push ylyue/plumelog:v3.5.1
+```
 
-echo "修改完成后启动plumelog-start.sh"
+### 部署
+若未进行修改，同官方镜像一致

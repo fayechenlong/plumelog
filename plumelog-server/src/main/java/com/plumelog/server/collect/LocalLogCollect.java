@@ -4,7 +4,7 @@ package com.plumelog.server.collect;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.lucene.LuceneClient;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import com.plumelog.server.util.IndexUtil;
 import com.plumelog.server.websocket.WebSocketSession;
 import org.slf4j.LoggerFactory;

@@ -2,7 +2,6 @@ package com.plumelog.server.config;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.plumelog.server.InitConfig;
 import com.plumelog.server.controller.Result;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.StringUtils;
