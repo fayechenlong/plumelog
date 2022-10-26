@@ -329,7 +329,7 @@ public class ElasticLowerClient extends AbstractServerClient {
     @Override
     public void insertListLog(List<String> list, String baseIndex, String type) throws IOException {
         if (!existIndice(baseIndex)) {
-            if (baseIndex.startsWith(LogMessageConstant.ES_INDEX)) {
+            if (baseIndex.indexOf(LogMessageConstant.ES_INDEX) > 0) {
                 creatIndice(baseIndex, type);
             } else {
                 creatIndiceNomal(baseIndex, type);
