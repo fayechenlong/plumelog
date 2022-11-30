@@ -9,7 +9,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.dto.WarningRuleDto;
 import com.plumelog.core.util.GfJsonUtil;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import com.plumelog.server.cache.AppNameCache;
 import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.server.controller.vo.LoginVO;

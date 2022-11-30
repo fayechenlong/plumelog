@@ -1,7 +1,8 @@
 # 基础镜像说明
-# openjdk:11.0.6-jre 》》 涉及图形界面UI相关API操作时使用（如：验证码生成），镜像大小 ≈ 200M
-# openjdk:11.0.6-jre-slim 》》 极简化的jar包运行环境，镜像大小 ≈ 100M
-FROM registry.cn-hangzhou.aliyuncs.com/yl-yue/openjdk:11.0.6-jre-slim
+# openjdk:11.0.13-jre → 涉及图形界面UI相关API操作时使用（如：验证码生成），镜像大小 ≈ 200M
+# openjdk:11.0.13-jre-slim → 极简化的jar包运行环境，镜像大小 ≈ 100M
+# registry-vpc.cn → 为阿里云专有网络，公网拉取镜像时请改为：registry.cn
+FROM registry.cn-beijing.aliyuncs.com/yl-yue/openjdk:11.0.13-jre-slim
 
 MAINTAINER ylyue yl-yue@qq.com
 

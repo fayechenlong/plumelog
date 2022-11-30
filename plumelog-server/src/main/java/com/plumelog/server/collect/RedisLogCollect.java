@@ -7,7 +7,7 @@ import com.plumelog.core.dto.RunLogCompressMessage;
 import com.plumelog.core.exception.LogQueueConnectException;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.LZ4Util;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;

@@ -6,7 +6,7 @@ import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import com.plumelog.server.client.http.SkipHostnameVerifier;
 import com.plumelog.server.client.http.SkipSslVerificationHttpRequestFactory;
 import org.apache.http.HttpHost;

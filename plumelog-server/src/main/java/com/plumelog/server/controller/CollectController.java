@@ -3,7 +3,7 @@ package com.plumelog.server.controller;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.TraceLogMessage;
 import com.plumelog.core.util.GfJsonUtil;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.server.collect.LocalLogQueue;
 import org.slf4j.Logger;

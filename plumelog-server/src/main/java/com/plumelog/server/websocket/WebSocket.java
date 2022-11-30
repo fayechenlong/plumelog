@@ -3,7 +3,7 @@ package com.plumelog.server.websocket;
 import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.IpGetter;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import com.plumelog.server.util.GfJsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

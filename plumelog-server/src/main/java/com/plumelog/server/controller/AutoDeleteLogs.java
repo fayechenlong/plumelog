@@ -1,7 +1,7 @@
 package com.plumelog.server.controller;
 
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.server.util.IndexUtil;
 import org.slf4j.LoggerFactory;

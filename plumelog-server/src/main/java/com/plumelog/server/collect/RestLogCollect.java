@@ -2,7 +2,7 @@ package com.plumelog.server.collect;
 
 
 import com.plumelog.core.constant.LogMessageConstant;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import com.plumelog.server.client.ElasticLowerClient;
 import com.plumelog.server.client.PlumeRestClient;
 import org.slf4j.LoggerFactory;
