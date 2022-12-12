@@ -1,4 +1,4 @@
-package com.plumelog.server;
+package com.plumelog.server.config;
 
 import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;

@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.WarningRule;
-import com.plumelog.server.InitConfig;
+import com.plumelog.server.config.InitConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

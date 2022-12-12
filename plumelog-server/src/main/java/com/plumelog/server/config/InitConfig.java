@@ -1,4 +1,4 @@
-package com.plumelog.server;
+package com.plumelog.server.config;
 
 
 public class InitConfig {
