@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <redis.version>3.1.0</redis.version>
+        <redis.version>3.3.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
         <elasticsearch.version>7.7.0</elasticsearch.version>
@@ -32,6 +32,17 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${redis.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>alibaba-dingtalk-service-sdk</artifactId>
