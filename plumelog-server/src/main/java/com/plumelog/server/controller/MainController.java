@@ -121,20 +121,21 @@ public class MainController {
 
     @RequestMapping({"/queryAppName", "/plumelog/queryAppName"})
     public String queryAppName(@RequestBody String queryStr) {
-
-        // 查询过去n天的索引
-        String[] indexs = new String[InitConfig.keepDays];
-        for (int i = 0; i < InitConfig.keepDays; i++) {
-            indexs[i] = IndexUtil.getRunLogIndex(
-                    System.currentTimeMillis() - i * InitConfig.MILLS_ONE_DAY) + "*";
-        }
-
-        // 检查ES索引是否存在
-        List<String> reindexs = abstractServerClient.getExistIndices(indexs);
-        String indexStr = String.join(",", reindexs);
-        if ("".equals(indexStr)) {
-            return "";
-        }
+//
+//        // 查询过去n天的索引
+//        String[] indexs = new String[InitConfig.keepDays];
+//        for (int i = 0; i < InitConfig.keepDays; i++) {
+//            indexs[i] = IndexUtil.getRunLogIndex(
+//                    System.currentTimeMillis() - i * InitConfig.MILLS_ONE_DAY) + "*";
+//        }
+//
+//        // 检查ES索引是否存在
+//        List<String> reindexs = abstractServerClient.getExistIndices(indexs);
+//        String indexStr = String.join(",", reindexs);
+//        if ("".equals(indexStr)) {
+//            return "";
+//        }
+        String indexStr = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_*";
         logger.info("queryStr:" + queryStr);
 
         try {
@@ -160,19 +161,20 @@ public class MainController {
     @RequestMapping({"/queryAppNames", "/plumelog/queryAppNames"})
     public Set<String> queryAppNames(@RequestBody String queryStr) {
 
-        // 查询过去n天的索引
-        String[] indexs = new String[InitConfig.keepDays];
-        for (int i = 0; i < InitConfig.keepDays; i++) {
-            indexs[i] = IndexUtil.getRunLogIndex(
-                    System.currentTimeMillis() - i * InitConfig.MILLS_ONE_DAY) + "*";
-        }
-
-        // 检查ES索引是否存在
-        List<String> reindexs = abstractServerClient.getExistIndices(indexs);
-        String indexStr = String.join(",", reindexs);
-        if ("".equals(indexStr)) {
-            return Collections.emptySet();
-        }
+//        // 查询过去n天的索引
+//        String[] indexs = new String[InitConfig.keepDays];
+//        for (int i = 0; i < InitConfig.keepDays; i++) {
+//            indexs[i] = IndexUtil.getRunLogIndex(
+//                    System.currentTimeMillis() - i * InitConfig.MILLS_ONE_DAY) + "*";
+//        }
+//
+//        // 检查ES索引是否存在
+//        List<String> reindexs = abstractServerClient.getExistIndices(indexs);
+//        String indexStr = String.join(",", reindexs);
+//        if ("".equals(indexStr)) {
+//            return Collections.emptySet();
+//        }
+        String indexStr = LogMessageConstant.ES_INDEX + LogMessageConstant.LOG_TYPE_RUN + "_*";
         logger.info("queryStr:" + queryStr);
         Set<String> appNameSet = new HashSet<>();
         boolean isQueryWithEnv = queryStr.contains("appNameWithEnv");
