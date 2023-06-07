@@ -106,7 +106,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             String cn = StringUtils.isEmpty(className) ? "" : runLogMessage.getClassName();
 
             //统计分析
-            statisticAlnalysis(getKey(appName, env, className), warningRule, errorContent, cn);
+            statisticAlnalysis(getKey(appName, env, className), warningRule, errorContent, cn, runLogMessage.getTraceId());
         }
     }
 
@@ -144,7 +144,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      * @param key  缓存key
      * @param rule 规则
      */
-    private void statisticAlnalysis(String key, WarningRule rule, String errorContent, String className) {
+    private void statisticAlnalysis(String key, WarningRule rule, String errorContent, String className, String traceId) {
         String time = redisClient.hget(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME);
         if (StringUtils.isEmpty(time)) {
             time = String.valueOf(System.currentTimeMillis());
@@ -155,7 +155,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         if (endTime > System.currentTimeMillis()) {
             Long incr = redisClient.hincrby(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT, 1);
             if (incr >= rule.getErrorCount() && !redisClient.existsKey(key + WARNING_NOTICE)) {
-                earlyWarning(rule, incr, key, errorContent, className);
+                earlyWarning(rule, incr, key, errorContent, className, traceId);
                 redisClient.del(key);
             }
         } else {
@@ -175,14 +175,14 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      * @param count
      * @param key
      */
-    private void earlyWarning(WarningRule rule, long count, String key, String errorContent, String className) {
+    private void earlyWarning(WarningRule rule, long count, String key, String errorContent, String className, String traceId) {
         PlumeLogMonitorTextMessage plumeLogMonitorTextMessage =
                 new PlumeLogMonitorTextMessage.Builder(rule.getAppName(), rule.getEnv())
                         .className(rule.getClassName())
                         .errorCount(rule.getErrorCount())
                         .time(rule.getTime())
                         .count(count)
-                        .monitorUrl(getMonitorMessageURL(rule, className))
+                        .monitorUrl(getMonitorMessageURL(rule, className, traceId))
                         .errorContent(errorContent)
                         .build();
         if (!StringUtils.isEmpty(rule.getReceiver())) {
@@ -225,7 +225,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         }
     }
 
-    private String getMonitorMessageURL(WarningRule rule, String className) {
+    private String getMonitorMessageURL(WarningRule rule, String className, String traceId) {
         //换算毫秒数
         int time = rule.getTime() * 1000;
         long currentTime = System.currentTimeMillis();
@@ -235,8 +235,11 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         builder.append(url).append("/#/?appName=").append(rule.getAppName())
                 .append("&env=").append(rule.getEnv())
                 .append("&className=").append(className)
-                .append("&logLevel=ERROR")
-                .append("&time=").append(startTime-1000).append(",").append(currentTime+1000);
+                .append("&logLevel=ERROR");
+        if (StringUtils.isEmpty(traceId)) {
+            builder.append("&traceId=").append(traceId);
+        }
+        builder.append("&time=").append(startTime-1000).append(",").append(currentTime+1000);
         return builder.toString();
     }
 
