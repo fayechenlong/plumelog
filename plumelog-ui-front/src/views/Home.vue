@@ -1093,7 +1093,11 @@ export default {
                 })
               }
             } else {
-              query = _data.replace(/,/g, ' ');
+              if(itemKey == "env"){
+                query = _data
+              }else{
+                query = _data.replace(/,/g, ' ');
+              }
               filters.push({
                 "match_phrase": {
                   [itemKey]: {
