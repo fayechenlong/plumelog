@@ -6,9 +6,9 @@ import com.plumelog.core.client.AbstractServerClient;
 import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.core.util.ThreadPoolUtil;
-import com.plumelog.server.config.InitConfig;
 import com.plumelog.server.client.http.SkipHostnameVerifier;
 import com.plumelog.server.client.http.SkipSslVerificationHttpRequestFactory;
+import com.plumelog.server.config.InitConfig;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -426,7 +426,13 @@ public class ElasticLowerClient extends AbstractServerClient {
                 long endTime = System.currentTimeMillis();
                 requestStr.setEntity(null);
                 if (response.getStatusLine().getStatusCode() == 200) {
-                    logger.info("ElasticSearch commit! success,日志提交ES耗时：{}", endTime - startTime);
+                    String responseStr = EntityUtils.toString(response.getEntity());
+                    JSONObject originalJsonData = JSONObject.parseObject(responseStr);
+                    if ((Boolean) originalJsonData.get("errors")) {
+                        logger.error("ElasticSearch commit Failure! {},日志提交ES耗时：{}", responseStr, endTime - startTime);
+                    } else {
+                        logger.info("ElasticSearch commit! success,日志提交ES耗时：{}", endTime - startTime);
+                    }
                 } else {
                     String responseStr = EntityUtils.toString(response.getEntity());
                     logger.error("ElasticSearch commit Failure! {},日志提交ES耗时：{}", responseStr, endTime - startTime);
@@ -437,6 +443,14 @@ public class ElasticLowerClient extends AbstractServerClient {
         });
     }
 
+    private String getRsponseEntityString(Response response) throws IOException {
+        InputStream inputStream = response.getEntity().getContent();
+        byte[] bytes = new byte[0];
+        bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        return new String(bytes);
+    }
+
     @Override
     public String cat(String index) {
         String reStr = "";
@@ -445,11 +459,7 @@ public class ElasticLowerClient extends AbstractServerClient {
                 "/_cat/indices/" + index + "?v");
         try {
             Response res = client.performRequest(request);
-            InputStream inputStream = res.getEntity().getContent();
-            byte[] bytes = new byte[0];
-            bytes = new byte[inputStream.available()];
-            inputStream.read(bytes);
-            String str = new String(bytes);
+            String str = getRsponseEntityString(res);
             reStr = str;
         } catch (Exception e) {
             e.printStackTrace();
@@ -590,5 +600,6 @@ public class ElasticLowerClient extends AbstractServerClient {
             logger.error("", e);
         }
     }
+
 
 }
