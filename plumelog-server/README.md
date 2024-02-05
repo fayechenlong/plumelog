@@ -1,8 +1,8 @@
 # docker构建与部署
 ## 快速开始（使用官方镜像）
 ### 运行命令
-`docker run -d -p8891:8891 -e plumelog.model=redis --name=plumelog ylyue/plumelog`
-
+`docker run -d -p 8891:8891 -e plumelog.model=redis --name=plumelog ylyue/plumelog`
+也可参考当前目录下的docker-compose.yml
 ### 环境变量说明
 支持 `-e` 环境变量注入，具体变量值参考 [application.properties](https://gitee.com/plumeorg/plumelog/blob/v3.5/plumelog-server/src/main/resources/application.properties) 文件
 
