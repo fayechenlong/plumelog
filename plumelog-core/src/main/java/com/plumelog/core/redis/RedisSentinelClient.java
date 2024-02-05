@@ -39,7 +39,14 @@ public class RedisSentinelClient extends AbstractClient {
         config.setMaxWaitMillis(MAX_WAIT);
         config.setTestOnBorrow(TEST_ON_BORROW);
         if (pass != null && !"".equals(pass)) {
-            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config,Protocol.DEFAULT_TIMEOUT,pass,db);
+            /**
+             * fix：哨兵模式下提示缺失哨兵密码的问题
+             *
+             */
+            jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config,Protocol.DEFAULT_TIMEOUT,Protocol.DEFAULT_TIMEOUT,
+                    null, pass, db,null,
+                    Protocol.DEFAULT_TIMEOUT,Protocol.DEFAULT_TIMEOUT,
+                    null, pass, null);
         } else {
             jedisSentinelPool = new JedisSentinelPool(masterName, sentinels, config,Protocol.DEFAULT_TIMEOUT);
         }
