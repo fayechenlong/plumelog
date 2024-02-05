@@ -335,7 +335,7 @@ spring.profiles.active=dev
     </appender>
     <!-- 配置日志输出，只输出info，只保留控制台和plumelog输出-->
   <!-- 正常开发环境本地，只输出到控制台，测试环境只输出到plumelog,生产环境输出到本地文件plumelog,因为有plumelog加持本地文件就保留3天即可-->
-  <!-- 这些都可以根据环境配置不同加载不同的ref->
+  <!-- 这些都可以根据环境配置不同加载不同的ref-->
     <root level="info">
       <!--输出到控制台-->
         <appender-ref ref="CONSOLE"/>
