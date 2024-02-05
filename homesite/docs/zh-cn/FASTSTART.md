@@ -463,9 +463,7 @@ LiteAppender
 
 
 * 方法一：添加拦截器
-
-TraceIdInterceptorsConfig.java
-
+  * javax api
 ```java
 import com.plumelog.core.PlumeLogTraceIdInterceptor;
 import org.springframework.context.annotation.Configuration;
@@ -492,10 +490,36 @@ public class TraceIdInterceptorsConfig extends WebMvcConfigurerAdapter {
 
 }
 ```
+  * jakarta api
+```java
+import com.plumelog.core.jakarta.PlumeLogJakartaTraceIdInterceptor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class TraceIdInterceptorsConfig implements WebMvcConfigurer {
+
+  private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {"classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/", "classpath:/public/"};
+  
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    //plumelog-lite的用户注意，拦截器会覆盖静态文件访问路径，导致不能访问查询页面，所以这边需要用addResourceLocations设置下静态文件访问路径，其他的用户可以不用管
+    registry.addResourceHandler("/**")
+            .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
+  }
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new PlumeLogJakartaTraceIdInterceptor());
+  }
+
+}
+```
 
 * 方法二:添加过滤器filter,新建一个过滤器 
-  
-PlumeLogilterConfig.java
+  * javax api
 ```java
 import com.plumelog.core.TraceIdFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -504,7 +528,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.servlet.Filter;
 
 @Configuration
-public class PlumeLogilterConfig {
+public class PlumeLogFilterConfig {
 
 
   @Bean
@@ -523,7 +547,34 @@ public class PlumeLogilterConfig {
 }
     
 ```   
+  * jakarta api
+```java
+import com.plumelog.core.jakarta.TraceIdJakartaFilter;
+import jakarta.servlet.Filter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
+public class PlumeLogFilterConfig {
+
+
+  @Bean
+  public FilterRegistrationBean filterRegistrationBean1() {
+    FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+    filterRegistrationBean.setFilter(initCustomFilter());
+    filterRegistrationBean.addUrlPatterns("/*");
+    filterRegistrationBean.setOrder(Integer.MIN_VALUE);
+    return filterRegistrationBean;
+  }
+
+  @Bean
+  public Filter initCustomFilter() {
+    return new TraceIdJakartaFilter();
+  }
+}
+    
+```   
 * webflux,以此类推
 
 ```java
