@@ -31,6 +31,12 @@
             </Option>
           </Select>
         </FormItem>
+        <FormItem label="加签"  v-if="dataInfo.hookServe === 1">
+          <i-switch v-model="dataInfo.signature" size="large">
+            <span slot="open">开启</span>
+            <span slot="close">关闭</span>
+          </i-switch>
+        </FormItem>
         <FormItem label="钩子" required>
           <Input v-model="dataInfo.webhookUrl" placeholder="输入钩子地址"/>
         </FormItem>
@@ -77,9 +83,9 @@
       </Tab-pane>
       <Tab-pane icon="md-alert" label="报警记录" key="报警记录">
         <div v-if="logs.length>0">
-         <Row>
-           <Button icon="ios-trash" class="btn_clear" @click="clearWarn">清空记录</Button>
-         </Row>
+          <Row>
+            <Button icon="ios-trash" class="btn_clear" @click="clearWarn">清空记录</Button>
+          </Row>
           <ul class="logList">
             <li v-for="(log,index) in logs" :key="index">
               <div class="time">{{ formatTime(log.dataTime) }}</div>
@@ -136,6 +142,7 @@ export default {
         time: 60,
         hookServe: 1,
         status: false,
+        signature: false,
       },
       pageSize: 50,
       from: 0,
@@ -231,9 +238,9 @@ export default {
       }
     },
     handlePageChange(pageNum) {
-        let start = 15*(pageNum-1);
-        let end = start + 15
-        this.showData = this.warnData.slice(start, end)
+      let start = 15*(pageNum-1);
+      let end = start + 15
+      this.showData = this.warnData.slice(start, end)
     },
     removeSelect() {
       if (this.selection.length > 0 && confirm('确认要删除所选的监控么')) {
@@ -306,7 +313,7 @@ export default {
     getAppNames(){
 
       if(sessionStorage['cache_appNames'] && sessionStorage['cache_appNames_time']
-              && sessionStorage['cache_appNames_time'] > new Date().getTime() - 1800000){
+          && sessionStorage['cache_appNames_time'] > new Date().getTime() - 1800000){
         this.appNames = JSON.parse(sessionStorage['cache_appNames'])
       } else {
         axios.post(process.env.VUE_APP_API+'/queryAppName?from=0&size=0',{
@@ -339,6 +346,7 @@ export default {
         webhookUrl: '',
         errorCount: 10,
         errorContent: '',
+        signature: true,
         status: true,
         time: 60
       };
@@ -348,6 +356,7 @@ export default {
       let id = _info.id || Date.now();
 
       _info.status = _info.status ? 1 : 0;
+      _info.signature = _info.signature ? 1 : 0;
       axios.post(process.env.VUE_APP_API + '/saveWarningRuleList?id=' + id, _info).then(data => {
         if (data.data.success) {
           this.$Message.success('保存成功');
@@ -363,7 +372,8 @@ export default {
         let rows = _.get(data, 'data', []).map(item => {
           return {
             ...item,
-            status: item.status == 1
+            status: item.status == 1,
+            signature: item.signature == 1
           }
         });
         this.warnData = rows;

@@ -6,6 +6,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.dto.WarningRule;
 import com.plumelog.core.client.AbstractServerClient;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,17 +36,23 @@ import java.util.List;
 public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMonitorEvent> {
 
     private static final String WARNING_NOTICE = ":WARNING:NOTICE";
+    private static final int DING_TALK_SECRET = 1;
+
     /**
      * 当KEY设置过期时间时加的后缀
      */
     private static final String KEY_NX = ":NX";
     private static final Logger logger = LoggerFactory.getLogger(PlumeLogMonitorListener.class);
+
+    @Value("${plumelog.ui.url:127.0.0.1:8989}")
+    private String url;
+    @Value("${ding.talk.secret}")
+    private String secret;
+
     @Autowired
     private PlumeLogMonitorRuleConfig plumeLogMonitorRuleConfig;
     @Autowired
     private AbstractClient redisClient;
-    @Value("${plumelog.ui.url:127.0.0.1:8989}")
-    private String url;
     @Autowired
     private AbstractServerClient abstractServerClient;
 
@@ -168,6 +179,15 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
 
     }
 
+    public static void main(String[] args) {
+        List<String> receivers = Arrays.asList("all");
+        if (receivers.removeIf(r -> r.equalsIgnoreCase("all"))) {
+            System.out.println(receivers);
+            System.out.println(true);
+        }
+
+    }
+
     /**
      * 执行预警
      *
@@ -176,6 +196,15 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
      * @param key
      */
     private void earlyWarning(WarningRule rule, long count, String key, String errorContent, String className, String traceId) {
+        List<String> receivers = new ArrayList<>();
+        boolean isSendAll = false;
+        if (!StringUtils.isEmpty(rule.getReceiver())) {
+            String[] split = rule.getReceiver().split(",");
+            receivers = new ArrayList<>(Arrays.asList(split));
+            if (receivers.removeIf(r -> r.equalsIgnoreCase("all"))) {
+                isSendAll = true;
+            }
+        }
         PlumeLogMonitorTextMessage plumeLogMonitorTextMessage =
                 new PlumeLogMonitorTextMessage.Builder(rule.getAppName(), rule.getEnv())
                         .className(rule.getClassName())
@@ -184,17 +213,19 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
                         .count(count)
                         .monitorUrl(getMonitorMessageURL(rule, className, traceId))
                         .errorContent(errorContent)
+                        .isSendAll(isSendAll)
+                        .receivers(receivers)
                         .build();
-        if (!StringUtils.isEmpty(rule.getReceiver())) {
-            String[] split = rule.getReceiver().split(",");
-            List<String> receivers = new ArrayList<String>(Arrays.asList(split));
-            if (receivers.contains("all") || receivers.contains("ALL")) {
-                plumeLogMonitorTextMessage.setAtAll(true);
-                receivers.remove("all");
-                receivers.remove("ALL");
-            }
-            plumeLogMonitorTextMessage.setAtMobiles(receivers);
+        plumeLogMonitorTextMessage.setAtMobiles(receivers);
+        plumeLogMonitorTextMessage.setAtAll(isSendAll);
+
+        if (rule.getHookServe() == DING_TALK_SECRET && rule.getSignature() == DING_TALK_SECRET) {
+            //钉钉平台&&开启加签,url拼接签名sign和时间戳
+            Long timestamp = System.currentTimeMillis();
+            String sign = getSign(timestamp);
+            rule.setWebhookUrl(rule.getWebhookUrl() + "&timestamp=" + timestamp + "&sign=" + sign);
         }
+
         String warningKey = key + WARNING_NOTICE;
         if (redisClient.setNx(warningKey + KEY_NX, rule.getTime())) {
             logger.info(plumeLogMonitorTextMessage.getText());
@@ -204,6 +235,19 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         }
         redisClient.set(warningKey, warningKey);
         redisClient.expireAt(warningKey, Long.parseLong(String.valueOf(rule.getTime())));
+    }
+
+    private String getSign(Long timestamp) {
+        try {
+            String stringToSign = timestamp + "\n" + secret;
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
+            return URLEncoder.encode(new String(Base64.encodeBase64(signData)), "UTF-8");
+        } catch (Exception e) {
+            logger.error("钉钉签名失败", e);
+            return null;
+        }
     }
 
 
@@ -239,7 +283,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
         if (!StringUtils.isEmpty(traceId)) {
             builder.append("&traceId=").append(traceId);
         }
-        builder.append("&time=").append(startTime-1000).append(",").append(currentTime+1000);
+        builder.append("&time=").append(startTime - 1000).append(",").append(currentTime + 1000);
         return builder.toString();
     }
 

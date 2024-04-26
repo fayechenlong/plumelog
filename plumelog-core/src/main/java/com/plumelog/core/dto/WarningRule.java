@@ -20,6 +20,7 @@ public class WarningRule {
     private int time;
     private int status;
     private int hookServe = 1; // 1 DingTalk 2 Wechat
+    private int signature;//钉钉加签
 
     public String getAppName() {
         return appName;
@@ -99,5 +100,13 @@ public class WarningRule {
 
     public void setHookServe(int hookServe) {
         this.hookServe = hookServe;
+    }
+
+    public int getSignature() {
+        return signature;
+    }
+
+    public void setSignature(int signature) {
+        this.signature = signature;
     }
 }

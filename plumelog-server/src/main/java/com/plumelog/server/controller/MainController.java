@@ -430,6 +430,7 @@ public class MainController {
             warningRuleDto.setErrorCount(warningRule.getErrorCount());
             warningRuleDto.setStatus(warningRule.getStatus());
             warningRuleDto.setHookServe(warningRule.getHookServe());
+            warningRuleDto.setSignature(warningRule.getSignature());
             list.add(warningRuleDto);
         }
         return list;
