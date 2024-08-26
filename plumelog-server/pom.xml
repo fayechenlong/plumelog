@@ -128,12 +128,12 @@
             <scope>compile</scope>
         </dependency>
         <!-- 内嵌redis server-->
-        <dependency>
-            <groupId>com.github.caryyu</groupId>
-            <artifactId>spring-embedded-redis-server</artifactId>
-            <version>1.1</version>
-            <type>pom</type>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.caryyu</groupId>-->
+<!--            <artifactId>spring-embedded-redis-server</artifactId>-->
+<!--            <version>1.1</version>-->
+<!--            <type>pom</type>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>

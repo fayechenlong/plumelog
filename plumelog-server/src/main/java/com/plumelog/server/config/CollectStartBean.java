@@ -57,24 +57,24 @@ public class CollectStartBean implements InitializingBean {
     @Autowired(required = false)
     @Value("${plumelog.redis.compressor:false}")
     private Boolean compressor;
-    @Autowired(required = false)
-    @Value("${plumelog.inside.redis.host:}")
-    private String insideRedis;
+//    @Autowired(required = false)
+//    @Value("${plumelog.inside.redis.host:}")
+//    private String insideRedis;
 
     private RedisServer redisServer;
 
 
     private void serverStart() {
 
-        if (!StringUtils.isEmpty(insideRedis)) {
-            String[] hs = insideRedis.split(":");
-            redisServer = RedisServer.builder()
-                    .port(Integer.parseInt(hs[1]))
-                    .setting("bind " + hs[0]) //绑定ip
-                    .build();
-            redisServer.start();
-            logger.info("inside redis start!");
-        }
+//        if (!StringUtils.isEmpty(insideRedis)) {
+//            String[] hs = insideRedis.split(":");
+//            redisServer = RedisServer.builder()
+//                    .port(Integer.parseInt(hs[1]))
+//                    .setting("bind " + hs[0]) //绑定ip
+//                    .build();
+//            redisServer.start();
+//            logger.info("inside redis start!");
+//        }
 
         if (InitConfig.KAFKA_MODE_NAME.equals(InitConfig.START_MODEL)) {
             KafkaLogCollect kafkaLogCollect = new KafkaLogCollect((ElasticLowerClient) abstractServerClient, kafkaConsumer,
