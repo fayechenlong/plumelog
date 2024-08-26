@@ -20,8 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import redis.embedded.RedisServer;
 
 import javax.annotation.PreDestroy;
 
@@ -61,7 +59,7 @@ public class CollectStartBean implements InitializingBean {
 //    @Value("${plumelog.inside.redis.host:}")
 //    private String insideRedis;
 
-    private RedisServer redisServer;
+//    private RedisServer redisServer;
 
 
     private void serverStart() {
@@ -154,10 +152,10 @@ public class CollectStartBean implements InitializingBean {
     }
 
 
-    @PreDestroy
-    public void stopRedis() {
-        if (redisServer != null) {
-            redisServer.stop();
-        }
-    }
+//    @PreDestroy
+//    public void stopRedis() {
+//        if (redisServer != null) {
+//            redisServer.stop();
+//        }
+//    }
 }

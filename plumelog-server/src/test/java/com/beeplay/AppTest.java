@@ -1,10 +1,7 @@
 package com.beeplay;
 
 
-import com.plumelog.server.client.ElasticLowerClient;
 import org.junit.Test;
-import redis.embedded.RedisServer;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +16,6 @@ public class AppTest
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue() {
-
-        RedisServer redisServer;
-        redisServer = RedisServer.builder()
-                .port(6379) //端口
-                .setting("bind 127.0.0.1") //绑定ip
-                .setting("requirepass 123456") //设置密码
-                .build();
-        redisServer.start();
-
-    }
 
     private List<String> getIndex(String indexStr) {
         List<String> indexsList = new ArrayList<>();
