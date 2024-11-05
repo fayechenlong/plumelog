@@ -78,8 +78,12 @@ public class PlumeLogMainController {
     }
 
     @RequestMapping({"/clientQuery"})
-    public String clientQuery(@RequestBody String queryStr, String size, String from,
-                              String clientStartDate, String clientEndDate, String trace) {
+    public String clientQuery(@RequestBody String queryStr,
+                              @RequestParam("size") String size,
+                              @RequestParam("from") String from,
+                              @RequestParam("clientStartDate") String clientStartDate,
+                              @RequestParam("clientEndDate") String clientEndDate,
+                              @RequestParam(value = "trace", required = false) String trace) {
 
         Long clientStartDateTime = 0L;
         try {
