@@ -1,3 +1,15 @@
 {
-    "maven.view": "hierarchical"
+    "maven.view": "hierarchical",
+    "maven.terminal.favorites": [
+        {
+            "alias": "full-build without tests",
+            "command": "clean package -DskipTests",
+            "debug": false
+        },
+        {
+            "alias": "full-build without tests and test compile",
+            "command": "clean package -Dmaven.test.skip=true",
+            "debug": false
+        }
+    ],
 }
