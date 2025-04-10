@@ -1,13 +1,18 @@
 # docker构建与部署
 ## 快速开始（使用官方镜像）
 ### 运行命令
-`docker run -d -p 8891:8891 -e plumelog.model=redis --name=plumelog ylyue/plumelog`
+
+```bash
+docker run -d -p 8891:8891 -e plumelog.model=redis --name=plumelog ylyue/plumelog
+```
+
 也可参考当前目录下的docker-compose.yml
 ### 环境变量说明
 支持 `-e` 环境变量注入，具体变量值参考 [application.properties](https://gitee.com/plumeorg/plumelog/blob/v3.5/plumelog-server/src/main/resources/application.properties) 文件
 
 v3.5版本变量值如下：
-```yml
+
+```properties
 #值为4种 redis,kafka,rest,restServer,lite
 #redis 表示用redis当队列
 #kafka 表示用kafka当队列
@@ -86,16 +91,19 @@ admin.log.trace.keepDays=30
 ## 自行构建镜像
 ### 镜像构建与发布
 1. 在`plumelog-server`目录下运行打包maven命令
+
 ```bash
 mvn clean package
 ```
 
 2. 在`plumelog-server`目录下构建docker镜像
+
 ```bash
 docker build --tag ylyue/plumelog:v3.5.1 .
 ```
 
 3. 发布docker镜像
+
 ```bash
 docker push ylyue/plumelog:v3.5.1
 ```
