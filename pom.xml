@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog</artifactId>
+    <version>${revision}</version>
     <packaging>pom</packaging>
-    <version>3.5.3</version>
     <name>plumelog</name>
     <description>The parent project of plumelog</description>
     <url>https://gitee.com/frankchenlong/plumelog</url>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
-        <redis.version>3.3.0</redis.version>
-        <kafka.version>2.5.0</kafka.version>
-        <springboot.version>2.1.7.RELEASE</springboot.version>
-        <elasticsearch.version>7.7.0</elasticsearch.version>
-    </properties>
+    <developers>
+        <developer>
+            <id>tonycody</id>
+            <name>Tony Cody</name>
+            <email>tonycody@outlook.com</email>
+            <url>https://tonycody.github.io/</url>
+            <roles>
+                <role>Contributor</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+    <prerequisites>
+        <maven>3.9.6</maven>
+    </prerequisites>
     <modules>
         <module>plumelog-core</module>
         <module>plumelog-server</module>
@@ -31,6 +37,34 @@
         <module>plumelog-lucene</module>
         <module>plumelog-lite-spring-boot-starter</module>
     </modules>
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>${distribution.repository.url}/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>${distribution.repository.url}/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <properties>
+        <revision>3.5.3</revision>
+
+        <encoding>UTF-8</encoding>
+        <java.version>8</java.version>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+        <maven.compiler.encoding>${encoding}</maven.compiler.encoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+
+        <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
+        <redis.version>3.3.0</redis.version>
+        <kafka.version>2.5.0</kafka.version>
+        <springboot.version>2.1.7.RELEASE</springboot.version>
+        <elasticsearch.version>7.7.0</elasticsearch.version>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -60,16 +94,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-     <distributionManagement>
-         <repository>
-             <id>releases</id>
-             <url>${distribution.repository.url}/content/repositories/releases</url>
-         </repository>
-         <snapshotRepository>
-             <id>snapshots</id>
-             <url>${distribution.repository.url}/content/repositories/snapshots</url>
-         </snapshotRepository>
-     </distributionManagement>
     <!--<licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -110,15 +134,84 @@
         </repository>
     </distributionManagement>-->
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.5.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.github.tonycody.maven.plugins</groupId>
+                    <artifactId>sorter-maven-plugin</artifactId>
+                    <version>1.0.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <flattenMode>ossrh</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                    <pomElements>
+                        <build>remove</build>
+                        <profiles>remove</profiles>
+                        <repositories>remove</repositories>
+                    </pomElements>
+                    <outputDirectory>${project.build.directory}/flattened</outputDirectory>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <phase>clean</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[8,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.github.tonycody.maven.plugins</groupId>
+                <artifactId>sorter-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>sort</goal>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!--<plugin>
                 <groupId>org.sonatype.plugins</groupId>
@@ -184,4 +277,16 @@
             </plugin>-->
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>jdk9</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.release>${java.version}</maven.compiler.release>
+            </properties>
+        </profile>
+    </profiles>
 </project>

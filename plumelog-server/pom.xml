@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.plumelog</groupId>
         <artifactId>plumelog</artifactId>
-        <version>3.5.3</version>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>plumelog-server</artifactId>
     <name>plumelog-server</name>
 
@@ -128,12 +128,12 @@
             <scope>compile</scope>
         </dependency>
         <!-- 内嵌redis server-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.caryyu</groupId>-->
-<!--            <artifactId>spring-embedded-redis-server</artifactId>-->
-<!--            <version>1.1</version>-->
-<!--            <type>pom</type>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.caryyu</groupId>-->
+        <!--            <artifactId>spring-embedded-redis-server</artifactId>-->
+        <!--            <version>1.1</version>-->
+        <!--            <type>pom</type>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -179,10 +179,10 @@
                 <executions>
                     <execution>
                         <id>copy-config</id>
-                        <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
+                        <phase>package</phase>
                         <configuration>
                             <outputDirectory>${project.build.directory}/</outputDirectory>
                             <resources>
