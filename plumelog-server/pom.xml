@@ -171,7 +171,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- maven资源文件复制插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -194,6 +193,26 @@
                                         <exclude>**/*.properties</exclude>
                                         <exclude>**/*.sh</exclude>
                                         <exclude>**/*.bat</exclude>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-dockerfile</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <outputDirectory>${project.basedir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>Dockerfile</include>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>

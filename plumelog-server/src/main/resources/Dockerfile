@@ -14,6 +14,6 @@ ENV TimeZone=Asia/Shanghai
 # 使用软连接，并且将时区配置覆盖/etc/timezone
 RUN ln -snf /usr/share/zoneinfo/$TimeZone /etc/localtime && echo $TimeZone > /etc/timezone
 
-ADD target/plumelog-server-3.5.3.jar app.jar
+ADD target/plumelog-server-${project.version}.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
