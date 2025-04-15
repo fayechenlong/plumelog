@@ -491,7 +491,7 @@ public class MainController {
 
     @RequestMapping({"/getAppNames", "/plumelog/getAppNames"})
     public Object getAppNames() {
-        return AppNameCache.appName;
+        return AppNameCache.getInstance().getAppName();
     }
 
     private Set<String> queryAppNameWithEnvSet(String indexStr, String queryStr, Set<String> appNameSet, boolean isQueryWithEnv) {
