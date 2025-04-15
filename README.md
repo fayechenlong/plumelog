@@ -50,11 +50,11 @@ Star趋势图
 
 * plumelog-lite plumelog的嵌入式集成版本，直接pom引用，嵌入在项目中，自带查询界面，适合单个独立小项目使用，外包软件的最佳伴侣
 
-#### 1. [使用文档](/FASTSTART.md)
+#### 1. [使用文档](/QUICKSTART.md)
 
-#### 2. [查询后台使用指南](/HELP.md)
+#### 2. [查询后台使用指南](/MANUAL.md)
 
-#### 3. [版本升级注意事项](/update.md)
+#### 3. [版本升级注意事项](/CHANNGELOG.md)
 
 #### 4. [lite版本使用文档](/plumelog-lite/README.md)
 
