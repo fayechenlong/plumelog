@@ -24,7 +24,7 @@
 
 第四步：配置plumelog-server，并启动，redis和kafka作为队列模式下可以部署多个plumelog-server达到高可用，配置一样即可
 
-第五步：后台查询语法详见[plumelog使用指南](/HELP.md)
+第五步：后台查询语法详见[plumelog使用指南](/MANUAL.md)
 
 ### （2）服务端配置
 
