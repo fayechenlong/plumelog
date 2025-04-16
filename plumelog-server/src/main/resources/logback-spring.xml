@@ -45,6 +45,6 @@
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
-       <appender-ref ref="PLUMELOG" />
+        <appender-ref ref="PLUMELOG" />
     </root>
 </configuration>
