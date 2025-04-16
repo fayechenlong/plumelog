@@ -151,7 +151,7 @@ public class PlumeLogMonitorListener implements ApplicationListener<PlumelogMoni
             redisClient.hset(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_TIME, time);
         }
         long startTime = Long.parseLong(time);
-        long endTime = startTime + (rule.getTime() * 1000);
+        long endTime = startTime + (rule.getTime() * 1000L);
         if (endTime > System.currentTimeMillis()) {
             Long incr = redisClient.hincrby(key, LogMessageConstant.PLUMELOG_MONITOR_KEY_MAP_FILED_COUNT, 1);
             if (incr >= rule.getErrorCount() && !redisClient.existsKey(key + WARNING_NOTICE)) {

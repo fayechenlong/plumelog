@@ -1,0 +1,64 @@
+services:
+  plumelog:
+    image: azul/zulu-openjdk:11
+    container_name: plumelog
+    working_dir: /plumelog
+    ports:
+      - "8891:8891"
+    environment:
+      plumelog.model: redis
+      plumelog.queue.redis.redisHost: redis:6379
+      plumelog.queue.redis.redisDb: 0
+      plumelog.redis.redisHost: redis:6379
+      plumelog.es.esHosts: elasticsearch:9200
+      login.username: admin
+      login.password: admin
+    volumes:
+      - ./target/plumelog-server-3.5.3.jar:/plumelog/app.jar
+    command: java -jar app.jar
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  redis:
+    image: registry.cn-hangzhou.aliyuncs.com/kennylee/redis
+    container_name: "redis"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data/
+      - redis_log:/var/log/redis/
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+  elasticsearch:
+    image: elasticsearch:8.17.5
+    container_name: elasticsearch
+    environment:
+      - "cluster.name=elasticsearch"
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "xpack.security.enabled=false"
+      - "xpack.security.http.ssl.enabled=false"
+      - "xpack.security.transport.ssl.enabled=false"
+    volumes:
+      - es_plugins:/usr/share/elasticsearch/plugins
+      - es_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+volumes:
+  redis_data: {}
+  redis_log: {}
+  es_plugins: {}
+  es_data: {}
