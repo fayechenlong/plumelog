@@ -46,39 +46,45 @@ export default {
           if(_range>1000*60*60*24*7){
             return {
               format:'MM-DD',
-              value: 1000*60*60*24
+              value: 1000*60*60*24,
+              fixed_interval: "24h"
             }
           }
           //大于3天按照12小时进行统计
           else if (_range>1000*60*60*24*3){
             return {
               format:'MM-DD HH:mm',
-              value: 1000*60*60*12
+              value: 1000*60*60*12,
+              fixed_interval: "12h"
             }
           }
           //大于1天按照6小时进行统计
           else if (_range>1000*60*60*24){
             return {
               format:'MM-DD HH:mm',
-              value: 1000*60*60*6
+              value: 1000*60*60*6,
+              fixed_interval: "6h"
             }
           } //小于1天按照小时统计
           else if (_range < 1000*60*60*24){
             return {
               format:'HH:mm',
-              value: 1000*60
+              value: 1000*60,
+              fixed_interval: "1m"
             }
           }else
           {
             return {
               format:'MM-DD HH:mm',
-              value: 1000*60*60
+              value: 1000*60*60,
+              fixed_interval: "1h"
             }
           }
         }
         return {
           format:'MM-DD HH:mm',
-          value: 1000*60*60
+          value: 1000*60*60,
+          fixed_interval: "1h"
         }
       }
   },
@@ -131,7 +137,7 @@ export default {
           "dataCount": {
             "date_histogram": {
               "field": "dtTime",
-              "interval": this.chartInterval.value,
+              "fixed_interval": this.chartInterval.fixed_interval,
               "min_doc_count": 0
             }
           }
@@ -161,7 +167,7 @@ export default {
         "dataCount":{
           "date_histogram": {
             "field": "dtTime",
-            "interval": this.chartInterval.value,
+            "fixed_interval": this.chartInterval.fixed_interval,
             "min_doc_count": 0
           }
         }
