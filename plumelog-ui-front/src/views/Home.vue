@@ -1034,16 +1034,13 @@ export default {
       myChart.off('click');
       myChart.on('click', params => {
         const bucket = this.chartData[params.dataIndex];
-        console.log('点击了柱状图，bucket:', bucket);
         if (bucket) {
           const start = bucket.key;
           const interval = this.chartInterval.value;
           let end = start + interval;
-          let startTime = moment(start).format('YYYY-MM-DD HH:mm:ss');
-          let endTime = moment(end).format('YYYY-MM-DD HH:mm:ss');
-          console.log('点击了柱状图，时间范围：', 'start:', startTime, 'end:', endTime);
+          console.log('点击了柱状图，时间范围：', 'start:', moment(start).format('YYYY-MM-DD HH:mm:ss'), 'end:', moment(end).format('YYYY-MM-DD HH:mm:ss'));
           this.from = 0;
-          this.doSearch(null, null, startTime, endTime);
+          this.doSearch(null, null, start, end);
         }
       });
     },
@@ -1479,15 +1476,18 @@ export default {
         chartFilter.query.bool.must_not = mustNotArr;
       }
 
-      axios.post(process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+      // 柱状图点过来的数据不刷新柱状图
+      if (!(startDate && endDate)) {
+        axios.post(process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&chartData', chartFilter).then(data => {
-        this.chartData = _.get(data, 'data.aggregations.2.buckets', []);
-        this.drawLine();
-      });
+          this.chartData = _.get(data, 'data.aggregations.2.buckets', []);
+          this.drawLine();
+        });
 
-      this.getErrorRate().then(data => {
-        this.drawErrorLine(data)
-      });
+        this.getErrorRate().then(data => {
+          this.drawErrorLine(data)
+        });
+      }
     },
     getErrorRate() {
       let now = new Date();
