@@ -1,5 +1,7 @@
 # Plumelog UI
 
+# Use NPM
+
 ## node 版本
 
 ```plaintext
@@ -23,3 +25,24 @@ npm run build
 ```bash
 node app
 ```
+
+# Use PNPM
+
+## Install
+
+```shell
+pnpm install
+```
+
+## Dev
+
+```shell
+pnpm dev
+```
+
+## Production
+
+```shell
+pnpm build
+```
+
