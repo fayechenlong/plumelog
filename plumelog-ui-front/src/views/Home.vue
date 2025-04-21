@@ -1030,6 +1030,22 @@ export default {
           }
         }]
       });
+      // 为柱状图添加点击事件
+      myChart.off('click');
+      myChart.on('click', params => {
+        const bucket = this.chartData[params.dataIndex];
+        console.log('点击了柱状图，bucket:', bucket);
+        if (bucket) {
+          const start = bucket.key;
+          const interval = this.chartInterval.value;
+          let end = start + interval;
+          let startTime = moment(start).format('YYYY-MM-DD HH:mm:ss');
+          let endTime = moment(end).format('YYYY-MM-DD HH:mm:ss');
+          console.log('点击了柱状图，时间范围：', 'start:', startTime, 'end:', endTime);
+          this.from = 0;
+          this.doSearch(null, null, startTime, endTime);
+        }
+      });
     },
     drawErrorLine(data) {
       let errorChart = this.$echarts.init(document.getElementById('errorChart'));
@@ -1321,7 +1337,7 @@ export default {
         this.drawErrorLine(data)
       });
     },
-    doSearch(keyName, item) {
+    doSearch(keyName, item, startDate, endDate) {
       this.localStorageChange('size', this.size);
 
       if (this.isSearching) {
@@ -1336,10 +1352,23 @@ export default {
           this.filter[keyName] = item[keyName]
         }
       }
-
-      //列出范围内的日期
-      let shouldFilter = this.getShouldFilter();
-
+      
+      let shouldFilter;
+      if (startDate && endDate){
+        // 调用方传时间范围的话，就不使用默认的时间范围了，这个地方是特殊处理啊，为了点击柱状图时查询柱状图的时间范围，这个搜索方法包的能力太多了，实在不想改了，就这样了
+        shouldFilter = [{
+          "range": {
+            "dtTime": {
+              "gte": Date.parse(moment(startDate).format('YYYY-MM-DD HH:mm:ss')),
+              "lt": Date.parse(moment(endDate).format('YYYY-MM-DD HH:mm:ss')),
+            }
+          }
+        }]
+      } else {
+        //列出范围内的日期
+        shouldFilter = this.getShouldFilter();
+      }
+      
       let url = process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
 
