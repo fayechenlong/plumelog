@@ -80,7 +80,7 @@
         <redis.version>3.3.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
-        <elasticsearch.version>7.7.0</elasticsearch.version>
+        <elasticsearch.version>8.18.0</elasticsearch.version>
     </properties>
     <dependencyManagement>
         <dependencies>

@@ -15,7 +15,6 @@
         <redis.version>3.3.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
-        <elasticsearch.version>7.7.0</elasticsearch.version>
         <dingtalk.version>2.0.0</dingtalk.version>
     </properties>
 
@@ -51,7 +50,7 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-client</artifactId>
-            <version>8.18.0</version>
+            <version>${elasticsearch.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
