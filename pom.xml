@@ -64,16 +64,7 @@
         <developerConnection>scm:git:https://gitee.com/frankchenlong/plumelog.git</developerConnection>
         <url>https://gitee.com/frankchenlong/plumelog</url>
     </scm>
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <url>${distribution.repository.url}/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>${distribution.repository.url}/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+
     <properties>
         <revision>3.5.3</revision>
 
@@ -86,7 +77,6 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
 
-        <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
         <redis.version>3.3.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
@@ -206,7 +196,24 @@
 
     <profiles>
         <profile>
-            <!-- 发布包时指定 -->
+            <!-- 发布到公司仓库时指定 -->
+            <id>company</id>
+            <distributionManagement>
+                <repository>
+                    <id>releases</id>
+                    <url>${distribution.repository.url}/content/repositories/releases</url>
+                </repository>
+                <snapshotRepository>
+                    <id>snapshots</id>
+                    <url>${distribution.repository.url}/content/repositories/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
+            <properties>
+                <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 发布到中央仓库时指定 -->
             <id>publish</id>
             <distributionManagement>
                 <repository>
