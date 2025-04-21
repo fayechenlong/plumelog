@@ -88,6 +88,34 @@ admin.log.trace.keepDays=30
 #login.password=admin
 ```
 
+# 项目结构说明
+
+```bash
+.
+├── docker-compose.yaml                      --------------- 基于 resources/docker-compose.yaml 模板生成的文件
+├── Dockerfile                               --------------- 基于 resources/Dockerfile 模板生成的文件
+├── pom.xml
+├── README.md
+└── src
+    ├── main
+    │   ├── java
+    │   │   └── com
+    │   └── resources
+    │       ├── application.properties
+    │       ├── banner.txt
+    │       ├── docker-compose.yaml          --------------- 模板文件，package 时自动替换当前项目的版本号
+    │       ├── Dockerfile                   --------------- 模板文件，package 时自动替换当前项目的版本号
+    │       ├── logback-spring.xml
+    │       ├── restart.sh
+    │       ├── startup.bat
+    │       ├── startup.sh
+    │       ├── static
+    │       └── templates
+    └── test
+        └── java
+            └── com
+```
+
 ## 自行构建镜像
 ### 镜像构建与发布
 1. 在`plumelog-server`目录下运行打包maven命令
