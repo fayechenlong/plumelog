@@ -368,7 +368,7 @@ export default {
         dataList.push(indexName);
         query.aggs.dataCount["date_histogram"] = {
               "field": "dtTime",
-              "interval": 1000 * 60 * 60,
+              "fixed_interval": "1h",
         }
         delete query.aggs.dataCount.terms
       }

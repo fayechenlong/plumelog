@@ -1,21 +1,48 @@
-# wf_logplat
+# Plumelog UI
 
-## node版本
-```
+# Use NPM
+
+## node 版本
+
+```plaintext
 建议使用 10.15.3
 ```
 
-## 项目安装
-```
+## 安装
+
+```bash
 npm install
 ```
 
 ### 编译
-```
+
+```bash
 npm run build
 ```
 
 ### 启动服务
-```
+
+```bash
 node app
 ```
+
+# Use PNPM
+
+## Install
+
+```shell
+pnpm install
+```
+
+## Dev
+
+```shell
+pnpm dev
+```
+
+## Production
+
+```shell
+pnpm build
+```
+

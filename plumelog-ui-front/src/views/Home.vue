@@ -284,6 +284,13 @@
     <!-- 功能区 -->
     <nav class="page_nav" aria-label="Page navigation example">
       <div class="pnl_select">
+        <span class="name">排除应用：</span>
+        <Select v-model="excludeAppNames" multiple filterable placeholder="选择要排除的应用" @on-change="excludeAppsChange"
+                style="width:270px">
+          <Option v-for="item in allAppNames" :value="item" :key="item">{{ item }}</Option>
+        </Select>
+      </div>
+      <div class="pnl_select" style="margin-left:20px">
         <span class="name">显示字段：</span>
         <Select v-model="showColumnTitles" multiple placeholder="选择要显示的字段" @on-change="columnsChange" :max-tag-count="2"
                 style="width:270px">
@@ -388,6 +395,7 @@ export default {
       chartData: [],
       searchOptions: [],
       showColumnTitles: ['appName', 'traceId'],
+      excludeAppNames: [],
       allColumns: [
         {
           label: '日志等级',
@@ -622,57 +630,67 @@ export default {
         if (_range > 1000 * 60 * 60 * 24 * 7) {
           return {
             format: 'MM-DD',
-            value: 1000 * 60 * 60 * 24
+            value: 1000 * 60 * 60 * 24,
+            fixed_interval: '24h'
           }
         }
         //大于3天按照12小时进行统计
         else if (_range > 1000 * 60 * 60 * 24 * 3) {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60 * 60 * 12
+            value: 1000 * 60 * 60 * 12,
+            fixed_interval: '12h'
           }
         }
         //大于1天按照3小时进行统计
         else if (_range > 1000 * 60 * 60 * 24) {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60 * 60
+            value: 1000 * 60 * 60,
+            fixed_interval: '1h'
           }
         } else if (_range >= 1000 * 60 * 60 * 12) {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60 * 60
+            value: 1000 * 60 * 60,
+            fixed_interval: '1h'
           }
         } else if (_range >= 1000 * 60 * 60 * 6) {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60 * 15
+            value: 1000 * 60 * 15,
+            fixed_interval: '15m'
           }
         } else if (_range >= 1000 * 60 * 60) {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60
+            value: 1000 * 60,
+            fixed_interval: '1m'
           }
         } else if (_range >= 1000 * 60 * 30) {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60
+            value: 1000 * 60,
+            fixed_interval: '1m'
           }
         } else if (_range >= 1000 * 60 * 15) {
           return {
             format: 'MM-DD HH:mm:ss',
-            value: 1000 * 30
+            value: 1000 * 30,
+            fixed_interval: '30s'
           }
         } else {
           return {
             format: 'MM-DD HH:mm',
-            value: 1000 * 60 * 60
+            value: 1000 * 60 * 60,
+            fixed_interval: '1h'
           }
         }
       }
       return {
         format: 'MM-DD HH:mm',
-        value: 1000 * 60 * 60
+        value: 1000 * 60 * 60,
+        fixed_interval: '1h'
       }
     },
     totalCount() {
@@ -909,10 +927,15 @@ export default {
       }
     },
     columnsChange() {
-
       this.list.hists = _.clone(this.list.hists);
       this.$nextTick(()=> {
         this.localStorageChange('showColumnTitles', this.showColumnTitles);
+      })
+    },
+    excludeAppsChange() {
+      this.list.hists = _.clone(this.list.hists);
+      this.$nextTick(()=> {
+        this.localStorageChange('excludeAppNames', this.excludeAppNames);
       })
     },
     substr(str, limit) {
@@ -1006,6 +1029,19 @@ export default {
             color: 'rgba(110, 173, 193,0.6)'
           }
         }]
+      });
+      // 为柱状图添加点击事件
+      myChart.off('click');
+      myChart.on('click', params => {
+        const bucket = this.chartData[params.dataIndex];
+        if (bucket) {
+          const start = bucket.key;
+          const interval = this.chartInterval.value;
+          let end = start + interval;
+          console.log('点击了柱状图，时间范围：', 'start:', moment(start).format('YYYY-MM-DD HH:mm:ss'), 'end:', moment(end).format('YYYY-MM-DD HH:mm:ss'));
+          this.from = 0;
+          this.doSearch(null, null, start, end);
+        }
       });
     },
     drawErrorLine(data) {
@@ -1272,12 +1308,21 @@ export default {
           "2": {
             "date_histogram": {
               "field": "dtTime",
-              "interval": this.chartInterval.value,
+              "fixed_interval": this.chartInterval.fixed_interval,
               "min_doc_count": 0
             }
           }
         }
       };
+
+      if (this.excludeAppNames && this.excludeAppNames.length > 0) {
+        const mustNotArr = this.excludeAppNames.map(appName => ({
+          match_phrase: {
+            appName: { query: appName }
+          }
+        }));
+        chartFilter.query.bool.must_not = mustNotArr;
+      }
 
       axios.post(process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
           + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&chartData', chartFilter).then(data => {
@@ -1289,7 +1334,7 @@ export default {
         this.drawErrorLine(data)
       });
     },
-    doSearch(keyName, item) {
+    doSearch(keyName, item, startDate, endDate) {
       this.localStorageChange('size', this.size);
 
       if (this.isSearching) {
@@ -1304,10 +1349,23 @@ export default {
           this.filter[keyName] = item[keyName]
         }
       }
-
-      //列出范围内的日期
-      let shouldFilter = this.getShouldFilter();
-
+      
+      let shouldFilter;
+      if (startDate && endDate){
+        // 调用方传时间范围的话，就不使用默认的时间范围了，这个地方是特殊处理啊，为了点击柱状图时查询柱状图的时间范围，这个搜索方法包的能力太多了，实在不想改了，就这样了
+        shouldFilter = [{
+          "range": {
+            "dtTime": {
+              "gte": Date.parse(moment(startDate).format('YYYY-MM-DD HH:mm:ss')),
+              "lt": Date.parse(moment(endDate).format('YYYY-MM-DD HH:mm:ss')),
+            }
+          }
+        }]
+      } else {
+        //列出范围内的日期
+        shouldFilter = this.getShouldFilter();
+      }
+      
       let url = process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]);
 
@@ -1321,20 +1379,30 @@ export default {
         }
       };
 
-      if (this.isExclude && this.filter['appName']) {
+      // if (this.isExclude && this.filter['appName']) {
 
-        let mustNotArr = [];
-        for (let appName of this.filter['appName'].split(',')) {
-          mustNotArr.push({
-            "match_phrase": {
-              'appName': {
-                "query": appName.replace(/,/g, ' ')
-              }
-            }
-          })
-        }
+      //   let mustNotArr = [];
+      //   for (let appName of this.filter['appName'].split(',')) {
+      //     mustNotArr.push({
+      //       "match_phrase": {
+      //         'appName': {
+      //           "query": appName.replace(/,/g, ' ')
+      //         }
+      //       }
+      //     })
+      //   }
 
-        query.query.bool['must_not'] = mustNotArr;
+      //   query.query.bool['must_not'] = mustNotArr;
+      // }
+
+      // 排除所选的应用
+      if (this.excludeAppNames && this.excludeAppNames.length > 0) {
+        const mustNotArr = this.excludeAppNames.map(appName => ({
+          match_phrase: {
+            appName: { query: appName }
+          }
+        }));
+        query.query.bool.must_not = mustNotArr;
       }
 
       // 如果指定了traceId，根据阅读习惯，把排序规则改为正序排序
@@ -1392,22 +1460,34 @@ export default {
           "2": {
             "date_histogram": {
               "field": "dtTime",
-              "interval": this.chartInterval.value,
+              "fixed_interval": this.chartInterval.fixed_interval,
               "min_doc_count": 0
             }
           }
         }
       };
 
-      axios.post(process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
-              + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&chartData', chartFilter).then(data => {
-        this.chartData = _.get(data, 'data.aggregations.2.buckets', []);
-        this.drawLine();
-      });
+      if (this.excludeAppNames && this.excludeAppNames.length > 0) {
+        const mustNotArr = this.excludeAppNames.map(appName => ({
+          match_phrase: {
+            appName: { query: appName }
+          }
+        }));
+        chartFilter.query.bool.must_not = mustNotArr;
+      }
 
-      this.getErrorRate().then(data => {
-        this.drawErrorLine(data)
-      });
+      // 柱状图点过来的数据不刷新柱状图
+      if (!(startDate && endDate)) {
+        axios.post(process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
+              + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&chartData', chartFilter).then(data => {
+          this.chartData = _.get(data, 'data.aggregations.2.buckets', []);
+          this.drawLine();
+        });
+
+        this.getErrorRate().then(data => {
+          this.drawErrorLine(data)
+        });
+      }
     },
     getErrorRate() {
       let now = new Date();
@@ -1424,7 +1504,7 @@ export default {
           "dataCount": {
             "date_histogram": {
               "field": "dtTime",
-              "interval": this.chartInterval.value,
+              "fixed_interval": this.chartInterval.fixed_interval,
               "min_doc_count": 0
             }
           }
@@ -1469,6 +1549,16 @@ export default {
         },
         ...aggs
       };
+
+      if (this.excludeAppNames && this.excludeAppNames.length > 0) {
+        const mustNotArr = this.excludeAppNames.map(appName => ({
+          match_phrase: {
+            appName: { query: appName }
+          }
+        }));
+        query.query.bool.must_not = mustNotArr;
+        _errorQuery.query.bool.must_not = mustNotArr;
+      }
 
       let url = process.env.VUE_APP_API + '/clientQuery?clientStartDate=' + Date.parse(this.dateTimeRange[0])
               + '&clientEndDate=' + Date.parse(this.dateTimeRange[1]) + '&from=0&size=0&errChat';
@@ -1529,6 +1619,7 @@ export default {
           plumeLogParams['autoWordWrap'] !== undefined && (this.autoWordWrap = plumeLogParams['autoWordWrap']);
           plumeLogParams['darkMode'] !== undefined && (this.darkMode = plumeLogParams['darkMode']);
           plumeLogParams['size'] !== undefined && (this.size = plumeLogParams['size']);
+          plumeLogParams['excludeAppNames'] !== undefined && (this.excludeAppNames = plumeLogParams['excludeAppNames']);
           if (!this.tableModel && this.darkMode && !this.autoWordWrap) {
             document.querySelector('html').style.cssText = `background: #2b2b2b;`;
           } else {

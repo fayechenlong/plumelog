@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>plumelog-example</artifactId>
-        <groupId>com.plumelog</groupId>
-        <version>3.5.3</version>
-    </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.plumelog</groupId>
+        <artifactId>plumelog-example</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <groupId>com.plumelog.example</groupId>
     <artifactId>plumelog-demo</artifactId>
     <properties>
@@ -29,20 +28,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <artifactId>com.plumelog.lite.logback-classic</artifactId>-->
-<!--                    <groupId>ch.qos.com.plumelog.lite.logback</groupId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <artifactId>spring-boot-starter-logging</artifactId>-->
-<!--                    <groupId>org.springframework.boot</groupId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <artifactId>log4j-to-slf4j</artifactId>-->
-<!--                    <groupId>org.apache.logging.log4j</groupId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
+            <!--            <exclusions>-->
+            <!--                <exclusion>-->
+            <!--                    <artifactId>com.plumelog.lite.logback-classic</artifactId>-->
+            <!--                    <groupId>ch.qos.com.plumelog.lite.logback</groupId>-->
+            <!--                </exclusion>-->
+            <!--                <exclusion>-->
+            <!--                    <artifactId>spring-boot-starter-logging</artifactId>-->
+            <!--                    <groupId>org.springframework.boot</groupId>-->
+            <!--                </exclusion>-->
+            <!--                <exclusion>-->
+            <!--                    <artifactId>log4j-to-slf4j</artifactId>-->
+            <!--                    <groupId>org.apache.logging.log4j</groupId>-->
+            <!--                </exclusion>-->
+            <!--            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -53,25 +52,25 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.plumelog</groupId>-->
-<!--            <artifactId>plumelog-logback</artifactId>-->
-<!--            <version>${version}</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.plumelog</groupId>-->
+        <!--            <artifactId>plumelog-logback</artifactId>-->
+        <!--            <version>${version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-lite-spring-boot-starter</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-trace</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-dubbo</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>de.codecentric</groupId>
@@ -85,6 +84,7 @@
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-spring-boot-starter</artifactId>
+            <version>2.7.3</version>
             <exclusions>
                 <!-- 排除默认日志配置 -->
                 <exclusion>
@@ -92,7 +92,6 @@
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
-            <version>2.7.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.curator</groupId>
@@ -110,6 +109,7 @@
         </dependency>
     </dependencies>
     <build>
+        <finalName>plumelog-demo</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -136,7 +136,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>plumelog-demo</finalName>
     </build>
 
 </project>

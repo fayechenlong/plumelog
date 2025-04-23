@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.plumelog</groupId>
         <artifactId>plumelog</artifactId>
-        <version>3.5.3</version>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>plumelog-server</artifactId>
     <name>plumelog-server</name>
 
@@ -15,7 +15,6 @@
         <redis.version>3.3.0</redis.version>
         <kafka.version>2.5.0</kafka.version>
         <springboot.version>2.1.7.RELEASE</springboot.version>
-        <elasticsearch.version>7.7.0</elasticsearch.version>
         <dingtalk.version>2.0.0</dingtalk.version>
     </properties>
 
@@ -51,7 +50,7 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-client</artifactId>
-            <version>7.7.0</version>
+            <version>${elasticsearch.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -128,12 +127,12 @@
             <scope>compile</scope>
         </dependency>
         <!-- 内嵌redis server-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.caryyu</groupId>-->
-<!--            <artifactId>spring-embedded-redis-server</artifactId>-->
-<!--            <version>1.1</version>-->
-<!--            <type>pom</type>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.caryyu</groupId>-->
+        <!--            <artifactId>spring-embedded-redis-server</artifactId>-->
+        <!--            <version>1.1</version>-->
+        <!--            <type>pom</type>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -171,7 +170,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- maven资源文件复制插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -179,10 +177,10 @@
                 <executions>
                     <execution>
                         <id>copy-config</id>
-                        <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
+                        <phase>package</phase>
                         <configuration>
                             <outputDirectory>${project.build.directory}/</outputDirectory>
                             <resources>
@@ -194,6 +192,27 @@
                                         <exclude>**/*.properties</exclude>
                                         <exclude>**/*.sh</exclude>
                                         <exclude>**/*.bat</exclude>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-dockerfile</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <outputDirectory>${project.basedir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>Dockerfile</include>
+                                        <include>docker-compose.yaml</include>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>

@@ -47,10 +47,10 @@
     <keepDay>30</keepDay>
 </appender>
         
-        <!-- 添加 ref-->
-    <root level="INFO">
-    <appender-ref ref="plumelog"/>
-    </root>
+<!-- 添加 ref-->
+<root level="INFO">
+<appender-ref ref="plumelog"/>
+</root>
 
 ```
 
@@ -114,9 +114,9 @@ public class TraceIdInterceptorsConfig extends WebMvcConfigurerAdapter{
 
 ```java
 public static void main(String[] args) {
-        System.setProperty("spring.cloud.bootstrap.enabled", "false");
-        SpringApplication.run(LogServerStart.class, args);
-        }
+    System.setProperty("spring.cloud.bootstrap.enabled", "false");
+    SpringApplication.run(LogServerStart.class, args);
+}
 
 ```
 

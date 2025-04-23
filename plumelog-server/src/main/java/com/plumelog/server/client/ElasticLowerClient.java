@@ -13,6 +13,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
@@ -22,6 +23,7 @@ import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.net.ssl.SSLContext;
 import java.io.*;
@@ -516,10 +518,9 @@ public class ElasticLowerClient extends AbstractServerClient {
     @Override
     public String get(String indexStr, String queryStr, String from, String size) throws Exception {
         String url = "/" + indexStr + "/_search?from=" + from + "&size=" + size;
-        StringEntity stringEntity = new StringEntity(queryStr, "utf-8");
-        stringEntity.setContentType("application/json");
+        StringEntity stringEntity = new StringEntity(queryStr, ContentType.APPLICATION_JSON);
         Request request = new Request(
-                "GET",
+                RequestMethod.GET.name(),
                 url);
         request.setEntity(stringEntity);
         Response res = client.performRequest(request);

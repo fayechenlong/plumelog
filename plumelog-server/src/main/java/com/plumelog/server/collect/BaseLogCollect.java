@@ -79,8 +79,7 @@ public class BaseLogCollect {
                 List<RunLogMessage> errorLogs = new ArrayList<>();
                 for (String logString : logs) {
                     RunLogMessage runLogMessage = JSON.parseObject(logString, RunLogMessage.class);
-                    AppNameCache.appName.computeIfAbsent(runLogMessage.getAppName(), k -> new HashSet<>())
-                            .add(runLogMessage.getEnv());
+                    AppNameCache.getInstance().addAppName(runLogMessage);
                     if ("ERROR".equalsIgnoreCase(runLogMessage.getLogLevel())) {
                         errorLogs.add(runLogMessage);
                     }
