@@ -92,7 +92,8 @@ public class LogMessageUtil {
     }
 
     private static String getMessage(ILoggingEvent logEvent) {
-        if (logEvent.getLevel().equals(Level.ERROR) || logEvent.getLevel().equals(Level.WARN)) {
+        Level level = logEvent.getLevel();
+        if (level.equals(Level.ERROR) || level.equals(Level.WARN)) {
             if (logEvent.getThrowableProxy() != null) {
                 ThrowableProxy throwableProxy = (ThrowableProxy) logEvent.getThrowableProxy();
                 String[] args = new String[]{logEvent.getFormattedMessage() + "\n" + LogExceptionStackTrace.errorStackTrace(throwableProxy.getThrowable()).toString()};

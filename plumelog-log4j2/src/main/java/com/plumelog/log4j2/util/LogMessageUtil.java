@@ -83,7 +83,8 @@ public class LogMessageUtil {
     }
 
     private static String getMessage(LogEvent logEvent) {
-        if (logEvent.getLevel().equals(Level.ERROR)) {
+        Level level = logEvent.getLevel();
+        if (level.equals(Level.ERROR) || level.equals(Level.WARN)) {
             // 如果占位符个数与参数个数相同,即使最后一个参数为Throwable类型,logEvent.getThrown()也会为null
             Throwable thrown = logEvent.getThrown();
             String formatMessage = logEvent.getMessage().getFormat();
