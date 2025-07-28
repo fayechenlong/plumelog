@@ -71,7 +71,7 @@ public class LogMessageUtil {
         return GfJsonUtil.toJSONString(map);
     }
     private static String getMessage(LoggingEvent logEvent) {
-        if (logEvent.getLevel().toInt() == Priority.ERROR_INT) {
+        if (logEvent.getLevel().toInt() == Priority.ERROR_INT || logEvent.getLevel().toInt() == Priority.WARN_INT) {
             String msg = "";
             if (logEvent.getThrowableInformation() != null) {
                 msg = LogExceptionStackTrace.errorStackTrace(
