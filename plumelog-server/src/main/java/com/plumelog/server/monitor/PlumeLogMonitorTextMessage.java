@@ -112,7 +112,7 @@ public class PlumeLogMonitorTextMessage {
                 builder.append("类路径【").append(className).append("】 \n\n> ");
             }
             builder.append("时间区间【").append(time).append("】秒 \n\n> ");
-            builder.append("错误阀值【").append(errorCount).append("】条数 \n\n> ");
+            builder.append("错误阈值【").append(errorCount).append("】条数 \n\n> ");
             builder.append("实际错误【").append(count).append("】条数 \n\n> ");
             builder.append("错误信息【").append(errorContent).append("】 \n\n> ");
             builder.append("[点击查看](").append(monitorUrl).append(") \n\n");
