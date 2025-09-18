@@ -5,11 +5,12 @@
     <groupId>com.plumelog</groupId>
     <artifactId>plumelog</artifactId>
     <packaging>pom</packaging>
-    <version>3.5.4</version>
+    <version>${revision}</version>
     <name>plumelog</name>
     <description>The parent project of plumelog</description>
     <url>https://gitee.com/frankchenlong/plumelog</url>
     <properties>
+        <revision>3.5.4</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <distribution.repository.url>http://172.16.249.94:4000</distribution.repository.url>
         <redis.version>3.3.0</redis.version>
@@ -17,6 +18,7 @@
         <springboot.version>2.1.7.RELEASE</springboot.version>
         <elasticsearch.version>7.7.0</elasticsearch.version>
     </properties>
+
     <modules>
         <module>plumelog-core</module>
         <module>plumelog-server</module>
