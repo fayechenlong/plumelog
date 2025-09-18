@@ -66,8 +66,7 @@
     </scm>
 
     <properties>
-        <revision>3.5.3</revision>
-
+        <revision>3.5.3.ES8</revision>
         <encoding>UTF-8</encoding>
         <java.version>8</java.version>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
