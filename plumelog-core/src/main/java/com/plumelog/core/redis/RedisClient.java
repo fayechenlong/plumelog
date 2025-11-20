@@ -3,6 +3,7 @@ package com.plumelog.core.redis;
 
 import com.plumelog.core.client.AbstractClient;
 import com.plumelog.core.exception.LogQueueConnectException;
+import com.plumelog.core.util.StringUtils;
 import redis.clients.jedis.*;
 
 import java.util.*;
@@ -36,11 +37,7 @@ public class RedisClient extends AbstractClient {
         config.setMaxIdle(MAX_IDLE);
         config.setMaxWaitMillis(MAX_WAIT);
         config.setTestOnBorrow(TEST_ON_BORROW);
-        if (pass != null && !"".equals(pass)) {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT, pass, db);
-        } else {
-            jedisPool = new JedisPool(config, host, port, TIMEOUT);
-        }
+        jedisPool = new JedisPool(config, host, port, TIMEOUT, StringUtils.isEmpty(pass) ? null : pass, db);
     }
 
     public static RedisClient getInstance(String host, int port, String pass, int db) {
