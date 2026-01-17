@@ -61,6 +61,7 @@ public class MainController {
         }
         if (InitConfig.loginUsername.equals(login.getUsername()) && InitConfig.loginPassword.equals(login.getPassword())) {
             request.getSession().setAttribute("token", new Object());
+            request.getSession().setMaxInactiveInterval(12 * 3600);
             return new Result();
         } else {
             request.getSession().removeAttribute("token");
